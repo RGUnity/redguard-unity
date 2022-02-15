@@ -8,7 +8,7 @@ public class test_settings_manager : MonoBehaviour
     //Variables
     public PostProcessLayer localPostProcessLayer;
     public PixelateEffect cameraObject;
-    //public bool shadowsEnabled
+
 
     //Function to change pixel size with UI buttons
     public void SetPixelScale(float overridePixelScale)
@@ -17,6 +17,7 @@ public class test_settings_manager : MonoBehaviour
         print(overridePixelScale);
     }
 
+    //This Toggles AntiAliasing
     public void ToggleAA(bool antiAliasingEnabled)
     {
         if (antiAliasingEnabled)
@@ -27,10 +28,15 @@ public class test_settings_manager : MonoBehaviour
         {
             localPostProcessLayer.antialiasingMode = PostProcessLayer.Antialiasing.None;
         }
-        //localPostProcessLayer.antialiasingMode = PostProcessLayer.Antialiasing.SubpixelMorphologicalAntialiasing;
-        //print("AA = " + antiAliasingEnabled);
     }
 
+    //This Toggles Bilinear Filtering for the Rendertexture
+    public void ToggleBilinearFiltering(bool overrideBF)
+    {
+        cameraObject.bilinearFilterEnabled = overrideBF;
+    }
+
+    //This toggles Shadows
     public void ToggleShadows(bool shadowsEnabled)
     {
         if (shadowsEnabled)
