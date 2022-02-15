@@ -5,7 +5,10 @@ using System.Collections;
 public class PixelateEffect : MonoBehaviour
 {
 
+    [Range(1, 3)]
     public float pixelScale = 1;
+    //public FilterMode fm;
+    public bool bilinearFilterEnabled;
 
     // Postprocess the image
     void OnRenderImage(RenderTexture source, RenderTexture destination)
@@ -18,8 +21,16 @@ public class PixelateEffect : MonoBehaviour
         //make RT
         RenderTexture lowresRT = RenderTexture.GetTemporary(lowresDepthWidth, lowresDepthHeight, 0, format);
 
-        //point sampling for crispness sake
-        lowresRT.filterMode = FilterMode.Point;
+        //Texture filtering
+        if (bilinearFilterEnabled)
+        {
+            lowresRT.filterMode = FilterMode.Bilinear;
+        }
+        else
+        {
+            lowresRT.filterMode = FilterMode.Point;
+        }
+
 
         //Blit source to lowres RT
         Graphics.Blit(source, lowresRT);
@@ -28,5 +39,7 @@ public class PixelateEffect : MonoBehaviour
 
         //release lowres RT from memory
         RenderTexture.ReleaseTemporary(lowresRT);
+
+
     }
 }
