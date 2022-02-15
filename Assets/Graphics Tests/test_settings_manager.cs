@@ -10,11 +10,23 @@ public class test_settings_manager : MonoBehaviour
     public PixelateEffect cameraObject;
     //public bool shadowsEnabled
 
+    // void Start()
+    // {
+    //     ScalableBufferManager.ResizeBuffers(1f, 1f);
+    // }
+
+
     //Function to change pixel size with UI buttons
     public void SetPixelScale(float overridePixelScale)
     {
+        ScalableBufferManager.ResizeBuffers(1 / overridePixelScale, 1 / overridePixelScale);
         cameraObject.pixelScale = overridePixelScale;
         print(overridePixelScale);
+    }
+
+    public void ToggleBilinearFiltering(bool overrideBF)
+    {
+        cameraObject.bilinearFilterEnabled = overrideBF;
     }
 
     public void ToggleAA(bool antiAliasingEnabled)
