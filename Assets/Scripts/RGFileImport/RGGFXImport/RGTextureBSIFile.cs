@@ -4,13 +4,16 @@ using System.IO;
 
 namespace Assets.Scripts.RGFileImport.RGGFXImport
 {
+    ///<summary>
+    ///Reads a BSI file with the desired palette.  Use LoadFile(string path) to continue.
+    ///</summary>
     public class RGTextureBSIFile
     {
         public const uint RedguardImageHeaderSize = 26;
         public List<RGTextureImage> Images { get; protected set; }
         static private RGPaletteFile.RGColor[] defaultPalette;
 
-        public RGTextureBSIFile(RGPaletteFile.RGColor[] colors)
+        public RGTextureBSIFile(RGPaletteFile.RGColor[] colors =null )
         {
             if (colors == null)
                 defaultPalette = new RGPaletteFile.RGColor[256];

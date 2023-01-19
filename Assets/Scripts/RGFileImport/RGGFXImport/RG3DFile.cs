@@ -68,6 +68,8 @@ namespace RGFileImport
         uint endFaceDataOffset;
         int totalFaceVertexes;
         int version;
+        //Debug todo: remove 
+        public int ModelVersion=>version; 
         Dictionary<int, int> faceVectorSizes;
 
         public List<FaceData> FaceDataCollection { get; set; }
@@ -311,7 +313,10 @@ namespace RGFileImport
             for (var i = 0; i < header.NumUVOffsets; ++i)
                 uvOffsets.Add(binaryReader.ReadUInt32());
             if (binaryReader.BaseStream.Position - header.OffsetUVOffsets != dataSize)
+            {
+                throw new Exception("Recorded "+(binaryReader.BaseStream.Position -header.OffsetUVOffsets)+", should have been " + dataSize);
                 throw new Exception("Did not read all bytes from 3d file UV offset data.");
+            }
 
             return uvOffsets;
         }
@@ -336,10 +341,15 @@ namespace RGFileImport
                     z = binaryReader.ReadSingle()
                 });
             }
-
+//3dart/CLAVA001.3DC fails here.
+//binaryReader.BaseStream.Position - header.OffsetUVData = 28836, should be 28840?
             if (binaryReader.BaseStream.Position - header.OffsetUVData != dataSize)
-                throw new Exception("Did not read all bytes from 3d file UV coordinate data.");
+            {
 
+                throw new Exception("Recorded "+(binaryReader.BaseStream.Position -header.OffsetUVData)+", should have been " + dataSize + "; header size = " + header.OffsetUVData+". Model ver"+version); 
+                throw new Exception("Did not read all bytes from 3d file UV coordinate data.");
+            }
+            
             return uvCoordinates;
         }
 

@@ -64,6 +64,22 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+UserSettings
+
+# Copyrighted Redguard assets
+*.COL
+*.3DC
+*.ROB
+*.3D
+*.COL
+3dart/
+TEXTURE.*
+*.RGM
+*.PVO
+*.WLD
+*.TSG
+*.GXA
+
 # Packed Addressables
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 
