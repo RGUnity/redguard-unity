@@ -64,6 +64,7 @@ namespace RGFileImport
         string fullName;
         string name;
         bool is3DCFile;
+        bool is3DFile;
         long fileSize;
         uint endFaceDataOffset;
         int totalFaceVertexes;
@@ -85,6 +86,7 @@ namespace RGFileImport
             fullName = path;
             name = Path.GetFileName(path);
             is3DCFile = name.ToLower().EndsWith(".3dc");
+            is3DFile = name.ToLower().EndsWith(".3d");
             using var binaryReader = new BinaryReader(File.OpenRead(path));
             fileSize = binaryReader.BaseStream.Length;
             header = GetHeader(binaryReader);

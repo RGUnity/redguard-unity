@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+namespace RGFileImport
+{
+
 [CustomEditor(typeof(ModelUnityReader))]
 public class ModelUnityReaderInspector : Editor
 {
@@ -17,5 +20,6 @@ public class ModelUnityReaderInspector : Editor
         // if(target != null&&Application.isPlaying) MusicPlayer.SetMixerSnapshot();
         ;
     }
+}
 }
 #endif
