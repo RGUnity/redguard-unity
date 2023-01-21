@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.RGFileImport.RGGFXImport;
+namespace RGFileImport 
+{
+
 public enum RGTexture
 {
     
@@ -14,6 +17,15 @@ public enum WorldOrientation
 [System.Serializable]
 public enum RGFiles
 {
+    //3D
+    CRAK0001,CRAK0002=0,CRAK0003=0,CRAK0004=0,CRAK0005=0,CRAK0006=0,CRAK0007=0,CRAK0008=0,CRAK0009=0,CRAK0010=0,CRAK0011=0,CRAK0012=0,CRAK0013=0,CRAK0014=0,CRAK0015=0,CRAK0016=0,CRAK0017=0,CRAK0018=0,CRAK0019=0,CRAK0020=0,CRAK0021=0,CRAK0022=0,CRAK0023=0,
+    CV_BOOM=0,
+    CV_SPR1=0,CV_SPR2=0,CV_SPR3=0,CV_SPR4=0,CV_SPR5=0,
+    CV_TRAP1=0,CV_TRAP2=0,CV_TRAP3=0,CV_TRAP4=0,CV_TRAP5=0,CV_TRAP6=0,
+    NCROCK=0,NCROCK00=0,NCROCK01=0,NCROCK1=0,NCROCK02=0,NCROCK03=0,NCROCK04=0,NCROCK05=0,NCROCK06=0,NCROCK08=0,
+    TV_BOTTL=0,TV_BTTL1=0,TV_BTTL2=0,TV_BTTL3=0,
+    XBUCKET=0,XBUCKETE=0,XBUCKETF=0,
+    //3DC
     AVIKA001,
     BASIA001,
     BAT,
@@ -22,48 +34,23 @@ public enum RGFiles
     BMANA001,
     BULLA001,
     BWAGA001,
-    CANAA001,
-    CANAA002,
+    CANAA001,CANAA002,
     CLAVA001,
-    COYLA001,
-    COYLA002,
+    COYLA001,COYLA002,
     CRENA001,
     CV_EXPL1,
     CV_FISH,
-    CV_MUSH1,
-    CV_MUSH2,
+    CV_MUSH1,CV_MUSH2,
     CV_ROPE,
     CV_SKUL3,
     CVFTL001,
-    CYRSA001,
-    CYRSA002,
-    CYRSA003,
-    CYRSA004,
-    CYRSA005,
-    CYRSA006,
-    CYRSA007,
-    CYRSA008,
-    CYRSA009,
-    CYRSA010,
-    CYRSA011,
-    CYRSA012,
-    CYRSA013,
-    CYRSA014,
-    CYRSA015,
-    CYRSA016,
-    CYRSA017,
-    CYRSA018,
-    CYRSA019,
-    CYRSA020,
-    CYRSA021,
-    CYRSA022,
-    CYRSA023,
+    CYRSA001,CYRSA002,CYRSA003,CYRSA004,CYRSA005,CYRSA006,CYRSA007,CYRSA008,CYRSA009,CYRSA010,
+    CYRSA011,CYRSA012,CYRSA013,CYRSA014,CYRSA015,CYRSA016,CYRSA017,CYRSA018,CYRSA019,
+    CYRSA020,CYRSA021,CYRSA022,CYRSA023,
     DEAD,
     DGOLA001,
     DOGA001,
-    DRAMA001,
-    DRAMA002,
-    DRAMA003,
+    DRAMA001,DRAMA002,DRAMA003,
     DREKA001,
     DR_SPIKE,
     EFCTA001,
@@ -71,93 +58,62 @@ public enum RGFiles
     FALIA001,
     FIDOA001,
     FLAGA01,
-    FVPRA001,
-    FVPRA002,
-    GARDA001,
-    GARDA002,
-    GARDA003,
-    GARDA004,
-    GBLNA001,
-    GBLNA002,
-    GBLNA003,
+    FVPRA001,FVPRA002,
+    GARDA001,GARDA002,GARDA003,GARDA004,
+    GBLNA001,GBLNA002,GBLNA003,
     GERRA001,
     GOATA001,
-    GOLMA001,
-    GOLMA002,
+    GOLMA001,GOLMA002,
     GREMA001,
     GRRKA001,
     HEADA001,
     ISZAA001,
     JAGAA001,
     JFFRA001,
-    JOTOA001,
-    JOTOA002,
-    JOTOA003,
+    JOTOA001,JOTOA002,JOTOA003,
     KANA001,
     KOTAA001,
     LAKEA001,
     LASRA001,
     LHMBA001,
     MAKOA001,
-    NFARA001,
-    NFARA002,
-    NFARA003,
-    NGASA001,
-    NGASA002,
+    NFARA001,NFARA002,NFARA003,
+    NGASA001,NGASA002,
     NIDAA001,
-    OB_TEL05,
-    OB_TEL06,
-    OGREA001,
-    OGREA002,
+    OB_TEL05,OB_TEL06,
+    OGREA001,OGREA002,
     OXA001,
     PIGA001,
     PRISA001,
     PRRTA001,
-    RICHA001,
-    RICHA002,
-    ROBOA001,
-    ROBOA002,
-    ROBOA003,
-    SABAA001,
-    SABAA002,
-    SABAA003,
+    RICHA001,RICHA002,
+    ROBOA001,ROBOA002,ROBOA003,
+    SABAA001,SABAA002,SABAA003,
     SEAGA001,
     SEAGULL,
     SEALOW,
     SERPA001,
-    SKELA001,
-    SKELA002,
-    SKELA003,
-    SKELA004,
+    SKELA001,SKELA002,SKELA003,SKELA004,
     SNAKA01,
     SWAPA001,
     TENTA001,
-    THUGA001,
-    THUGA002,
-    THUGA003,
-    THUGA004,
-    THUGA005,
-    TIRBA001,
-    TIRBA002,
-    TOBIAS,
-    TOBIAS_A,
+    THUGA001,THUGA002,THUGA003,THUGA004,THUGA005,
+    TIRBA001,TIRBA002,
+    TOBIAS,TOBIAS_A,
     TOBYA001,
     TOMJONES,
-    TROLA001,
-    TROLA002,
-    TROLA003,
+    TROLA001,TROLA002,TROLA003,
     TS_RP,
     TUFFA001,
-    VANDA001,
-    VANDA002,
-    VANDA003,
+    VANDA001,VANDA002,VANDA003,
     VERMA001,VERMA002,
     VILEGARD,
     VR_DOOR,
     VULTA,
-    WOMEA001,XBOWA001,YAELA001,ZOMBA001,ZOMBA002
-
-
+    WOMEA001,
+    XBOWA001,
+    YAELA001,
+    ZOMBA001,ZOMBA002
 }
 // [RequireComponent(typeof(MeshFilter))]
 // [RequireComponent(typeof(MeshRenderer))]
@@ -202,12 +158,15 @@ public class ModelUnityReader : MonoBehaviour
         
         //Load in file from game
         file3d = new RGFileImport.RG3DFile(); 
-        file3d.LoadFile(filePath+fileToLoad.ToString()+extension);
+        if((int)nextFile == 0) extension = ".3d";
+        else extension = ".3dc";
+        Debug.Log(extension+", "+(int)nextFile);
+        file3d.LoadFile(filePath+nextFile.ToString()+extension);
         fileToLoad.ToString();
-        Debug.Log("Attempted to load "+filePath + fileToLoad.ToString()+extension);        
+        Debug.Log("Attempted to load "+filePath + nextFile.ToString()+extension);        
         if (file3d==null) 
         {
-            Debug.Log("The file "+fileToLoad.ToString()+extension+" could not be loaded.");
+            Debug.Log("The file "+nextFile.ToString()+extension+" could not be loaded.");
             return;
             }
 
@@ -302,7 +261,7 @@ public class ModelUnityReader : MonoBehaviour
     void Start()
     {
         SetModel(fileToLoad);
-        MakeMat(texToLoad);
+        // MakeMat(texToLoad);
     }
     RGTextureBSIFile texFile;
     public void MakeMat(string texToLoad)
@@ -339,4 +298,6 @@ public class ModelUnityReader : MonoBehaviour
     {
         
     }
+}
+
 }

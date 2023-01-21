@@ -156,8 +156,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldDirection: 0
   filePath: F:\Games\Redguard\Redguard\3dart\
-  fileToLoad: 5
-  extension: .3dc
+  fileToLoad: 7
+  extension: .3d
   vertices: []
   triangles: 
   normals: []
@@ -933,6 +933,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1084940586}
+  - {fileID: 848421660}
   - {fileID: 1598170943}
   m_Father: {fileID: 37671463}
   m_RootOrder: 0
@@ -1178,12 +1179,12 @@ RectTransform:
   - {fileID: 1394180600}
   - {fileID: 648703702}
   - {fileID: 1851912463}
-  m_Father: {fileID: 1598170943}
-  m_RootOrder: 3
+  m_Father: {fileID: 654589564}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -29.999985}
+  m_AnchoredPosition: {x: 0, y: -191.39998}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &848421661
@@ -1739,9 +1740,8 @@ RectTransform:
   - {fileID: 153221927}
   - {fileID: 392785807}
   - {fileID: 1697711835}
-  - {fileID: 848421660}
   m_Father: {fileID: 654589564}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
