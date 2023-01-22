@@ -1,18 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
+public enum RGVideos
+{
+    A_ruins1,
+    A_ruins2,
+    B_ruins1,
+    B_ruins2,
+    C_ruins1,
+    C_ruins2,
+    Intro,
+    SCENE3,
+    Scene7,
+    Scene10,
+    WIN
+}
 public class RGSmacker
 {
-    //Request data from a SMACKER file.
+    ///<summary>
+    ///Request data from a SMACKER file.
+    ///</summary>
     //Data format is property of RAD Game Tools.
     //Created with assistance from https://wiki.multimedia.cx/index.php?title=Smacker
+    //Current status: barely started
 
-    //Note: Because of Redguard's formatting (use of a Bin/Cue file in digital releases), a CD ROM or mounted BIN/CUE will be mandatory.
+    //Note: Because of Redguard's formatting (use of a Bin/Cue file in digital releases), the original Play Disc or mounted BIN/CUE is required at this moment. This is not ideal.
  
     //Array of 4x4 pixels with set palettes
     //Convert to bytes then convert to colors then output to Unity
+    string filepath = "D:" + System.IO.Path.DirectorySeparatorChar;
 
+    SmackerHeader dataHeader;
+    BinaryReader binaryReader;
     public struct PaletteChunk
     {
         byte Length;
@@ -25,9 +46,40 @@ public class RGSmacker
         byte[] Data;
     }
 
+    void GetFramerate()
+    {
+        float fps = 10;
+        if(dataHeader.FrameRate != 0)
+            fps = 1000f / Mathf.Abs(dataHeader.FrameRate);
+    }
+
+    private SmackerHeader GetHeader(BinaryReader binaryReader)
+
+    {
+        var newHeader = new SmackerHeader
+        {
+            Signature = binaryReader.ReadUInt32(), // SMK2 or SMK4
+            Width = binaryReader.ReadUInt32(),
+            Height = binaryReader.ReadUInt32(),
+            Frames = binaryReader.ReadUInt32(), //Extra "ring" frame is not counted
+            FrameRate = binaryReader.ReadUInt32(), //fps = 1000/Mathf.Abs(FrameRate) or if 0, fps = 10
+            Flags = binaryReader.ReadUInt32(),// 0
+            AudioSize = new uint[1]{binaryReader.ReadUInt32()},//Size of largest buffer (bytes) per audio track (up to 8)... this isn't how it works and needs to be fixed
+            TreesSize = binaryReader.ReadUInt32(),//Size of bytes in huffman trees
+            MMap_Size = binaryReader.ReadUInt32(),//Huffman data
+            MClr_Size = binaryReader.ReadUInt32(),//huffman data
+            Full_Size = binaryReader.ReadUInt32(),//huffman data
+            Type_Size = binaryReader.ReadUInt32(),//huffman data
+            AudioRate = new uint[1]{binaryReader.ReadUInt32()},
+            Dummy = binaryReader.ReadUInt32(),
+        };
+
+        return (SmackerHeader)newHeader;
+    }
+
     void GetSMKInfo()
     {
-
+        
     }
     
     public struct HuffmanFlag
