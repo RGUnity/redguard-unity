@@ -263,17 +263,18 @@ public class ModelUnityReader : MonoBehaviour
         SetModel(fileToLoad);
         // MakeMat(texToLoad);
     }
-    RGTextureBSIFile texFile;
-    public void MakeMat(string texToLoad)
-    {
+    // [SerializeField] string texToLoad;
+    //RGTextureBSIFile texFile;
+    //This isn't usable.  Needs to be moved to its own script.
+    // public void MakeMat(string texToLoad)
+    // {
         
-        string loc = filePath + texToLoad;
-        texFile = new RGTextureBSIFile();
-        texFile.LoadFile(loc);  
-        GraphicsConverter.RGTextureToTexture2D(texFile.Images[0]);
-        //Convert image textures from texFile.Images;
-    }
-    [SerializeField] string texToLoad;
+    //     string loc = filePath + texToLoad;
+    //     texFile = new RGTextureBSIFile();
+    //     texFile.LoadFile(loc);  
+    //     GraphicsConverter.RGTextureToTexture2D(texFile.Images[0]);
+    //     //Convert image textures from texFile.Images;
+    // }
     #region Debug Info (PlayMode)
     [SerializeField] TMPro.TMP_Text DebugConsole;
     void PrintToScreen(bool verbose = false)
@@ -292,6 +293,7 @@ public class ModelUnityReader : MonoBehaviour
         }
     }
     #endregion
+    //Debug: If checked, ignore original normals and autogenerate them in Unity.
     [SerializeField] bool autoNorm = true;
     // Update is called once per frame
     void Update()
