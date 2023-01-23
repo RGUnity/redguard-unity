@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
+namespace RGFileImport.VideoPlayback
+{
+
 public enum RGVideos
 {
     A_ruins1,
@@ -17,6 +20,7 @@ public enum RGVideos
     Scene10,
     WIN
 }
+
 public class RGSmacker
 {
     ///<summary>
@@ -31,27 +35,39 @@ public class RGSmacker
     //Array of 4x4 pixels with set palettes
     //Convert to bytes then convert to colors then output to Unity
     string filepath = "D:" + System.IO.Path.DirectorySeparatorChar;
-
     int[] FrameSizes;
-
-    SmackerHeader dataHeader;
+    // This probably shouldn't be an instance but for testing purposes it can't hurt
+    public static RGSmacker Instance; 
+    public SmackerHeader dataHeader;
     BinaryReader binaryReader;
 
+    byte[] palmap = new byte[64]{
+        0x00, 0x04, 0x08, 0x0C, 0x10, 0x14, 0x18, 0x1C,
+        0x20, 0x24, 0x28, 0x2C, 0x30, 0x34, 0x38, 0x3C,
+        0x41, 0x45, 0x49, 0x4D, 0x51, 0x55, 0x59, 0x5D,
+        0x61, 0x65, 0x69, 0x6D, 0x71, 0x75, 0x79, 0x7D,
+        0x82, 0x86, 0x8A, 0x8E, 0x92, 0x96, 0x9A, 0x9E,
+        0xA2, 0xA6, 0xAA, 0xAE, 0xB2, 0xB6, 0xBA, 0xBE,
+        0xC3, 0xC7, 0xCB, 0xCF, 0xD3, 0xD7, 0xDB, 0xDF,
+        0xE3, 0xE7, 0xEB, 0xEF, 0xF3, 0xF7, 0xFB, 0xFF
+    };
 
-
-    void LoadFile()
+    public void LoadFile(string path)
     {
-        if(File.Exists(filepath))
+        if(File.Exists(path))
         {
-            binaryReader = new BinaryReader(File.OpenRead(filepath));
+            binaryReader = new BinaryReader(File.OpenRead(path));
             dataHeader = GetHeader(binaryReader);
         }
-        else throw new System.Exception("The file "+filepath+ " could not be found. The video was not loaded.");
+        else throw new System.Exception("The file "+path+ " could not be found. The video was not loaded.");
+        binaryReader.BaseStream.Position = 0;
         dataHeader = GetHeader(binaryReader);
-        ReadFrameSizes();
-        ReadFrameTypes();
-        GetHuffmanTrees();
-        GetFramesData();
+        // ReadFrameSizes();
+        // ReadFrameTypes();
+        // GetHuffmanTrees();
+        // GetFramesData();
+        Debug.Log(dataHeader);
+        
     }
 
 
@@ -67,11 +83,13 @@ public class RGSmacker
         byte[] Data;
     }
 
-    float GetFramerate()
+    public float GetFramerate()
     {
         float fps = 10;
-        if(dataHeader.FrameRate != 0)
-            fps = 1000f / Mathf.Abs(dataHeader.FrameRate);
+        if(dataHeader.FrameRate < 0)
+            fps = 100000f / (float)(-dataHeader.FrameRate);
+        else if (dataHeader.FrameRate > 0)
+            fps = 1000f / (float)dataHeader.FrameRate;
         return fps;
     }
 
@@ -84,8 +102,8 @@ public class RGSmacker
             Width = binaryReader.ReadUInt32(), //most videos will return 640
             Height = binaryReader.ReadUInt32(), //most videos will return 240
             Frames = binaryReader.ReadUInt32(), //Extra "ring" frame is not counted; Intro is about 6895 frames
-            FrameRate = binaryReader.ReadUInt32(), //fps = 1000/Mathf.Abs(FrameRate) or if 0, fps = 10
-            Flags = binaryReader.ReadUInt32(),// 0
+            FrameRate = binaryReader.ReadInt32(), //fps = 1000/Mathf.Abs(FrameRate) or if 0, fps = 10; should equal 15
+            Flags = binaryReader.ReadUInt32(),// 02000000 ; videos should be interlaced
             AudioSize = new uint[7]{binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32()},//Size of largest buffer (bytes) per audio track (up to 8)... this isn't how it works and needs to be fixed
             TreesSize = binaryReader.ReadUInt32(),//Size of bytes in huffman trees
             MMap_Size = binaryReader.ReadUInt32(),//Huffman data
@@ -135,15 +153,17 @@ public class RGSmacker
     }
     int version;
 
-    void GetSMKVersion()
+    public int GetSMKVersion()
     {
         version = dataHeader.Signature switch
         {
-            0x534D4B32 => 2, //SMK2
+            // 0x534D4B32 => 2, //SMK2
+            843795795 => 2,
             0x534D4B34 => 4, //SMK4
             _ => 0 // null, will never happen in a valid file
             
         };
+        return version;
     }
     
     public struct HuffmanFlag
@@ -182,4 +202,6 @@ public class RGSmacker
 
 
     
+}
+
 }
