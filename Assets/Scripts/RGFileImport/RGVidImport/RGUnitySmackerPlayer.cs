@@ -47,7 +47,8 @@ public class RGUnitySmackerPlayer : MonoBehaviour
         "\nMMap Size: "+SmackerInstance.dataHeader.MMap_Size+
         "\nMClr Size: "+SmackerInstance.dataHeader.MClr_Size+
         "\nFull Size: "+SmackerInstance.dataHeader.Full_Size+
-        "\nType Size: "+SmackerInstance.dataHeader.Type_Size);
+        "\nType Size: "+SmackerInstance.dataHeader.Type_Size+
+        "\nAudio Rate[0]: "+SmackerInstance.dataHeader.AudioRate[0]);
     }
 }
 }

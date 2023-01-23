@@ -102,7 +102,7 @@ public class RGSmacker
             Width = binaryReader.ReadUInt32(), //most videos will return 640
             Height = binaryReader.ReadUInt32(), //most videos will return 240
             Frames = binaryReader.ReadUInt32(), //Extra "ring" frame is not counted; Intro is about 6895 frames
-            FrameRate = binaryReader.ReadInt32(), //fps = 1000/Mathf.Abs(FrameRate) or if 0, fps = 10; should equal 15
+            FrameRate = binaryReader.ReadInt32(), //fps = 1000/Mathf.Abs(FrameRate) or if 0, fps = 10; should equal 15... signed int unlike the others
             Flags = binaryReader.ReadUInt32(),// 02000000 ; videos should be interlaced
             AudioSize = new uint[7]{binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32()},//Size of largest buffer (bytes) per audio track (up to 8)... this isn't how it works and needs to be fixed
             TreesSize = binaryReader.ReadUInt32(),//Size of bytes in huffman trees
@@ -110,7 +110,8 @@ public class RGSmacker
             MClr_Size = binaryReader.ReadUInt32(),//huffman data
             Full_Size = binaryReader.ReadUInt32(),//huffman data
             Type_Size = binaryReader.ReadUInt32(),//huffman data
-            AudioRate = new uint[7]{binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32()},
+            AudioRate = new uint[7]{binaryReader.ReadUInt16(), //...no idea why but this was NOT a dword
+            binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32(),binaryReader.ReadUInt32()},
             Dummy = binaryReader.ReadUInt32(),
         };
 
