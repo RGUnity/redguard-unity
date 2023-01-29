@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InventoryManager : MonoBehaviour
+public class PlayerInventoryManager : MonoBehaviour
 {
 
     public Inventory inventory;
-    public List<InventoryObject> startObjects;
     public int startGoldAmount = 0;
+    public List<InventoryObject> startObjects;
     public List<InventoryObject> unusedObjects;
     
     // Start is called before the first frame update
@@ -26,5 +26,4 @@ public class InventoryManager : MonoBehaviour
             obj.amount = 0;
         }
     }
-    
 }

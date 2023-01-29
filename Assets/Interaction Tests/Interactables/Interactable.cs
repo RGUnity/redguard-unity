@@ -7,7 +7,6 @@ public class Interactable : MonoBehaviour
     //public int testValue;
     public virtual void Interact()
     {
-        print("Code for Interactions goes here");
+        print("This is the parent class for Interactables");
     }
-        
 }

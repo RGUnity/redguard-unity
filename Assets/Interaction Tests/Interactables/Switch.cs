@@ -4,5 +4,8 @@ using UnityEngine;
 
 public class Switch : Interactable
 {
-    public int gold;
+    public override void Interact()
+    {
+        print("This is a switch");
+    }
 }

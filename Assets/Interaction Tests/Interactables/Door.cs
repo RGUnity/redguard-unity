@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Door : Interactable
 {
-    public string sceneToLoad;
+    [SerializeField] string sceneToLoad;
 
     public override void Interact()
     {
