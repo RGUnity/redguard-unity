@@ -22,8 +22,9 @@ public class Item : Interactable
             inventory.objects.Add(_object);
         }
         // Increase the "amount" value in the Scriptable Object by the specified amount
-        _object.amount += Random.Range(minAmount, maxAmount);
-        print("Added " + _object.amount + " " + _object.displayName);
+        int addAmount = Random.Range(minAmount, maxAmount);
+        _object.amount += addAmount;
+        print("Added " + addAmount + " " + _object.displayName);
         // Delete the object
         Destroy(this.gameObject);
     }

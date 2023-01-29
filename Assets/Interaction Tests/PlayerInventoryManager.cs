@@ -5,12 +5,11 @@ using UnityEngine;
 public class PlayerInventoryManager : MonoBehaviour
 {
 
-    public Inventory inventory;
-    public int startGoldAmount = 0;
+    [SerializeField] Inventory inventory;
     // All inventory objects must be linked in one of the to lists
-    public List<InventoryObject> startObjects;
-    public List<InventoryObject> unusedObjects;
-    
+    [SerializeField] StartInventory startInventory;
+    [SerializeField] Inventory AllInventoryObjects;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,14 +17,29 @@ public class PlayerInventoryManager : MonoBehaviour
     }
     
     // Kind of hacky but ScriptableObjects keep their values when you exit playmode, ...
-    // ... So we reset them here to whatever we wat them to be
+    // ... So we reset them here to whatever we want them to be
     void SetStartValues()
     {
-        inventory.objects = startObjects;
-        inventory.objects[1].amount = startGoldAmount;
-        foreach (var obj in unusedObjects)
+        // First, reset all "amounts" to zero and clear the inventory list
+        foreach (var regObj in AllInventoryObjects.objects)
         {
-            obj.amount = 0;
+            regObj.amount = 0;
+            inventory.objects.Clear();
+        }
+        
+        // Loop through the list of startInventory objects,and add them to the real inventory one by one
+        // and set their "amounts" at the same time
+        foreach (StartInventoryObject startObj in startInventory.objects)
+        {
+            if (startObj.amount > 0)
+            {
+                inventory.objects.Add(startObj.stackType);
+                startObj.stackType.amount = startObj.amount;
+            }
+            else
+            {
+                Debug.LogWarning("Amount of inventory start item ---" + startObj.name + "--- is less than 1. Item is not added to inventory.");
+            }
         }
     }
 }

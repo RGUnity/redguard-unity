@@ -971,7 +971,7 @@ GameObject:
   m_Component:
   - component: {fileID: 752391599}
   - component: {fileID: 752391601}
-  - component: {fileID: 752391600}
+  - component: {fileID: 752391602}
   m_Layer: 6
   m_Name: Gold_Test (3)
   m_TagString: Untagged
@@ -995,18 +995,6 @@ Transform:
   m_Father: {fileID: 1926802469}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &752391600
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752391598}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28360ee5e840be647ba63e963f84d9f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!135 &752391601
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1020,6 +1008,22 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.4
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &752391602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752391598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 405dd0d83cf232b4492609669eb3ab58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventory: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
+  _object: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
+  minAmount: 3
+  maxAmount: 15
 --- !u!1001 &828831396
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1184,7 +1188,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1000466921}
   - component: {fileID: 1000466923}
-  - component: {fileID: 1000466922}
+  - component: {fileID: 1000466924}
   m_Layer: 6
   m_Name: Gold_Test (2)
   m_TagString: Untagged
@@ -1208,18 +1212,6 @@ Transform:
   m_Father: {fileID: 1926802469}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1000466922
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000466920}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28360ee5e840be647ba63e963f84d9f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!135 &1000466923
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1233,6 +1225,22 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.4
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1000466924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000466920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 405dd0d83cf232b4492609669eb3ab58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventory: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
+  _object: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
+  minAmount: 3
+  maxAmount: 15
 --- !u!1 &1002222717
 GameObject:
   m_ObjectHideFlags: 0
@@ -1419,9 +1427,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventory: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
-  _object: {fileID: 11400000, guid: 0999072b4a4fb9e40b5f83f7aabef080, type: 2}
+  _object: {fileID: 11400000, guid: 035ad5014001d8e429706d2bdc797f85, type: 2}
   minAmount: 1
-  maxAmount: 1
+  maxAmount: 20
 --- !u!1 &1158704382
 GameObject:
   m_ObjectHideFlags: 0
@@ -1912,14 +1920,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventory: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
-  startGoldAmount: 100
-  startObjects:
-  - {fileID: 11400000, guid: 6d343dec7ed20d243af41b59ad1edb1b, type: 2}
-  - {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
-  unusedObjects:
-  - {fileID: 11400000, guid: 0999072b4a4fb9e40b5f83f7aabef080, type: 2}
-  - {fileID: 11400000, guid: a16a60d2d5d9d8a44b9dc5c1938c7bfd, type: 2}
-  - {fileID: 11400000, guid: 035ad5014001d8e429706d2bdc797f85, type: 2}
+  startInventory: {fileID: 11400000, guid: 22a0985c65c78624c8514fd55a00017c, type: 2}
+  AllInventoryObjects: {fileID: 11400000, guid: b82691fdec8f3c94eadcc089ab4b6b39, type: 2}
 --- !u!1 &1504627340
 GameObject:
   m_ObjectHideFlags: 0
@@ -1963,9 +1965,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1504627340}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28360ee5e840be647ba63e963f84d9f7, type: 3}
+  m_Script: {fileID: 11500000, guid: 405dd0d83cf232b4492609669eb3ab58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventory: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
+  _object: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
+  minAmount: 3
+  maxAmount: 15
 --- !u!135 &1504627343
 SphereCollider:
   m_ObjectHideFlags: 0
