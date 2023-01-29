@@ -2,12 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Item : Interactable
 {
+    // Need to link these scriptable objects
     [SerializeField] Inventory inventory;
     [SerializeField] InventoryObject _object;
-    [SerializeField] int amount;
+
+    // The ranges for the randomized amounts that this item can be dropped in
+    [SerializeField] int minAmount = 3;
+    [SerializeField] int maxAmount = 15;
 
     public override void Interact()
     {
@@ -17,7 +22,8 @@ public class Item : Interactable
             inventory.objects.Add(_object);
         }
         // Increase the "amount" value in the Scriptable Object by the specified amount
-        _object.amount += amount;
+        _object.amount += Random.Range(minAmount, maxAmount);
+        print("Added " + _object.amount + " " + _object.displayName);
         // Delete the object
         Destroy(this.gameObject);
     }

@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c8db2b746f8c9242969662420fb069e, type: 3}
-  m_Name: Inventory
+  m_Script: {fileID: 11500000, guid: 17eb00c3bfd63284590ca05c827dc5d0, type: 3}
+  m_Name: 5 Gold
   m_EditorClassIdentifier: 
-  objects:
-  - {fileID: 11400000, guid: 6d343dec7ed20d243af41b59ad1edb1b, type: 2}
-  - {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
+  stackType: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
+  displayName: Five Gold Pieces
+  amount: 5

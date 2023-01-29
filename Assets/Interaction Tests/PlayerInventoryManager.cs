@@ -7,6 +7,7 @@ public class PlayerInventoryManager : MonoBehaviour
 
     public Inventory inventory;
     public int startGoldAmount = 0;
+    // All inventory objects must be linked in one of the to lists
     public List<InventoryObject> startObjects;
     public List<InventoryObject> unusedObjects;
     
@@ -14,9 +15,10 @@ public class PlayerInventoryManager : MonoBehaviour
     void Start()
     {
         SetStartValues();
-        //print(inventory.Objects[1].amount);
     }
     
+    // Kind of hacky but ScriptableObjects keep their values when you exit playmode, ...
+    // ... So we reset them here to whatever we wat them to be
     void SetStartValues()
     {
         inventory.objects = startObjects;

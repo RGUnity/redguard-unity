@@ -620,10 +620,6 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: adf126d306c935644a373e696be13294, type: 3}
-      propertyPath: m_TagString
-      value: NPC
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: adf126d306c935644a373e696be13294, type: 3}
 --- !u!1 &386593825
@@ -718,7 +714,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: adf126d306c935644a373e696be13294, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: adf126d306c935644a373e696be13294, type: 3}
       propertyPath: m_LocalPosition.x
@@ -767,10 +763,6 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: adf126d306c935644a373e696be13294, type: 3}
       propertyPath: m_Layer
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: adf126d306c935644a373e696be13294, type: 3}
-      propertyPath: m_TagString
-      value: Container
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: adf126d306c935644a373e696be13294, type: 3}
@@ -900,7 +892,7 @@ Transform:
   m_GameObject: {fileID: 641832351}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.612, y: 0, z: 0}
-  m_LocalScale: {x: 0.3352603, y: 0.3352603, z: 0.3352603}
+  m_LocalScale: {x: 0.40553084, y: 0.3352603, z: 0.3352603}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1016606420}
@@ -1015,8 +1007,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28360ee5e840be647ba63e963f84d9f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldAmount: 20
-  gold: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
 --- !u!135 &752391601
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1230,8 +1220,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28360ee5e840be647ba63e963f84d9f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldAmount: 20
-  gold: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
 --- !u!135 &1000466923
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1258,7 +1246,7 @@ GameObject:
   - component: {fileID: 1002222720}
   m_Layer: 6
   m_Name: Switch_Test
-  m_TagString: Switch
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1305,7 +1293,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11498f8233113264ebe6fc8c68f2937f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gold: 0
 --- !u!1 &1016606416
 GameObject:
   m_ObjectHideFlags: 0
@@ -1322,7 +1309,7 @@ GameObject:
   - component: {fileID: 1016606422}
   m_Layer: 6
   m_Name: Item_Test
-  m_TagString: Item
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1399,7 +1386,7 @@ Transform:
   m_GameObject: {fileID: 1016606416}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -1.31, y: 0.17400002, z: 5.48}
-  m_LocalScale: {x: 0.7992887, y: 0.32825, z: 0.32825}
+  m_LocalScale: {x: 0.6590455, y: 0.32825, z: 0.32825}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 641832352}
@@ -1433,7 +1420,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventory: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
   _object: {fileID: 11400000, guid: 0999072b4a4fb9e40b5f83f7aabef080, type: 2}
-  amount: 1
+  minAmount: 1
+  maxAmount: 1
 --- !u!1 &1158704382
 GameObject:
   m_ObjectHideFlags: 0
@@ -1895,7 +1883,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedObject: {fileID: 0}
-  inter: {fileID: 0}
 --- !u!54 &1440835403
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1925,12 +1912,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventory: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
+  startGoldAmount: 100
   startObjects:
   - {fileID: 11400000, guid: 6d343dec7ed20d243af41b59ad1edb1b, type: 2}
   - {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
-  startGoldAmount: 100
   unusedObjects:
   - {fileID: 11400000, guid: 0999072b4a4fb9e40b5f83f7aabef080, type: 2}
+  - {fileID: 11400000, guid: a16a60d2d5d9d8a44b9dc5c1938c7bfd, type: 2}
+  - {fileID: 11400000, guid: 035ad5014001d8e429706d2bdc797f85, type: 2}
 --- !u!1 &1504627340
 GameObject:
   m_ObjectHideFlags: 0
@@ -1977,8 +1966,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28360ee5e840be647ba63e963f84d9f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldAmount: 20
-  gold: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
 --- !u!135 &1504627343
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2053,7 +2040,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventory: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
   _object: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
-  amount: 20
+  minAmount: 3
+  maxAmount: 15
 --- !u!1 &1569789689
 GameObject:
   m_ObjectHideFlags: 0
@@ -2277,9 +2265,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed208517ad37dad47b547ef59cf4fa73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventory: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
+  inventoryStackLink:
+  - {fileID: 11400000, guid: 6d343dec7ed20d243af41b59ad1edb1b, type: 2}
+  - {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
+  - {fileID: 11400000, guid: 0999072b4a4fb9e40b5f83f7aabef080, type: 2}
+  - {fileID: 11400000, guid: a16a60d2d5d9d8a44b9dc5c1938c7bfd, type: 2}
+  - {fileID: 11400000, guid: 035ad5014001d8e429706d2bdc797f85, type: 2}
   isEmpty: 0
-  goldAmount: 100
-  gold: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
+  possibleObjects:
+  - {fileID: 11400000, guid: bed4d148bc672ec46a35df200a5b51fd, type: 2}
+  - {fileID: 11400000, guid: 68f10775a848a0046bd9d284a630ac92, type: 2}
+  - {fileID: 11400000, guid: ddabd1ea94a955d4f849222e024a5124, type: 2}
+  - {fileID: 11400000, guid: 2f3de95a9b430224e8fc043179e7cd95, type: 2}
+  - {fileID: 11400000, guid: 5d8d69c01da51094b9e1aa1953f811d6, type: 2}
+  - {fileID: 11400000, guid: 3b6753da2f7aaee4ca9fc2af4e67ab6b, type: 2}
+  - {fileID: 11400000, guid: bb6a2ae2ac5352a498ebcbdfba6f9a40, type: 2}
 --- !u!136 &1712875682
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2309,7 +2310,7 @@ GameObject:
   - component: {fileID: 1722467983}
   m_Layer: 6
   m_Name: Door_Test
-  m_TagString: Door
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2415,10 +2416,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1778280356}
   - component: {fileID: 1778280357}
-  - component: {fileID: 1778280359}
   m_Layer: 6
   m_Name: Chest_Test
-  m_TagString: Container
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2438,7 +2438,7 @@ Transform:
   - {fileID: 136356062}
   - {fileID: 386593826}
   m_Father: {fileID: 1926802469}
-  m_RootOrder: 3
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &1778280357
 SphereCollider:
@@ -2453,18 +2453,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.53
   m_Center: {x: 0, y: 0.35, z: 0}
---- !u!114 &1778280359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1778280355}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76bc3f3f7d0d6c140b5d50ab6592ecd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1790575167 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: adf126d306c935644a373e696be13294, type: 3}
@@ -2532,10 +2520,10 @@ Transform:
   - {fileID: 1790575170}
   - {fileID: 1533150298}
   - {fileID: 1016606420}
-  - {fileID: 1778280356}
+  - {fileID: 1712875680}
   - {fileID: 1722467982}
   - {fileID: 1002222718}
-  - {fileID: 1712875680}
+  - {fileID: 1778280356}
   - {fileID: 1504627341}
   - {fileID: 1000466921}
   - {fileID: 752391599}
