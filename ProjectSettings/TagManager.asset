@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - NPC
+  - Item
+  - Container
+  - Door
+  - Switch
   layers:
   - Default
   - TransparentFX
@@ -11,8 +16,8 @@ TagManager:
   - Post Processing
   - Water
   - UI
-  - 
-  - 
+  - Interactables
+  - Sensors
   - 
   - 
   - 
