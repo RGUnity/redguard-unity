@@ -5,7 +5,7 @@ using UnityEngine;
 public class DummyCharacterController : MonoBehaviour
 {
     public CharacterController controller;
-    public float moveSppeed = 10f;
+    public float moveSpeed = 10f;
     public bool useMouseLook;
     
     void Update()
@@ -21,13 +21,13 @@ public class DummyCharacterController : MonoBehaviour
         if (move.magnitude >= 0.1f && useMouseLook)
         {
             //Move the player along with X and Z inputs
-            controller.SimpleMove(move * (moveSppeed*30 * Time.deltaTime));
+            controller.SimpleMove(move * (moveSpeed*30 * Time.deltaTime));
         }
 
         if (useMouseLook == false)
         {
             //Move the player only along the Z axis
-            controller.SimpleMove(zMove * (moveSppeed *30* Time.deltaTime));
+            controller.SimpleMove(zMove * (moveSpeed *30* Time.deltaTime));
         }
 
         
