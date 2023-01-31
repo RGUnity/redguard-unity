@@ -6,8 +6,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewInventory", menuName = "ScriptableObjects/Inventory")]
 public class Inventory : ScriptableObject
 {
+    public InventoryObject activeObject;
     // The real Player inventory
     public List<InventoryObject> objects;
+    
     // Only objects in this list can be added to the player inventory
     public List<InventoryObject> allowedObjects;
 

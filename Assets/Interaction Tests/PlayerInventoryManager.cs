@@ -17,19 +17,32 @@ public class PlayerInventoryManager : MonoBehaviour
     // ... So we reset them here to whatever we want them to be
     void SetStartValues()
     {
+        int index = 0;
         // First, clear the inventory list.
         inventory.objects.Clear();
         
-        // Then set each object's [amount] value to its [StartAmount]
-        // Lastly, add objects with an amount greater than 0 to the inventory list
-        foreach (var regObj in inventory.allowedObjects)
+        // Then check all known inventory objects
+        foreach (var allObj in inventory.allowedObjects)
         {
-            regObj.amount = regObj.startAmount;
+
+            // Then set each object's [amount] value to its [StartAmount]
+            allObj.amount = allObj.startAmount;
             
-            if (regObj.amount > 0)
+            // To find out if an object should be in the inventory, we simply check the amount
+            if (allObj.amount > 0)
             {
-                inventory.objects.Add(regObj);
+                inventory.objects.Add(allObj);
+                allObj.inventorySlotIndex = inventory.objects.Count-1;
+
+                // And, if it's the first object being added, make it the activeObject
+                // because that probably shouldn't be empty
+                if (index == 0)
+                {
+                    inventory.activeObject = allObj;
+                }
+                index++;
             }
+
         }
     }
 }
