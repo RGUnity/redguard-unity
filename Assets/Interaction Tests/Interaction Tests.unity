@@ -1429,7 +1429,7 @@ MonoBehaviour:
   inventory: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
   _object: {fileID: 11400000, guid: 035ad5014001d8e429706d2bdc797f85, type: 2}
   minAmount: 1
-  maxAmount: 20
+  maxAmount: 1
 --- !u!1 &1158704382
 GameObject:
   m_ObjectHideFlags: 0
@@ -1790,7 +1790,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 1440835398}
-  moveSppeed: 10
+  moveSpeed: 10
   useMouseLook: 0
 --- !u!143 &1440835398
 CharacterController:
@@ -1920,7 +1920,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventory: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
-  startInventory: {fileID: 11400000, guid: 22a0985c65c78624c8514fd55a00017c, type: 2}
   AllInventoryObjects: {fileID: 11400000, guid: b82691fdec8f3c94eadcc089ab4b6b39, type: 2}
 --- !u!1 &1504627340
 GameObject:

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Potion of Health
   m_EditorClassIdentifier: 
   displayName: Health Potion
-  stackType: PotionHealth
   amount: 0
+  startAmount: 3

@@ -7,5 +7,6 @@ using UnityEngine;
 public class InventoryObject : ScriptableObject
 {
     public String displayName;
-    public int amount = 1;
+    public int amount = 0;
+    public int startAmount = 0;
 }

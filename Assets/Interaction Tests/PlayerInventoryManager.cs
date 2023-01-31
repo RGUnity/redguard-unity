@@ -7,7 +7,6 @@ public class PlayerInventoryManager : MonoBehaviour
 
     [SerializeField] Inventory inventory;
     // All inventory objects must be linked in one of the to lists
-    [SerializeField] StartInventory startInventory;
     [SerializeField] Inventory AllInventoryObjects;
 
     // Start is called before the first frame update
@@ -20,25 +19,18 @@ public class PlayerInventoryManager : MonoBehaviour
     // ... So we reset them here to whatever we want them to be
     void SetStartValues()
     {
-        // First, reset all "amounts" to zero and clear the inventory list
+        // First, clear the inventory list.
+        inventory.objects.Clear();
+        
+        // Then set each object's [amount] value to its [StartAmount]
+        // Lastly, add objects with an amount greater than 0 to the inventory list
         foreach (var regObj in AllInventoryObjects.objects)
         {
-            regObj.amount = 0;
-            inventory.objects.Clear();
-        }
-        
-        // Loop through the list of startInventory objects,and add them to the real inventory one by one
-        // and set their "amounts" at the same time
-        foreach (StartInventoryObject startObj in startInventory.objects)
-        {
-            if (startObj.amount > 0)
+            regObj.amount = regObj.startAmount;
+            
+            if (regObj.amount > 0)
             {
-                inventory.objects.Add(startObj.stackType);
-                startObj.stackType.amount = startObj.amount;
-            }
-            else
-            {
-                Debug.LogWarning("Amount of inventory start item ---" + startObj.name + "--- is less than 1. Item is not added to inventory.");
+                inventory.objects.Add(regObj);
             }
         }
     }
