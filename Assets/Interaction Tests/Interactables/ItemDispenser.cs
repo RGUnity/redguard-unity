@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 // This class generates random loot from a list of Loot Items.
@@ -9,7 +11,6 @@ using UnityEngine;
 public class ItemDispenser : Interactable
 {
     [SerializeField] Inventory inventory;
-    [SerializeField] List<InventoryObject> inventoryStackLink;
     [SerializeField] private bool isEmpty = false;
     [SerializeField] List<LootObject> possibleObjects;
 
@@ -45,7 +46,6 @@ public class ItemDispenser : Interactable
             // Mark the Dispenser as empty so that the player can no longer interact with it
             isEmpty = true;
         }
-
     }
 
     // Pick a random element from the "possibleItems" list by generating an integer, ...
