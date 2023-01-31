@@ -6,8 +6,6 @@ public class PlayerInventoryManager : MonoBehaviour
 {
 
     [SerializeField] Inventory inventory;
-    // All inventory objects must be linked in one of the to lists
-    [SerializeField] Inventory AllInventoryObjects;
 
     // Start is called before the first frame update
     void Start()
@@ -24,7 +22,7 @@ public class PlayerInventoryManager : MonoBehaviour
         
         // Then set each object's [amount] value to its [StartAmount]
         // Lastly, add objects with an amount greater than 0 to the inventory list
-        foreach (var regObj in AllInventoryObjects.objects)
+        foreach (var regObj in inventory.allowedObjects)
         {
             regObj.amount = regObj.startAmount;
             
