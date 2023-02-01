@@ -11,7 +11,7 @@ public class UIWindowManager : MonoBehaviour
     void Start()
     {
         inventoryPanel.SetActive(false);
-        hudPanel.GetComponent<HUD>().UpdateActiveObjectIndicator();
+        hudPanel.GetComponent<ActiveObjectManager>().UpdateActiveObjectIndicator();
     }
 
     // Update is called once per frame
@@ -20,7 +20,7 @@ public class UIWindowManager : MonoBehaviour
         if (Input.GetButtonDown("Fire2"))
         {
             ToggleWindow(inventoryPanel);
-            hudPanel.GetComponent<HUD>().UpdateActiveObjectIndicator();
+            hudPanel.GetComponent<ActiveObjectManager>().UpdateActiveObjectIndicator();
         }
     }
 

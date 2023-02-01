@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HUD : MonoBehaviour
+public class ActiveObjectManager : MonoBehaviour
 {
     [SerializeField] private Inventory inventory;
     [SerializeField] private InventoryUIObject _activeObjectIndicator;
@@ -28,6 +28,10 @@ public class HUD : MonoBehaviour
         {
             inventory.activeObject = inventory.objects[0];
         }
+
+        // And for now, because the scriptableObject wont reset itself
+        // Set it to the first object by default
+        inventory.activeObject = inventory.objects[0];
         
         // Set Text and sprite
         _activeObjectIndicator.label.text = inventory.activeObject.displayName;
