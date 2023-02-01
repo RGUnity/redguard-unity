@@ -10,6 +10,6 @@ public class Door : Interactable
     public override void Interact()
     {
         print("This door should load a scene");
-        SceneManager.LoadScene("Some New Scene");
+        SceneManager.LoadScene(sceneToLoad);
     }
 }

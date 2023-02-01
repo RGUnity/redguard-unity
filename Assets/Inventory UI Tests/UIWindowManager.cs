@@ -30,5 +30,15 @@ public class UIWindowManager : MonoBehaviour
         hudPanel.SetActive(!hudPanel.activeSelf);
         // Then do whatever
         window.SetActive(!window.activeSelf);
+
+        if (GameManager.isGamePaused)
+        {
+            GameManager.ContinueGame();
+        }
+        else
+        {
+            GameManager.PauseGame();
+        }
+
     }
 }
