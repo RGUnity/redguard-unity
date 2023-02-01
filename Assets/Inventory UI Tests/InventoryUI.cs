@@ -2,12 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class InventoryUI : MonoBehaviour
 {
     [SerializeField] private Inventory _inventory;
     [SerializeField] private GameObject gridLayout;
     [SerializeField] private GameObject UIObjectPrefab;
+
+    private GameObject _selectedButton;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,12 +20,26 @@ public class InventoryUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.anyKeyDown)
+        {
+            if (EventSystem.current.currentSelectedGameObject != null)
+            {
+                _selectedButton = EventSystem.current.currentSelectedGameObject;
+            }
+            else
+            {
+                _inventory.activeObject = _selectedButton.GetComponent<InventoryUIObject>().stackType;
+                EventSystem.current.SetSelectedGameObject(_selectedButton);
+            }
+            print(EventSystem.current.currentSelectedGameObject);
+        }
         
+
     }
 
     private void OnEnable()
     {
-        // Clear the Grid Layout
+        // If the Grid Layout is not empty, clear it by deleting all children
         if (gridLayout.transform.childCount > 0)
         {
             for (int i = 0; i < gridLayout.transform.childCount; i++)
@@ -44,9 +61,27 @@ public class InventoryUI : MonoBehaviour
             InventoryUIObject invObj = newUIObject.GetComponent<InventoryUIObject>();
             
             // Match the Grid element's displaying properties to the Scriptable Object
+            invObj.stackType = obj;
             invObj.label.text = obj.displayName;
             invObj.amount.text = obj.amount.ToString();
             invObj.image.sprite = obj.icon;
+
+            // If we are dealing with the activeObject, mark it as selected
+            if (obj == _inventory.activeObject)
+            {
+                _selectedButton = newUIObject;
+            }
+
+            invObj.GridSlotIndex = obj.inventorySlotIndex;
         }
+        
+        // Tell the EventSystem about our selected button
+        EventSystem.current.SetSelectedGameObject(_selectedButton);
+    }
+
+    private void OnDisable()
+    {
+        _inventory.activeObject = _selectedButton.GetComponent<InventoryUIObject>().stackType;
+        //EventSystem.current.SetSelectedGameObject(_selectedButton);
     }
 }

@@ -15,5 +15,7 @@ public class InventoryObject : ScriptableObject
     
     [Header("Dynamic Variables")]
     public int amount = 0;
+    
+    // Could be obsolete
     public int inventorySlotIndex;
 }

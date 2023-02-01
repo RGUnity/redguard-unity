@@ -24,7 +24,6 @@ public class PlayerInventoryManager : MonoBehaviour
         // Then check all known inventory objects
         foreach (var allObj in inventory.allowedObjects)
         {
-
             // Then set each object's [amount] value to its [StartAmount]
             allObj.amount = allObj.startAmount;
             
@@ -36,10 +35,15 @@ public class PlayerInventoryManager : MonoBehaviour
 
                 // And, if it's the first object being added, make it the activeObject
                 // because that probably shouldn't be empty
+                
+                // This is pointless because activeObject is already being read "OnEnable"...
+                //.. by InventoryUI, and "OnEnable" happens before "Start"
                 if (index == 0)
                 {
                     inventory.activeObject = allObj;
                 }
+                
+                // Increment the index
                 index++;
             }
 

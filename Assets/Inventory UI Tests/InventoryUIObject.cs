@@ -6,9 +6,13 @@ using UnityEngine.UI;
 
 public class InventoryUIObject : MonoBehaviour
 {
+    public InventoryObject stackType;
     public TMP_Text label;
     public TMP_Text amount;
     public Image image;
+    
+    // Guess this one is obsolete?
+    public int GridSlotIndex;
     // Start is called before the first frame update
     void Start()
     {

@@ -663,6 +663,7 @@ GameObject:
   - component: {fileID: 240108089}
   - component: {fileID: 240108088}
   - component: {fileID: 240108087}
+  - component: {fileID: 240108091}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -753,6 +754,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &240108091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 240108086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 678afbd5e57772648b81ea30568ff537, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventoryPanel: {fileID: 957207490}
+  hudPanel: {fileID: 1356432136}
 --- !u!1 &362619747
 GameObject:
   m_ObjectHideFlags: 0
@@ -2295,9 +2310,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88cfd48821b03194686c2c71b4b19716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stackType: {fileID: 0}
   label: {fileID: 1240822031}
   amount: {fileID: 150863387}
   image: {fileID: 651844100}
+  GridSlotIndex: 0
 --- !u!1 &1335843666
 GameObject:
   m_ObjectHideFlags: 0
@@ -3545,6 +3562,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9183135470875780214}
     m_Modifications:
+    - target: {fileID: 113201378249016580, guid: 088c09b8d87a163458e6d7a19a9c81b7, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e221ec24eadff1f49beef44cfcbe97d1, type: 3}
+    - target: {fileID: 6819327325555163885, guid: 088c09b8d87a163458e6d7a19a9c81b7, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7157202442524780377, guid: 088c09b8d87a163458e6d7a19a9c81b7, type: 3}
       propertyPath: m_Name
       value: Object
