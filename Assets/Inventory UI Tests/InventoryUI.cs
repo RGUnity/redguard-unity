@@ -11,10 +11,11 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private GameObject UIObjectPrefab;
 
     private GameObject _selectedButton;
+    
     // Start is called before the first frame update
     void Start()
     {
-        //Debug.LogWarning("Dude [InventoryUIObject] HUD is running on >>Update<<");
+        
     }
 
     // Update is called once per frame
@@ -22,16 +23,14 @@ public class InventoryUI : MonoBehaviour
     {
         if (Input.anyKeyDown)
         {
+            // This ensures there is always a selected UI button, so that directional button navigation works
             if (EventSystem.current.currentSelectedGameObject != null)
             {
                 _selectedButton = EventSystem.current.currentSelectedGameObject;
             }
-            else
-            {
-                _inventory.activeObject = _selectedButton.GetComponent<InventoryUIObject>().stackType;
-                EventSystem.current.SetSelectedGameObject(_selectedButton);
-            }
-            print(EventSystem.current.currentSelectedGameObject);
+
+            // Update the ScriptableObject with the latest _selectedButton information
+            _inventory.activeObject = _selectedButton.GetComponent<InventoryUIObject>().stackType;
         }
         
 
@@ -71,17 +70,9 @@ public class InventoryUI : MonoBehaviour
             {
                 _selectedButton = newUIObject;
             }
-
-            invObj.GridSlotIndex = obj.inventorySlotIndex;
         }
         
         // Tell the EventSystem about our selected button
         EventSystem.current.SetSelectedGameObject(_selectedButton);
-    }
-
-    private void OnDisable()
-    {
-        _inventory.activeObject = _selectedButton.GetComponent<InventoryUIObject>().stackType;
-        //EventSystem.current.SetSelectedGameObject(_selectedButton);
     }
 }

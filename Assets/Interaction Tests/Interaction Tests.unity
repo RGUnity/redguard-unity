@@ -2314,7 +2314,6 @@ MonoBehaviour:
   label: {fileID: 1240822031}
   amount: {fileID: 150863387}
   image: {fileID: 651844100}
-  GridSlotIndex: 0
 --- !u!1 &1335843666
 GameObject:
   m_ObjectHideFlags: 0

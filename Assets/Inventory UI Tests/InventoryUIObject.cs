@@ -10,18 +10,4 @@ public class InventoryUIObject : MonoBehaviour
     public TMP_Text label;
     public TMP_Text amount;
     public Image image;
-    
-    // Guess this one is obsolete?
-    public int GridSlotIndex;
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

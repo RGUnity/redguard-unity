@@ -6,10 +6,12 @@ public class UIWindowManager : MonoBehaviour
 {
     public GameObject inventoryPanel;
     public GameObject hudPanel;
+    
     // Start is called before the first frame update
     void Start()
     {
         inventoryPanel.SetActive(false);
+        hudPanel.GetComponent<HUD>().UpdateActiveObjectIndicator();
     }
 
     // Update is called once per frame

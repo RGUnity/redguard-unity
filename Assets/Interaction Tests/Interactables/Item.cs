@@ -20,7 +20,6 @@ public class Item : Interactable
         if (!inventory.objects.Contains(_object))
         {
             inventory.objects.Add(_object);
-            _object.inventorySlotIndex = inventory.objects.Count-1;
         }
         // Increase the "amount" value in the Scriptable Object by the specified amount
         int addAmount = Random.Range(minAmount, maxAmount);

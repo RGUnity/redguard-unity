@@ -31,17 +31,20 @@ public class PlayerInventoryManager : MonoBehaviour
             if (allObj.amount > 0)
             {
                 inventory.objects.Add(allObj);
-                allObj.inventorySlotIndex = inventory.objects.Count-1;
 
-                // And, if it's the first object being added, make it the activeObject
+                // 1. And, if it's the first object being added, make it the activeObject
                 // because that probably shouldn't be empty
                 
-                // This is pointless because activeObject is already being read "OnEnable"...
+                // 2. Okay, actually this is pointless because activeObject is already being read "OnEnable"...
                 //.. by InventoryUI, and "OnEnable" happens before "Start"
-                if (index == 0)
-                {
-                    inventory.activeObject = allObj;
-                }
+                
+                // 3. I suggest we keep this turned off. This means the activeObject will always ...
+                // ... be pulled from the Scriptable Object, will not revert to any default value.
+                
+                // if (index == 0)
+                // {
+                //     inventory.activeObject = allObj;
+                // }
                 
                 // Increment the index
                 index++;
