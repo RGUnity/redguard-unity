@@ -11,7 +11,9 @@ public class ActiveObjectManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        // This resets the active object to the first inventory object
+        inventory.activeObject = inventory.objects[0];
+        UpdateActiveObjectIndicator();
     }
 
     // Update is called once per frame
