@@ -28,6 +28,10 @@ public class InventoryUI : MonoBehaviour
             {
                 _selectedButton = EventSystem.current.currentSelectedGameObject;
             }
+            else
+            {
+                EventSystem.current.SetSelectedGameObject(_selectedButton);
+            }
 
             // Update the ScriptableObject with the latest _selectedButton information
             _inventory.activeObject = _selectedButton.GetComponent<InventoryUIObject>().stackType;
