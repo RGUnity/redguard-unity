@@ -250,7 +250,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
-  _sceneData: {fileID: 11400000, guid: 9c9b6ced8a095cb4b8a1610439a5ad72, type: 2}
 --- !u!4 &95317206
 Transform:
   m_ObjectHideFlags: 0
@@ -3577,6 +3576,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _sceneData: {fileID: 11400000, guid: 9c9b6ced8a095cb4b8a1610439a5ad72, type: 2}
+  useFirstSpawnPoint: 0
   fallbackPosition: {x: 0, y: 5, z: 0}
 --- !u!1 &1569789689
 GameObject:
