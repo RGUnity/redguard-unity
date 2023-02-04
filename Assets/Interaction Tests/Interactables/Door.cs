@@ -5,11 +5,22 @@ using UnityEngine.SceneManagement;
 
 public class Door : Interactable
 {
-    [SerializeField] string sceneToLoad;
+    [SerializeField] private bool _playerCanEnter = true;
+    
+    [SerializeField] private SceneData _targetSceneData;
+    [SerializeField] private PlayerSpawnPoint _targetSpawnPointAsset;
 
+
+    
     public override void Interact()
     {
-        print("This door should load a scene");
-        SceneManager.LoadScene("Some New Scene");
+        if (_playerCanEnter)
+        {
+            //print("This door should load a scene");
+            _targetSceneData.nextEntryPoint = _targetSpawnPointAsset;
+            //print("Next SpawnPoint: " + _targetSceneData.nextEntryPoint);
+            SceneManager.LoadScene(_targetSceneData.sceneName);
+        }
+
     }
 }

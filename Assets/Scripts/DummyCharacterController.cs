@@ -6,41 +6,74 @@ public class DummyCharacterController : MonoBehaviour
 {
     public CharacterController controller;
     public float moveSpeed = 10f;
+    public float gravity = -9.81f;
     public bool useMouseLook;
+
+    private float currentGravity = 0f;
+    void FixedUpdate()
+    {
+        if (!GameManager.isGamePaused)
+        {
+            MovePlayer();
+        }
+    }
     
     void Update()
     {
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-        //Vector3 move = new Vector3(x, 0f, z).normalized;
-        Vector3 move = transform.right * x + transform.forward * z;
-        Vector3 zMove = transform.forward * z;
-
-        
-        // Movement
-        if (move.magnitude >= 0.1f && useMouseLook)
+        if (!GameManager.isGamePaused)
         {
+            RotatePlayer();
+        }
+    }
+
+    private void MovePlayer()
+    {
+        float xInput = Input.GetAxis("Horizontal") * moveSpeed;
+        float zInput = Input.GetAxis("Vertical") * moveSpeed;
+        //Vector3 move = new Vector3(x, 0f, z).normalized;
+        
+        
+        if (useMouseLook)
+        {
+            Vector3 moveVector = transform.right * xInput + transform.forward * zInput;
+            moveVector += ApplyGravity();
+            moveVector *= Time.deltaTime;
             //Move the player along with X and Z inputs
-            controller.SimpleMove(move * (moveSpeed*30 * Time.deltaTime));
+            controller.Move(moveVector);
         }
 
         if (useMouseLook == false)
         {
             //Move the player only along the Z axis
-            controller.SimpleMove(zMove * (moveSpeed *30* Time.deltaTime));
+            Vector3 zMoveVector = transform.forward * zInput;
+            zMoveVector += ApplyGravity();
+            zMoveVector *= Time.deltaTime;
+            controller.Move(zMoveVector);
         }
-
-        
-        // Rotation
+    }
+    
+    private void RotatePlayer()
+    {
         if (useMouseLook)
         {
             //Rotate the player with the Mouse-X axis
-            transform.Rotate(0f,Input.GetAxis("Mouse X")*1.5f, 0f);
+            transform.Rotate(0f,Input.GetAxis("Mouse X")* Time.deltaTime *100f, 0f);
         }
         else
         {
             //use the Horizontal buttons to rotate the player
-            transform.Rotate(0f,Input.GetAxisRaw("Horizontal")*2, 0f);
+            transform.Rotate(0f,Input.GetAxisRaw("Horizontal")* Time.deltaTime*100, 0f);
         }
+    }
+
+    private Vector3 ApplyGravity()
+    {
+        Vector3 gravityVector = new Vector3(0, currentGravity, 0);
+        
+        if (!controller.isGrounded)
+        {
+            currentGravity += gravity * Time.deltaTime;
+        }
+        return gravityVector;
     }
 }

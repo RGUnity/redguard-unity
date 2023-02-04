@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Potion of Ironskin
   m_EditorClassIdentifier: 
   displayName: Potion of Ironskin
-  stackType: PotionIronskin
+  startAmount: 0
+  icon: {fileID: 21300000, guid: 56c781cb7d0c7d243bb09a1373d2d7cd, type: 3}
   amount: 0

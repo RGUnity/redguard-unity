@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "com.intothedev.savesystem": "https://github.com/IntoTheDev/Save-System-for-Unity.git",
+    "com.kelvip.quick-scene-switcher": "https://github.com/Kelvin-CD/Quick-Scene-Switcher.git#upm",
     "com.unity.ide.rider": "3.0.18",
     "com.unity.ide.visualstudio": "2.0.14",
     "com.unity.ide.vscode": "1.2.4",

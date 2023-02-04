@@ -1,5 +1,19 @@
 {
   "dependencies": {
+    "com.intothedev.savesystem": {
+      "version": "https://github.com/IntoTheDev/Save-System-for-Unity.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "e042fd8b31109ceae166c1ccca024842279054df"
+    },
+    "com.kelvip.quick-scene-switcher": {
+      "version": "https://github.com/Kelvin-CD/Quick-Scene-Switcher.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "79eaa62b8bfa59c1002ff85c665246bd23fbe49d"
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
       "depth": 1,

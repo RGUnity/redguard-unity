@@ -7,8 +7,8 @@ using Random = UnityEngine.Random;
 public class Item : Interactable
 {
     // Need to link these scriptable objects
-    [SerializeField] Inventory inventory;
-    [SerializeField] InventoryObject _object;
+    [SerializeField] InventoryData _inventoryData;
+    [SerializeField] InventoryObjectType _objectType;
 
     // The ranges for the randomized amounts that this item can be dropped in
     [SerializeField] int minAmount = 3;
@@ -17,14 +17,21 @@ public class Item : Interactable
     public override void Interact()
     {
         // If the Object type is not yet part of the Inventory List, add it
-        if (!inventory.objects.Contains(_object))
+        if (!_inventoryData.objects.Contains(_objectType))
         {
-            inventory.objects.Add(_object);
+            _inventoryData.objects.Add(_objectType);
         }
         // Increase the "amount" value in the Scriptable Object by the specified amount
         int addAmount = Random.Range(minAmount, maxAmount);
-        _object.amount += addAmount;
-        print("Added " + addAmount + " " + _object.displayName);
+        _objectType.amount += addAmount;
+        print("Added " + addAmount + " " + _objectType.displayName);
+
+        // If it has a DeletableObject script, mark it as deleted
+        if (gameObject.TryGetComponent(out DeletableObject _deletableObject))
+        {
+            _deletableObject.RememberAsDeleted();
+        }
+        
         // Delete the object
         Destroy(this.gameObject);
     }

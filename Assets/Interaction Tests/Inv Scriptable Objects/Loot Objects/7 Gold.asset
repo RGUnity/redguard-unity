@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17eb00c3bfd63284590ca05c827dc5d0, type: 3}
   m_Name: 7 Gold
   m_EditorClassIdentifier: 
-  stackType: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
+  inventoryObjectType: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
   displayName: Seven Gold Pieces
   amount: 7

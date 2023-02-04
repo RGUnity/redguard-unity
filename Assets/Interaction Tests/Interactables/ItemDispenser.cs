@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 // If you want it to only drop one specific item, just add a single object to the list
 public class ItemDispenser : Interactable
 {
-    [SerializeField] Inventory inventory;
+    [SerializeField] InventoryData _inventoryData;
     [SerializeField] private bool isEmpty = false;
     [SerializeField] List<LootObject> possibleObjects;
 
@@ -27,16 +27,16 @@ public class ItemDispenser : Interactable
             // First, Check if there already is an object of the same (Stack-)type in the inventory.
             // If not, add the Stack Type to the inventory list.
             // The stack type is a direct reference to the inventory object, and must be set in the scriptable object.
-            if (!inventory.objects.Contains(randomObject.stackType))
+            if (!_inventoryData.objects.Contains(randomObject.inventoryObjectType))
             {
-                inventory.objects.Add(randomObject.stackType);
+                _inventoryData.objects.Add(randomObject.inventoryObjectType);
             }
             
             // Check the Objects in the inventory, and once you find one with the same stack type...
             // ...add more of the specified amount
-            foreach (var InventoryObject in inventory.objects)
+            foreach (var InventoryObject in _inventoryData.objects)
             {
-                if (InventoryObject == randomObject.stackType)
+                if (InventoryObject == randomObject.inventoryObjectType)
                 {
                     InventoryObject.amount += randomObject.amount;
                     print("Added " +randomObject.amount + " " + InventoryObject.displayName);
