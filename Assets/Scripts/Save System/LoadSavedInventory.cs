@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class LoadSavedInventory : MonoBehaviour
 {
+    // This primarily loads the inventory data.
+    // Objects can independently add themselves to the inventory list
+    // The list is then saved by GameSaveManager.cs
+    
     [SerializeField] private InventoryData _inventoryData;
 
     // Start is called before the first frame update
