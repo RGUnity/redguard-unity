@@ -23,9 +23,6 @@ public class LoadSavedPlayerTransforms : MonoBehaviour
 
             Quaternion loadedRotaion = Quaternion.Euler(_sceneData.nextEntryPoint.eulerRotation);
             SetPlayerPositionAndRotation(loadedPosition, loadedRotaion);
-
-            // Set to null
-            _sceneData.nextEntryPoint = null;
         }
         
         else

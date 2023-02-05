@@ -39,6 +39,11 @@ public class DeletableObject : MonoBehaviour
             {
                 Destroy(gameObject);
             }
+
+            if (GameSaveManager.deletedObjectCache.Contains(GUID))
+            {
+                Destroy(gameObject);
+            }
         }
         else
         {

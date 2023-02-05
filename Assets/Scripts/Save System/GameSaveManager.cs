@@ -10,7 +10,7 @@ public class GameSaveManager : MonoBehaviour
 {
    
     [SerializeField] private InventoryData _inventoryData;
-    //[SerializeField] private SceneData _sceneData;
+    [SerializeField] private SceneData _sceneData;
     private GameObject _player;
     public static List<String> deletedObjectCache = new List<String>();
 
@@ -30,6 +30,11 @@ public class GameSaveManager : MonoBehaviour
         //         print("found file Save_" + i);
         //     }
         // }
+        
+        if (_sceneData.nextEntryPoint == null)
+        {
+            LoadInventory();
+        }
 
     }
 
@@ -42,7 +47,14 @@ public class GameSaveManager : MonoBehaviour
         
         if (Input.GetButtonDown("Quickload"))
         {
-            LoadGame();
+            // Clear, because we want it to load the deletionStatus from the savefile instead
+            deletedObjectCache.Clear();
+            
+            // Set to null, because we dont want to respawn at a spawnPoint
+            _sceneData.nextEntryPoint = null;
+            
+            LoadInventory();
+            LoadScene();
         }
     }
 
@@ -54,12 +66,15 @@ public class GameSaveManager : MonoBehaviour
     
     private void SaveGame()
     {
-        // Save the player inventory
+        // Save the player inventory objects
         foreach (InventoryObjectType objType in _inventoryData.objects)
         {
             DataSerializer.Save(objType.name, objType.amount);
             print("Saved " + objType.amount + " " + objType.name);
         }
+        
+        // Save the active inventory object
+        DataSerializer.Save("InventoryActiveObject", _inventoryData.activeObject);
         
         // Save the player's position
         DataSerializer.Save("Player_Position", _player.transform.position);
@@ -77,28 +92,33 @@ public class GameSaveManager : MonoBehaviour
         }
     }
     
-    
-    private void LoadGame()
+    private void LoadInventory()
     {
-        
         // This threw an error in a Build one (when entering a new scene) so i'm gonna null check this
         if (_inventoryData != null)
         {
             _inventoryData.objects.Clear();
         }
         
+        // Load active object
+        if (DataSerializer.TryLoad("InventoryActiveObject", out InventoryObjectType actObj))
+        {
+            _inventoryData.activeObject = actObj;
+            print("Loaded active object: " + actObj);
+        }
+
+
         // Load inventory objects from savefile
+        List<InventoryObjectType> loadedObjects = new List<InventoryObjectType>();
         foreach (InventoryObjectType objType in _inventoryData.allowedObjects)
         {
             if (DataSerializer.TryLoad(objType.name, out int loadedAmount))
             {
                 //print("Savefile contains " + objType.displayName);
                 objType.amount = loadedAmount;
-                print("Loaded: " + objType.amount + " " + objType.name);
-                if (objType.amount > 0)
-                {
-                    _inventoryData.objects.Add(objType);
-                }
+                //print("Loaded: " + objType.amount + " " + objType.name);
+                
+                loadedObjects.Add(objType);
             }
 
             else
@@ -106,7 +126,21 @@ public class GameSaveManager : MonoBehaviour
                 objType.amount = 0;
             }
         }
-
+        
+        // If the temp list is not empty, match the lists
+        if (loadedObjects.Count > 0)
+        {
+            _inventoryData.objects = loadedObjects;
+        }
+        else
+        {
+            print("No objects loaded");
+        }
+    }
+    
+    
+    private void LoadScene()
+    {
         // Once our scriptble objects are set up, scene in the savefile
         if (DataSerializer.TryLoad("CurrentScene", out string loadedSceneName))
         {
