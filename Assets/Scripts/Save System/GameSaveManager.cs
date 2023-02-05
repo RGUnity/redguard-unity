@@ -8,7 +8,6 @@ using UnityEngine.SceneManagement;
 
 public class GameSaveManager : MonoBehaviour
 {
-    [SerializeField] private SceneData _sceneData;
     [SerializeField] private InventoryData _inventoryData;
 
     private GameObject _player;
@@ -46,19 +45,25 @@ public class GameSaveManager : MonoBehaviour
             // Clear, because we want it to load the deletionStatus from the savefile instead
             deletedObjectCache.Clear();
             
-            // TODO get the scene that we are trying to reload into, and take its SceneData!
-            if (DataSerializer.TryLoad("SceneData", out SceneData _loadedSceneData))
-            {
-                PlayerPrefs.DeleteKey("EnterThroughDoor");
-                PlayerPrefs.SetString("EnterThroughLoad", SceneManager.GetActiveScene().name);
+            // // TODO get the scene that we are trying to reload into, and take its SceneData!
+            // if (DataSerializer.TryLoad("SceneData", out SceneData _loadedSceneData))
+            // {
+            //     PlayerPrefs.DeleteKey("EnterThroughDoor");
+            //     PlayerPrefs.SetString("EnterThroughLoad", SceneManager.GetActiveScene().name);
+            //
+            //     //LoadInventory();
+            //     LoadScene();
+            // }
+            // else
+            // {
+            //     print("No SceneData found. LoadScene aborted");
+            // }
             
-                //LoadInventory();
-                LoadScene();
-            }
-            else
-            {
-                print("No SceneData found. LoadScene aborted");
-            }
+            PlayerPrefs.DeleteKey("EnterThroughDoor");
+            PlayerPrefs.SetString("EnterThroughLoad", SceneManager.GetActiveScene().name);
+            
+            //LoadInventory();
+            LoadScene();
 
         }
     }
@@ -85,7 +90,7 @@ public class GameSaveManager : MonoBehaviour
         DataSerializer.Save("Player_Position", _player.transform.position);
         DataSerializer.Save("Player_Rotation", _player.transform.rotation);
         
-        DataSerializer.Save("SceneData", _sceneData);
+        //DataSerializer.Save("SceneData", _sceneData);
         // Save the current scene name
         DataSerializer.Save("CurrentScene", SceneManager.GetActiveScene().name);
         

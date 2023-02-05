@@ -36,7 +36,6 @@ public class ActiveObjectManager : MonoBehaviour
             _inventoryData.activeObject = _inventoryData.objects[0];
             print("activeObject was NULL. New activeObject: " + _inventoryData.activeObject);
         }
-
         
         //Set Type
         _activeObjectIndicator.stackType = _inventoryData.activeObject;

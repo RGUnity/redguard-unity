@@ -251,7 +251,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8ff124f39f510e4e83c486ff3be93da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sceneData: {fileID: 11400000, guid: 9c9b6ced8a095cb4b8a1610439a5ad72, type: 2}
   _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
 --- !u!4 &95317206
 Transform:
@@ -3714,7 +3713,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
-  useDefaultInventory: 1
+  useDefaultInventory: 0
 --- !u!1 &1569789689
 GameObject:
   m_ObjectHideFlags: 0
