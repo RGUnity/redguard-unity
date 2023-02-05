@@ -11,7 +11,6 @@ public class UIWindowManager : MonoBehaviour
     void Start()
     {
         inventoryPanel.SetActive(false);
-        hudPanel.GetComponent<ActiveObjectManager>().UpdateActiveObjectIndicator();
     }
 
     // Update is called once per frame
@@ -20,7 +19,7 @@ public class UIWindowManager : MonoBehaviour
         if (Input.GetButtonDown("Fire2"))
         {
             ToggleWindow(inventoryPanel);
-            hudPanel.GetComponent<ActiveObjectManager>().UpdateActiveObjectIndicator();
+            //hudPanel.GetComponent<ActiveObjectManager>().UpdateActiveObjectIndicator();
         }
     }
 
@@ -39,6 +38,5 @@ public class UIWindowManager : MonoBehaviour
         {
             GameManager.PauseGame();
         }
-
     }
 }

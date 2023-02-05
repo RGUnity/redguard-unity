@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: InteractionTests SceneData
   m_EditorClassIdentifier: 
   sceneName: Interaction Tests
-  nextEntryPoint: {fileID: 0}
-  playerSpawnPoints:
+  allPlayerSpawnPoints:
   - {fileID: 11400000, guid: a86138fac01f97442a9851cbe62a335f, type: 2}
+  nextPlayerSpawnPoint: {fileID: 0}
+  canSetPlayerTransforms: 0
+  canLoadInventory: 0

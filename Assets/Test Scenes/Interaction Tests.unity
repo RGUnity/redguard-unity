@@ -230,6 +230,8 @@ GameObject:
   m_Component:
   - component: {fileID: 95317206}
   - component: {fileID: 95317205}
+  - component: {fileID: 95317207}
+  - component: {fileID: 95317208}
   m_Layer: 0
   m_Name: GameSaveManager
   m_TagString: Untagged
@@ -249,8 +251,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8ff124f39f510e4e83c486ff3be93da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
   _sceneData: {fileID: 11400000, guid: 9c9b6ced8a095cb4b8a1610439a5ad72, type: 2}
+  _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
 --- !u!4 &95317206
 Transform:
   m_ObjectHideFlags: 0
@@ -266,6 +268,35 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &95317207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95317204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7acf3a3e2d90c10449782a82dbc26721, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1440835396}
+  _sceneData: {fileID: 11400000, guid: 9c9b6ced8a095cb4b8a1610439a5ad72, type: 2}
+  overrideInEditor: 0
+--- !u!114 &95317208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95317204}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dd8ea1b60c3064409cba6be30d88005, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sceneData: {fileID: 11400000, guid: 9c9b6ced8a095cb4b8a1610439a5ad72, type: 2}
+  _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
 --- !u!1 &136356061
 GameObject:
   m_ObjectHideFlags: 0
@@ -3534,7 +3565,6 @@ GameObject:
   - component: {fileID: 1440835397}
   - component: {fileID: 1440835402}
   - component: {fileID: 1440835404}
-  - component: {fileID: 1440835405}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -3687,21 +3717,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
   useDefaultInventory: 0
---- !u!114 &1440835405
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1440835396}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7acf3a3e2d90c10449782a82dbc26721, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _sceneData: {fileID: 11400000, guid: 9c9b6ced8a095cb4b8a1610439a5ad72, type: 2}
-  useFirstSpawnPoint: 0
-  fallbackPosition: {x: 0, y: 5, z: 0}
 --- !u!1 &1569789689
 GameObject:
   m_ObjectHideFlags: 0

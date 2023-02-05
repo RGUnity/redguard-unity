@@ -12,16 +12,11 @@ public class InventoryUI : MonoBehaviour
 
     private GameObject _selectedButton;
     
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
-        if (Input.anyKeyDown)
+        // previously i just checked if (Input.anyKeyDown) here but i think this is better
+        if (_selectedButton != EventSystem.current.currentSelectedGameObject)
         {
             // This ensures there is always a selected UI button, so that directional button navigation works
             if (EventSystem.current.currentSelectedGameObject != null)

@@ -2683,7 +2683,6 @@ GameObject:
   - component: {fileID: 1649425725}
   - component: {fileID: 1649425724}
   - component: {fileID: 1649425723}
-  - component: {fileID: 1649425731}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -2836,20 +2835,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1649425731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1649425722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7acf3a3e2d90c10449782a82dbc26721, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _sceneData: {fileID: 11400000, guid: 845d19ea06daf3541a3da5cf6473713e, type: 2}
-  fallbackPosition: {x: 0, y: 5, z: 0}
 --- !u!1 &1726389489
 GameObject:
   m_ObjectHideFlags: 0
@@ -2958,6 +2943,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1766222303}
   - component: {fileID: 1766222302}
+  - component: {fileID: 1766222305}
+  - component: {fileID: 1766222304}
   m_Layer: 0
   m_Name: GameSaveManager
   m_TagString: Untagged
@@ -2977,8 +2964,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8ff124f39f510e4e83c486ff3be93da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
   _sceneData: {fileID: 11400000, guid: 845d19ea06daf3541a3da5cf6473713e, type: 2}
+  _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
 --- !u!4 &1766222303
 Transform:
   m_ObjectHideFlags: 0
@@ -2994,6 +2981,35 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1766222304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766222301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7acf3a3e2d90c10449782a82dbc26721, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1649425722}
+  _sceneData: {fileID: 11400000, guid: 845d19ea06daf3541a3da5cf6473713e, type: 2}
+  overrideInEditor: 0
+--- !u!114 &1766222305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766222301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dd8ea1b60c3064409cba6be30d88005, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sceneData: {fileID: 11400000, guid: 845d19ea06daf3541a3da5cf6473713e, type: 2}
+  _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
 --- !u!1 &1894860014
 GameObject:
   m_ObjectHideFlags: 0

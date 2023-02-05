@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 
 public class GameSaveManager : MonoBehaviour
 {
-   
-    [SerializeField] private InventoryData _inventoryData;
     [SerializeField] private SceneData _sceneData;
+    [SerializeField] private InventoryData _inventoryData;
+
     private GameObject _player;
     public static List<String> deletedObjectCache = new List<String>();
 
@@ -31,12 +31,11 @@ public class GameSaveManager : MonoBehaviour
         //     }
         // }
         
-        if (_sceneData.nextPlayerSpawnPoint == null)
+        if (_sceneData.playerSpawnPoint == null)
         {
-            LoadInventory();
+            //LoadInventory();
             
         }
-        _sceneData.nextPlayerSpawnPoint = null;
     }
 
     void Update()
@@ -53,6 +52,8 @@ public class GameSaveManager : MonoBehaviour
             
             // Set to null, because we dont want to respawn at a spawnPoint
             //_sceneData.nextEntryPoint = null;
+            _sceneData.canLoadSavedInventory = true; 
+            _sceneData.canLoadSavedPlayerTransforms = true; 
             
             LoadInventory();
             LoadScene();

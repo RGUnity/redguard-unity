@@ -12,7 +12,9 @@ public class SceneData : ScriptableObject
     public string sceneName;
     public List<PlayerSpawnPoint> allPlayerSpawnPoints;
     
-    [Header("Dynamic Variables")]
-    public PlayerSpawnPoint nextPlayerSpawnPoint;
+    [Header("Dynamic Start Parameters for this Scene")]
+    public PlayerSpawnPoint playerSpawnPoint;
 
+    public bool canLoadSavedPlayerTransforms;
+    public bool canLoadSavedInventory;
 }

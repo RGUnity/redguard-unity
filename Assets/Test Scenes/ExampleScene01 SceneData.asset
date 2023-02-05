@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: ExampleScene01 SceneData
   m_EditorClassIdentifier: 
   sceneName: ExampleScene01
-  nextEntryPoint: {fileID: 0}
-  playerSpawnPoints:
+  allPlayerSpawnPoints:
   - {fileID: 11400000, guid: 1d67f99002b873e4b82df1ff7021a6ef, type: 2}
+  nextPlayerSpawnPoint: {fileID: 0}
+  canSetPlayerTransforms: 0
+  canLoadInventory: 0

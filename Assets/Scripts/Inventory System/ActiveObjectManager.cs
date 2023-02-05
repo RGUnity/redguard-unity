@@ -7,38 +7,21 @@ public class ActiveObjectManager : MonoBehaviour
 {
     [SerializeField] private InventoryData _inventoryData;
     [SerializeField] private InventoryUIObject _activeObjectIndicator;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        // This resets the active object to the first inventory object
-        if (_inventoryData.objects.Count != 0)
-        {
-            _inventoryData.activeObject = _inventoryData.objects[0];
-        }
-        else
-        {
-            print("Inventory is empty. No activeObject found.");
-        }
 
-        //UpdateActiveObjectIndicator();
-    }
-
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        // Calling this in Update for now because otherwise the counter on the activeObject ...
-        //... would not update until you open the inventory
         UpdateActiveObjectIndicator();
     }
     
 
     public void UpdateActiveObjectIndicator()
     {
+        print("_inventoryData.activeObject is " + _inventoryData.activeObject);
         // If no activeObject object is set, pick the first from the inventory
         if (_inventoryData.activeObject == null)
         {
             _inventoryData.activeObject = _inventoryData.objects[0];
+            print("activeObject set to " + _inventoryData.activeObject);
         }
 
         // Set Text and sprite
