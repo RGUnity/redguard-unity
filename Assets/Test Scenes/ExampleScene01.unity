@@ -652,7 +652,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCanEnter: 1
-  targetSceneData: {fileID: 0}
   targetSceneName: Interaction Tests
   targetSpawnPointAsset: {fileID: 11400000, guid: a86138fac01f97442a9851cbe62a335f, type: 2}
 --- !u!65 &302759769
@@ -2682,7 +2681,6 @@ GameObject:
   - component: {fileID: 1649425726}
   - component: {fileID: 1649425725}
   - component: {fileID: 1649425724}
-  - component: {fileID: 1649425723}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -2690,20 +2688,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1649425723
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1649425722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcd525143c46cd347ab643eb1b0cbd3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
-  useDefaultInventory: 0
 --- !u!114 &1649425724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2964,7 +2948,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8ff124f39f510e4e83c486ff3be93da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sceneData: {fileID: 11400000, guid: 845d19ea06daf3541a3da5cf6473713e, type: 2}
   _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
 --- !u!4 &1766222303
 Transform:
@@ -2994,8 +2977,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1649425722}
-  _sceneData: {fileID: 11400000, guid: 845d19ea06daf3541a3da5cf6473713e, type: 2}
-  overrideInEditor: 0
+  editorSpawnPoint: {fileID: 0}
 --- !u!114 &1766222305
 MonoBehaviour:
   m_ObjectHideFlags: 0
