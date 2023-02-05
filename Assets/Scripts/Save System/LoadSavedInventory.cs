@@ -63,7 +63,26 @@ public class LoadSavedInventory : MonoBehaviour
         }
         else
         {
-            print("No objects loaded");
+            RestoreInventoryDefaults();
+            print("Loaded Inventory was empty. Restoring defaults!");
+        }
+    }
+    
+    private void RestoreInventoryDefaults()
+    {
+        print("Restoring inventory Defaults");
+        _inventoryData.objects.Clear();
+        foreach (var obj in _inventoryData.allowedObjects)
+        {
+            if (obj.startAmount > 0)
+            {
+                _inventoryData.objects.Add(obj);
+                obj.amount = obj.startAmount;
+            }
+            else
+            {
+                obj.amount = 0;
+            }
         }
     }
 }

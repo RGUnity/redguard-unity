@@ -36,7 +36,8 @@ public class GameSaveManager : MonoBehaviour
     {
         if (Input.GetButtonDown("Quicksave"))
         {
-            PlayerPrefs.DeleteKey("EnterThroughDoor");
+            //PlayerPrefs.DeleteKey("EnterThroughDoor");
+            
             SaveGame();
         }
         
@@ -49,6 +50,7 @@ public class GameSaveManager : MonoBehaviour
             if (DataSerializer.TryLoad("SceneData", out SceneData _loadedSceneData))
             {
                 PlayerPrefs.DeleteKey("EnterThroughDoor");
+                PlayerPrefs.SetString("EnterThroughLoad", SceneManager.GetActiveScene().name);
             
                 //LoadInventory();
                 LoadScene();

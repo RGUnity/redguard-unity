@@ -23,14 +23,24 @@ public class ActiveObjectManager : MonoBehaviour
 
     public void UpdateActiveObjectIndicator()
     {
-        //print("_inventoryData.activeObject is " + _inventoryData.activeObject);
-        // If no activeObject object is set, pick the first from the inventory
+        // If the active objects is not part of the inventory, select [0] and continue
+        if (!_inventoryData.objects.Contains(_inventoryData.activeObject))
+        {
+            _inventoryData.activeObject = _inventoryData.objects[0];
+            print("activeObject is no longer in Inventory. New activeObject: " + _inventoryData.objects[0]);
+        }
+        
+        // If the active objects is null, select [0] and continue
         if (_inventoryData.activeObject == null)
         {
             _inventoryData.activeObject = _inventoryData.objects[0];
-            print("activeObject set to " + _inventoryData.activeObject);
+            print("activeObject was NULL. New activeObject: " + _inventoryData.activeObject);
         }
 
+        
+        //Set Type
+        _activeObjectIndicator.stackType = _inventoryData.activeObject;
+        
         // Set Text and sprite
         _activeObjectIndicator.label.text = _inventoryData.activeObject.displayName;
         _activeObjectIndicator.image.sprite = _inventoryData.activeObject.icon;
@@ -42,9 +52,7 @@ public class ActiveObjectManager : MonoBehaviour
         }
         else
         {
-            {
-                _activeObjectIndicator.amount.text = "";
-            }
+            _activeObjectIndicator.amount.text = "";
         }
     }
 }

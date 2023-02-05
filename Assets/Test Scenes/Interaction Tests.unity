@@ -281,8 +281,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1440835396}
-  _sceneData: {fileID: 11400000, guid: 9c9b6ced8a095cb4b8a1610439a5ad72, type: 2}
-  overrideInEditor: 0
+  editorSpawnPoint: {fileID: 0}
 --- !u!114 &95317208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1598,7 +1597,7 @@ GameObject:
   - component: {fileID: 514199207}
   - component: {fileID: 514199208}
   m_Layer: 0
-  m_Name: Door_Test_EntryPoint
+  m_Name: Door_Test_SpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3217,7 +3216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88cfd48821b03194686c2c71b4b19716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stackType: {fileID: 0}
+  stackType: {fileID: 11400000, guid: 6d343dec7ed20d243af41b59ad1edb1b, type: 2}
   label: {fileID: 1240822031}
   amount: {fileID: 150863387}
   image: {fileID: 651844100}
@@ -3715,7 +3714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
-  useDefaultInventory: 0
+  useDefaultInventory: 1
 --- !u!1 &1569789689
 GameObject:
   m_ObjectHideFlags: 0
@@ -4021,6 +4020,51 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: adf126d306c935644a373e696be13294, type: 3}
   m_PrefabInstance: {fileID: 828831396}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1700483974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1700483976}
+  - component: {fileID: 1700483975}
+  m_Layer: 0
+  m_Name: SpawnPoint_002
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1700483975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700483974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e422e0539b5124242a61d9d6f4466ab6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spawnPoint: {fileID: 11400000, guid: a86138fac01f97442a9851cbe62a335f, type: 2}
+--- !u!4 &1700483976
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700483974}
+  m_LocalRotation: {x: -0, y: 0.50350714, z: -0, w: 0.8639911}
+  m_LocalPosition: {x: -4.817246, y: 0, z: -1.5253663}
+  m_LocalScale: {x: 0.3880682, y: 1, z: 4.193393}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 60.465, z: 0}
 --- !u!1 &1712875679 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: adf126d306c935644a373e696be13294, type: 3}
@@ -4179,7 +4223,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCanEnter: 1
-  targetSceneData: {fileID: 0}
   targetSceneName: ExampleScene01
   targetSpawnPointAsset: {fileID: 11400000, guid: 1d67f99002b873e4b82df1ff7021a6ef, type: 2}
 --- !u!1 &1778280355

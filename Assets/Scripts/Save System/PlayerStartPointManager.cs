@@ -9,25 +9,15 @@ using UnityEngine.SceneManagement;
 public class PlayerStartPointManager : MonoBehaviour
 {
     [SerializeField] private GameObject player;
-    [SerializeField] private SceneData sceneData;
-    [SerializeField] private EditorSpawnPointOverride overrideInEditor;
+    [SerializeField] private GameObject editorSpawnPoint;
 
     void Start()
     {
-        if (Application.isEditor && overrideInEditor != EditorSpawnPointOverride.None)
+        // An optional setting to start from a specific point while playing in the Editor
+        if (editorSpawnPoint != null && Application.isEditor)
         {
-
-            if (overrideInEditor == EditorSpawnPointOverride.DoNotMove)
-            {
-                // Do nothing
-                print("EditorSpawnPointOverride == DoNotMove. Player will not be moved to a spawn point");
-            }
-
-            if (overrideInEditor == EditorSpawnPointOverride.FirstAvailablePoint)
-            {
-                UseFirstPlayerSpawnPoint();
-                print("EditorSpawnPointOverride == FirstAvailablePoint. Moving Player to first available spawn point ");
-            }
+            UseSpecificSpawnPoint(editorSpawnPoint);
+            editorSpawnPoint = null;
         }
         
         else
@@ -38,31 +28,35 @@ public class PlayerStartPointManager : MonoBehaviour
             // True -> Player has entered the scene through a door
             // False -> Player is reloading from a savefile
 
-            //if (PlayerPrefs.HasKey("EnterThroughDoor"))
-            if (thisSceneName == loadedSceneName)
+            // Must make sure we dont accidentally load coordinates from another scene
+            if (PlayerPrefs.HasKey("EnterThroughDoor"))
+            //if (thisSceneName == loadedSceneName)
             {
                 UseSceneSpawnPoint();
                 print("Entered scene through Door, probably");
+                PlayerPrefs.DeleteKey("EnterThroughDoor");
             }
-
-            else
+            
+            if (PlayerPrefs.HasKey("EnterThroughLoad"))
             {
                 var transformDataIsOk = DataSerializer.HasKey("Player_Position") && DataSerializer.HasKey("Player_Rotation");
                 if (transformDataIsOk)
                 {
                     UseSavedPlayerSpawnPoint();
                     print("Entered scene through a Reload, probably");
+                    PlayerPrefs.DeleteKey("EnterThroughLoad");
                 }
                 else
                 {
-                    UseFirstPlayerSpawnPoint();
-                    Debug.LogWarning("Failed to load Player transform data. Using first known spawn point");
+                    // Do nothing
+                    Debug.LogWarning("Failed to load [Player_Position] and [Player_Rotation] from savefile. Player will not be moved");
                 }
             }
+            
+            print("No Spawn Point specified. Player will not be moved");
         }
     }
     
-
     private void SetPlayerPositionAndRotation(Vector3 newPosition, Quaternion newRotation)
     {
         // The CharacterController must be turned off while we move the player
@@ -76,15 +70,16 @@ public class PlayerStartPointManager : MonoBehaviour
         playerController.enabled = true;
     }
 
-    private void UseFirstPlayerSpawnPoint()
-    {
-        Vector3 loadedPosition = sceneData.allPlayerSpawnPoints[0].position;
-        // Adding a small Y offset so that we dont fall through the floor
-        loadedPosition += new Vector3(0, 1, 0);
-        Quaternion loadedRotaion = Quaternion.Euler(sceneData.allPlayerSpawnPoints[0].eulerRotation);
-        SetPlayerPositionAndRotation(loadedPosition, loadedRotaion);
-    }
 
+    private void UseSpecificSpawnPoint(GameObject obj)
+    {
+        var loadedPosition = obj.transform.position;
+        var loadedRotation = obj.transform.rotation;
+        loadedPosition += new Vector3(0, 1, 0);
+        SetPlayerPositionAndRotation(loadedPosition, loadedRotation);
+        print("Start at editorSpawnPoint: " + obj);
+    }
+    
     private void UseSavedPlayerSpawnPoint()
     {
         Vector3 loadedPosition = DataSerializer.Load<Vector3>("Player_Position");
@@ -94,6 +89,7 @@ public class PlayerStartPointManager : MonoBehaviour
         var sceneName = DataSerializer.Load<String>("CurrentScene");
         print("Loading player transform data for scene [" + sceneName + "] at position " + loadedPosition);
     }
+
     
     private void UseSceneSpawnPoint()
     {

@@ -10,7 +10,7 @@ public class SceneData : ScriptableObject
 {
     [Header("Config Variables")]
     public string sceneName;
-    public List<PlayerSpawnPoint> allPlayerSpawnPoints;
+    //public List<PlayerSpawnPoint> allPlayerSpawnPoints;
     
     [Header("Dynamic Start Parameters for this Scene")]
     public PlayerSpawnPoint playerSpawnPoint;

@@ -8,8 +8,6 @@ using UnityEngine.SceneManagement;
 public class Door : Interactable
 {
     [SerializeField] private bool playerCanEnter = true;
-    
-    [SerializeField] private SceneData targetSceneData;
     [SerializeField] private string targetSceneName;
     [SerializeField] private PlayerSpawnPoint targetSpawnPointAsset;
 
@@ -21,6 +19,7 @@ public class Door : Interactable
         {
             if (!targetSceneName.IsNullOrWhitespace())
             {
+                PlayerPrefs.DeleteKey("EnterThroughLoad");
                 PlayerPrefs.SetString("EnterThroughDoor", targetSceneName);
                 SaveNextStartPoint(targetSpawnPointAsset);
 
