@@ -14,7 +14,4 @@ public class SceneData : ScriptableObject
     
     [Header("Dynamic Start Parameters for this Scene")]
     public PlayerSpawnPoint playerSpawnPoint;
-
-    public bool canLoadSavedPlayerTransforms;
-    public bool canLoadSavedInventory;
 }

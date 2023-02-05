@@ -15,6 +15,6 @@ MonoBehaviour:
   sceneName: Interaction Tests
   allPlayerSpawnPoints:
   - {fileID: 11400000, guid: a86138fac01f97442a9851cbe62a335f, type: 2}
-  nextPlayerSpawnPoint: {fileID: 0}
-  canSetPlayerTransforms: 0
-  canLoadInventory: 0
+  playerSpawnPoint: {fileID: 11400000, guid: a86138fac01f97442a9851cbe62a335f, type: 2}
+  canLoadSavedPlayerTransforms: 0
+  canLoadSavedInventory: 0

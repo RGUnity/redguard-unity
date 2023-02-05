@@ -35,7 +35,53 @@ public class InventoryUI : MonoBehaviour
 
     }
 
+    private void Start()
+    {
+        UpdateInventoryUIObjects();
+    }
+
     private void OnEnable()
+    {
+        UpdateInventoryUIObjects();
+        // // If the Grid Layout is not empty, clear it by deleting all children
+        // if (gridLayout.transform.childCount > 0)
+        // {
+        //     for (int i = 0; i < gridLayout.transform.childCount; i++)
+        //     {
+        //         Transform childTransform = gridLayout.transform.GetChild(i);
+        //         Destroy(childTransform.gameObject);
+        //     }
+        // }
+        //
+        // // Loop through the list of objects in the Inventory
+        // foreach (InventoryObjectType obj in _inventoryData.objects)
+        // {
+        //     // Instantiate a Grid element from the prefab
+        //     GameObject newUIObject = GameObject.Instantiate(UIObjectPrefab, gridLayout.transform);
+        //     // And rename it just because it looks nicer
+        //     newUIObject.name = obj.displayName;
+        //     
+        //     // Get the component which has links to the text and image components
+        //     InventoryUIObject invObj = newUIObject.GetComponent<InventoryUIObject>();
+        //     
+        //     // Match the Grid element's displaying properties to the Scriptable Object
+        //     invObj.stackType = obj;
+        //     invObj.label.text = obj.displayName;
+        //     invObj.amount.text = obj.amount.ToString();
+        //     invObj.image.sprite = obj.icon;
+        //
+        //     // If we are dealing with the activeObject, mark it as selected
+        //     if (obj == _inventoryData.activeObject)
+        //     {
+        //         _selectedButton = newUIObject;
+        //     }
+        // }
+        //
+        // // Tell the EventSystem about our selected button
+        // EventSystem.current.SetSelectedGameObject(_selectedButton);
+    }
+
+    private void UpdateInventoryUIObjects()
     {
         // If the Grid Layout is not empty, clear it by deleting all children
         if (gridLayout.transform.childCount > 0)

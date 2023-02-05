@@ -8,6 +8,13 @@ public class ActiveObjectManager : MonoBehaviour
     [SerializeField] private InventoryData _inventoryData;
     [SerializeField] private InventoryUIObject _activeObjectIndicator;
 
+    private void Start()
+    {
+        // This is necessary for the indicator to refresh on the first frame
+        // I just hope it will never be executed AFTER LoadSavedInventory.cs refreshes the inventory...
+        UpdateActiveObjectIndicator();
+    }
+
     private void OnEnable()
     {
         UpdateActiveObjectIndicator();

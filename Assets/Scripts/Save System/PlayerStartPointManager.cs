@@ -33,31 +33,27 @@ public class PlayerStartPointManager : MonoBehaviour
         
         else
         {
-            // True -> Player is reloading from a savefile
-            // False -> Player has entered the scene through a door
-            if (_sceneData.canLoadSavedPlayerTransforms)
+            // True -> Player has entered the scene through a door
+            // False -> Player is reloading from a savefile
+
+            if (PlayerPrefs.HasKey("EnterThroughDoor"))
+            {
+                UseSceneSpawnPoint();
+                print("Entered scene through Door, probably");
+            }
+
+            else
             {
                 bool transformDataIsOK = DataSerializer.HasKey("Player_Position") && DataSerializer.HasKey("Player_Rotation");
                 if (transformDataIsOK)
                 {
                     UseSavedPlayerSpawnPoint();
+                    print("Entered scene through a Reload, probably");
                 }
                 else
                 {
                     UseFirstPlayerSpawnPoint();
                     Debug.LogWarning("Failed to load Player transform data. Using first known spawn point");
-                }
-            }
-            else
-            {
-                if (_sceneData.playerSpawnPoint != null)
-                {
-                    UseSceneSpawnPoint();
-                }
-                else
-                {
-                    UseFirstPlayerSpawnPoint();
-                    Debug.LogWarning("Missing [playerSpawnPoint] selection. Using first known spawn point. If you are in Editor, this is probably okay.");
                 }
             }
         }
@@ -101,12 +97,21 @@ public class PlayerStartPointManager : MonoBehaviour
     // _sceneData.playerSpawnPoint != null
     private void UseSceneSpawnPoint()
     {
-        Vector3 loadedPosition = _sceneData.playerSpawnPoint.position;
-        print("Use Spawn point " + _sceneData.playerSpawnPoint.name + " with position "+ loadedPosition);
+        Vector3 loadedPosition = new Vector3(
+            PlayerPrefs.GetFloat("StartPositionX"),
+            PlayerPrefs.GetFloat("StartPositionY"),
+            PlayerPrefs.GetFloat("StartPositionZ")
+            );
         // Adding a small Y offset so that we dont fall through the floor
         loadedPosition += new Vector3(0, 1, 0);
+        print("Use Spawn point " + _sceneData.playerSpawnPoint.name + " with position "+ loadedPosition);
 
-        Quaternion loadedRotaion = Quaternion.Euler(_sceneData.playerSpawnPoint.eulerRotation);
+
+        Quaternion loadedRotaion = Quaternion.Euler(
+            PlayerPrefs.GetFloat("StartRotationX"),
+            PlayerPrefs.GetFloat("StartRotationY"),
+            PlayerPrefs.GetFloat("StartRotationZ")
+            );
         SetPlayerPositionAndRotation(loadedPosition, loadedRotaion);
     }
 }

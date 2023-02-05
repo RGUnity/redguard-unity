@@ -5,16 +5,14 @@ using UnityEngine;
 
 public class LoadSavedInventory : MonoBehaviour
 {
-    [SerializeField] private SceneData _sceneData;
     [SerializeField] private InventoryData _inventoryData;
 
     // Start is called before the first frame update
     void Start()
     {
-        if (_sceneData.canLoadSavedInventory)
+        if(PlayerPrefs.HasKey("EnterThroughDoor"))
         {
             LoadInventory();
-            _sceneData.canLoadSavedInventory = false;
         }
     }
     
@@ -48,7 +46,7 @@ public class LoadSavedInventory : MonoBehaviour
                 //print("Savefile contains " + objType.displayName);
                 objType.amount = loadedAmount;
                 //print("Loaded: " + objType.amount + " " + objType.name);
-
+                
                 loadedObjects.Add(objType);
             }
 
@@ -56,6 +54,16 @@ public class LoadSavedInventory : MonoBehaviour
             {
                 objType.amount = 0;
             }
+        }
+        
+        // If the temp list is not empty, match the lists
+        if (loadedObjects.Count > 0)
+        {
+            _inventoryData.objects = loadedObjects;
+        }
+        else
+        {
+            print("No objects loaded");
         }
     }
 }

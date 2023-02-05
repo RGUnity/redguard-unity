@@ -17,11 +17,21 @@ public class Door : Interactable
         if (_playerCanEnter)
         {
             _targetSceneData.playerSpawnPoint = _targetSpawnPointAsset;
-            _targetSceneData.canLoadSavedPlayerTransforms = false;
-            _targetSceneData.canLoadSavedInventory = false;
-            
+            PlayerPrefs.SetInt("EnterThroughDoor", 0);
+            SaveNextStartPoint(_targetSpawnPointAsset);
+
             SceneManager.LoadScene(_targetSceneData.sceneName);
         }
 
+    }
+
+    private void SaveNextStartPoint(PlayerSpawnPoint point)
+    {
+        PlayerPrefs.SetFloat("StartPositionX", point.position.x);
+        PlayerPrefs.SetFloat("StartPositionY", point.position.y);
+        PlayerPrefs.SetFloat("StartPositionZ", point.position.z);
+        PlayerPrefs.SetFloat("StartRotationX", point.eulerRotation.x);
+        PlayerPrefs.SetFloat("StartRotationY", point.eulerRotation.y);
+        PlayerPrefs.SetFloat("StartRotationZ", point.eulerRotation.z);
     }
 }

@@ -42,6 +42,7 @@ public class GameSaveManager : MonoBehaviour
     {
         if (Input.GetButtonDown("Quicksave"))
         {
+            PlayerPrefs.DeleteKey("EnterThroughDoor");
             SaveGame();
         }
         
@@ -50,13 +51,19 @@ public class GameSaveManager : MonoBehaviour
             // Clear, because we want it to load the deletionStatus from the savefile instead
             deletedObjectCache.Clear();
             
-            // Set to null, because we dont want to respawn at a spawnPoint
-            //_sceneData.nextEntryPoint = null;
-            _sceneData.canLoadSavedInventory = true; 
-            _sceneData.canLoadSavedPlayerTransforms = true; 
+            // TODO get the scene that we are trying to reload into, and take its SceneData!
+            if (DataSerializer.TryLoad("SceneData", out SceneData _loadedSceneData))
+            {
+                PlayerPrefs.DeleteKey("EnterThroughDoor");
             
-            LoadInventory();
-            LoadScene();
+                //LoadInventory();
+                LoadScene();
+            }
+            else
+            {
+                print("No SceneData found. LoadScene aborted");
+            }
+
         }
     }
 
@@ -82,6 +89,7 @@ public class GameSaveManager : MonoBehaviour
         DataSerializer.Save("Player_Position", _player.transform.position);
         DataSerializer.Save("Player_Rotation", _player.transform.rotation);
         
+        DataSerializer.Save("SceneData", _sceneData);
         // Save the current scene name
         DataSerializer.Save("CurrentScene", SceneManager.GetActiveScene().name);
         

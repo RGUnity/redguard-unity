@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c8db2b746f8c9242969662420fb069e, type: 3}
   m_Name: Player Inventory
   m_EditorClassIdentifier: 
-  activeObject: {fileID: 11400000, guid: 0999072b4a4fb9e40b5f83f7aabef080, type: 2}
+  activeObject: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
   testString: Apple
   objects:
   - {fileID: 11400000, guid: 6d343dec7ed20d243af41b59ad1edb1b, type: 2}
