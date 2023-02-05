@@ -7,12 +7,11 @@ public class PlayerInventoryManager : MonoBehaviour
 
     [SerializeField] private InventoryData _inventoryData;
     [SerializeField] private bool useDefaultInventory;
-
-    // Start is called before the first frame update
+    
     void Start()
     {
         // restore the default inventory if necessary
-        if (useDefaultInventory || _inventoryData.objects.Count == 0)
+        if (useDefaultInventory)
         {
             RestoreInventoryDefaults();
         }

@@ -651,9 +651,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c404608b5c1d88141b041d598e0f8fc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerCanEnter: 1
-  _targetSceneData: {fileID: 11400000, guid: 9c9b6ced8a095cb4b8a1610439a5ad72, type: 2}
-  _targetSpawnPointAsset: {fileID: 11400000, guid: a86138fac01f97442a9851cbe62a335f, type: 2}
+  playerCanEnter: 1
+  targetSceneData: {fileID: 0}
+  targetSceneName: Interaction Tests
+  targetSpawnPointAsset: {fileID: 11400000, guid: a86138fac01f97442a9851cbe62a335f, type: 2}
 --- !u!65 &302759769
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3007,7 +3008,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dd8ea1b60c3064409cba6be30d88005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sceneData: {fileID: 11400000, guid: 845d19ea06daf3541a3da5cf6473713e, type: 2}
   _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
 --- !u!1 &1894860014
 GameObject:

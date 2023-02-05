@@ -1,27 +1,34 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using ToolBox.Serialization.OdinSerializer.Utilities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Door : Interactable
 {
-    [SerializeField] private bool _playerCanEnter = true;
+    [SerializeField] private bool playerCanEnter = true;
     
-    [SerializeField] private SceneData _targetSceneData;
-    [SerializeField] private PlayerSpawnPoint _targetSpawnPointAsset;
+    [SerializeField] private SceneData targetSceneData;
+    [SerializeField] private string targetSceneName;
+    [SerializeField] private PlayerSpawnPoint targetSpawnPointAsset;
 
 
     
     public override void Interact()
     {
-        if (_playerCanEnter)
+        if (playerCanEnter)
         {
-            _targetSceneData.playerSpawnPoint = _targetSpawnPointAsset;
-            PlayerPrefs.SetInt("EnterThroughDoor", 0);
-            SaveNextStartPoint(_targetSpawnPointAsset);
+            if (!targetSceneName.IsNullOrWhitespace())
+            {
+                PlayerPrefs.SetString("EnterThroughDoor", targetSceneName);
+                SaveNextStartPoint(targetSpawnPointAsset);
 
-            SceneManager.LoadScene(_targetSceneData.sceneName);
+                SceneManager.LoadScene(targetSceneName);
+            }
+            Debug.LogWarning(gameObject.name + " has no Target Scene. Please enter a valid scene name for string [targetSceneName]");
         }
+        print("Player can not enter this door [playerCanEnter] is set to " + playerCanEnter);
 
     }
 

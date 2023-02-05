@@ -3715,7 +3715,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
-  useDefaultInventory: 1
+  useDefaultInventory: 0
 --- !u!1 &1569789689
 GameObject:
   m_ObjectHideFlags: 0
@@ -4178,9 +4178,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c404608b5c1d88141b041d598e0f8fc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerCanEnter: 1
-  _targetSceneData: {fileID: 11400000, guid: 845d19ea06daf3541a3da5cf6473713e, type: 2}
-  _targetSpawnPointAsset: {fileID: 11400000, guid: 1d67f99002b873e4b82df1ff7021a6ef, type: 2}
+  playerCanEnter: 1
+  targetSceneData: {fileID: 0}
+  targetSceneName: ExampleScene01
+  targetSpawnPointAsset: {fileID: 11400000, guid: 1d67f99002b873e4b82df1ff7021a6ef, type: 2}
 --- !u!1 &1778280355
 GameObject:
   m_ObjectHideFlags: 0

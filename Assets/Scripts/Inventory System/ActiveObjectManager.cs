@@ -23,7 +23,7 @@ public class ActiveObjectManager : MonoBehaviour
 
     public void UpdateActiveObjectIndicator()
     {
-        print("_inventoryData.activeObject is " + _inventoryData.activeObject);
+        //print("_inventoryData.activeObject is " + _inventoryData.activeObject);
         // If no activeObject object is set, pick the first from the inventory
         if (_inventoryData.activeObject == null)
         {
