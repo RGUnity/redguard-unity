@@ -17,7 +17,8 @@ public class Door : Interactable
         if (_playerCanEnter)
         {
             //print("This door should load a scene");
-            _targetSceneData.nextEntryPoint = _targetSpawnPointAsset;
+            _targetSceneData.nextPlayerSpawnPoint = _targetSpawnPointAsset;
+            //_targetSceneData.
             //print("Next SpawnPoint: " + _targetSceneData.nextEntryPoint);
             SceneManager.LoadScene(_targetSceneData.sceneName);
         }

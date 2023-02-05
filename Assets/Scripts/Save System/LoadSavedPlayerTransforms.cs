@@ -14,14 +14,14 @@ public class LoadSavedPlayerTransforms : MonoBehaviour
     void Start()
     {
         // If a "nextEntryPoint" exists, use that
-        if (_sceneData.nextEntryPoint != null)
+        if (_sceneData.nextPlayerSpawnPoint != null)
         {
-            Vector3 loadedPosition = _sceneData.nextEntryPoint.position;
-            print("Use Spawn point " + _sceneData.nextEntryPoint.name + " with position "+ loadedPosition);
+            Vector3 loadedPosition = _sceneData.nextPlayerSpawnPoint.position;
+            print("Use Spawn point " + _sceneData.nextPlayerSpawnPoint.name + " with position "+ loadedPosition);
             // Adding a small Y offset so that we dont fall through the floor
             loadedPosition += new Vector3(0, 1, 0);
 
-            Quaternion loadedRotaion = Quaternion.Euler(_sceneData.nextEntryPoint.eulerRotation);
+            Quaternion loadedRotaion = Quaternion.Euler(_sceneData.nextPlayerSpawnPoint.eulerRotation);
             SetPlayerPositionAndRotation(loadedPosition, loadedRotaion);
         }
         
@@ -33,10 +33,10 @@ public class LoadSavedPlayerTransforms : MonoBehaviour
             
             if (useFirstSpawnPoint)
             {
-                Vector3 loadedPosition = _sceneData.playerSpawnPoints[0].position;
+                Vector3 loadedPosition = _sceneData.allPlayerSpawnPoints[0].position;
                 // Adding a small Y offset so that we dont fall through the floor
                 loadedPosition += new Vector3(0, 1, 0);
-                Quaternion loadedRotaion = Quaternion.Euler(_sceneData.playerSpawnPoints[0].eulerRotation);
+                Quaternion loadedRotaion = Quaternion.Euler(_sceneData.allPlayerSpawnPoints[0].eulerRotation);
                 SetPlayerPositionAndRotation(loadedPosition, loadedRotaion);
             }
             else

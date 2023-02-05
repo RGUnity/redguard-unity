@@ -8,7 +8,11 @@ using UnityEngine;using UnityEngine.SceneManagement;
 
 public class SceneData : ScriptableObject
 {
+    [Header("Config Variables")]
     public string sceneName;
-    public PlayerSpawnPoint nextEntryPoint;
-    public List<PlayerSpawnPoint> playerSpawnPoints;
+    public List<PlayerSpawnPoint> allPlayerSpawnPoints;
+    
+    [Header("Dynamic Variables")]
+    public PlayerSpawnPoint nextPlayerSpawnPoint;
+
 }

@@ -31,11 +31,12 @@ public class GameSaveManager : MonoBehaviour
         //     }
         // }
         
-        if (_sceneData.nextEntryPoint == null)
+        if (_sceneData.nextPlayerSpawnPoint == null)
         {
             LoadInventory();
+            
         }
-
+        _sceneData.nextPlayerSpawnPoint = null;
     }
 
     void Update()
@@ -51,7 +52,7 @@ public class GameSaveManager : MonoBehaviour
             deletedObjectCache.Clear();
             
             // Set to null, because we dont want to respawn at a spawnPoint
-            _sceneData.nextEntryPoint = null;
+            //_sceneData.nextEntryPoint = null;
             
             LoadInventory();
             LoadScene();
@@ -105,6 +106,10 @@ public class GameSaveManager : MonoBehaviour
         {
             _inventoryData.activeObject = actObj;
             print("Loaded active object: " + actObj);
+        }
+        else
+        {
+            print("No active object could be loaded");
         }
 
 
