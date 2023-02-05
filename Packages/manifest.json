@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.bgtools.playerprefseditor": "https://github.com/Dysman/bgTools-playerPrefsEditor.git#upm",
     "com.intothedev.savesystem": "https://github.com/IntoTheDev/Save-System-for-Unity.git",
     "com.kelvip.quick-scene-switcher": "https://github.com/Kelvin-CD/Quick-Scene-Switcher.git#upm",
     "com.unity.ide.rider": "3.0.18",

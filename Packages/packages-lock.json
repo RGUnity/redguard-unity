@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.bgtools.playerprefseditor": {
+      "version": "https://github.com/Dysman/bgTools-playerPrefsEditor.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "ce702021249e73fcff3fd05e0f726089c05641ac"
+    },
     "com.intothedev.savesystem": {
       "version": "https://github.com/IntoTheDev/Save-System-for-Unity.git",
       "depth": 0,
