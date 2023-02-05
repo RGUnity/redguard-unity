@@ -1645,7 +1645,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e422e0539b5124242a61d9d6f4466ab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spawnPoint: {fileID: 11400000, guid: 1d67f99002b873e4b82df1ff7021a6ef, type: 2}
+  _spawnPoint: {fileID: 11400000, guid: e89b60fe9d850d74ebf345c4d6e039f4, type: 2}
 --- !u!1001 &931682129
 PrefabInstance:
   m_ObjectHideFlags: 0
