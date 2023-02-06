@@ -9,6 +9,9 @@ using UnityEngine.SceneManagement;
 public class PlayerStartPointManager : MonoBehaviour
 {
     [SerializeField] private GameObject player;
+    // This point is used, if we enter neither through a savefile nor a door
+    //[SerializeField] private GameObject initialSpawnPoint;
+    // In the editor, this overrides the initialSpawnPoint. Has no effect in builds.
     [SerializeField] private GameObject editorSpawnPoint;
 
     void Start()
@@ -18,44 +21,54 @@ public class PlayerStartPointManager : MonoBehaviour
         {
             UseSpecificSpawnPoint(editorSpawnPoint);
             editorSpawnPoint = null;
+            print("Player Start point: [editorSpawnPoint]");
         }
         
+        // If we are not in the editor, proceed with the regular checks.
         else
         {
-            var thisSceneName = SceneManager.GetActiveScene().name;
-            var loadedSceneName = PlayerPrefs.GetString("EnterThroughDoor");
-            
-            // True -> Player has entered the scene through a door
-            // False -> Player is reloading from a savefile
-
-            // Must make sure we dont accidentally load coordinates from another scene
-            if (PlayerPrefs.HasKey("EnterThroughDoor"))
-            //if (thisSceneName == loadedSceneName)
+            // First, check if we have any entrance key at all. If not, use the initialSpawnPoint.
+            if (!PlayerPrefs.HasKey("EnterThroughDoor") && !PlayerPrefs.HasKey("EnterThroughLoad"))
             {
-                UseSceneSpawnPoint();
-                print("Entered scene through Door, probably");
-                PlayerPrefs.DeleteKey("EnterThroughDoor");
+                print("No spawn point specified. Player will not be moved.");
+                
+                // Decided to keep this off for now, Since we can also just use the point that the ...
+                // ... Player object is at by default. Makes it easier for testing in the editor too, i think.
+                
+                //UseSpecificSpawnPoint(initialSpawnPoint);
+                // print("Player Start point: None specified. Using [initialSpawnPoint]");
             }
             
-            if (PlayerPrefs.HasKey("EnterThroughLoad"))
+            // or else, check which key we have.
+            else
             {
-                var transformDataIsOk = DataSerializer.HasKey("Player_Position") && DataSerializer.HasKey("Player_Rotation");
-                if (transformDataIsOk)
+                // If this is true, the Player has entered the scene through a door
+                if (PlayerPrefs.HasKey("EnterThroughDoor"))
                 {
-                    UseSavedPlayerSpawnPoint();
-                    print("Entered scene through a Reload, probably");
-                    PlayerPrefs.DeleteKey("EnterThroughLoad");
+                    UseSceneSpawnPoint();
+                    print("Entered scene through Door, probably");
+                    // Delete the key, to not create any confusion when the scene is loaded next time.
+                    PlayerPrefs.DeleteKey("EnterThroughDoor");
                 }
-                else
+            
+                // If this is true, the Player is reloading from a savefile
+                if (PlayerPrefs.HasKey("EnterThroughLoad"))
                 {
-                    // Do nothing
-                    Debug.LogWarning("Failed to load [Player_Position] and [Player_Rotation] from savefile. Player will not be moved");
+                    // Do a quick check if the savefile actually has the Vector3s
+                    var transformDataIsOk = DataSerializer.HasKey("Player_Position") && DataSerializer.HasKey("Player_Rotation");
+                    if (transformDataIsOk)
+                    {
+                        UseSavedPlayerSpawnPoint();
+                        print("Entered scene through a Reload, probably");
+                        // Delete the key, to not create any confusion when the scene is loaded next time.
+                        PlayerPrefs.DeleteKey("EnterThroughLoad");
+                    }
+                    else
+                    {
+                        // Do nothing
+                        Debug.LogWarning("Failed to load [Player_Position] and [Player_Rotation] from savefile. Player will not be moved");
+                    }
                 }
-            }
-
-            if (!PlayerPrefs.HasKey("EnterThroughDoor") && PlayerPrefs.HasKey("EnterThroughLoad"))
-            {
-                print("No Spawn Point specified. Player will not be moved");
             }
         }
     }
