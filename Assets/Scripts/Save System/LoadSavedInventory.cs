@@ -28,18 +28,7 @@ public class LoadSavedInventory : MonoBehaviour
         {
             _inventoryData.objects.Clear();
         }
-
-        // Load active object
-        if (DataSerializer.TryLoad("InventoryActiveObject", out InventoryObjectType actObj))
-        {
-            _inventoryData.activeObject = actObj;
-            print("Loaded active object: " + actObj);
-        }
-        else
-        {
-            print("No active object could be loaded");
-        }
-
+        
 
         // Load inventory objects from savefile
         List<InventoryObjectType> loadedObjects = new List<InventoryObjectType>();
@@ -60,22 +49,42 @@ public class LoadSavedInventory : MonoBehaviour
             }
         }
         
-        // If the temp list is not empty, match the lists
+        // If the temp list is not empty, match the lists and load the active object
         if (loadedObjects.Count > 0)
         {
             _inventoryData.objects = loadedObjects;
+            print("Inventory loaded successfully");
+            
+            var loadedActiveObject = DataSerializer.Load<InventoryObjectType>("InventoryActiveObject");
+            if (_inventoryData.objects.Contains(loadedActiveObject))
+            {
+                _inventoryData.activeObject = loadedActiveObject;
+                print("Loaded active object: " + _inventoryData.activeObject);
+            }
+            else
+            {
+                // Make [0] the new active object
+                _inventoryData.activeObject = _inventoryData.objects[0];
+                print("New active object: " + _inventoryData.activeObject);
+            }
         }
         else
         {
+            print("No Inventory objects could be loaded. Restoring defaults!");
             RestoreInventoryDefaults();
-            print("Loaded Inventory was empty. Restoring defaults!");
+            // Make [0] the new active object
+            _inventoryData.activeObject = _inventoryData.objects[0];
+            print("New active object: " + _inventoryData.activeObject);
         }
     }
     
     private void RestoreInventoryDefaults()
     {
-        print("Restoring inventory Defaults");
+        // Clear the inventory
         _inventoryData.objects.Clear();
+        
+        // For every known object, amount = startAmount
+        // Objects that are not empty will be added to the inventory
         foreach (var obj in _inventoryData.allowedObjects)
         {
             if (obj.startAmount > 0)
@@ -83,6 +92,7 @@ public class LoadSavedInventory : MonoBehaviour
                 _inventoryData.objects.Add(obj);
                 obj.amount = obj.startAmount;
             }
+            // Reset the amount of excluded objects to zero, just to be sure
             else
             {
                 obj.amount = 0;

@@ -52,8 +52,11 @@ public class PlayerStartPointManager : MonoBehaviour
                     Debug.LogWarning("Failed to load [Player_Position] and [Player_Rotation] from savefile. Player will not be moved");
                 }
             }
-            
-            print("No Spawn Point specified. Player will not be moved");
+
+            if (!PlayerPrefs.HasKey("EnterThroughDoor") && PlayerPrefs.HasKey("EnterThroughLoad"))
+            {
+                print("No Spawn Point specified. Player will not be moved");
+            }
         }
     }
     
