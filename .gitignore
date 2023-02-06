@@ -80,3 +80,5 @@ Assets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db
 
 # other
 *.zip
+*.7z
+redguard-unity-win64
