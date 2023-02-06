@@ -11,21 +11,28 @@ public class Door : Interactable
     [SerializeField] private string targetSceneName;
     [SerializeField] private PlayerSpawnPoint targetSpawnPointAsset;
 
-
     
     public override void Interact()
     {
         if (playerCanEnter)
         {
-            if (!targetSceneName.IsNullOrWhitespace())
+            if (targetSceneName.IsNullOrWhitespace())
+            {
+                Debug.LogWarning("string: [targetSceneName] is null. Please enter a valid scene name");
+            }
+
+            if (targetSpawnPointAsset == null)
+            {
+                Debug.LogWarning("PlayerSpawnPoint: [targetSpawnPointAsset] is null. Please link a valid asset");
+            }
+            if (!targetSceneName.IsNullOrWhitespace() && targetSpawnPointAsset != null)
             {
                 PlayerPrefs.DeleteKey("EnterThroughLoad");
                 PlayerPrefs.SetString("EnterThroughDoor", targetSceneName);
                 SaveNextStartPoint(targetSpawnPointAsset);
-
+                
                 SceneManager.LoadScene(targetSceneName);
             }
-            Debug.LogWarning(gameObject.name + " has no Target Scene. Please enter a valid scene name for string [targetSceneName]");
         }
         print("Player can not enter this door [playerCanEnter] is set to " + playerCanEnter);
 

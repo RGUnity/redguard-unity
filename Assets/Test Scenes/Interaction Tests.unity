@@ -4614,7 +4614,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCanEnter: 1
   targetSceneName: ExampleScene01
-  targetSpawnPointAsset: {fileID: 11400000, guid: 1d67f99002b873e4b82df1ff7021a6ef, type: 2}
+  targetSpawnPointAsset: {fileID: 11400000, guid: e89b60fe9d850d74ebf345c4d6e039f4, type: 2}
 --- !u!1 &1778280355
 GameObject:
   m_ObjectHideFlags: 0
