@@ -45,11 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45b4ed94653aa3c42b2ed8eb0744500f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  config: {fileID: 0}
+  config: {fileID: 11400000, guid: 6f8c9ea75fa726746bda207cd3d4fb71, type: 2}
   id: 
+  registerOnAwake: 0
   actionState: 0
-  health: 1
-  gameSaveManager: {fileID: 0}
+  health: 3
 --- !u!1001 &7832313613534383459
 PrefabInstance:
   m_ObjectHideFlags: 0

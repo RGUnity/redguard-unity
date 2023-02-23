@@ -5,6 +5,7 @@ using UnityEngine;
 public class NPCData
 {
     public string id;
+    public NPCConfig config;
     public Vector3 position;
     public Quaternion rotation;
     public NPCStateEnum actionState;

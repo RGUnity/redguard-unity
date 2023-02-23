@@ -12,8 +12,7 @@ public class NPC : Interactable
     public string id;
     public NPCStateEnum actionState;
     public int health = 1;
-
-    [SerializeField] private GameObject gameSaveManager;
+    
     public override void Interact()
     {
         print("TODO: Start conversation with NPC");
@@ -23,16 +22,18 @@ public class NPC : Interactable
 
     private void Awake()
     {
-        RegisterNPC();
+        if (!id.IsNullOrWhitespace())
+        {
+            RegisterNPC();
+        }
+        else
+        {
+            // This probably means the NPC is not meant to be remembered, or will get its ID after beeing spawned
+        }
     }
 
     public void RegisterNPC()
     {
-        if (id.IsNullOrWhitespace())
-        {
-            Debug.LogWarning("NPC [" + gameObject.name + "] has no ID assigned! Object can not be saved.");
-        }
-
         var dict = GameSaveManager.sceneNPCDict;
         // Then, if the id of the object is not already in the list, we can add it
    
@@ -53,7 +54,7 @@ public class NPC : Interactable
                      dict[id].gameObject != gameObject
                      )
             {
-                Debug.LogWarning(name +" at " +transform.position+  " has no unique ID! Please generate a new one.");
+                Debug.LogWarning(name +" at " +transform.position+  "'s ID is not unique! Please generate a new one.");
             }
             else if (dict[id].gameObject == null)
             {
@@ -75,7 +76,7 @@ public class NPC : Interactable
         string shortGUID = guid.Remove(numberLength, guid.Length-numberLength);
 
         id = name.Replace(" ", "") +"--" + shortGUID;
-        print("Generated new GUID for " + name);
+        print("Generated new ID for " + name);
     }
     
     public void RemoveHealth(int negativeHealth)

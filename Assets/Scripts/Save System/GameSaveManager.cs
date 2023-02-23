@@ -27,7 +27,6 @@ public class GameSaveManager : MonoBehaviour
         {
             print("sceneNPCDict size is " + sceneNPCDict.Count);
             GetComponent<LoadSavedNPCs>().LoadNPCs();
-            //LoadNPCs();
         }
 
         
@@ -69,22 +68,6 @@ public class GameSaveManager : MonoBehaviour
         
         if (Input.GetButtonDown("Quickload"))
         {
-            // Clear, because we want it to load the deletionStatus from the savefile instead
-
-            // // TODO get the scene that we are trying to reload into, and take its SceneData!
-            // if (DataSerializer.TryLoad("SceneData", out SceneData _loadedSceneData))
-            // {
-            //     PlayerPrefs.DeleteKey("EnterThroughDoor");
-            //     PlayerPrefs.SetString("EnterThroughLoad", SceneManager.GetActiveScene().name);
-            //
-            //     //LoadInventory();
-            //     LoadScene();
-            // }
-            // else
-            // {
-            //     print("No SceneData found. LoadScene aborted");
-            // }
-            
             PlayerPrefs.DeleteKey("EnterThroughDoor");
             PlayerPrefs.SetString("EnterThroughLoad", SceneManager.GetActiveScene().name);
             
@@ -159,6 +142,7 @@ public class GameSaveManager : MonoBehaviour
             {
                 // Assign values
                 id = id,
+                config = npc.GetComponent<NPC>().config,
                 actionState = npc.GetComponent<NPC>().actionState,
                 health = npc.GetComponent<NPC>().health,
 
