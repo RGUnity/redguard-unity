@@ -123,11 +123,8 @@ public class GameSaveManager : MonoBehaviour
         // Save the current scene name
         DataSerializer.Save("CurrentScene", SceneManager.GetActiveScene().name);
         
-
         
-
-        
-        // ---------- NPCs---------------------
+        // Save the NPCs
         if (sceneNPCDict.Count == 0)
         {
             print("sceneNPCDict is empty");
@@ -136,8 +133,11 @@ public class GameSaveManager : MonoBehaviour
         {
             print("sceneNPCDict contains: " + element.Value);
         }
-
+            
+        // To remember which IDs already have been added
         List <string> idCache = new();
+        
+        // Here we loop through the list of NPCs and create a NPCData for each one
         foreach (var entry in sceneNPCDict)
         {
             var id = entry.Key;
@@ -175,32 +175,11 @@ public class GameSaveManager : MonoBehaviour
         // Clear id cache. we dont need this anymore.
         idCache.Clear();
         
-        
+        // Finally, save the List to the savefile
         DataSerializer.Save("NPCDataList", NPCDataList);
     }
 
-    
-    private void LoadNPCs()
-    {
-        if (DataSerializer.TryLoad("NPCDataList", out List<NPCData> loadedNPCDataList))
-        {
-            foreach (var _npcData in loadedNPCDataList)
-            {
-                print("found NPCData with id: " + _npcData.id);
-                if (sceneNPCDict.ContainsKey(_npcData.id))
-                {
-                    //print("[GameSaveManager.sceneNPCDict] contains key " + _npcData.id);
-                    
-                    GameObject myNPC = sceneNPCDict[_npcData.id];
-                    
-                    //print("Set " + sceneNPCDict[_npcData.id] + "to loaded position" + _npcData.position);
-                    myNPC.transform.position = _npcData.position;
-                    myNPC.transform.rotation = _npcData.rotation;
-                }
-            }
-        }
-    }
-
+   
     private void LoadScene()
     {
         // Once our scriptable objects are set up, scene in the savefile
