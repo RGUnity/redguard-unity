@@ -35,21 +35,27 @@ public class NPC : Interactable
 
         var dict = GameSaveManager.sceneNPCDict;
         // Then, if the id of the object is not already in the list, we can add it
-        if (GameSaveManager.sceneNPCDict.ContainsKey(id))
+   
+        if (!id.IsNullOrWhitespace() && !GameSaveManager.sceneNPCDict.ContainsKey(id))
         {
-            if (dict[id].gameObject != gameObject &&
-                dict[id].gameObject != null)
-            {
-                Debug.LogWarning(name +" at " +transform.position+  " has no unique ID! Please generate a new one.");
-            }
-            
+            dict.Add(id, gameObject);
+            //print("Added [" + gameObject.name + "] to sceneNPCDict");
+        }
+        else if (GameSaveManager.sceneNPCDict.ContainsKey(id))
+        {
+            // Handle case where ID is in dictionary
             if (dict[id].gameObject == gameObject)
             {
                 // This should only happen in the editor
                 Debug.LogWarning("I guess " + name +" at " + transform.position+  " already was in the sceneNPCDict...? If you are playing in the Editor, that should be okay.");
             }
-
-            if (dict[id].gameObject == null)
+            else if (dict[id].gameObject != null &&
+                     dict[id].gameObject != gameObject
+                     )
+            {
+                Debug.LogWarning(name +" at " +transform.position+  " has no unique ID! Please generate a new one.");
+            }
+            else if (dict[id].gameObject == null)
             {
                 dict.Remove(id);
                 print("Found one but its null");
@@ -57,11 +63,6 @@ public class NPC : Interactable
                 dict.Add(id, gameObject);
                 //print("Added [" + gameObject.name + "] to sceneNPCDict");
             }
-        }
-        if (!id.IsNullOrWhitespace() && !GameSaveManager.sceneNPCDict.ContainsKey(id))
-        {
-            dict.Add(id, gameObject);
-            //print("Added [" + gameObject.name + "] to sceneNPCDict");
         }
     }
     
