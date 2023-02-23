@@ -14,9 +14,10 @@ public class PlayerStartPointManager : MonoBehaviour
     // In the editor, this overrides the initialSpawnPoint. Has no effect in builds.
     [SerializeField] private GameObject editorSpawnPoint;
 
-    void Start()
+    void Awake()
     {
         // An optional setting to start from a specific point while playing in the Editor
+        // Bit flawed, because it also overrides the spawn point if you enter through a door
         if (editorSpawnPoint != null && Application.isEditor)
         {
             UseSpecificSpawnPoint(editorSpawnPoint);
@@ -47,8 +48,8 @@ public class PlayerStartPointManager : MonoBehaviour
                 {
                     UseSceneSpawnPoint();
                     print("Entered scene through Door, probably");
-                    // Delete the key, to not create any confusion when the scene is loaded next time.
-                    PlayerPrefs.DeleteKey("EnterThroughDoor");
+                    
+                    // Info: The entrance key is then deleted on Start in GameSaveManager.cs
                 }
             
                 // If this is true, the Player is reloading from a savefile
@@ -60,8 +61,8 @@ public class PlayerStartPointManager : MonoBehaviour
                     {
                         UseSavedPlayerSpawnPoint();
                         print("Entered scene through a Reload, probably");
-                        // Delete the key, to not create any confusion when the scene is loaded next time.
-                        PlayerPrefs.DeleteKey("EnterThroughLoad");
+                        
+                        // Info: The entrance key is then deleted on Start in GameSaveManager.cs
                     }
                     else
                     {

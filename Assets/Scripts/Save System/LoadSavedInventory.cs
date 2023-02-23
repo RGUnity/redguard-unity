@@ -12,8 +12,10 @@ public class LoadSavedInventory : MonoBehaviour
     [SerializeField] private InventoryData _inventoryData;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        // Checking this bool is probably stupid, because "PlayerStartPointManager.cs" is also checking for it ...
+        // ... and it it finds it, the key will be deleted
         if(!PlayerPrefs.HasKey("EnterThroughDoor"))
         {
             LoadInventory();
@@ -59,7 +61,7 @@ public class LoadSavedInventory : MonoBehaviour
             if (_inventoryData.objects.Contains(loadedActiveObject))
             {
                 _inventoryData.activeObject = loadedActiveObject;
-                print("Loaded active object: " + _inventoryData.activeObject);
+                //print("Loaded active object: " + _inventoryData.activeObject);
             }
             else
             {

@@ -11,12 +11,29 @@ public class GameSaveManager : MonoBehaviour
     [SerializeField] private InventoryData _inventoryData;
 
     private GameObject _player;
-    public static List<String> deletedObjectCache = new List<String>();
+    
+
+    public static Dictionary<string, GameObject> sceneNPCDict = new ();
+    private List<NPCData> NPCDataList = new();
+    
 
     void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player");
+
+            
+        // Has to be onStart, because onAwake, the NPCs add themselves to the sceneNPCDict
+        if (PlayerPrefs.HasKey("EnterThroughLoad"))
+        {
+            print("sceneNPCDict size is " + sceneNPCDict.Count);
+            GetComponent<LoadSavedNPCs>().LoadNPCs();
+            //LoadNPCs();
+        }
+
         
+        // Delete Entry keys
+        PlayerPrefs.DeleteKey("EnterThroughDoor");
+        PlayerPrefs.DeleteKey("EnterThroughLoad");
         
         // get a list of savefiles (for later)
 
@@ -29,22 +46,31 @@ public class GameSaveManager : MonoBehaviour
         //         print("found file Save_" + i);
         //     }
         // }
+
+        Dictionary<string, GameObject> updatedDict = new();
+        
+        foreach (var entry in sceneNPCDict)
+        {
+            if (entry.Value != null)
+            {
+                updatedDict.Add(entry.Key, entry.Value);
+            }
+        }
+
+        sceneNPCDict = updatedDict;
     }
 
     void Update()
     {
         if (Input.GetButtonDown("Quicksave"))
         {
-            //PlayerPrefs.DeleteKey("EnterThroughDoor");
-            
             SaveGame();
         }
         
         if (Input.GetButtonDown("Quickload"))
         {
             // Clear, because we want it to load the deletionStatus from the savefile instead
-            deletedObjectCache.Clear();
-            
+
             // // TODO get the scene that we are trying to reload into, and take its SceneData!
             // if (DataSerializer.TryLoad("SceneData", out SceneData _loadedSceneData))
             // {
@@ -62,7 +88,9 @@ public class GameSaveManager : MonoBehaviour
             PlayerPrefs.DeleteKey("EnterThroughDoor");
             PlayerPrefs.SetString("EnterThroughLoad", SceneManager.GetActiveScene().name);
             
-            //LoadInventory();
+            // sceneNPCDict must be cleared, because otherwise it will be full with dead object references next time
+            sceneNPCDict.Clear();
+            
             LoadScene();
 
         }
@@ -80,8 +108,9 @@ public class GameSaveManager : MonoBehaviour
         foreach (InventoryObjectType objType in _inventoryData.objects)
         {
             DataSerializer.Save(objType.name, objType.amount);
-            print("Saved " + objType.amount + " " + objType.name);
+            //print("Saved " + objType.amount + " " + objType.name);
         }
+        print("Saved Inventory");
         
         // Save the active inventory object
         DataSerializer.Save("InventoryActiveObject", _inventoryData.activeObject);
@@ -94,19 +123,87 @@ public class GameSaveManager : MonoBehaviour
         // Save the current scene name
         DataSerializer.Save("CurrentScene", SceneManager.GetActiveScene().name);
         
-        // Save the list of deleted objects to disk
-        foreach (var obj in deletedObjectCache)
+
+        
+
+        
+        // ---------- NPCs---------------------
+        if (sceneNPCDict.Count == 0)
         {
-            // Since we only check if the GUID exists as a key, we dont actually need a value.
-            // ... the bool is just there because it wants one
-            DataSerializer.Save(obj, true); 
+            print("sceneNPCDict is empty");
+        }
+        foreach (var element in sceneNPCDict)
+        {
+            print("sceneNPCDict contains: " + element.Value);
+        }
+
+        List <string> idCache = new();
+        foreach (var entry in sceneNPCDict)
+        {
+            var id = entry.Key;
+            var npc = entry.Value;
+            
+            // If the ID has already been added, throw a warning
+            if (idCache.Contains(id))
+            {
+                Debug.LogWarning("NPC " + npc + " has no unique ID! Please generate a new one.");
+            }
+            else
+            {
+                idCache.Add(id);
+            }
+
+            
+            // Create new NPCData
+            var npcdata = new NPCData
+            {
+                // Assign values
+                id = id,
+                actionState = npc.GetComponent<NPC>().actionState,
+                health = npc.GetComponent<NPC>().health,
+
+                // Assign transform data
+                position = npc.transform.position,
+                rotation = npc.transform.rotation
+            };
+
+            // Add the NPCData to the list
+            NPCDataList.Add(npcdata);
+            print("added " + npcdata.id + "to NPCDataList" );
+            print("NPCDataList count is " + NPCDataList.Count);
+        }
+        // Clear id cache. we dont need this anymore.
+        idCache.Clear();
+        
+        
+        DataSerializer.Save("NPCDataList", NPCDataList);
+    }
+
+    
+    private void LoadNPCs()
+    {
+        if (DataSerializer.TryLoad("NPCDataList", out List<NPCData> loadedNPCDataList))
+        {
+            foreach (var _npcData in loadedNPCDataList)
+            {
+                print("found NPCData with id: " + _npcData.id);
+                if (sceneNPCDict.ContainsKey(_npcData.id))
+                {
+                    //print("[GameSaveManager.sceneNPCDict] contains key " + _npcData.id);
+                    
+                    GameObject myNPC = sceneNPCDict[_npcData.id];
+                    
+                    //print("Set " + sceneNPCDict[_npcData.id] + "to loaded position" + _npcData.position);
+                    myNPC.transform.position = _npcData.position;
+                    myNPC.transform.rotation = _npcData.rotation;
+                }
+            }
         }
     }
 
-
     private void LoadScene()
     {
-        // Once our scriptble objects are set up, scene in the savefile
+        // Once our scriptable objects are set up, scene in the savefile
         if (DataSerializer.TryLoad("CurrentScene", out string loadedSceneName))
         {
             SceneManager.LoadScene(loadedSceneName);
