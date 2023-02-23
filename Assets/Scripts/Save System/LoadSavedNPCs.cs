@@ -31,7 +31,7 @@ public class LoadSavedNPCs : MonoBehaviour
                 }
                 else
                 {
-                    print("shit");
+                    print("sceneNPCDict has no entry with key " + _npcData.id);
                 }
             }
         }

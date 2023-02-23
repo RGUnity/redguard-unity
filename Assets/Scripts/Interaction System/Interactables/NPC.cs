@@ -58,7 +58,7 @@ public class NPC : Interactable
                 //print("Added [" + gameObject.name + "] to sceneNPCDict");
             }
         }
-        else
+        if (!id.IsNullOrWhitespace() && !GameSaveManager.sceneNPCDict.ContainsKey(id))
         {
             dict.Add(id, gameObject);
             //print("Added [" + gameObject.name + "] to sceneNPCDict");
