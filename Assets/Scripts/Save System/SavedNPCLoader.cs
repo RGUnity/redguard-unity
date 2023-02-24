@@ -4,7 +4,7 @@ using System.Linq;
 using ToolBox.Serialization;
 using UnityEngine;
 
-public class LoadSavedNPCs : MonoBehaviour
+public class SavedNPCLoader : MonoBehaviour
 {
     public void LoadNPCs()
     {

@@ -24,7 +24,8 @@ public class GameSaveManager : MonoBehaviour
         // Has to be onStart, because onAwake, the NPCs add themselves to the sceneNPCDict
         if (PlayerPrefs.HasKey("EnterThroughLoad"))
         {
-            GetComponent<LoadSavedNPCs>().LoadNPCs();
+            GetComponent<SavedNPCLoader>().LoadNPCs();
+            GetComponent<SavedObjectLoader>().LoadObjects();
         }
 
         

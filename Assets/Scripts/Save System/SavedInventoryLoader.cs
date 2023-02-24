@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ToolBox.Serialization;
 using UnityEngine;
 
-public class LoadSavedInventory : MonoBehaviour
+public class SavedInventoryLoader : MonoBehaviour
 {
     // This primarily loads the inventory data.
     // Objects can independently add themselves to the inventory list
