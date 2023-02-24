@@ -108,10 +108,10 @@ public class GameSaveManager : MonoBehaviour
         
 
         
-        // Save the NPCs
+        // ------------------------------ Save NPCs ------------------------------------
 
         // Primary List for NPC data
-        List<NPCData> NPCDataList = new();
+        List<SavableNPCData> NPCDataList = new();
 
         // To remember which IDs already have been added
         List <string> idCache = new();
@@ -133,8 +133,8 @@ public class GameSaveManager : MonoBehaviour
             }
 
             
-            // Create new NPCData
-            var npcdata = new NPCData
+            // Create new SavableNPCData
+            var npcdata = new SavableNPCData
             {
                 // Assign values
                 id = id,
@@ -158,6 +158,11 @@ public class GameSaveManager : MonoBehaviour
         // Finally, save the List to the savefile
         DataSerializer.Save("NPCDataList", NPCDataList);
         print(NPCDataList.Count + " NPCs stored in Savefile, the scene did contain " + sceneNPCDict.Count);
+        
+        
+        // -------------------------- Save Objects --------------------------
+        
+        
     }
 
    

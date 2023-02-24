@@ -26,10 +26,10 @@ public class Item : Interactable
         _objectType.amount += addAmount;
         print("Added " + addAmount + " " + _objectType.displayName);
 
-        // If it has a DeletableObject script, mark it as deleted
-        if (gameObject.TryGetComponent(out DeletableObject _deletableObject))
+        // If it has a SavableObject script, mark it as deleted
+        if (gameObject.TryGetComponent(out SavableObject _saveableObject))
         {
-            _deletableObject.RememberAsDeleted();
+            _saveableObject.RegisterObject();
         }
         
         // Delete the object

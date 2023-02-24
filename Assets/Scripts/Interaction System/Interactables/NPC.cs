@@ -9,9 +9,9 @@ using UnityEngine;
 public class NPC : Interactable
 {
     public NPCConfig config;
-    public string id;
     public NPCStateEnum actionState;
     public int health = 1;
+    public string id;
     
     public override void Interact()
     {

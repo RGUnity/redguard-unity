@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCData
+public class SavableNPCData
 {
     public string id;
     public NPCConfig config;

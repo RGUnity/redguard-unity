@@ -8,7 +8,7 @@ public class SavedNPCLoader : MonoBehaviour
 {
     public void LoadNPCs()
     {
-        if (DataSerializer.TryLoad("NPCDataList", out List<NPCData> loadedNPCDataList))
+        if (DataSerializer.TryLoad("NPCDataList", out List<SavableNPCData> loadedNPCDataList))
         {
             foreach (var _npcData in loadedNPCDataList)
             {
@@ -26,7 +26,7 @@ public class SavedNPCLoader : MonoBehaviour
         }
     }
 
-    private void ApplyNPCData(GameObject NPC, NPCData _npcData)
+    private void ApplyNPCData(GameObject NPC, SavableNPCData _npcData)
     {
 
         // Load values
@@ -39,7 +39,7 @@ public class SavedNPCLoader : MonoBehaviour
         //print("Set " + GameSaveManager.sceneNPCDict[_npcData.id] + "to loaded position" + _npcData.position);
     }
 
-    private GameObject SpawnNPC(NPCData _npcData)
+    private GameObject SpawnNPC(SavableNPCData _npcData)
     {
         var newInstance = Instantiate(_npcData.config.prefab, _npcData.position, _npcData.rotation);
         newInstance.GetComponent<NPC>().id = _npcData.id;

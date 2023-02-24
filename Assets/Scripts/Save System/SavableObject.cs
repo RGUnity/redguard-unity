@@ -7,10 +7,10 @@ using ToolBox.Serialization.OdinSerializer.Utilities;
 using UnityEditor;
 using UnityEngine;
 
-public class DeletableObject : MonoBehaviour
+public class SavableObject : MonoBehaviour
 {
     
-    [SerializeField] private string GUID;
+    [SerializeField] private string id;
     
 
     void Start()
@@ -19,30 +19,38 @@ public class DeletableObject : MonoBehaviour
     }
 
     // GUID Generator. Triggered when Button is pressed.
-    public void GenerateGUID()
+    public void GenerateID()
     {
-        GUID = Guid.NewGuid().ToString();
+        string guid = Guid.NewGuid().ToString();
+
+        int numberLength = 8;
+        string shortGUID = guid.Remove(numberLength, guid.Length-numberLength);
+
+        id = name.Replace(" ", "") +"--" + shortGUID;
+        print("Generated new ID for " + name);
     }
     
     // This should be triggered in the "item" script, when the player interacts
-    public void RememberAsDeleted()
+    public void RegisterObject()
     {
-        GameSaveManager.deletedObjectCache.Add(GUID);
+        GameSaveManager.saveableObjects.Add(id, gameObject);
     }
 
     private void CheckDeletionStatus()
     {
-        if (!GUID.IsNullOrWhitespace())
+        if (!id.IsNullOrWhitespace())
         {
             // If the savefile contains a matching key, delete this object on start
-            if (DataSerializer.TryLoad(GUID, out bool isDeleted))
+            if (DataSerializer.TryLoad(id, out bool isDeleted))
             {
                 Destroy(gameObject);
+                print(gameObject.name + " Found in Savefile");
             }
 
-            if (GameSaveManager.deletedObjectCache.Contains(GUID))
+            if (GameSaveManager.saveableObjects.ContainsKey(id))
             {
                 Destroy(gameObject);
+                print(gameObject.name + " Found in deletedObjectCache");
             }
         }
         else
