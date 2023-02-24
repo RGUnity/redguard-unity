@@ -10,7 +10,6 @@ public class LoadSavedNPCs : MonoBehaviour
     {
         if (DataSerializer.TryLoad("NPCDataList", out List<NPCData> loadedNPCDataList))
         {
-            print("loadedNPCDataList count is " + loadedNPCDataList.Count);
             foreach (var _npcData in loadedNPCDataList)
             {
                 if (GameSaveManager.sceneNPCDict.ContainsKey(_npcData.id))
@@ -23,6 +22,7 @@ public class LoadSavedNPCs : MonoBehaviour
                     ApplyNPCData(SpawnNPC(_npcData), _npcData);
                 }
             }
+            print("Savefile contains " + loadedNPCDataList.Count + " NPCs, sceneNPCDict now contains " + GameSaveManager.sceneNPCDict.Count);
         }
     }
 
@@ -41,10 +41,9 @@ public class LoadSavedNPCs : MonoBehaviour
 
     private GameObject SpawnNPC(NPCData _npcData)
     {
-        print(_npcData.config);
         var newInstance = Instantiate(_npcData.config.prefab, _npcData.position, _npcData.rotation);
-        newInstance.GetComponent<NPC>().RegisterNPC();
         newInstance.GetComponent<NPC>().id = _npcData.id;
+        newInstance.GetComponent<NPC>().RegisterNPC();
         return newInstance;
     }
 }
