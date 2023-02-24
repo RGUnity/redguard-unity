@@ -22,7 +22,7 @@ public class LoadSavedNPCs : MonoBehaviour
                     ApplyNPCData(SpawnNPC(_npcData), _npcData);
                 }
             }
-            print("Savefile contains " + loadedNPCDataList.Count + " NPCs, sceneNPCDict now contains " + GameSaveManager.sceneNPCDict.Count);
+            print(loadedNPCDataList.Count + " NPCs loaded from Savefile, scene now contains " + GameSaveManager.sceneNPCDict.Count);
         }
     }
 

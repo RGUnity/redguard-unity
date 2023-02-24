@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using ToolBox.Serialization;
+using UnityEditor.VersionControl;
 using UnityEngine.SceneManagement;
 
 public class GameSaveManager : MonoBehaviour
@@ -11,11 +12,9 @@ public class GameSaveManager : MonoBehaviour
     [SerializeField] private InventoryData _inventoryData;
 
     private GameObject _player;
-    
 
+    public static Dictionary<string, GameObject> saveableObjects = new();
     public static Dictionary<string, GameObject> sceneNPCDict = new ();
-    private List<NPCData> NPCDataList = new();
-    
 
     void Start()
     {
@@ -25,7 +24,6 @@ public class GameSaveManager : MonoBehaviour
         // Has to be onStart, because onAwake, the NPCs add themselves to the sceneNPCDict
         if (PlayerPrefs.HasKey("EnterThroughLoad"))
         {
-            print("sceneNPCDict size is " + sceneNPCDict.Count);
             GetComponent<LoadSavedNPCs>().LoadNPCs();
         }
 
@@ -107,16 +105,13 @@ public class GameSaveManager : MonoBehaviour
         DataSerializer.Save("CurrentScene", SceneManager.GetActiveScene().name);
         
         
+
+        
         // Save the NPCs
-        if (sceneNPCDict.Count == 0)
-        {
-            print("sceneNPCDict is empty");
-        }
-        foreach (var element in sceneNPCDict)
-        {
-            print("sceneNPCDict contains: " + element.Value);
-        }
-            
+
+        // Primary List for NPC data
+        List<NPCData> NPCDataList = new();
+
         // To remember which IDs already have been added
         List <string> idCache = new();
         
@@ -153,14 +148,15 @@ public class GameSaveManager : MonoBehaviour
 
             // Add the NPCData to the list
             NPCDataList.Add(npcdata);
-            print("added " + npcdata.id + "to NPCDataList" );
-            print("NPCDataList count is " + NPCDataList.Count);
+            // print("added " + npcdata.id + "to NPCDataList" );
+            // print("NPCDataList count is " + NPCDataList.Count);
         }
         // Clear id cache. we dont need this anymore.
         idCache.Clear();
         
         // Finally, save the List to the savefile
         DataSerializer.Save("NPCDataList", NPCDataList);
+        print(NPCDataList.Count + " NPCs stored in Savefile, the scene did contain " + sceneNPCDict.Count);
     }
 
    
