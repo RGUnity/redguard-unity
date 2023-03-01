@@ -30,13 +30,13 @@ public class UIWindowManager : MonoBehaviour
         // Then do whatever
         window.SetActive(!window.activeSelf);
 
-        if (GameManager.isGamePaused)
+        if (Game.isGamePaused)
         {
-            GameManager.ContinueGame();
+            Game.ContinueGame();
         }
         else
         {
-            GameManager.PauseGame();
+            Game.PauseGame();
         }
     }
 }

@@ -27,24 +27,28 @@ public class Door : Interactable
             }
             if (!targetSceneName.IsNullOrWhitespace() && targetSpawnPointAsset != null)
             {
-                PlayerPrefs.DeleteKey("EnterThroughLoad");
-                PlayerPrefs.SetString("EnterThroughDoor", targetSceneName);
+                
+                // To tell the next scene that we entered it through a door
+                Game.EnterSceneMode = EnterSceneModeEnum.Door;
+                
+                // Get the coordinates of the next spawn Point and store it in memory 
                 SaveNextStartPoint(targetSpawnPointAsset);
                 
+                // Load the scene
                 SceneManager.LoadScene(targetSceneName);
             }
         }
-        print("Player can not enter this door [playerCanEnter] is set to " + playerCanEnter);
+        else
+        {
+            print("Player can not enter this door [playerCanEnter] is set to " + playerCanEnter);
+        }
+        
 
     }
 
     private void SaveNextStartPoint(PlayerSpawnPoint point)
     {
-        PlayerPrefs.SetFloat("StartPositionX", point.position.x);
-        PlayerPrefs.SetFloat("StartPositionY", point.position.y);
-        PlayerPrefs.SetFloat("StartPositionZ", point.position.z);
-        PlayerPrefs.SetFloat("StartRotationX", point.eulerRotation.x);
-        PlayerPrefs.SetFloat("StartRotationY", point.eulerRotation.y);
-        PlayerPrefs.SetFloat("StartRotationZ", point.eulerRotation.z);
+        Game.WorkingSaveData.SavablePlayerData.PlayerPosition = point.position;
+        Game.WorkingSaveData.SavablePlayerData.PlayerRotation = Quaternion.Euler(point.eulerRotation);
     }
 }

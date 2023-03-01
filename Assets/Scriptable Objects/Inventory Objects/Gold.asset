@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Gold
   m_EditorClassIdentifier: 
   displayName: Gold
+  worldObject: {fileID: 3213388602907898920, guid: a1cd8b0c42473214db80a8011b4d7408, type: 3}
   startAmount: 10
   icon: {fileID: 21300000, guid: 2e4ebcb1645bc2447a0c32fa5dbdc67b, type: 3}
-  amount: 30
+  amount: 13

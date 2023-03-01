@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1798e3912ebe65c439d98368df939409, type: 3}
   m_Name: Guard
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3504731824396397614, guid: a743ac3ed49b06441bc4611293968151, type: 3}
+  worldPrefab: {fileID: 3504731824396397614, guid: a743ac3ed49b06441bc4611293968151, type: 3}
   isAggressive: 1
   isProtective: 1
   maxHealth: 3

@@ -10,7 +10,7 @@ public class TEST_SpawnNPC : MonoBehaviour
     {
         var newGuard = Instantiate(prefab, transform.position, Quaternion.identity);
         newGuard.GetComponent<NPC>().GenerateID();
-        newGuard.GetComponent<NPC>().RegisterNPC();
+        //newGuard.GetComponent<NPC>().RegisterNPC();
     }
 
     // Update is called once per frame

@@ -17,57 +17,8 @@ public class NPC : Interactable
     {
         print("TODO: Start conversation with NPC");
     }
-
-
-
-    private void Awake()
-    {
-        if (!id.IsNullOrWhitespace())
-        {
-            RegisterNPC();
-        }
-        else
-        {
-            // This probably means the NPC is not meant to be remembered, or will get its ID after beeing spawned
-        }
-    }
-
-    public void RegisterNPC()
-    {
-        var dict = GameSaveManager.sceneNPCDict;
-        // Then, if the id of the object is not already in the list, we can add it
-   
-        if (!id.IsNullOrWhitespace() && !GameSaveManager.sceneNPCDict.ContainsKey(id))
-        {
-            dict.Add(id, gameObject);
-            //print("Added [" + gameObject.name + "] to sceneNPCDict");
-        }
-        else if (GameSaveManager.sceneNPCDict.ContainsKey(id))
-        {
-            // Handle case where ID is in dictionary
-            if (dict[id].gameObject == gameObject)
-            {
-                // This should only happen in the editor
-                Debug.LogWarning("I guess " + name +" at " + transform.position+  " already was in the sceneNPCDict...? If you are playing in the Editor, that should be okay.");
-            }
-            else if (dict[id].gameObject != null &&
-                     dict[id].gameObject != gameObject
-                     )
-            {
-                Debug.LogWarning(name +" at " +transform.position+  "'s ID is not unique! Please generate a new one.");
-            }
-            else if (dict[id].gameObject == null)
-            {
-                dict.Remove(id);
-                print("Found one but its null");
-                
-                dict.Add(id, gameObject);
-                //print("Added [" + gameObject.name + "] to sceneNPCDict");
-            }
-        }
-    }
     
-
+  
     public void GenerateID()
     {
         string guid = Guid.NewGuid().ToString();

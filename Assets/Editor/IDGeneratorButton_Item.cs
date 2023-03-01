@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor((typeof(SavableObject)))]
-public class IDGeneratorButton_Object : Editor
+[CustomEditor((typeof(Item)))]
+public class IDGeneratorButton_Item : Editor
 {
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
         
-        SavableObject linkedScript = (SavableObject)target;
+        Item linkedScript = (Item)target;
         if (GUILayout.Button("Generate ID"))
         {
             linkedScript.GenerateID();
+            Undo.RecordObject(linkedScript, "Generate Identifier");
+            PrefabUtility.RecordPrefabInstancePropertyModifications(linkedScript);
         }
     }
 }

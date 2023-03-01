@@ -94,6 +94,7 @@ public class InventoryUI : MonoBehaviour
         }
         
         // Loop through the list of objects in the Inventory
+        print(_inventoryData);
         foreach (InventoryObjectType obj in _inventoryData.objects)
         {
             // Instantiate a Grid element from the prefab

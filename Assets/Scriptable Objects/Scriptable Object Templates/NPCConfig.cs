@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewNPCType", menuName = "ScriptableObjects/NPCType")]
 public class NPCConfig : ScriptableObject
 {
-    public GameObject prefab;
+    public GameObject worldPrefab;
     // NPC will attack on sight. Can not talk with player.
     public bool isAggressive;
     // NPC will attack when nearby player pulls sword. Can talk with player while not in combat.
