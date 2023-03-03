@@ -4374,27 +4374,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: adf126d306c935644a373e696be13294, type: 3}
   m_PrefabInstance: {fileID: 498217678}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1712875681
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1712875679}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed208517ad37dad47b547ef59cf4fa73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isEmpty: 0
-  possibleObjects:
-  - {fileID: 11400000, guid: bed4d148bc672ec46a35df200a5b51fd, type: 2}
-  - {fileID: 11400000, guid: 68f10775a848a0046bd9d284a630ac92, type: 2}
-  - {fileID: 11400000, guid: ddabd1ea94a955d4f849222e024a5124, type: 2}
-  - {fileID: 11400000, guid: 2f3de95a9b430224e8fc043179e7cd95, type: 2}
-  - {fileID: 11400000, guid: 5d8d69c01da51094b9e1aa1953f811d6, type: 2}
-  - {fileID: 11400000, guid: 3b6753da2f7aaee4ca9fc2af4e67ab6b, type: 2}
-  - {fileID: 11400000, guid: bb6a2ae2ac5352a498ebcbdfba6f9a40, type: 2}
 --- !u!136 &1712875682
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4425,7 +4404,7 @@ MonoBehaviour:
   actionState: 0
   health: 1
   id: DyingGuard--e7108dfd
---- !u!114 &1712875692
+--- !u!114 &1712875695
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4438,6 +4417,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 3
+--- !u!114 &1712875696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712875679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed208517ad37dad47b547ef59cf4fa73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isEmpty: 0
+  possibleObjects:
+  - {fileID: 11400000, guid: bed4d148bc672ec46a35df200a5b51fd, type: 2}
+  - {fileID: 11400000, guid: 68f10775a848a0046bd9d284a630ac92, type: 2}
+  - {fileID: 11400000, guid: ddabd1ea94a955d4f849222e024a5124, type: 2}
+  - {fileID: 11400000, guid: 2f3de95a9b430224e8fc043179e7cd95, type: 2}
+  - {fileID: 11400000, guid: 5d8d69c01da51094b9e1aa1953f811d6, type: 2}
+  - {fileID: 11400000, guid: 3b6753da2f7aaee4ca9fc2af4e67ab6b, type: 2}
+  - {fileID: 11400000, guid: bb6a2ae2ac5352a498ebcbdfba6f9a40, type: 2}
 --- !u!1 &1722467978
 GameObject:
   m_ObjectHideFlags: 0

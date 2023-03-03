@@ -15,7 +15,31 @@ public class NPC : Interactable
     
     public override void Interact()
     {
-        print("TODO: Start conversation with NPC");
+        switch (actionState)
+        {
+            case NPCStateEnum.Idle:
+                print("TODO: Start conversation with NPC");
+                break;
+            case NPCStateEnum.Patrolling:
+                print("TODO: Start conversation with NPC");
+                break;
+            case NPCStateEnum.Fighting:
+                // NPC can not talk
+                break;
+            case NPCStateEnum.Dead:
+                // NPC will talk even less now
+                if (TryGetComponent(out ItemDispenser dispenser))
+                {
+                    dispenser.AddItems();
+                }
+                else
+                {
+                    print("NPC " + gameObject.name + " is dead but has no ItemDispenser");
+                }
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
     
   

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum NPCStateEnum
 {
-    Resting,
+    Idle,
     Patrolling,
     Fighting,
     Dead

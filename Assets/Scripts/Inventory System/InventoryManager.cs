@@ -51,5 +51,6 @@ public class InventoryManager : MonoBehaviour
             
             Game.Data.Player.Inventory.objects.Add(type.displayName, newObject);
         }
+        print("Added " + amount + " " + type.displayName + " to Player Inventory" );
     }
 }
