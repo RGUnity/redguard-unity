@@ -7,26 +7,6 @@ public class InventoryManager : MonoBehaviour
 {
     [SerializeField] private InventoryDefaults defaultInventory;
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        if (defaultInventory == null)
-        {
-            Debug.Log("InventoryManager has no Default Inventory assigned! Please create a scriptable object and assign it!");
-        }
-        
-        if (!Game.Data.Player.Inventory.objects.Any())
-        {
-            print("Inventory is empty. Restoring Default Inventory.");
-            LoadDefaultInventory();
-        }
-        else
-        {
-            print("Inventory contains at least one item, like "+ Game.Data.Player.Inventory.objects.First());
-        }
-    }
-
     public void LoadDefaultInventory()
     {
         Game.Data.Player.Inventory.objects.Clear();
@@ -47,6 +27,8 @@ public class InventoryManager : MonoBehaviour
         }
         // use the first object as the activeObjecte
         Game.Data.Player.Inventory.activeObject = Game.Data.Player.Inventory.objects.First().Value;
+        
+        print("Loaded default inventory");
     }
 
     public static void AddItems(InventoryObjectType type, int amount)

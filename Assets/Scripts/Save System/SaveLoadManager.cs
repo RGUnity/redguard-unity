@@ -7,8 +7,10 @@ using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(GameSaver))]
 [RequireComponent(typeof(GameLoader))]
+[RequireComponent(typeof(InventoryManager))]
 public class SaveLoadManager : MonoBehaviour
 {
+    [SerializeField] private InventoryManager inventoryManager;
     
     // Right now this happens on Start, because we initialize the data types on Awake
     private void Start()
@@ -17,7 +19,7 @@ public class SaveLoadManager : MonoBehaviour
         {
             case EnterSceneModeEnum.None:
                 // THis means we are probably starting in the editor
-                //InventoryManager.LoadDefaultInventory();
+                inventoryManager.LoadDefaultInventory();
                 break;
             case EnterSceneModeEnum.Load:
                 // A game was loaded
