@@ -27,21 +27,24 @@ public class ItemDispenser : Interactable
             // First, Check if there already is an object of the same (Stack-)type in the inventory.
             // If not, add the Stack Type to the inventory list.
             // The stack type is a direct reference to the inventory object, and must be set in the scriptable object.
-            if (!_inventoryData.objects.Contains(randomObject.inventoryObjectType))
-            {
-                _inventoryData.objects.Add(randomObject.inventoryObjectType);
-            }
             
-            // Check the Objects in the inventory, and once you find one with the same stack type...
-            // ...add more of the specified amount
-            foreach (var InventoryObject in _inventoryData.objects)
-            {
-                if (InventoryObject == randomObject.inventoryObjectType)
-                {
-                    InventoryObject.amount += randomObject.amount;
-                    print("Added " +randomObject.amount + " " + InventoryObject.displayName);
-                }
-            }
+            Debug.LogWarning("This is broken too");
+            
+            // if (!_inventoryData.objects.Contains(randomObject.inventoryObjectType))
+            // {
+            //     _inventoryData.objects.Add(randomObject.inventoryObjectType);
+            // }
+            //
+            // // Check the Objects in the inventory, and once you find one with the same stack type...
+            // // ...add more of the specified amount
+            // foreach (var InventoryObject in _inventoryData.objects)
+            // {
+            //     if (InventoryObject == randomObject.inventoryObjectType)
+            //     {
+            //         InventoryObject.amount += randomObject.amount;
+            //         print("Added " +randomObject.amount + " " + InventoryObject.displayName);
+            //     }
+            // }
             
             // Mark the Dispenser as empty so that the player can no longer interact with it
             isEmpty = true;

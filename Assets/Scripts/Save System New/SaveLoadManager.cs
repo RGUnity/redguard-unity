@@ -9,12 +9,15 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(GameLoader))]
 public class SaveLoadManager : MonoBehaviour
 {
+    
+    // Right now this happens on Start, because we initialize the data types on Awake
     private void Start()
     {
         switch (Game.EnterSceneMode)
         {
             case EnterSceneModeEnum.None:
                 // THis means we are probably starting in the editor
+                //InventoryManager.LoadDefaultInventory();
                 break;
             case EnterSceneModeEnum.Load:
                 // A game was loaded
@@ -23,7 +26,7 @@ public class SaveLoadManager : MonoBehaviour
             case EnterSceneModeEnum.Door:
                 // A door was opened.
                 // Clear the NPC data, because that never carries over across scenes
-                Game.WorkingSaveData.NPCDataDict.Clear();
+                Game.Data.NPCDataDict.Clear();
                 GetComponent<GameLoader>().ApplyData();
                 break;
             default:

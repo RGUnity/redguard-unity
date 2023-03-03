@@ -20,10 +20,10 @@ public class GameSaver : MonoBehaviour
             var sceneName = SceneManager.GetActiveScene().name;
 
             
-            var objDataDict = Game.WorkingSaveData.SceneDataCache[sceneName].ObjectDataDict;
+            var objDataDict = Game.Data.Scene[sceneName].ObjectDataDict;
 
             var itemComponent = obj.GetComponent<Item>();
-            var objData = new SavableObjectData
+            var objData = new ObjectData
             {
                 position = obj.transform.position,
                 rotation = obj.transform.rotation,
@@ -50,18 +50,18 @@ public class GameSaver : MonoBehaviour
     {
         string sceneName = SceneManager.GetActiveScene().name;
 
-        Game.WorkingSaveData.LastSceneName = sceneName;
+        Game.Data.LastSceneName = sceneName;
         
         // ----- Save Player -----
 
         var player = GameObject.FindGameObjectWithTag("Player");
-        var playerData = Game.WorkingSaveData.SavablePlayerData;
+        var playerData = Game.Data.Player;
 
         // We subtract -1 on y to get a vector that matches the feet position 
         playerData.PlayerPosition = player.transform.position - new Vector3(0, 1, 0);;;
         playerData.PlayerRotation = player.transform.rotation;
-        playerData.InventoryActiveObject = inventoryData.activeObject;
-        playerData.InventoryObjects = inventoryData.objects;
+        //playerData.Inventory.activeObject = inventoryData.activeObject;
+        //playerData.InventoryObjects = inventoryData.objects;
 
         
         
@@ -69,13 +69,13 @@ public class GameSaver : MonoBehaviour
         // ----- Save NPCs -----
         
         // Create new NPCDataList
-        Game.WorkingSaveData.NPCDataDict = new Dictionary<string, SavableNPCData>();
+        Game.Data.NPCDataDict = new Dictionary<string, NPCData>();
         
         foreach (var npc in GameObject.FindGameObjectsWithTag("NPC"))
         {
             var npcComponent = npc.GetComponent<NPC>();
             
-            var npcdata = new SavableNPCData
+            var npcdata = new NPCData
             {
                 //Assign values
                 id = npcComponent.id,
@@ -88,8 +88,8 @@ public class GameSaver : MonoBehaviour
                 rotation = npc.transform.rotation
             };
             
-            // Add NPCData to list in WorkingSaveData
-            var npcDataDict = Game.WorkingSaveData.NPCDataDict;
+            // Add NPCData to list in Data
+            var npcDataDict = Game.Data.NPCDataDict;
             
             if (!npcDataDict.TryAdd(npcdata.id, npcdata))
             {
@@ -103,13 +103,13 @@ public class GameSaver : MonoBehaviour
         // ----- Save Objects -----
         
         // Create new ObjectDataList
-        var _sceneData = Game.WorkingSaveData.SceneDataCache[sceneName];
+        var _sceneData = Game.Data.Scene[sceneName];
         
         foreach (var item in GameObject.FindGameObjectsWithTag("Item"))
         {
             var itemComponent = item.GetComponent<Item>();
             
-            var objData = new SavableObjectData
+            var objData = new ObjectData
             {
                 
                 position = itemComponent.transform.position,
@@ -121,7 +121,7 @@ public class GameSaver : MonoBehaviour
                 id = itemComponent.id
             };
             
-            // Add ObjectData to list in WorkingSaveData
+            // Add ObjectData to list in Data
             var objDataDict = _sceneData.ObjectDataDict;
             
             if (!objDataDict.TryAdd(objData.id, objData))
@@ -135,7 +135,7 @@ public class GameSaver : MonoBehaviour
         }
         
         // Serialize Data
-        DataSerializer.Save("SaveData", Game.WorkingSaveData);
+        DataSerializer.Save("SaveData", Game.Data);
     }
     
 }

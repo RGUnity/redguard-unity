@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SaveDataContainer
+public class GameDataContainer
 {
     // These have to be saved before the next scene get loaded
     // Or you manually save each SavableObjectData when it gets modified
-    public Dictionary<string, SavableSceneData> SceneDataCache;
+    public Dictionary<string, SceneData> Scene  = new();
     // Inventory?
     
     // These only have to be set before serializing the savefile
     public string LastSceneName;
-    public SavablePlayerData SavablePlayerData;
-    public Dictionary<string, SavableNPCData> NPCDataDict = new();
+    public PlayerData Player = new();
+    public Dictionary<string, NPCData> NPCDataDict = new();
 
 }

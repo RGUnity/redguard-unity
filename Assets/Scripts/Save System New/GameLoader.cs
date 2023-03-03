@@ -10,12 +10,14 @@ public class GameLoader : MonoBehaviour
     [SerializeField] private InventoryData inventoryData;
     public void LoadGame()
     {
-        if (DataSerializer.TryLoad("SaveData", out SaveDataContainer loadedSaveData))
+        if (DataSerializer.TryLoad("SaveData", out GameDataContainer loadedSaveData))
         {
-            Game.WorkingSaveData = loadedSaveData;
+            Game.Data = loadedSaveData;
             Game.EnterSceneMode = EnterSceneModeEnum.Load;
             
-            SceneManager.LoadScene(Game.WorkingSaveData.LastSceneName);
+            print("Loaded GameData with " + Game.Data.Player.Inventory.activeObject.type);
+            
+            SceneManager.LoadScene(Game.Data.LastSceneName);
         }
     }
 
@@ -38,7 +40,7 @@ public class GameLoader : MonoBehaviour
         }
         
         string sceneName = SceneManager.GetActiveScene().name;
-        Dictionary<string, SavableObjectData> loadedObjDict = Game.WorkingSaveData.SceneDataCache[sceneName].ObjectDataDict;
+        Dictionary<string, ObjectData> loadedObjDict = Game.Data.Scene[sceneName].ObjectDataDict;
         
         foreach (var entry in loadedObjDict)
         {
@@ -55,6 +57,7 @@ public class GameLoader : MonoBehaviour
                 {
                     // If it exists and is Deleted, simply hide it.
                     sceneObj.SetActive(false);
+                    print(sceneObj.gameObject.name + " was marked as deleted and will be hidden");
                 }
                 else
                 {
@@ -97,7 +100,7 @@ public class GameLoader : MonoBehaviour
         }
         
         string sceneName = SceneManager.GetActiveScene().name;
-        Dictionary<string, SavableNPCData> loadedNPCDict = Game.WorkingSaveData.NPCDataDict;
+        Dictionary<string, NPCData> loadedNPCDict = Game.Data.NPCDataDict;
         
         foreach (var entry in loadedNPCDict)
         {
@@ -136,7 +139,7 @@ public class GameLoader : MonoBehaviour
     public void SetPlayer()
     {
         var player = GameObject.FindGameObjectWithTag("Player");
-        var playerData = Game.WorkingSaveData.SavablePlayerData;
+        var playerData = Game.Data.Player;
         
         
         // Just use those always?
@@ -149,8 +152,8 @@ public class GameLoader : MonoBehaviour
         playerController.enabled = true;
 
         
-        inventoryData.activeObject = playerData.InventoryActiveObject;
-        inventoryData.objects = playerData.InventoryObjects;
+        //inventoryData.activeObject = playerData.InventoryActiveObject;
+        //inventoryData.objects = playerData.InventoryObjects;
 
     }
 }

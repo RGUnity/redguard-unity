@@ -484,10 +484,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88cfd48821b03194686c2c71b4b19716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stackType: {fileID: 0}
-  label: {fileID: 3005619506355009618}
-  amount: {fileID: 1373104277369208963}
-  image: {fileID: 113201378249016580}
+  type: {fileID: 0}
+  labelComponent: {fileID: 3005619506355009618}
+  amountComponent: {fileID: 1373104277369208963}
+  imageComponent: {fileID: 113201378249016580}
 --- !u!114 &871376891563033555
 MonoBehaviour:
   m_ObjectHideFlags: 0

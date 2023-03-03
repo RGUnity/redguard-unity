@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SavableObjectData
+public class ObjectData
 {
     public bool isDeleted;
     public InventoryObjectType objectType;

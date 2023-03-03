@@ -22,28 +22,27 @@ public class Item : Interactable
 
     public override void Interact()
     {
-        // If the Object type is not yet part of the Inventory List, add it
-        if (!_inventoryData.objects.Contains(objectType))
-        {
-            _inventoryData.objects.Add(objectType);
-        }
-        // Increase the "amount" value in the Scriptable Object by the specified amount
-        int addAmount = Random.Range(minAmount, maxAmount);
-        objectType.amount += addAmount;
-        print("Added " + addAmount + " " + objectType.displayName);
+   
+        // Generate a random amount
+        int amount = Random.Range(minAmount, maxAmount);
+
+        // Add the object with the amount
+        InventoryManager.AddItems(objectType, amount);
         
-        
+        // Mark this object as deleted
         isDeleted = true;
+        
+        // And update its data in the data tree
         GameSaver.RememberObject(gameObject);
         
-        
-        
         // Delete the object
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
     
     private void Start()
     {
+        // This is primarily for objects that get spawned after the scene was loaded
+        // We could probably also call this manually when objects are spawned
         if (!id.IsNullOrWhitespace())
         {
             GameSaver.RememberObject(gameObject);

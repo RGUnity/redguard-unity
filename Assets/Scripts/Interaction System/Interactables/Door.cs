@@ -48,7 +48,7 @@ public class Door : Interactable
 
     private void SaveNextStartPoint(PlayerSpawnPoint point)
     {
-        Game.WorkingSaveData.SavablePlayerData.PlayerPosition = point.position;
-        Game.WorkingSaveData.SavablePlayerData.PlayerRotation = Quaternion.Euler(point.eulerRotation);
+        Game.Data.Player.PlayerPosition = point.position;
+        Game.Data.Player.PlayerRotation = Quaternion.Euler(point.eulerRotation);
     }
 }

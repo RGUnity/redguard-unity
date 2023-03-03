@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SavableSceneData
+public class SceneData
 {
-    public Dictionary<string, SavableObjectData> ObjectDataDict;
+    public Dictionary<string, ObjectData> ObjectDataDict = new();
     //public Dictionary<string, SavableDialogueData> DialogueDataDict;
 }

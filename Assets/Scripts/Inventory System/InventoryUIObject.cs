@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class InventoryUIObject : MonoBehaviour
 {
-    public InventoryObjectType stackType;
-    public TMP_Text label;
-    public TMP_Text amount;
-    public Image image;
+    public InventoryObject inventoryObject;
+    public TMP_Text labelComponent;
+    public TMP_Text amountComponent;
+    public Image imageComponent;
 }

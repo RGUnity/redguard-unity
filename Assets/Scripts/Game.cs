@@ -9,7 +9,7 @@ public class Game : MonoBehaviour
 
     [Header("Dynamic Variables")]
     public static bool isGamePaused;
-    public static SaveDataContainer WorkingSaveData = new();
+    public static GameDataContainer Data = new();
     public static EnterSceneModeEnum EnterSceneMode;
     
     
@@ -19,30 +19,41 @@ public class Game : MonoBehaviour
         isGamePaused = false;
         
         // Initialize Save System
-        if (WorkingSaveData.SceneDataCache == null)
-        {
-            WorkingSaveData.SceneDataCache = new Dictionary<string, SavableSceneData>();
-            print("New SceneDataCache was created");
-        }
-
         var sceneName = SceneManager.GetActiveScene().name;
         
-        if (!WorkingSaveData.SceneDataCache.ContainsKey(sceneName))
+        if (!Data.Scene.ContainsKey(sceneName))
         {
-            var newSceneData = new SavableSceneData();
-            WorkingSaveData.SceneDataCache.Add(sceneName, newSceneData);
-        }
-
-        if (WorkingSaveData.SceneDataCache[sceneName].ObjectDataDict == null)
-        {
-            WorkingSaveData.SceneDataCache[sceneName].ObjectDataDict = new Dictionary<string, SavableObjectData>();
+            var newSceneData = new SceneData();
+            Data.Scene.Add(sceneName, newSceneData);
         }
         
-        if (WorkingSaveData.SavablePlayerData == null)
-        {
-            WorkingSaveData.SavablePlayerData = new SavablePlayerData();
-            print("Created new SavablePlayerData");
-        }
+        
+        // These below are probably obsolete because mose fields should now have "new()" behind them
+
+        // if (Data.Scene == null)
+        // {
+        //     Data.Scene = new Dictionary<string, SceneData>();
+        //     print("New SceneData was created for this scene");
+        // }
+        //
+
+        //
+        // if (Data.Scene[sceneName].ObjectDataDict == null)
+        // {
+        //     Data.Scene[sceneName].ObjectDataDict = new Dictionary<string, ObjectData>();
+        // }
+        //
+        // if (Data.Player == null)
+        // {
+        //     Data.Player = new PlayerData();
+        //     print("Created new PlayerData");
+        // }
+        //
+        // if (Data.Player.Inventory == null)
+        // {
+        //     Data.Player.Inventory = new InventoryData();
+        //     print("Created new InventoryData");
+        // }
     }
 
     public static void PauseGame()
