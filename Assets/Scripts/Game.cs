@@ -18,7 +18,7 @@ public class Game : MonoBehaviour
     {
         isGamePaused = false;
         
-        // Initialize Save System
+        // Look for scene data, create new if necessary
         var sceneName = SceneManager.GetActiveScene().name;
         
         if (!Data.Scene.ContainsKey(sceneName))
@@ -26,34 +26,6 @@ public class Game : MonoBehaviour
             var newSceneData = new SceneData();
             Data.Scene.Add(sceneName, newSceneData);
         }
-        
-        
-        // These below are probably obsolete because mose fields should now have "new()" behind them
-
-        // if (Data.Scene == null)
-        // {
-        //     Data.Scene = new Dictionary<string, SceneData>();
-        //     print("New SceneData was created for this scene");
-        // }
-        //
-
-        //
-        // if (Data.Scene[sceneName].ObjectDataDict == null)
-        // {
-        //     Data.Scene[sceneName].ObjectDataDict = new Dictionary<string, ObjectData>();
-        // }
-        //
-        // if (Data.Player == null)
-        // {
-        //     Data.Player = new PlayerData();
-        //     print("Created new PlayerData");
-        // }
-        //
-        // if (Data.Player.Inventory == null)
-        // {
-        //     Data.Player.Inventory = new InventoryData();
-        //     print("Created new InventoryData");
-        // }
     }
 
     public static void PauseGame()
