@@ -6,15 +6,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewInventoryObjectType", menuName = "ScriptableObjects/InventoryObjectType")]
 public class InventoryObjectType : ScriptableObject
 {
-    [Header("Required Data")]
     public String displayName;
 
     public GameObject worldObject;
 
-    [Header("Optional Data")]
-    public int startAmount = 0;
     public Sprite icon;
-    
-    [Header("Dynamic Variables")]
-    public int amount = 0;
 }

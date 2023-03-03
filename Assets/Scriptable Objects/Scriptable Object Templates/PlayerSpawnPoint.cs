@@ -8,7 +8,7 @@ using UnityEngine;using UnityEngine.SceneManagement;
 
 public class PlayerSpawnPoint : ScriptableObject
 {
-    [Header("Set these values with the button on [Set Entry Points Transforms]")]
+    [Header("Set these values with the button on [SpawnPointUpdater]")]
     public Vector3 position;
     public Vector3 eulerRotation;
 }
