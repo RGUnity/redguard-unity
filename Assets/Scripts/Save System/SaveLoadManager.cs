@@ -18,7 +18,7 @@ public class SaveLoadManager : MonoBehaviour
         switch (Game.EnterSceneMode)
         {
             case EnterSceneModeEnum.None:
-                // THis means we are probably starting in the editor
+                // This means we are probably starting in the editor
                 inventoryManager.LoadDefaultInventory();
                 break;
             case EnterSceneModeEnum.Load:
