@@ -7,8 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class GameSaver : MonoBehaviour
 {
-    [SerializeField] private InventoryData inventoryData;
-
     public void SaveGame()
     {
         GetComponent<GameSaver>().UpdateSaveData();

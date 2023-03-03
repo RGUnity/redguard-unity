@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class GameLoader : MonoBehaviour
 {
-    [SerializeField] private InventoryData inventoryData;
     public void LoadGame()
     {
         if (DataSerializer.TryLoad("SaveData", out GameDataContainer loadedSaveData))
