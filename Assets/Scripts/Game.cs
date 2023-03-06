@@ -8,7 +8,7 @@ public class Game : MonoBehaviour
     [Header("Config")]
 
     [Header("Dynamic Variables")]
-    public static bool isGamePaused;
+    public static bool isPaused;
     public static GameDataContainer Data = new();
     public static EnterSceneModeEnum EnterSceneMode;
     
@@ -16,7 +16,7 @@ public class Game : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        isGamePaused = false;
+        isPaused = false;
         
         // Look for scene data, create new if necessary
         var sceneName = SceneManager.GetActiveScene().name;
@@ -30,13 +30,13 @@ public class Game : MonoBehaviour
 
     public static void PauseGame()
     {
-        isGamePaused = true;
-        //print("Game Paused");
+        isPaused = true;
+        print("Game Paused. Unfortunately for now that means only a boolean was set.");
     }
     
     public static void ContinueGame()
     {
-        isGamePaused = false;
-        //print("Game Continues");
+        isPaused = false;
+        print("Game Continues. Unfortunately for now that means only a boolean was set.");
     }
 }

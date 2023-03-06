@@ -12,7 +12,7 @@ public class DummyCharacterController : MonoBehaviour
     private float currentGravity = 0f;
     void FixedUpdate()
     {
-        if (!Game.isGamePaused)
+        if (!Game.isPaused)
         {
             MovePlayer();
         }
@@ -20,7 +20,7 @@ public class DummyCharacterController : MonoBehaviour
     
     void Update()
     {
-        if (!Game.isGamePaused)
+        if (!Game.isPaused)
         {
             RotatePlayer();
         }

@@ -36,7 +36,10 @@ public class MenuManager : MonoBehaviour
                 print("found file Save_" + i);
             }
         }
-        print(DateTime.Now.ToBinary());
+        
+        // if (SceneManager.GetActiveScene == "Menu")
+        // {Load latest savefile}
+        // else {Hide Menu and unpause}
     }
 
     public void ShowSavePage()

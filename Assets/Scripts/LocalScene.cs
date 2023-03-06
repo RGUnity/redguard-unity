@@ -1,24 +1,24 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class SaveMenu : MonoBehaviour
+public class LocalScene : MonoBehaviour
 {
+    public EventSystem eventSystem;
+
+    public AudioListener audioListener;
+
+    public Light sun;
+    
     // Start is called before the first frame update
     void Start()
-    {
-        // Todo: use this to encode time into savefile
-        print(DateTime.Now.ToBinary());
-    }
-
-    // Update is called once per frame
-    void Update()
     {
         
     }
 
-    public void SaveGame()
+    // Update is called once per frame
+    void Update()
     {
         
     }
