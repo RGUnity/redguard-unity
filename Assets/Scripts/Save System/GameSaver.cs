@@ -9,44 +9,7 @@ public class GameSaver : MonoBehaviour
 {
     public void SaveGame()
     {
-        GetComponent<GameSaver>().UpdateSaveData();
-    }
-
-    public static void RememberObject(GameObject obj)
-    {
-        {
-            var sceneName = SceneManager.GetActiveScene().name;
-
-            
-            var objDataDict = Game.Data.Scene[sceneName].ObjectDataDict;
-
-            var itemComponent = obj.GetComponent<Item>();
-            var objData = new ObjectData
-            {
-                position = obj.transform.position,
-                rotation = obj.transform.rotation,
-                 
-                objectType = itemComponent.objectType,
-                isDeleted = itemComponent.isDeleted,
-                minAmount = itemComponent.minAmount,
-                maxAmount = itemComponent.maxAmount,
-                id = itemComponent.id
-            };
-            
-            // Add the objectData
-            
-            if (!objDataDict.TryAdd(objData.id, objData))
-            {
-                objDataDict.Remove(objData.id);
-                objDataDict.Add(objData.id, objData);
-            }
-            //print("Saved "+ objData.id + " with isDeleted = "+ objData.isDeleted);
-
-        }
-    }
-    private void UpdateSaveData()
-    {
-        string sceneName = SceneManager.GetActiveScene().name;
+                string sceneName = SceneManager.GetActiveScene().name;
 
         Game.Data.LastSceneName = sceneName;
         
@@ -58,12 +21,10 @@ public class GameSaver : MonoBehaviour
         // We subtract -1 on y to get a vector that matches the feet position 
         playerData.PlayerPosition = player.transform.position - new Vector3(0, 1, 0);;;
         playerData.PlayerRotation = player.transform.rotation;
-        //playerData.Inventory.activeObject = inventoryData.activeObject;
-        //playerData.InventoryObjects = inventoryData.objects;
 
-        
-        
-        
+
+
+
         // ----- Save NPCs -----
         
         // Create new NPCDataList
@@ -135,5 +96,37 @@ public class GameSaver : MonoBehaviour
         // Serialize Data
         DataSerializer.Save("SaveData", Game.Data);
     }
-    
+
+    public static void RememberObject(GameObject obj)
+    {
+        {
+            var sceneName = SceneManager.GetActiveScene().name;
+
+            
+            var objDataDict = Game.Data.Scene[sceneName].ObjectDataDict;
+
+            var itemComponent = obj.GetComponent<Item>();
+            var objData = new ObjectData
+            {
+                position = obj.transform.position,
+                rotation = obj.transform.rotation,
+                 
+                objectType = itemComponent.objectType,
+                isDeleted = itemComponent.isDeleted,
+                minAmount = itemComponent.minAmount,
+                maxAmount = itemComponent.maxAmount,
+                id = itemComponent.id
+            };
+            
+            // Add the objectData
+            
+            if (!objDataDict.TryAdd(objData.id, objData))
+            {
+                objDataDict.Remove(objData.id);
+                objDataDict.Add(objData.id, objData);
+            }
+            //print("Saved "+ objData.id + " with isDeleted = "+ objData.isDeleted);
+
+        }
+    }
 }
