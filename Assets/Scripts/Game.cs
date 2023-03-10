@@ -11,12 +11,14 @@ public class Game : MonoBehaviour
     public static bool isPaused;
     public static GameDataContainer Data = new();
     public static EnterSceneModeEnum EnterSceneMode;
+    public static Menu Menu = new();
     
     
     // Start is called before the first frame update
     void Awake()
     {
         isPaused = false;
+        Menu.isLoadedAdditively = false;
         
         // Look for scene data, create new if necessary
         var sceneName = SceneManager.GetActiveScene().name;

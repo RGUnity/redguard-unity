@@ -22,28 +22,6 @@ public class UIWindowManager : MonoBehaviour
             ToggleWindow(inventoryPanel);
             //hudPanel.GetComponent<ActiveObjectManager>().UpdateActiveObjectIndicator();
         }
-        
-        if (Input.GetButtonDown("Pause"))
-        {
-            // Todo: Game.Pause() or something
-            
-            print("Game.isPaused = " + Game.isPaused);
-            
-            // Check if main menu is already shown
-            if (Game.isPaused)
-            {
-                // Hide menu here
-                HideMainMenu();
-                Game.ContinueGame();
-
-            }
-            else
-            {
-                // Load menu scene here
-                ShowMainMenu();
-                Game.PauseGame();
-            }
-        }
     }
 
     void ToggleWindow(GameObject window)
@@ -62,25 +40,5 @@ public class UIWindowManager : MonoBehaviour
         {
             Game.PauseGame();
         }
-    }
-
-    void ShowMainMenu()
-    {
-        var localScene = FindObjectOfType<LocalScene>();
-        localScene.eventSystem.enabled = false;
-        localScene.audioListener.enabled = false;
-        localScene.sun.enabled = false;
-
-        SceneManager.LoadScene("Menu", LoadSceneMode.Additive);
-    }
-
-    void HideMainMenu()
-    {
-        SceneManager.UnloadSceneAsync("Menu");
-        
-        var localScene = FindObjectOfType<LocalScene>();
-        localScene.eventSystem.enabled = true;
-        localScene.audioListener.enabled = true;
-        localScene.sun.enabled = true;
     }
 }
