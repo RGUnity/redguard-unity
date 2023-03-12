@@ -142,8 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 405dd0d83cf232b4492609669eb3ab58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inventoryData: {fileID: 11400000, guid: 984de2abd6bee444297afe9be76de173, type: 2}
-  objectType: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
+  objectInfo: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
   minAmount: 3
   maxAmount: 15
   isDeleted: 0

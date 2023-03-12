@@ -8,6 +8,7 @@ public class ActiveObjectManager : MonoBehaviour
 {
     [SerializeField] private InventoryData _inventoryData;
     [SerializeField] private InventoryUIObject _activeObjectIndicator;
+    [SerializeField] private InventoryObjectRegister objectRegister;
 
     private void Start()
     {
@@ -18,7 +19,7 @@ public class ActiveObjectManager : MonoBehaviour
     private void OnEnable()
     {
         // Not recommended, because GameData is loaded on Awake, and Defaults are restored at Start
-        if (Game.Data.Player.Inventory.activeObject.type != null)
+        if (Game.Data.Player.Inventory.activeObject != null)
         {
             UpdateActiveObjectIndicator();
         }
@@ -43,31 +44,38 @@ public class ActiveObjectManager : MonoBehaviour
         }
         
         // If the active objects is not part of the inventory, select [0] and continue
-        if (!inventoryObjects.ContainsKey(activeObject.type.displayName) && inventoryObjects.Any())
+        if (!inventoryObjects.ContainsKey(activeObject) && inventoryObjects.Any())
         {
-            Game.Data.Player.Inventory.activeObject = inventoryObjects.First().Value;
+            Game.Data.Player.Inventory.activeObject = inventoryObjects.First().Key;
             print("activeObject is no longer in Inventory. New activeObject: " + inventoryObjects.First().Value);
         }
         
         // If the active objects is null, select [0] and continue
         if (activeObject == null && inventoryObjects.Any())
         {
-            Game.Data.Player.Inventory.activeObject = inventoryObjects.First().Value;
+            Game.Data.Player.Inventory.activeObject = inventoryObjects.First().Key;
             print("activeObject was NULL. New activeObject: " + activeObject);
         }
         
         
         //Set Type
-        _activeObjectIndicator.inventoryObject = activeObject;
+        _activeObjectIndicator.id = activeObject;
         
         // Set Text and sprite
-        _activeObjectIndicator.labelComponent.text = activeObject.type.displayName;
-        _activeObjectIndicator.imageComponent.sprite = activeObject.type.icon;
+        _activeObjectIndicator.labelComponent.text = activeObject;
+        foreach (var objInfo in objectRegister.objects)
+        {
+            if (objInfo.id == activeObject)
+            {
+                _activeObjectIndicator.imageComponent.sprite = objInfo.icon;
+            }
+        }
+        
 
         // The amount indicator can be hidden if it is zero, so just input an empty string.
-        if (activeObject.amount > 1)
+        if (Game.Data.Player.Inventory.objects[activeObject] > 1)
         {
-            _activeObjectIndicator.amountComponent.text = activeObject.amount.ToString();
+            _activeObjectIndicator.amountComponent.text = activeObject;
         }
         else
         {

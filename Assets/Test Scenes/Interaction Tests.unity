@@ -319,6 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultInventory: {fileID: 11400000, guid: 68fb7e1dc9bc5c444ba028e2f324b6bf, type: 2}
+  objectRegister: {fileID: 11400000, guid: 783a532a1f7a6364281f1fa010294074, type: 2}
 --- !u!1 &136356061
 GameObject:
   m_ObjectHideFlags: 0
@@ -2366,6 +2367,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7309b8caa52645545b43274c204b8c3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectRegister: {fileID: 11400000, guid: 783a532a1f7a6364281f1fa010294074, type: 2}
   gridLayout: {fileID: 5684453355958207900}
   UIObjectPrefab: {fileID: 7157202442524780377, guid: 088c09b8d87a163458e6d7a19a9c81b7, type: 3}
 --- !u!1 &985310487
@@ -2597,7 +2599,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 405dd0d83cf232b4492609669eb3ab58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectType: {fileID: 11400000, guid: 035ad5014001d8e429706d2bdc797f85, type: 2}
+  objectInfo: {fileID: 11400000, guid: 035ad5014001d8e429706d2bdc797f85, type: 2}
   minAmount: 1
   maxAmount: 1
   isDeleted: 0
@@ -3504,6 +3506,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88cfd48821b03194686c2c71b4b19716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 
   labelComponent: {fileID: 1240822031}
   amountComponent: {fileID: 150863387}
   imageComponent: {fileID: 651844100}
@@ -3766,6 +3769,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _activeObjectIndicator: {fileID: 1272194689}
+  objectRegister: {fileID: 11400000, guid: 783a532a1f7a6364281f1fa010294074, type: 2}
 --- !u!1 &1430973746
 GameObject:
   m_ObjectHideFlags: 0

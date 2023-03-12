@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17eb00c3bfd63284590ca05c827dc5d0, type: 3}
   m_Name: Health Potion
   m_EditorClassIdentifier: 
-  inventoryObjectType: {fileID: 11400000, guid: 0999072b4a4fb9e40b5f83f7aabef080, type: 2}
+  objectInfo: {fileID: 11400000, guid: 0999072b4a4fb9e40b5f83f7aabef080, type: 2}
   displayName: Health Potion
   amount: 1

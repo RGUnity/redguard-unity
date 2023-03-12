@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17eb00c3bfd63284590ca05c827dc5d0, type: 3}
   m_Name: Strength Potion
   m_EditorClassIdentifier: 
-  inventoryObjectType: {fileID: 11400000, guid: 035ad5014001d8e429706d2bdc797f85, type: 2}
+  objectInfo: {fileID: 11400000, guid: 035ad5014001d8e429706d2bdc797f85, type: 2}
   displayName: Strength Potion
   amount: 1

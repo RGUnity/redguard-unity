@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using ToolBox.Serialization.OdinSerializer.Utilities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,7 +15,7 @@ public class Door : Interactable
     {
         if (playerCanEnter)
         {
-            if (targetSceneName.IsNullOrWhitespace())
+            if (string.IsNullOrEmpty(targetSceneName))
             {
                 Debug.LogWarning("string: [targetSceneName] is null. Please enter a valid scene name");
             }
@@ -25,7 +24,7 @@ public class Door : Interactable
             {
                 Debug.LogWarning("PlayerSpawnPoint: [targetSpawnPointAsset] is null. Please link a valid asset");
             }
-            if (!targetSceneName.IsNullOrWhitespace() && targetSpawnPointAsset != null)
+            if (!string.IsNullOrEmpty(targetSceneName) && targetSpawnPointAsset != null)
             {
                 
                 // To tell the next scene that we entered it through a door

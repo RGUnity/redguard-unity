@@ -49,7 +49,7 @@ public class PauseMenuLoader : MonoBehaviour
         SceneManager.LoadScene("Menu", LoadSceneMode.Additive);
     }
 
-    void HideMainMenu()
+    public void HideMainMenu()
     {
         SceneManager.UnloadSceneAsync("Menu");
         

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1faf7fcf3c560954eb72185264d77f74, type: 3}
   m_Name: Cyrus Sabre
   m_EditorClassIdentifier: 
-  displayName: Sabre
-  startAmount: 1
+  id: Sabre
+  worldObject: {fileID: 0}
   icon: {fileID: 21300000, guid: e6e42dc23f96a844e9160346eeff490b, type: 3}
-  amount: 1
+  startAmount: 1

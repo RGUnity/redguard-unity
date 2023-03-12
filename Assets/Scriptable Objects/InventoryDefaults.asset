@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a04f4f26f804e34eb91db3325c2b2eb, type: 3}
   m_Name: InventoryDefaults
   m_EditorClassIdentifier: 
-  objectTypes:
-  - {fileID: 11400000, guid: 6d343dec7ed20d243af41b59ad1edb1b, type: 2}
-  - {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
-  - {fileID: 11400000, guid: 0999072b4a4fb9e40b5f83f7aabef080, type: 2}
-  objectAmounts: 010000001100000003000000
+  objects:
+    list:
+    - Key: {fileID: 11400000, guid: 6d343dec7ed20d243af41b59ad1edb1b, type: 2}
+      Value: 1
+    - Key: {fileID: 11400000, guid: c836f726b4f1d5341a59fd9b8e80082c, type: 2}
+      Value: 17
+    - Key: {fileID: 11400000, guid: 0999072b4a4fb9e40b5f83f7aabef080, type: 2}
+      Value: 3
+    keyCollision: 0

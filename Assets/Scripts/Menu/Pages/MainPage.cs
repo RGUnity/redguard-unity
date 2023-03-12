@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using BayatGames.SaveGameFree;
 
 public class MainPage : MonoBehaviour
 {
@@ -35,15 +36,41 @@ public class MainPage : MonoBehaviour
 
     public void ContinueGame()
     {
-        // Get Cached Scene, reload it
-        for (int i = 0; i < 19; i++)
+        if (Game.Menu.isLoadedAdditively)
         {
-            var filePath = Application.persistentDataPath + "/Save_" + i + ".data";
+            // This means a level is our active scene and the game is already running
+            print(Game.Menu.isLoadedAdditively);
+            
+            FindObjectOfType<PauseMenuLoader>().HideMainMenu();
+            Game.Menu.isLoadedAdditively = false;
+            Game.PauseGame();
+            
+            // PauseMenuLoader handles this control when using the pause button
 
-            if (File.Exists(filePath))
+        }
+        else
+        {
+            // This means the Menu scene is our active scene and no game has loaded yet
+            // for (int i = 0; i < 19; i++)
+            // {
+            //     var filePath = Application.persistentDataPath + "/Save_" + i + ".data";
+            //
+            //     if (File.Exists(filePath))
+            //     {
+            //         print("found file Save_" + i);
+            //     }
+            // }
+
+            var foundFiles = BayatGames.SaveGameFree.SaveGame.GetFiles();
+            //print(foundFiles[0].LastWriteTime);
+
+            foreach (var file in foundFiles)
             {
-                print("found file Save_" + i);
+                print(file.Name);
             }
+            
+            
+            
         }
         
         // if (SceneManager.GetActiveScene == "Menu")

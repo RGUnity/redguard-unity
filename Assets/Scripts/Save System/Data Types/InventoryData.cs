@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class InventoryData
 {
-    public InventoryObject activeObject = new();
-    public Dictionary<string, InventoryObject> objects = new();
+    //public InventoryObject activeObject = new();
+    //public Dictionary<string, InventoryObject> objects = new();
+
+    // Or just a direct dictionary?
+    public string activeObject;
+    public Dictionary<string, int> objects = new();
 }

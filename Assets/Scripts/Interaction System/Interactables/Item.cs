@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ToolBox.Serialization.OdinSerializer.Utilities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -10,7 +9,7 @@ public class Item : Interactable
 {
     // Need to link these scriptable objects
     [SerializeField] InventoryData _inventoryData;
-    public InventoryObjectType objectType;
+    public InventoryObjectInfo objectInfo;
 
     // The ranges for the randomized amounts that this item can be dropped in
     public int minAmount = 3;
@@ -27,7 +26,7 @@ public class Item : Interactable
         int amount = Random.Range(minAmount, maxAmount);
 
         // Add the object with the amount
-        InventoryManager.AddItems(objectType, amount);
+        InventoryManager.AddItems(objectInfo.id, amount);
         
         // Mark this object as deleted
         isDeleted = true;
@@ -43,7 +42,7 @@ public class Item : Interactable
     {
         // This is primarily for objects that get spawned after the scene was loaded
         // We could probably also call this manually when objects are spawned
-        if (!id.IsNullOrWhitespace())
+        if (!string.IsNullOrEmpty(id))
         {
             GameSaver.RememberObject(gameObject);
         }

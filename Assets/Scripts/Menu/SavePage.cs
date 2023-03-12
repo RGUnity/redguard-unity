@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ToolBox.Serialization;
 using UnityEngine;
 
 public class SavePage : MonoBehaviour
@@ -10,7 +9,7 @@ public class SavePage : MonoBehaviour
     void Start()
     {
         // Todo: use this to encode time into savefile
-        // print(DateTime.Now.ToBinary());
+        //print(DateTime.Now.ToBinary().GetType());
     }
 
     public void SaveGame()
@@ -21,20 +20,17 @@ public class SavePage : MonoBehaviour
 
     public void SaveSlot1()
     {
-        DataSerializer.ChangeProfile(1);
         var gameSaver = FindObjectOfType<GameSaver>();
-        gameSaver.SaveGame();
+        gameSaver.SaveGame(1);
     }
     public void SaveSlot2()
     {
-        DataSerializer.ChangeProfile(2);
         var gameSaver = FindObjectOfType<GameSaver>();
-        gameSaver.SaveGame();
+        gameSaver.SaveGame(2);
     }
     public void SaveSlot3()
     {
-        DataSerializer.ChangeProfile(3);
         var gameSaver = FindObjectOfType<GameSaver>();
-        gameSaver.SaveGame();
+        gameSaver.SaveGame(3);
     }
 }

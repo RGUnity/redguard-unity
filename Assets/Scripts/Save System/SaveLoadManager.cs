@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ToolBox.Serialization;
+using System.Configuration;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,7 +13,7 @@ public class SaveLoadManager : MonoBehaviour
     [SerializeField] private InventoryManager inventoryManager;
     
     // Right now this happens on Start, because we initialize the data types on Awake
-    private void Start()
+    private void Awake()
     {
         switch (Game.EnterSceneMode)
         {
@@ -45,17 +45,17 @@ public class SaveLoadManager : MonoBehaviour
     {
         if (Input.GetButtonDown("Quicksave"))
         {
-            GetComponent<GameSaver>().SaveGame();
+            //GetComponent<GameSaver>().SaveGame();
         }
         
         if (Input.GetButtonDown("Quickload"))
         {
-            GetComponent<GameLoader>().LoadGame();
+            //GameLoader.LoadGame();
         }
     }
     
     public void DeleteAllSavefileData()
     {
-        DataSerializer.DeleteAll();
+
     }
 }

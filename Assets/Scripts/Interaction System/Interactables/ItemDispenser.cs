@@ -22,8 +22,8 @@ public class ItemDispenser : MonoBehaviour
             // Pick a random LootObject
             LootObject randomObject = RandomLootObject();
             
-            InventoryManager.AddItems(randomObject.inventoryObjectType, randomObject.amount);
-            
+            InventoryManager.AddItems(randomObject.objectInfo.id, randomObject.amount);
+
             // Mark the Dispenser as empty so that the player can no longer interact with it
             isEmpty = true;
         }

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1faf7fcf3c560954eb72185264d77f74, type: 3}
-  m_Name: Potion of Health
+  m_Name: Potion of Strength
   m_EditorClassIdentifier: 
-  displayName: Health Potion
-  startAmount: 3
-  icon: {fileID: 21300000, guid: e5c01eb38c1818c45a455604e4676a0f, type: 3}
-  amount: 3
+  id: Ironskin Potion
+  worldObject: {fileID: 0}
+  icon: {fileID: 21300000, guid: d8c0f5c11fff6994bb290d0c77ef5aef, type: 3}
+  startAmount: 0

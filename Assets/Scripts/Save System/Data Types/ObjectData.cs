@@ -5,7 +5,7 @@ using UnityEngine;
 public class ObjectData
 {
     public bool isDeleted;
-    public InventoryObjectType objectType;
+    public InventoryObjectInfo objectType;
     public Vector3 position;
     public Quaternion rotation;
     public int minAmount;

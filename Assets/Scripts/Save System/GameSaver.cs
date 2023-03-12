@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ToolBox.Serialization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using BayatGames.SaveGameFree;
 
 public class GameSaver : MonoBehaviour
 {
-    public void SaveGame()
+    public void SaveGame(int slot)
     {
                 string sceneName = SceneManager.GetActiveScene().name;
 
@@ -73,7 +73,6 @@ public class GameSaver : MonoBehaviour
                 
                 position = itemComponent.transform.position,
                 rotation = itemComponent.transform.rotation,
-                objectType = itemComponent.objectType,
                 isDeleted = itemComponent.isDeleted,
                 minAmount = itemComponent.minAmount,
                 maxAmount = itemComponent.maxAmount,
@@ -92,9 +91,17 @@ public class GameSaver : MonoBehaviour
             print("Saved " + objData.id + " with isDeleted = " + objData.isDeleted);
 
         }
-        
+
+        Game.Data.Timestamp = DateTime.Now;
         // Serialize Data
-        DataSerializer.Save("SaveData", Game.Data);
+        //DataSerializer.Save("SaveData", Game.Data);
+        
+
+        string slotWithPadding = slot.ToString().PadLeft(3, '0');
+
+        string filename = "Save/RGUnity_Save_" + slotWithPadding + ".json";
+        
+        BayatGames.SaveGameFree.SaveGame.Save(filename, Game.Data);
     }
 
     public static void RememberObject(GameObject obj)
@@ -110,8 +117,7 @@ public class GameSaver : MonoBehaviour
             {
                 position = obj.transform.position,
                 rotation = obj.transform.rotation,
-                 
-                objectType = itemComponent.objectType,
+                
                 isDeleted = itemComponent.isDeleted,
                 minAmount = itemComponent.minAmount,
                 maxAmount = itemComponent.maxAmount,

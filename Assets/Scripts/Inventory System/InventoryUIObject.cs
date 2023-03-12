@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class InventoryUIObject : MonoBehaviour
 {
-    public InventoryObject inventoryObject;
+    public string id;
     public TMP_Text labelComponent;
     public TMP_Text amountComponent;
     public Image imageComponent;

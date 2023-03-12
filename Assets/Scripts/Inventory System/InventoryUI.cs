@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class InventoryUI : MonoBehaviour
 {
-    [SerializeField] private InventoryData _inventoryData;
+    [SerializeField] private InventoryObjectRegister objectRegister;
     [SerializeField] private GameObject gridLayout;
     [SerializeField] private GameObject UIObjectPrefab;
 
@@ -29,7 +29,8 @@ public class InventoryUI : MonoBehaviour
             }
 
             // Update the ScriptableObject with the latest _selectedButton information
-            Game.Data.Player.Inventory.activeObject = _selectedButton.GetComponent<InventoryUIObject>().inventoryObject;
+            
+            Game.Data.Player.Inventory.activeObject = _selectedButton.GetComponent<InventoryUIObject>().id;
         }
         
 
@@ -37,7 +38,7 @@ public class InventoryUI : MonoBehaviour
 
     private void Start()
     {
-        UpdateInventoryUIObjects();
+        //UpdateInventoryUIObjects();
     }
 
     private void OnEnable()
@@ -61,26 +62,35 @@ public class InventoryUI : MonoBehaviour
 
         foreach (var entry in Game.Data.Player.Inventory.objects)
         {
-            string displayName = entry.Key;
-            InventoryObject obj = entry.Value;
+            string id = entry.Key;
+            int amount = entry.Value;
             
             
             // Instantiate a Grid element from the prefab
             GameObject newUIObject = GameObject.Instantiate(UIObjectPrefab, gridLayout.transform);
             // And rename it just because it looks nicer
-            newUIObject.name = obj.type.displayName;
+            newUIObject.name = id;
             
             // Get the component which has links to the text and image components
             InventoryUIObject invObj = newUIObject.GetComponent<InventoryUIObject>();
             
             // Match the Grid element's displaying properties to the Scriptable Object
-            invObj.inventoryObject = obj;
-            invObj.labelComponent.text = obj.type.displayName;
-            invObj.amountComponent.text = obj.amount.ToString();
-            invObj.imageComponent.sprite = obj.type.icon;
+            invObj.labelComponent.text = id;
+            invObj.amountComponent.text = amount.ToString();
+
+ 
+            
+            foreach (var objInfo in objectRegister.objects)
+            {
+                if (objInfo.id == id)
+                {
+                    invObj.imageComponent.sprite = objInfo.icon;
+                }
+            }
+            
 
             // If we are dealing with the activeObject, mark it as selected
-            if (obj == Game.Data.Player.Inventory.activeObject)
+            if (id == Game.Data.Player.Inventory.activeObject)
             {
                 _selectedButton = newUIObject;
             }

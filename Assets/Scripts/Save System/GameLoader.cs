@@ -1,23 +1,33 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ToolBox.Serialization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameLoader : MonoBehaviour
 {
-    public void LoadGame()
+    // Made this static so that we can call it from the menu scene
+    public static void LoadGame(int slot)
     {
-        if (DataSerializer.TryLoad("SaveData", out GameDataContainer loadedSaveData))
+        string slotWithPadding = slot.ToString().PadLeft(3, '0');
+
+        string filename = "Save/RGUnity_Save_" + slotWithPadding + ".json";
+
+        if (BayatGames.SaveGameFree.SaveGame.Exists(filename))
         {
-            Game.Data = loadedSaveData;
+            Game.Data = BayatGames.SaveGameFree.SaveGame.Load<GameDataContainer>(filename);
             Game.EnterSceneMode = EnterSceneModeEnum.Load;
-            
-            print("Loaded GameData with " + Game.Data.Player.Inventory.activeObject.type);
-            
+
+            print("Loaded " + filename + " with Timestamp: " + Game.Data.Timestamp);
+
             SceneManager.LoadScene(Game.Data.LastSceneName);
         }
+        else
+        {
+            print("Failed to load savefile with name " + filename );
+        }
+
+        
     }
 
     public void ApplyData()
@@ -43,6 +53,7 @@ public class GameLoader : MonoBehaviour
         
         foreach (var entry in loadedObjDict)
         {
+
             var loadedObj = entry.Value;
             //print("loadedObjDict contains " + loadedObj.id + "with isDeleted = " + loadedObj.isDeleted);
             

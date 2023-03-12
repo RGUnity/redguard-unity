@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using ToolBox.Serialization;
 using UnityEngine;
 
 public class SavedInventoryLoader : MonoBehaviour

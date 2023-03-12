@@ -6,51 +6,42 @@ using UnityEngine;
 public class InventoryManager : MonoBehaviour
 {
     [SerializeField] private InventoryDefaults defaultInventory;
+    [SerializeField] private InventoryObjectRegister objectRegister;
 
     public void LoadDefaultInventory()
     {
         Game.Data.Player.Inventory.objects.Clear();
-        
-        // Loop through the list of default objectTypes, and create new Objects for all
-        int index = 0;
-        foreach (var type in defaultInventory.objectTypes)
+
+        // Loop through the list of all objects and create new Objects for all
+
+        foreach (var objInfo in defaultInventory.objects)
         {
             var newObject = new InventoryObject
             {
-                type = defaultInventory.objectTypes[index],
-                amount = defaultInventory.objectAmounts[index]
+                id = objInfo.Key.id,
+                amount = objInfo.Value
                     
             };
-            // Add it to the list
-            Game.Data.Player.Inventory.objects.Add(type.displayName, newObject);
-            index++;
+            Game.Data.Player.Inventory.objects.Add(objInfo.Key.id, objInfo.Value);
         }
-        // use the first object as the activeObjecte
-        Game.Data.Player.Inventory.activeObject = Game.Data.Player.Inventory.objects.First().Value;
         
+        Game.Data.Player.Inventory.activeObject = Game.Data.Player.Inventory.objects.First().Key;
         print("Loaded default inventory");
     }
 
-    public static void AddItems(InventoryObjectType type, int amount)
+    public static void AddItems(string id, int amount)
     {
-        if (Game.Data.Player.Inventory.objects.ContainsKey(type.displayName))
+        if (Game.Data.Player.Inventory.objects.ContainsKey(id))
         {
             // increase object amount
-            Game.Data.Player.Inventory.objects[type.displayName].amount += amount;
+            Game.Data.Player.Inventory.objects[id] += amount;
         }
 
         else
         {
             // Create new InventoryObject
-            var newObject = new InventoryObject
-            {
-                type = type,
-                amount = amount
-                    
-            };
-            
-            Game.Data.Player.Inventory.objects.Add(type.displayName, newObject);
+            Game.Data.Player.Inventory.objects.Add(id, amount);
         }
-        print("Added " + amount + " " + type.displayName + " to Player Inventory" );
+        print("Added " + amount + " " + id + " to Player Inventory" );
     }
 }
