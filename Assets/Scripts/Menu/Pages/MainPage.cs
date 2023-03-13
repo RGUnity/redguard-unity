@@ -15,8 +15,6 @@ public class MainPage : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-
         if (FindObjectOfType<Game>() == null)
         {
             // This means we started from the menu scene
@@ -28,7 +26,12 @@ public class MainPage : MonoBehaviour
         {
             // this means we loaded the Menu from a running game
         }
-        
+
+        // Sometimes in the editor isLoadedAdditively can remain true if we exit playmode in a level scene
+        if (SceneManager.GetActiveScene().name == "Menu")
+        {
+            Game.Menu.isLoadedAdditively = false;
+        }
 
         
     }
@@ -38,6 +41,7 @@ public class MainPage : MonoBehaviour
     {
         if (Game.Menu.isLoadedAdditively)
         {
+            print("Menu Scene is loaded Additively");
             // This means a level is our active scene and the game is already running
             print(Game.Menu.isLoadedAdditively);
             
@@ -50,25 +54,60 @@ public class MainPage : MonoBehaviour
         }
         else
         {
-            // This means the Menu scene is our active scene and no game has loaded yet
-            // for (int i = 0; i < 19; i++)
-            // {
-            //     var filePath = Application.persistentDataPath + "/Save_" + i + ".data";
-            //
-            //     if (File.Exists(filePath))
-            //     {
-            //         print("found file Save_" + i);
-            //     }
-            // }
+            var foundFiles = SaveGame.GetFiles("Save");
 
-            var foundFiles = BayatGames.SaveGameFree.SaveGame.GetFiles();
-            //print(foundFiles[0].LastWriteTime);
-
+            string newestFile = null;
+            
             foreach (var file in foundFiles)
             {
-                print(file.Name);
+
+                string filepath = "Save/" + file.Name;
+
+                
+                var gameData = SaveGame.Load<GameDataContainer>(filepath);
+                if (gameData != null)
+                {
+                    print(file.Name + " has timestamp " + gameData.Timestamp);
+
+                    if (newestFile == null)
+                    {
+                        //print("newestFile is null");
+                        newestFile = filepath;
+                    }
+                    else
+                    {
+                        //print("newestFile is not null");
+                        DateTime currentTimestamp = SaveGame.Load<GameDataContainer>(filepath).Timestamp;
+                        DateTime prevTimestamp = SaveGame.Load<GameDataContainer>(newestFile).Timestamp;
+                        
+                        int result = currentTimestamp.CompareTo(prevTimestamp);
+        
+                        if (result < 0)
+                        {
+                            //print("prevTimestamp is newer than currentTimestamp");
+                        }
+                        else if (result > 0)
+                        {
+                            //print("currentTimestamp is newer than prevTimestamp");
+                            newestFile = filepath;
+                        }
+                        else
+                        {
+                            //print("currentTimestamp and prevTimestamp are equal");
+                        }
+                    }
+                }
+                
             }
-            
+
+            var newestGameData = SaveGame.Load<GameDataContainer>(newestFile);
+            if (newestGameData != null)
+            {
+                print("newestFile is " + newestFile);
+                Game.Data = newestGameData;
+                Game.EnterSceneMode = EnterSceneModeEnum.Load;
+                SceneManager.LoadScene(Game.Data.LastSceneName);
+            }
             
             
         }

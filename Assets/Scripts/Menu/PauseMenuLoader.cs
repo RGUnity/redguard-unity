@@ -22,20 +22,20 @@ public class PauseMenuLoader : MonoBehaviour
             // If the Menu Scene is already loaded, hide it
             if (Game.Menu.isLoadedAdditively)
             {
-                print("isLoadedAdditively = " + Game.Menu.isLoadedAdditively);
+                //print("isLoadedAdditively = " + Game.Menu.isLoadedAdditively);
                 HideMainMenu();
                 Game.Menu.isLoadedAdditively = false;
                 Game.ContinueGame();
-                print("isLoadedAdditively was set to false, is now = " + Game.Menu.isLoadedAdditively);
+                //print("isLoadedAdditively was set to false, is now = " + Game.Menu.isLoadedAdditively);
             }
             // If not, show it
             else
             {
-                print("isLoadedAdditively = " + Game.Menu.isLoadedAdditively);
+                //print("isLoadedAdditively = " + Game.Menu.isLoadedAdditively);
                 ShowMainMenu();
                 Game.Menu.isLoadedAdditively = true;
                 Game.PauseGame();
-                print("isLoadedAdditively was set to true, is now = " + Game.Menu.isLoadedAdditively);
+                //print("isLoadedAdditively was set to true, is now = " + Game.Menu.isLoadedAdditively);
             }
         }
     }
