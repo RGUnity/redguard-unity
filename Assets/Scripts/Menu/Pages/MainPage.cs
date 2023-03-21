@@ -103,7 +103,7 @@ public class MainPage : MonoBehaviour
             var newestGameData = SaveGame.Load<GameDataContainer>(newestFile);
             if (newestGameData != null)
             {
-                print("newestFile is " + newestFile);
+                print("Newest file is " + newestFile + ". Using that for Continue.");
                 Game.Data = newestGameData;
                 Game.EnterSceneMode = EnterSceneModeEnum.Load;
                 SceneManager.LoadScene(Game.Data.LastSceneName);

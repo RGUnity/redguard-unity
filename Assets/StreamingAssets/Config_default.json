@@ -1,0 +1,16 @@
+{
+    "iniversion": 1,
+    "redguardPath": "C:/GOG Games/Redguard/Redguard",
+    "windowMode": 0,
+    "vsync": true,
+    "limitFPS": false,
+    "maxFPS": 60,
+    "antiAliasing": false,
+    "shadows": false,
+    "music": 1,
+    "effects": 1,
+    "voices": 1,
+    "subtitles": true,
+    "autoDefend": true,
+    "newControls": false
+  }
