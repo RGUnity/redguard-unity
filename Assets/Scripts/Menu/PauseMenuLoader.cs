@@ -43,9 +43,13 @@ public class PauseMenuLoader : MonoBehaviour
         localScene.eventSystem.enabled = false;
         localScene.audioListener.enabled = false;
         localScene.sun.enabled = false;
+        
+        // Hide the Gameplay GUI
+        FindObjectOfType<UIWindowManager>().HideGameplayGUI();
 
         SceneManager.LoadScene("Menu", LoadSceneMode.Additive);
         
+        Game.Menu.isLoadedAdditively = true;
         Game.PauseGame();
     }
 
@@ -58,6 +62,10 @@ public class PauseMenuLoader : MonoBehaviour
         localScene.audioListener.enabled = true;
         localScene.sun.enabled = true;
         
+        // Show Gameplay GUI
+        FindObjectOfType<UIWindowManager>().ShowGameplayGUI();
+        
+        Game.Menu.isLoadedAdditively = false;
         Game.ContinueGame();
     }
 }

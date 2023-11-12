@@ -33,7 +33,6 @@ public class Game : MonoBehaviour
     public static void PauseGame()
     {
         isPaused = true;
-        Game.Menu.isLoadedAdditively = true;
         print("Game Paused.");
         
         // Attention: Player char controller checks for "if (!Game.isPaused)"
@@ -42,7 +41,6 @@ public class Game : MonoBehaviour
     public static void ContinueGame()
     {
         isPaused = false;
-        Game.Menu.isLoadedAdditively = false;
         print("Game Continues.");
     }
 }

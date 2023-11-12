@@ -41,4 +41,15 @@ public class UIWindowManager : MonoBehaviour
             Game.PauseGame();
         }
     }
+
+    public void HideGameplayGUI()
+    {
+        inventoryPanel.SetActive(false);
+        hudPanel.SetActive(false);
+    }
+    
+    public void ShowGameplayGUI()
+    {
+        hudPanel.SetActive(true);
+    }
 }
