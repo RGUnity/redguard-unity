@@ -35,6 +35,8 @@ public class Game : MonoBehaviour
         isPaused = true;
         Game.Menu.isLoadedAdditively = true;
         print("Game Paused.");
+        
+        // Attention: Player char controller checks for "if (!Game.isPaused)"
     }
     
     public static void ContinueGame()
