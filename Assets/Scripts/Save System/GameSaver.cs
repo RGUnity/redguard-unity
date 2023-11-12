@@ -7,7 +7,7 @@ using BayatGames.SaveGameFree;
 
 public class GameSaver : MonoBehaviour
 {
-    public void SaveGame(int slot)
+    public static void SaveGame(int slot)
     {
                 string sceneName = SceneManager.GetActiveScene().name;
 
@@ -104,6 +104,11 @@ public class GameSaver : MonoBehaviour
         BayatGames.SaveGameFree.SaveGame.Save(filename, Game.Data);
     }
 
+    public static void QuickSave()
+    {
+        SaveGame(0);
+    }
+    
     public static void RememberObject(GameObject obj)
     {
         {

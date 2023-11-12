@@ -20,17 +20,14 @@ public class SavePage : MonoBehaviour
 
     public void SaveSlot1()
     {
-        var gameSaver = FindObjectOfType<GameSaver>();
-        gameSaver.SaveGame(1);
+        GameSaver.SaveGame(1);
     }
     public void SaveSlot2()
     {
-        var gameSaver = FindObjectOfType<GameSaver>();
-        gameSaver.SaveGame(2);
+        GameSaver.SaveGame(2);
     }
     public void SaveSlot3()
     {
-        var gameSaver = FindObjectOfType<GameSaver>();
-        gameSaver.SaveGame(3);
+        GameSaver.SaveGame(3);
     }
 }

@@ -34,24 +34,8 @@ public class SaveLoadManager : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException();
         }
-
-        
         // Reset EnterSceneMode
         Game.EnterSceneMode = EnterSceneModeEnum.None;
-
-    }
-
-    void Update()
-    {
-        if (Input.GetButtonDown("Quicksave"))
-        {
-            //GetComponent<GameSaver>().SaveGame();
-        }
-        
-        if (Input.GetButtonDown("Quickload"))
-        {
-            //GameLoader.LoadGame();
-        }
     }
     
     public void DeleteAllSavefileData()

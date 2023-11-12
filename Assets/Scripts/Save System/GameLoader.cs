@@ -26,10 +26,70 @@ public class GameLoader : MonoBehaviour
         {
             print("Failed to load savefile with name " + filename );
         }
-
-        
     }
 
+    
+    public static void LoadLatestGame()
+    {
+        var foundFiles = BayatGames.SaveGameFree.SaveGame.GetFiles("Save");
+
+        string newestFile = null;
+            
+        foreach (var file in foundFiles)
+        {
+
+            string filepath = "Save/" + file.Name;
+
+                
+            var gameData = BayatGames.SaveGameFree.SaveGame.Load<GameDataContainer>(filepath);
+            if (gameData != null)
+            {
+                print(file.Name + " has timestamp " + gameData.Timestamp);
+
+                if (newestFile == null)
+                {
+                    //print("newestFile is null");
+                    newestFile = filepath;
+                }
+                else
+                {
+                    //print("newestFile is not null");
+                    DateTime currentTimestamp = BayatGames.SaveGameFree.SaveGame.Load<GameDataContainer>(filepath).Timestamp;
+                    DateTime prevTimestamp = BayatGames.SaveGameFree.SaveGame.Load<GameDataContainer>(newestFile).Timestamp;
+                        
+                    int result = currentTimestamp.CompareTo(prevTimestamp);
+        
+                    if (result < 0)
+                    {
+                        //print("prevTimestamp is newer than currentTimestamp");
+                    }
+                    else if (result > 0)
+                    {
+                        //print("currentTimestamp is newer than prevTimestamp");
+                        newestFile = filepath;
+                    }
+                    else
+                    {
+                        //print("currentTimestamp and prevTimestamp are equal");
+                    }
+                }
+            }
+        }
+        var newestGameData = BayatGames.SaveGameFree.SaveGame.Load<GameDataContainer>(newestFile);
+        if (newestGameData != null)
+        {
+            print("Newest file is " + newestFile + ". Using that for Continue.");
+            Game.Data = newestGameData;
+            Game.EnterSceneMode = EnterSceneModeEnum.Load;
+            SceneManager.LoadScene(Game.Data.LastSceneName);
+        }
+    }
+
+    public static void QuickLoad()
+    {
+        LoadLatestGame();
+    }
+    
     public void ApplyData()
     {
         SetPlayer();
