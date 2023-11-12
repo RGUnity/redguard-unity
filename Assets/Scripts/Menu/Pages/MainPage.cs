@@ -46,8 +46,6 @@ public class MainPage : MonoBehaviour
             print(Game.Menu.isLoadedAdditively);
             
             FindObjectOfType<PauseMenuLoader>().HideMainMenu();
-            Game.Menu.isLoadedAdditively = false;
-            Game.PauseGame();
             
             // PauseMenuLoader handles this control when using the pause button
 

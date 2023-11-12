@@ -46,12 +46,12 @@ public class PageManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Pause") & Game.Menu.State != MenuStateEnum.MainPage)
-        {
-            print("Trying to switch page");
-            SwitchToPage(mainPage);
-            Game.Menu.State = MenuStateEnum.MainPage;
-        }
+        // if (Input.GetButtonDown("Pause") & Game.Menu.State != MenuStateEnum.MainPage)
+        // {
+        //     print("Trying to switch page");
+        //     SwitchToPage(mainPage);
+        //     Game.Menu.State = MenuStateEnum.MainPage;
+        // }
     }
     
     public void SwitchToPage(GameObject targetPage)

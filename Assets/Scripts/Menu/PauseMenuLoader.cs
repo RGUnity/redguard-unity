@@ -24,8 +24,7 @@ public class PauseMenuLoader : MonoBehaviour
             {
                 //print("isLoadedAdditively = " + Game.Menu.isLoadedAdditively);
                 HideMainMenu();
-                Game.Menu.isLoadedAdditively = false;
-                Game.ContinueGame();
+
                 //print("isLoadedAdditively was set to false, is now = " + Game.Menu.isLoadedAdditively);
             }
             // If not, show it
@@ -33,8 +32,7 @@ public class PauseMenuLoader : MonoBehaviour
             {
                 //print("isLoadedAdditively = " + Game.Menu.isLoadedAdditively);
                 ShowMainMenu();
-                Game.Menu.isLoadedAdditively = true;
-                Game.PauseGame();
+                
                 //print("isLoadedAdditively was set to true, is now = " + Game.Menu.isLoadedAdditively);
             }
         }
@@ -47,6 +45,8 @@ public class PauseMenuLoader : MonoBehaviour
         localScene.sun.enabled = false;
 
         SceneManager.LoadScene("Menu", LoadSceneMode.Additive);
+        
+        Game.PauseGame();
     }
 
     public void HideMainMenu()
@@ -57,5 +57,7 @@ public class PauseMenuLoader : MonoBehaviour
         localScene.eventSystem.enabled = true;
         localScene.audioListener.enabled = true;
         localScene.sun.enabled = true;
+        
+        Game.ContinueGame();
     }
 }

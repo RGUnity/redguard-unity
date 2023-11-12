@@ -33,12 +33,14 @@ public class Game : MonoBehaviour
     public static void PauseGame()
     {
         isPaused = true;
-        print("Game Paused. Unfortunately for now that means only a boolean was set.");
+        Game.Menu.isLoadedAdditively = true;
+        print("Game Paused.");
     }
     
     public static void ContinueGame()
     {
         isPaused = false;
-        print("Game Continues. Unfortunately for now that means only a boolean was set.");
+        Game.Menu.isLoadedAdditively = false;
+        print("Game Continues.");
     }
 }
