@@ -13,17 +13,7 @@ public class UIWindowManager : MonoBehaviour
     {
         inventoryPanel.SetActive(false);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetButtonDown("Fire2"))
-        {
-            ToggleWindow(inventoryPanel);
-            //hudPanel.GetComponent<ActiveObjectManager>().UpdateActiveObjectIndicator();
-        }
-    }
-
+    
     void ToggleWindow(GameObject window)
     {
         // Because the HUD should always be hidden when any other window is open
@@ -51,5 +41,10 @@ public class UIWindowManager : MonoBehaviour
     public void ShowGameplayGUI()
     {
         hudPanel.SetActive(true);
+    }
+
+    public void ToggleInventory()
+    {
+        ToggleWindow(inventoryPanel);
     }
 }

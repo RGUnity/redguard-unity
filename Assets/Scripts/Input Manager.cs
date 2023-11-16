@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
+    private UIWindowManager UiWindowManager;
+    
     // Start is called before the first frame update
     void Start()
     {
-        
+        UiWindowManager = FindObjectOfType<UIWindowManager>();
     }
 
     // Update is called once per frame
@@ -22,6 +24,21 @@ public class InputManager : MonoBehaviour
         {
             print("Input Button Called: Quick Load");
             GameLoader.QuickLoad();
+        }
+        
+
+        if (Game.Menu.isLoadedAdditively)
+        {
+            // Inputs that can only happen when the additive pause menu is OPEN 
+        }
+        else
+        {
+            // Inputs that can only happen when the additive pause menu is HIDDEN 
+            
+            if (Input.GetButtonDown("Fire2"))
+            {
+                UiWindowManager.ToggleInventory();
+            }
         }
     }
 }
