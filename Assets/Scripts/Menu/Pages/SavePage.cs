@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SavePage : MonoBehaviour
 {
-    // Start is called before the first frame update
+    private GameObject _selectedButton;
+    
     void Start()
     {
         // Todo: use this to encode time into savefile
@@ -20,7 +22,8 @@ public class SavePage : MonoBehaviour
 
     public void UpdateSlotView()
     {
-        
+        _selectedButton = ButtonManager.menuEventSystem.currentSelectedGameObject;
+        print(_selectedButton.name);
     }
 
     public void NewSaveGame()
