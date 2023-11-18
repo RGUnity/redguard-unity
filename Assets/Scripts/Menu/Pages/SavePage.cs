@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SavePage : MonoBehaviour
 {
@@ -12,7 +13,17 @@ public class SavePage : MonoBehaviour
         //print(DateTime.Now.ToBinary().GetType());
     }
 
-    public void SaveGame()
+    private void Update()
+    {
+        UpdateSlotView();
+    }
+
+    public void UpdateSlotView()
+    {
+        
+    }
+
+    public void NewSaveGame()
     {
 
     }
