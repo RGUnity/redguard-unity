@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LoadPage : MonoBehaviour
+public class LoadPage : GenericMenuPage
 {
+    // OnEnable() is used by the parent object, "GenericMenuPage"
+    
     public void LoadSlot1()
     {
         Game.EnterSceneMode = EnterSceneModeEnum.Load;

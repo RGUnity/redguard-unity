@@ -7,12 +7,13 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using BayatGames.SaveGameFree;
 
-public class MainPage : MonoBehaviour
+public class MainPage : GenericMenuPage
 {
     [SerializeField] private Button saveButton; 
     [SerializeField] private PageManager pageManager;
 
-    // Start is called before the first frame update
+    // OnEnable() is used by the parent object, "GenericMenuPage"
+    
     void Start()
     {
         if (FindObjectOfType<Game>() == null)

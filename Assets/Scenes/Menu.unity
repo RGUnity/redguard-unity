@@ -608,7 +608,6 @@ GameObject:
   - component: {fileID: 137594909}
   - component: {fileID: 137594908}
   - component: {fileID: 137594907}
-  - component: {fileID: 137594906}
   m_Layer: 5
   m_Name: Options Page
   m_TagString: Untagged
@@ -616,18 +615,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &137594906
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 137594905}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 300c86df18a4868499bd971967a27baa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &137594907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -724,7 +711,6 @@ GameObject:
   - component: {fileID: 142737157}
   - component: {fileID: 142737156}
   - component: {fileID: 142737155}
-  - component: {fileID: 142737154}
   m_Layer: 5
   m_Name: Movies Page
   m_TagString: Untagged
@@ -752,18 +738,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -1534, y: -326}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &142737154
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 142737152}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 300c86df18a4868499bd971967a27baa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &142737155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2249,6 +2223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6226f0fef30fd749b855b818260459c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firstSelectedButton: {fileID: 1755656271}
   saveButton: {fileID: 2068355459}
   pageManager: {fileID: 97063739}
 --- !u!1 &600396472
@@ -3356,6 +3331,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 300c86df18a4868499bd971967a27baa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firstSelectedButton: {fileID: 639625815}
+  saveSlotParent: {fileID: 1902742888}
 --- !u!1 &834615345
 GameObject:
   m_ObjectHideFlags: 0
@@ -3707,7 +3684,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1007790053}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
   m_Name: 
@@ -7279,6 +7256,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 653d0004649a6b7498111b60c7c02efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firstSelectedButton: {fileID: 617909451}
 --- !u!1 &2063283088
 GameObject:
   m_ObjectHideFlags: 0
