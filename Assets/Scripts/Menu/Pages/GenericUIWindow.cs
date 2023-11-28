@@ -15,7 +15,14 @@ public class GenericUIWindow : MonoBehaviour
         // Select first page button
         if (firstSelectedButton != null)
         {
-            ButtonManager.menuEventSystem.SetSelectedGameObject(firstSelectedButton);
+            if (ButtonManager.menuEventSystem != null)
+            {
+                ButtonManager.menuEventSystem.SetSelectedGameObject(firstSelectedButton);
+            }
+            else
+            {
+                print("Failed to SetSelectedGameObject ");
+            }
         }
         else
         {

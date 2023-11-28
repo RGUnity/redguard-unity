@@ -13,7 +13,15 @@ public class ButtonManager : MonoBehaviour
 
     private void Awake()
     {
-        menuEventSystem = _eventSystem;
+        
+        if (_eventSystem != null)
+        {
+            menuEventSystem = _eventSystem;
+        }
+        else
+        {
+            Debug.LogWarning("failed to set menuEventSystem ");
+        }
     }
 
     // Start is called before the first frame update
