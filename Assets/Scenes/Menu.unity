@@ -2504,6 +2504,7 @@ MonoBehaviour:
   setNamePopup: {fileID: 1133307011}
   fileAlreadyExistsError: {fileID: 1787634831}
   saveSlotPrefab: {fileID: 333955638781281539, guid: 448a5b1cb4dff9b4489351346988b9f4, type: 3}
+  newSaveFileButton: {fileID: 639625815}
 --- !u!1 &834615345
 GameObject:
   m_ObjectHideFlags: 0

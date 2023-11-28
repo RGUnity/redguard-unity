@@ -14,6 +14,7 @@ public class SavePage : GenericUIWindow
     [SerializeField] private GameObject setNamePopup;
     [SerializeField] private GameObject fileAlreadyExistsError;
     [SerializeField] private GameObject saveSlotPrefab;
+    [SerializeField] private GameObject newSaveFileButton;
     
     private GameObject _selectedButton;
     
@@ -26,9 +27,26 @@ public class SavePage : GenericUIWindow
         GenerateSaveFileList();
     }
 
-    private void OnDisable()
+
+    private void GenerateSaveFileList()
     {
-        // On exit, clear all unneeded children
+        DeleteAllButtons();
+        
+        var foundFiles = BayatGames.SaveGameFree.SaveGame.GetFiles("Save/");
+        
+        foundFiles = foundFiles.OrderByDescending(p => p.LastWriteTimeUtc).ToArray();
+        //print(foundFiles[0]);
+
+        foreach (var file in foundFiles)
+        {
+            GameObject button = GameObject.Instantiate(saveSlotPrefab, saveSlotParent.transform);
+            string displayName = file.Name.Replace(".json", "");
+            button.GetComponentInChildren<TMP_Text>().SetText(displayName);
+        }
+    }
+
+    private void DeleteAllButtons()
+    {
         foreach (Transform child in saveSlotParent.transform) 
         {
             if (child.transform.GetSiblingIndex() == 0)
@@ -41,33 +59,16 @@ public class SavePage : GenericUIWindow
             }
         }
     }
-
-
-    private void GenerateSaveFileList()
-    {
-        var foundFiles = BayatGames.SaveGameFree.SaveGame.GetFiles("Save/");
-        
-        foundFiles = foundFiles.OrderByDescending(p => p.LastWriteTimeUtc).ToArray();
-        //print(foundFiles[0]);
-
-        foreach (var file in foundFiles)
-        {
-            GameObject button = GameObject.Instantiate(saveSlotPrefab, saveSlotParent.transform);
-            print(file.Name);
-            string displayName = file.Name.Replace(".json", "");
-            button.GetComponentInChildren<TMP_Text>().SetText(displayName);
-        }
-    }
-
+    
     private void Update()
     {
-        UpdateSlotView();
+        FocusSelectedButton();
     }
 
     // The list of save slots is technically a grid layout group.
     // When then simply move the array left/right in 500 increments...
     // ... depending on which page the currently selected element is on
-    public void UpdateSlotView()
+    public void FocusSelectedButton()
     {
         // Start by getting the currently selected button
         _selectedButton = ButtonManager.menuEventSystem.currentSelectedGameObject;
@@ -116,6 +117,12 @@ public class SavePage : GenericUIWindow
             
             // Create new savefile with this name
             GameSaver.SaveGame(saveFileName);
+
+            // Update the savefile UI list
+            GenerateSaveFileList();
+            
+            // Select a button
+            ButtonManager.menuEventSystem.SetSelectedGameObject(newSaveFileButton);
         }
     }
 
