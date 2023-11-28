@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GenericMenuPage : MonoBehaviour
+public class GenericUIWindow : MonoBehaviour
 {
+    // This is a class for all UI windows and popups.
+    // We can use this for things like setting a default selected button, when the window opens
+    
     [SerializeField] private GameObject firstSelectedButton;
     
     private void OnEnable()

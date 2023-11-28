@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LoadPage : GenericMenuPage
+public class LoadPage : GenericUIWindow
 {
     // OnEnable() is used by the parent object, "GenericMenuPage"
     

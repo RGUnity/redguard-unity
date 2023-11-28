@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using BayatGames.SaveGameFree;
 
-public class MainPage : GenericMenuPage
+public class MainPage : GenericUIWindow
 {
     [SerializeField] private Button saveButton; 
     [SerializeField] private PageManager pageManager;
