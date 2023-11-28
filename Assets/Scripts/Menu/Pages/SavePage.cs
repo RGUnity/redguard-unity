@@ -125,19 +125,4 @@ public class SavePage : GenericUIWindow
             ButtonManager.menuEventSystem.SetSelectedGameObject(newSaveFileButton);
         }
     }
-
-
-    // TODO: DELETE THIS ----------
-    public void SaveSlot1()
-    {
-        GameSaver.SaveGameBySlot(1);
-    }
-    public void SaveSlot2()
-    {
-        GameSaver.SaveGameBySlot(2);
-    }
-    public void SaveSlot3()
-    {
-        GameSaver.SaveGameBySlot(3);
-    }
 }
