@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,16 +13,50 @@ public class SavePage : GenericUIWindow
     [SerializeField] private GameObject saveSlotParent;
     [SerializeField] private GameObject setNamePopup;
     [SerializeField] private GameObject fileAlreadyExistsError;
+    [SerializeField] private GameObject saveSlotPrefab;
     
     private GameObject _selectedButton;
     
     
     // OnEnable() is used by the parent object, "GenericMenuPage"
-    
-    void Start()
+
+
+    protected override void OnEnableChild()
     {
-        // Todo: use this to encode time into savefile
-        //print(DateTime.Now.ToBinary().GetType());
+        GenerateSaveFileList();
+    }
+
+    private void OnDisable()
+    {
+        // On exit, clear all unneeded children
+        foreach (Transform child in saveSlotParent.transform) 
+        {
+            if (child.transform.GetSiblingIndex() == 0)
+            {
+                // skip the first one, because it is the "Create new savefile" button
+            }
+            else
+            {
+                Destroy(child.gameObject);
+            }
+        }
+    }
+
+
+    private void GenerateSaveFileList()
+    {
+        var foundFiles = BayatGames.SaveGameFree.SaveGame.GetFiles("Save/");
+        
+        foundFiles = foundFiles.OrderByDescending(p => p.LastWriteTimeUtc).ToArray();
+        //print(foundFiles[0]);
+
+        foreach (var file in foundFiles)
+        {
+            GameObject button = GameObject.Instantiate(saveSlotPrefab, saveSlotParent.transform);
+            print(file.Name);
+            string displayName = file.Name.Replace(".json", "");
+            button.GetComponentInChildren<TMP_Text>().SetText(displayName);
+        }
     }
 
     private void Update()

@@ -21,6 +21,12 @@ public class GenericUIWindow : MonoBehaviour
         {
             Debug.LogWarning(gameObject.name + " has no firstSelectedButton! Menu navigation might not work properly when using gamepad or keyboard");
         }
+
+        OnEnableChild();
+    }
+
+    protected virtual void OnEnableChild()
+    {
         
     }
 }
