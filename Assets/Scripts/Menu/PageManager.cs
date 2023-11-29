@@ -57,6 +57,7 @@ public class PageManager : MonoBehaviour
     
     public void SwitchToPage(GameObject targetPage)
     {
+        // Disable all other pages
         foreach (var page in allPages)
         {
             if (page != targetPage)
@@ -65,6 +66,10 @@ public class PageManager : MonoBehaviour
             }
         }
         
+        // Enable the target page
         targetPage.SetActive(true);
+        
+        // Update the enum state
+        Game.Menu.State = targetPage.GetComponent<GenericUIWindow>().associatedEnumState;
     }
 }

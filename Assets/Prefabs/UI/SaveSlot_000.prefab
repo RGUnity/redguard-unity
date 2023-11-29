@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2131959828711883911}
   - component: {fileID: 2496281176411370792}
   - component: {fileID: 2861321827233103623}
+  - component: {fileID: 7064481481283229404}
   m_Layer: 5
   m_Name: SaveSlot_000
   m_TagString: Untagged
@@ -133,6 +134,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7064481481283229404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 333955638781281539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9898e42368290d4e951da5e36b4f118, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveFileName: 
 --- !u!1 &4213753610188994503
 GameObject:
   m_ObjectHideFlags: 0

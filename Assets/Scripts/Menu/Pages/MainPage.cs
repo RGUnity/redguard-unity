@@ -33,8 +33,6 @@ public class MainPage : GenericUIWindow
         {
             Game.Menu.isLoadedAdditively = false;
         }
-
-        
     }
 
 
@@ -53,62 +51,7 @@ public class MainPage : GenericUIWindow
         }
         else
         {
-            var foundFiles = SaveGame.GetFiles("Save");
-
-            string newestFile = null;
-            
-            foreach (var file in foundFiles)
-            {
-
-                string filepath = "Save/" + file.Name;
-
-                
-                var gameData = SaveGame.Load<GameDataContainer>(filepath);
-                if (gameData != null)
-                {
-                    print(file.Name + " has timestamp " + gameData.Timestamp);
-
-                    if (newestFile == null)
-                    {
-                        //print("newestFile is null");
-                        newestFile = filepath;
-                    }
-                    else
-                    {
-                        //print("newestFile is not null");
-                        DateTime currentTimestamp = SaveGame.Load<GameDataContainer>(filepath).Timestamp;
-                        DateTime prevTimestamp = SaveGame.Load<GameDataContainer>(newestFile).Timestamp;
-                        
-                        int result = currentTimestamp.CompareTo(prevTimestamp);
-        
-                        if (result < 0)
-                        {
-                            //print("prevTimestamp is newer than currentTimestamp");
-                        }
-                        else if (result > 0)
-                        {
-                            //print("currentTimestamp is newer than prevTimestamp");
-                            newestFile = filepath;
-                        }
-                        else
-                        {
-                            //print("currentTimestamp and prevTimestamp are equal");
-                        }
-                    }
-                }
-                
-            }
-
-            var newestGameData = SaveGame.Load<GameDataContainer>(newestFile);
-            if (newestGameData != null)
-            {
-                print("Newest file is " + newestFile + ". Using that for Continue.");
-                Game.Data = newestGameData;
-                Game.EnterSceneMode = EnterSceneModeEnum.Load;
-                SceneManager.LoadScene(Game.Data.LastSceneName);
-            }
-            
-            
+            GameLoader.LoadLatestGame();
         }
         
         // if (SceneManager.GetActiveScene == "Menu")
@@ -116,50 +59,15 @@ public class MainPage : GenericUIWindow
         // else {Hide Menu and unpause}
     }
 
-    public void ShowSavePage()
-    {
-        Game.Menu.State = MenuStateEnum.SavePage;
-        SwitchToPage(pageManager.savePage);
-    }
-    
-    public void ShowLoadPage()
-    {
-        Game.Menu.State = MenuStateEnum.LoadPage;
-        SwitchToPage(pageManager.loadPage);
-    }
 
     public void NewGame()
     {
         SceneManager.LoadScene("Interaction Tests");
     }
     
-    public void ShowOptionsPage()
-    {
-        Game.Menu.State = MenuStateEnum.OptionsPage;
-        SwitchToPage(pageManager.optionsPage);
-    }
-    
-    public void ShowMoviesPage()
-    {
-        Game.Menu.State = MenuStateEnum.MoviesPage;
-        SwitchToPage(pageManager.moviesPage);
-    }
     
     public void QuitGame()
     {
         
-    }
-    
-    private void SwitchToPage(GameObject targetPage)
-    {
-        foreach (var page in pageManager.allPages)
-        {
-            if (page != targetPage)
-            {
-                page.SetActive(false);
-            }
-        }
-        
-        targetPage.SetActive(true);
     }
 }

@@ -8,7 +8,9 @@ public class GenericUIWindow : MonoBehaviour
     // This is a class for all UI windows and popups.
     // We can use this for things like setting a default selected button, when the window opens
     
+    [SerializeField] public MenuStateEnum associatedEnumState;
     [SerializeField] private GameObject firstSelectedButton;
+
     
     private void OnEnable()
     {

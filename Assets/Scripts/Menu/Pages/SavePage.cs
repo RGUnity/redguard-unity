@@ -15,6 +15,7 @@ public class SavePage : GenericUIWindow
     [SerializeField] private GameObject fileAlreadyExistsError;
     [SerializeField] private GameObject saveSlotPrefab;
     [SerializeField] private GameObject newSaveFileButton;
+    [SerializeField] private GameObject deletePopup;
     
     private GameObject _selectedButton;
     
@@ -28,7 +29,7 @@ public class SavePage : GenericUIWindow
     }
 
 
-    private void GenerateSaveFileList()
+    public void GenerateSaveFileList()
     {
         DeleteAllButtons();
         
@@ -39,7 +40,13 @@ public class SavePage : GenericUIWindow
 
         foreach (var file in foundFiles)
         {
+            // Spawn the button prefab
             GameObject button = GameObject.Instantiate(saveSlotPrefab, saveSlotParent.transform);
+            
+            // Set the name variable
+            button.GetComponent<SaveFileListItem>().saveFileName = file.Name;
+            
+            // Set the displayed text
             string displayName = file.Name.Replace(".json", "");
             button.GetComponentInChildren<TMP_Text>().SetText(displayName);
         }
@@ -124,5 +131,11 @@ public class SavePage : GenericUIWindow
             // Select a button
             ButtonManager.menuEventSystem.SetSelectedGameObject(newSaveFileButton);
         }
+    }
+
+    public void OpenDeletePopup(string fileToDelete)
+    {
+        deletePopup.GetComponent<SavefileDeletePopup>().savefileToDelete = fileToDelete;
+        deletePopup.SetActive(true);
     }
 }
