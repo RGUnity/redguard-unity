@@ -99,6 +99,9 @@ public class SavePage : GenericUIWindow
 
     public void OpenSetNamePopup()
     {
+        // Hint: The text is cleared on the popup itself ("SetNamePopup.cs") 
+        
+        // Then reveal the popup
         setNamePopup.SetActive(true);
     }
     
@@ -114,6 +117,8 @@ public class SavePage : GenericUIWindow
             // If yes, show an error message
             print("Stop, file already exists: " + saveFileName);
             fileAlreadyExistsError.SetActive(true);
+            // Set the input field as selected game object. 
+            ButtonManager.menuEventSystem.SetSelectedGameObject(setNamePopup.GetComponent<SetNamePopup>().inputField.gameObject);
         }
         else
         {
