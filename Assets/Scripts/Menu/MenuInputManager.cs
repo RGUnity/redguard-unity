@@ -5,17 +5,28 @@ using UnityEngine;
 public class MenuInputManager : MonoBehaviour
 {
     [SerializeField] private PageManager pageManager;
-    [SerializeField] private GameObject deletePopup;
     
     void Update()
     {
-        if (Input.GetButtonDown("Delete") && Game.Menu.State == MenuStateEnum.SavePage)
+        if (Input.GetButtonDown("Delete"))
         {
-            GameObject selectedButton = ButtonManager.menuEventSystem.currentSelectedGameObject;
-            
-            if (selectedButton.TryGetComponent(out SaveFileListItem listItem))
+            if (Game.Menu.State == MenuStateEnum.SavePage)
             {
-                pageManager.savePage.GetComponent<SavePage>().OpenDeletePopup(listItem.saveFileName);
+                GameObject selectedButton = ButtonManager.menuEventSystem.currentSelectedGameObject;
+            
+                if (selectedButton.TryGetComponent(out SaveFileListItem listItem))
+                {
+                    pageManager.savePage.GetComponent<SavePage>().OpenDeletePopup(listItem.saveFileName);
+                }
+            }
+            else if (Game.Menu.State == MenuStateEnum.LoadPage)
+            {
+                GameObject selectedButton = ButtonManager.menuEventSystem.currentSelectedGameObject;
+            
+                if (selectedButton.TryGetComponent(out SaveFileListItem listItem))
+                {
+                    pageManager.loadPage.GetComponent<LoadPage>().OpenDeletePopup(listItem.saveFileName);
+                }
             }
         }
     }

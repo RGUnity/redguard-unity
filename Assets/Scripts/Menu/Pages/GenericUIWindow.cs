@@ -28,7 +28,7 @@ public class GenericUIWindow : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning(gameObject.name + " has no firstSelectedButton! Menu navigation might not work properly when using gamepad or keyboard");
+            Debug.LogWarning(gameObject.name + " has no firstSelectedButton! All pages (except for LoadPage) need one, for keyboard and gamepads to work");
         }
 
         OnEnableChild();

@@ -42,6 +42,7 @@ public class SavePage : GenericUIWindow
         {
             // Spawn the button prefab
             GameObject button = GameObject.Instantiate(saveSlotPrefab, saveSlotParent.transform);
+            button.name = file.Name;
             
             // Set the name variable
             button.GetComponent<SaveFileListItem>().saveFileName = file.Name;
@@ -50,6 +51,9 @@ public class SavePage : GenericUIWindow
             string displayName = file.Name.Replace(".json", "");
             button.GetComponentInChildren<TMP_Text>().SetText(displayName);
         }
+        
+        // Lastly, set the first child object as the currently selected button
+        ButtonManager.menuEventSystem.SetSelectedGameObject(saveSlotParent.transform.GetChild(0).gameObject);
     }
 
     private void DeleteAllButtons()
@@ -135,7 +139,7 @@ public class SavePage : GenericUIWindow
 
     public void OpenDeletePopup(string fileToDelete)
     {
-        deletePopup.GetComponent<SavefileDeletePopup>().savefileToDelete = fileToDelete;
+        deletePopup.GetComponent<SavePageDeletePopup>().savefileToDelete = fileToDelete;
         deletePopup.SetActive(true);
     }
 }

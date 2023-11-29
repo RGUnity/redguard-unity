@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class SavefileDeletePopup : GenericUIWindow
+public class LoadPageDeletePopup : GenericUIWindow
 {
     [SerializeField] private PageManager _pageManager;
     [SerializeField] public string savefileToDelete;
     [SerializeField] public TMP_Text nameDisplay;
-    [SerializeField] public GameObject newSaveGameButton;
     private void OnEnable()
     {
         nameDisplay.text = savefileToDelete.Replace(".json", "");
@@ -23,8 +22,8 @@ public class SavefileDeletePopup : GenericUIWindow
         // Close the popup and reset parameters
         gameObject.SetActive(false);
         nameDisplay.SetText("");
-        ButtonManager.menuEventSystem.SetSelectedGameObject(newSaveGameButton);
-        _pageManager.savePage.GetComponent<SavePage>().GenerateSaveFileList();
+        // ButtonManager.menuEventSystem.SetSelectedGameObject(newSaveGameButton);
+        _pageManager.loadPage.GetComponent<LoadPage>().GenerateSaveFileList();
     }
     
     public void CancelDelete()
@@ -32,7 +31,8 @@ public class SavefileDeletePopup : GenericUIWindow
         // Close the popup and reset parameters
         gameObject.SetActive(false);
         nameDisplay.SetText("");
-        ButtonManager.menuEventSystem.SetSelectedGameObject(newSaveGameButton);
+        // ButtonManager.menuEventSystem.SetSelectedGameObject(newSaveGameButton);
+        _pageManager.loadPage.GetComponent<LoadPage>().GenerateSaveFileList();
     }
     
 }

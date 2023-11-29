@@ -33,6 +33,11 @@ public class ButtonManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        PreventButtonDeselection();
+    }
+
+    private void PreventButtonDeselection()
+    {
         if (menuEventSystem.currentSelectedGameObject != null)
         {
             lastSelectedButton = menuEventSystem.currentSelectedGameObject;
