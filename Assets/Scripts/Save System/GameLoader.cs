@@ -7,25 +7,16 @@ using UnityEngine.SceneManagement;
 public class GameLoader : MonoBehaviour
 {
     // Made this static so that we can call it from the menu scene
-    public static void LoadGame(int slot)
+    public static void LoadGame(string savefile)
     {
-        string slotWithPadding = slot.ToString().PadLeft(3, '0');
+        string filename = "Save/" + savefile;
+        
+        Game.Data = BayatGames.SaveGameFree.SaveGame.Load<GameDataContainer>(filename);
+        Game.EnterSceneMode = EnterSceneModeEnum.Load;
 
-        string filename = "Save/RGUnity_Save_" + slotWithPadding + ".json";
+        print("Loaded " + filename + " with Timestamp: " + Game.Data.Timestamp);
 
-        if (BayatGames.SaveGameFree.SaveGame.Exists(filename))
-        {
-            Game.Data = BayatGames.SaveGameFree.SaveGame.Load<GameDataContainer>(filename);
-            Game.EnterSceneMode = EnterSceneModeEnum.Load;
-
-            print("Loaded " + filename + " with Timestamp: " + Game.Data.Timestamp);
-
-            SceneManager.LoadScene(Game.Data.LastSceneName);
-        }
-        else
-        {
-            print("Failed to load savefile with name " + filename );
-        }
+        SceneManager.LoadScene(Game.Data.LastSceneName);
     }
 
     

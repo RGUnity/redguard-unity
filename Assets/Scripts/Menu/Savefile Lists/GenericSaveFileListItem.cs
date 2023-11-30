@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SaveFileListItem : MonoBehaviour
+public class GenericSaveFileListItem : MonoBehaviour
 {
     [SerializeField] public string saveFileName;
 }

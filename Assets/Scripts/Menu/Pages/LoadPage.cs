@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LoadPage : GenericUIWindow
 {
@@ -35,7 +36,7 @@ public class LoadPage : GenericUIWindow
             button.name = file.Name;
             
             // Set the name variable
-            button.GetComponent<SaveFileListItem>().saveFileName = file.Name;
+            button.GetComponent<GenericSaveFileListItem>().saveFileName = file.Name;
             
             // Set the displayed text
             string displayName = file.Name.Replace(".json", "");

@@ -14,7 +14,7 @@ public class MenuInputManager : MonoBehaviour
             {
                 GameObject selectedButton = ButtonManager.menuEventSystem.currentSelectedGameObject;
             
-                if (selectedButton.TryGetComponent(out SaveFileListItem listItem))
+                if (selectedButton.TryGetComponent(out GenericSaveFileListItem listItem))
                 {
                     pageManager.OpenPopup(pageManager.saveDeletePopup, listItem.saveFileName);
                 }
@@ -23,7 +23,7 @@ public class MenuInputManager : MonoBehaviour
             {
                 GameObject selectedButton = ButtonManager.menuEventSystem.currentSelectedGameObject;
             
-                if (selectedButton.TryGetComponent(out SaveFileListItem listItem))
+                if (selectedButton.TryGetComponent(out GenericSaveFileListItem listItem))
                 {
                     pageManager.OpenPopup(pageManager.loadDeletePopup, listItem.saveFileName);
                 }

@@ -45,7 +45,7 @@ public class SavePage : GenericUIWindow
             button.name = file.Name;
             
             // Set the name variable
-            button.GetComponent<SaveFileListItem>().saveFileName = file.Name;
+            button.GetComponent<GenericSaveFileListItem>().saveFileName = file.Name;
             
             // Set the displayed text
             string displayName = file.Name.Replace(".json", "");
