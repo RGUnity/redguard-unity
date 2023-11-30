@@ -8,14 +8,11 @@ public class LoadPage : GenericUIWindow
 {
     [SerializeField] private GameObject saveSlotParent;
     [SerializeField] private GameObject loadSlotPrefab;
-    [SerializeField] private GameObject deletePopup;
     
     private GameObject _selectedButton;
     
     
-    // OnEnable() is used by the parent object, "GenericMenuPage"
-
-
+    // This is triggered by OnEnable() in the the parent class, "GenericMenuPage"
     protected override void OnEnableChild()
     {
         GenerateSaveFileList();
@@ -95,11 +92,5 @@ public class LoadPage : GenericUIWindow
         
             saveSlotParent.GetComponent<RectTransform>().anchoredPosition =  newPosition;
         }
-    }
-    
-    public void OpenDeletePopup(string fileToDelete)
-    {
-        deletePopup.GetComponent<LoadPageDeletePopup>().savefileToDelete = fileToDelete;
-        deletePopup.SetActive(true);
     }
 }

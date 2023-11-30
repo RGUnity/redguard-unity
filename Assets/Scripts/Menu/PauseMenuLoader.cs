@@ -14,30 +14,33 @@ public class PauseMenuLoader : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Pause"))
+        
+    }
+
+    public void ToggleMenu()
+    {
+        // Todo: Game.Pause() or something
+
+
+        // If the Menu Scene is already loaded, hide it
+        if (Game.Menu.isLoadedAdditively)
         {
-            // Todo: Game.Pause() or something
+            //print("isLoadedAdditively = " + Game.Menu.isLoadedAdditively);
+            HideMainMenu();
 
-
-            // If the Menu Scene is already loaded, hide it
-            if (Game.Menu.isLoadedAdditively)
-            {
-                //print("isLoadedAdditively = " + Game.Menu.isLoadedAdditively);
-                HideMainMenu();
-
-                //print("isLoadedAdditively was set to false, is now = " + Game.Menu.isLoadedAdditively);
-            }
-            // If not, show it
-            else
-            {
-                //print("isLoadedAdditively = " + Game.Menu.isLoadedAdditively);
-                ShowMainMenu();
+            //print("isLoadedAdditively was set to false, is now = " + Game.Menu.isLoadedAdditively);
+        }
+        // If not, show it
+        else
+        {
+            //print("isLoadedAdditively = " + Game.Menu.isLoadedAdditively);
+            ShowMainMenu();
                 
-                //print("isLoadedAdditively was set to true, is now = " + Game.Menu.isLoadedAdditively);
-            }
+            //print("isLoadedAdditively was set to true, is now = " + Game.Menu.isLoadedAdditively);
         }
     }
-    void ShowMainMenu()
+    
+    public void ShowMainMenu()
     {
         var localScene = FindObjectOfType<LocalScene>();
         localScene.eventSystem.enabled = false;

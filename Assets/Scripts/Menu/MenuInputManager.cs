@@ -16,7 +16,7 @@ public class MenuInputManager : MonoBehaviour
             
                 if (selectedButton.TryGetComponent(out SaveFileListItem listItem))
                 {
-                    pageManager.savePage.GetComponent<SavePage>().OpenDeletePopup(listItem.saveFileName);
+                    pageManager.OpenPopup(pageManager.saveDeletePopup, listItem.saveFileName);
                 }
             }
             else if (Game.Menu.State == MenuStateEnum.LoadPage)
@@ -25,9 +25,14 @@ public class MenuInputManager : MonoBehaviour
             
                 if (selectedButton.TryGetComponent(out SaveFileListItem listItem))
                 {
-                    pageManager.loadPage.GetComponent<LoadPage>().OpenDeletePopup(listItem.saveFileName);
+                    pageManager.OpenPopup(pageManager.loadDeletePopup, listItem.saveFileName);
                 }
             }
+        }
+        
+        if (Input.GetButtonDown("Pause"))
+        {
+            pageManager.MoveUp();
         }
     }
 }

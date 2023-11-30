@@ -8,6 +8,9 @@ public enum MenuStateEnum
     SavePage,
     LoadPage,
     OptionsPage,
-    MoviesPage
+    MoviesPage,
+    SaveDeletePopup,
+    SaveSetNamePopup,
+    LoadDeletePopup
 }
 

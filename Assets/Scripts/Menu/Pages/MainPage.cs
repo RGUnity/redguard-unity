@@ -9,8 +9,9 @@ using BayatGames.SaveGameFree;
 
 public class MainPage : GenericUIWindow
 {
+    [SerializeField] private Button continueButton; 
     [SerializeField] private Button saveButton; 
-    [SerializeField] private PageManager pageManager;
+    [SerializeField] private Button loadButton; 
 
     // OnEnable() is used by the parent object, "GenericMenuPage"
     
@@ -32,6 +33,15 @@ public class MainPage : GenericUIWindow
         if (SceneManager.GetActiveScene().name == "Menu")
         {
             Game.Menu.isLoadedAdditively = false;
+        }
+        
+        // If no savefiles exist, disable the "Continue" and "Load" Button
+        var foundFiles = BayatGames.SaveGameFree.SaveGame.GetFiles("Save");
+        
+        if (foundFiles.Length <= 0)
+        {
+            continueButton.interactable = false;
+            loadButton.interactable = false;
         }
     }
 

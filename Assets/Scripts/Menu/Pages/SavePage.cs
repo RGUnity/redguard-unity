@@ -9,13 +9,10 @@ using UnityEngine.UI;
 
 public class SavePage : GenericUIWindow
 {
-
+    [SerializeField] private PageManager pageManager;
     [SerializeField] private GameObject saveSlotParent;
-    [SerializeField] private GameObject setNamePopup;
-    [SerializeField] private GameObject fileAlreadyExistsError;
     [SerializeField] private GameObject saveSlotPrefab;
     [SerializeField] private GameObject newSaveFileButton;
-    [SerializeField] private GameObject deletePopup;
     
     private GameObject _selectedButton;
     
@@ -26,6 +23,9 @@ public class SavePage : GenericUIWindow
     protected override void OnEnableChild()
     {
         GenerateSaveFileList();
+        
+        // Connect the "New savefile" button with "OpenPopup"
+        newSaveFileButton.GetComponent<Button>().onClick.AddListener(() => pageManager.OpenPopup(pageManager.saveSetNamePopup, ""));
     }
 
 
@@ -95,56 +95,5 @@ public class SavePage : GenericUIWindow
         
         saveSlotParent.GetComponent<RectTransform>().anchoredPosition =  newPosition;
 
-    }
-
-    public void OpenSetNamePopup()
-    {
-        // Hint: The text is cleared on the popup itself ("SetNamePopup.cs") 
-        
-        // Then reveal the popup
-        setNamePopup.SetActive(true);
-    }
-    
-    public void CreateNewSaveFile()
-    {
-        
-        // Grab the entered name from the inputField
-        string saveFileName = setNamePopup.GetComponent<SetNamePopup>().inputField.text;
-        
-        // First, check if a savefile with that the entered name already exists
-        if (BayatGames.SaveGameFree.SaveGame.Exists("Save/" + saveFileName + ".json"))
-        {
-            // If yes, show an error message
-            print("Stop, file already exists: " + saveFileName);
-            fileAlreadyExistsError.SetActive(true);
-            // Set the input field as selected game object. 
-            ButtonManager.menuEventSystem.SetSelectedGameObject(setNamePopup.GetComponent<SetNamePopup>().inputField.gameObject);
-        }
-        else
-        {
-            // Else, proceed to create the savefile
-            print("Attempting to create savefile with name: " + saveFileName);
-            
-            // Hide the "name already exists" error
-            fileAlreadyExistsError.SetActive(false);
-            
-            // Close popup
-            setNamePopup.SetActive(false);
-            
-            // Create new savefile with this name
-            GameSaver.SaveGame(saveFileName);
-
-            // Update the savefile UI list
-            GenerateSaveFileList();
-            
-            // Select a button
-            ButtonManager.menuEventSystem.SetSelectedGameObject(newSaveFileButton);
-        }
-    }
-
-    public void OpenDeletePopup(string fileToDelete)
-    {
-        deletePopup.GetComponent<SavePageDeletePopup>().savefileToDelete = fileToDelete;
-        deletePopup.SetActive(true);
     }
 }

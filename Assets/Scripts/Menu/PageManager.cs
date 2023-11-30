@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,6 +12,9 @@ public class PageManager : MonoBehaviour
     public GameObject loadPage;
     public GameObject optionsPage;
     public GameObject moviesPage;
+    public GameObject saveDeletePopup;
+    public GameObject saveSetNamePopup;
+    public GameObject loadDeletePopup;
     
     [HideInInspector] public List<GameObject> allPages;
     
@@ -24,7 +28,10 @@ public class PageManager : MonoBehaviour
             savePage,
             loadPage,
             optionsPage,
-            moviesPage
+            moviesPage,
+            saveDeletePopup,
+            saveSetNamePopup,
+            loadDeletePopup
         };
         
         // Restore Start State
@@ -43,17 +50,6 @@ public class PageManager : MonoBehaviour
             }
         }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // if (Input.GetButtonDown("Pause") & Game.Menu.State != MenuStateEnum.MainPage)
-        // {
-        //     print("Trying to switch page");
-        //     SwitchToPage(mainPage);
-        //     Game.Menu.State = MenuStateEnum.MainPage;
-        // }
-    }
     
     public void SwitchToPage(GameObject targetPage)
     {
@@ -71,5 +67,78 @@ public class PageManager : MonoBehaviour
         
         // Update the enum state
         Game.Menu.State = targetPage.GetComponent<GenericUIWindow>().associatedEnumState;
+    }
+    
+    public void OpenPopup(GameObject popup, string infoString)
+    {
+        // Activate the popup
+        popup.SetActive(true);
+
+        popup.GetComponent<GenericUIPopup>().infoString = infoString;
+        
+        // Update the menu state
+        Game.Menu.State = popup.GetComponent<GenericUIWindow>().associatedEnumState;
+        print("Set Menu state to " + popup.GetComponent<GenericUIWindow>().associatedEnumState);
+    }
+
+    public void ClosePopup(GameObject popup)
+    {
+        popup.SetActive(false);
+        
+        if (popup == loadDeletePopup)
+        {
+            Game.Menu.State = MenuStateEnum.LoadPage;
+        }
+        else if (popup == saveDeletePopup)
+        {
+            Game.Menu.State = MenuStateEnum.SavePage;
+        }
+        else if (popup == saveSetNamePopup)
+        {
+            Game.Menu.State = MenuStateEnum.SavePage;
+        }
+    }
+
+    public void MoveUp()
+    {
+        print("MENU STATE: " + Game.Menu.State);
+        switch (Game.Menu.State)
+        {
+            case MenuStateEnum.MainPage:
+                if (Game.Menu.isLoadedAdditively)
+                {
+                    // If the game is already running, "back" means returning to the game
+                    mainPage.GetComponent<MainPage>().ContinueGame();
+                    //print("CONTINUE GAME");
+                }
+                else
+                {
+                    // Do nothing
+                }
+                break;
+            case MenuStateEnum.SavePage:
+                SwitchToPage(mainPage);
+                break;
+            case MenuStateEnum.LoadPage:
+                SwitchToPage(mainPage);
+                break;
+            case MenuStateEnum.OptionsPage:
+                SwitchToPage(mainPage);
+                break;
+            case MenuStateEnum.MoviesPage:
+                SwitchToPage(mainPage);
+                break;
+            case MenuStateEnum.SaveDeletePopup:
+                ClosePopup(saveDeletePopup);
+                break;
+            case MenuStateEnum.SaveSetNamePopup:
+                ClosePopup(saveSetNamePopup);
+                break;
+            case MenuStateEnum.LoadDeletePopup:
+                ClosePopup(loadDeletePopup);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 }

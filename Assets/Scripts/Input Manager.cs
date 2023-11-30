@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
+    [SerializeField] private PauseMenuLoader _pauseMenuLoader; 
+    
     private UIWindowManager UiWindowManager;
+    
     
     // Start is called before the first frame update
     void Start()
@@ -30,6 +33,11 @@ public class InputManager : MonoBehaviour
         if (Game.Menu.isLoadedAdditively)
         {
             // Inputs that can only happen when the additive pause menu is OPEN 
+            if (Input.GetButtonDown("Pause") && Game.Menu.State == MenuStateEnum.MainPage)
+            {
+                //_pauseMenuLoader.HideMainMenu();
+            }
+            
         }
         else
         {
@@ -38,6 +46,11 @@ public class InputManager : MonoBehaviour
             if (Input.GetButtonDown("Fire2"))
             {
                 UiWindowManager.ToggleInventory();
+            }
+            
+            if (Input.GetButtonDown("Pause"))
+            {
+                _pauseMenuLoader.ShowMainMenu();
             }
         }
     }
