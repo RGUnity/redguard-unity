@@ -1,12 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using BayatGames.SaveGameFree;
-using System.Linq;
-using File = UnityEngine.Windows.File;
 
 public class GameSaver : MonoBehaviour
 {
