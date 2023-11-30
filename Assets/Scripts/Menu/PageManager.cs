@@ -71,11 +71,12 @@ public class PageManager : MonoBehaviour
     
     public void OpenPopup(GameObject popup, string infoString)
     {
+        // First, set the info string
+        popup.GetComponent<GenericUIPopup>().infoString = infoString;
+        
         // Activate the popup
         popup.SetActive(true);
 
-        popup.GetComponent<GenericUIPopup>().infoString = infoString;
-        
         // Update the menu state
         Game.Menu.State = popup.GetComponent<GenericUIWindow>().associatedEnumState;
         print("Set Menu state to " + popup.GetComponent<GenericUIWindow>().associatedEnumState);
