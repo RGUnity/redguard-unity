@@ -46,6 +46,7 @@ public class PauseMenuLoader : MonoBehaviour
         localScene.eventSystem.enabled = false;
         localScene.audioListener.enabled = false;
         localScene.sun.enabled = false;
+        localScene.canvas.enabled = false;
         
         // Hide the Gameplay GUI
         FindObjectOfType<UIWindowManager>().HideGameplayGUI();
@@ -64,6 +65,7 @@ public class PauseMenuLoader : MonoBehaviour
         localScene.eventSystem.enabled = true;
         localScene.audioListener.enabled = true;
         localScene.sun.enabled = true;
+        localScene.canvas.enabled = true;
         
         // Show Gameplay GUI
         FindObjectOfType<UIWindowManager>().ShowGameplayGUI();

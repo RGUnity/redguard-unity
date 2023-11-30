@@ -577,6 +577,7 @@ MonoBehaviour:
   eventSystem: {fileID: 1430973748}
   audioListener: {fileID: 218495399}
   sun: {fileID: 202247407}
+  canvas: {fileID: 240108089}
 --- !u!4 &187147139
 Transform:
   m_ObjectHideFlags: 0

@@ -6,10 +6,9 @@ using UnityEngine.EventSystems;
 public class LocalScene : MonoBehaviour
 {
     public EventSystem eventSystem;
-
     public AudioListener audioListener;
-
     public Light sun;
+    public Canvas canvas;
     
     // Start is called before the first frame update
     void Start()
