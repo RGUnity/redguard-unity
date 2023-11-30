@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LoadPageListItem : GenericSaveFileListItem
 {
-    public void RequiestFileLoad()
+    public void RequestFileLoad()
     {
         GameLoader.LoadGame(saveFileName);
     }
