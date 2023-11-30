@@ -23,7 +23,8 @@ public class GenericUIWindow : MonoBehaviour
             }
             else
             {
-                print("Failed to SetSelectedGameObject ");
+                // I guess this is not an actual problem, but the error here still calls on start.
+                // print("Failed to SetSelectedGameObject ");
             }
         }
         else

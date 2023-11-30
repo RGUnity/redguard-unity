@@ -79,7 +79,6 @@ public class PageManager : MonoBehaviour
 
         // Update the menu state
         Game.Menu.State = popup.GetComponent<GenericUIWindow>().associatedEnumState;
-        print("Set Menu state to " + popup.GetComponent<GenericUIWindow>().associatedEnumState);
     }
 
     public void ClosePopup(GameObject popup)
@@ -102,7 +101,6 @@ public class PageManager : MonoBehaviour
 
     public void MoveUp()
     {
-        print("MENU STATE: " + Game.Menu.State);
         switch (Game.Menu.State)
         {
             case MenuStateEnum.MainPage:

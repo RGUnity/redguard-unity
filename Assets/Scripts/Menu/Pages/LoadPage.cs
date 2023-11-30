@@ -45,7 +45,6 @@ public class LoadPage : GenericUIWindow
         
         // Lastly, set the first child object as the currently selected button
         ButtonManager.menuEventSystem.SetSelectedGameObject(saveSlotParent.transform.GetChild(0).gameObject);
-        print(ButtonManager.menuEventSystem.currentSelectedGameObject.name);
     }
 
     private void DeleteAllButtons()
