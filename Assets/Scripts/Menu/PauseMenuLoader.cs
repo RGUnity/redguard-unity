@@ -42,11 +42,11 @@ public class PauseMenuLoader : MonoBehaviour
     
     public void ShowMainMenu()
     {
-        var localScene = FindObjectOfType<LocalScene>();
-        localScene.eventSystem.enabled = false;
-        localScene.audioListener.enabled = false;
-        localScene.sun.enabled = false;
-        localScene.canvas.enabled = false;
+        
+        LocalScene.eventSystem.enabled = false;
+        LocalScene.audioListener.enabled = false;
+        LocalScene.sun.enabled = false;
+        LocalScene.canvas.enabled = false;
         
         // Hide the Gameplay GUI
         FindObjectOfType<UIWindowManager>().HideGameplayGUI();
@@ -61,11 +61,10 @@ public class PauseMenuLoader : MonoBehaviour
     {
         SceneManager.UnloadSceneAsync("Menu");
         
-        var localScene = FindObjectOfType<LocalScene>();
-        localScene.eventSystem.enabled = true;
-        localScene.audioListener.enabled = true;
-        localScene.sun.enabled = true;
-        localScene.canvas.enabled = true;
+        LocalScene.eventSystem.enabled = true;
+        LocalScene.audioListener.enabled = true;
+        LocalScene.sun.enabled = true;
+        LocalScene.canvas.enabled = true;
         
         // Show Gameplay GUI
         FindObjectOfType<UIWindowManager>().ShowGameplayGUI();

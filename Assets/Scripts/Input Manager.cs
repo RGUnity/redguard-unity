@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    [SerializeField] private PauseMenuLoader _pauseMenuLoader; 
+    [SerializeField] private PauseMenuLoader _pauseMenuLoader;
+
+    public float xInput;
+    public float zInput;
     
     private UIWindowManager UiWindowManager;
     
@@ -31,7 +34,6 @@ public class InputManager : MonoBehaviour
         
 
         if (!Game.Menu.isLoadedAdditively)
-
         {
             // Inputs that can only happen when the additive pause menu is HIDDEN 
 
@@ -45,5 +47,8 @@ public class InputManager : MonoBehaviour
                 _pauseMenuLoader.ShowMainMenu();
             }
         }
+        
+        xInput = Input.GetAxis("Horizontal");
+        zInput = Input.GetAxis("Vertical");
     }
 }

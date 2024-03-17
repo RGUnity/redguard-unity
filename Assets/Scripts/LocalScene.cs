@@ -3,22 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class LocalScene : MonoBehaviour
+public static class LocalScene
 {
-    public EventSystem eventSystem;
-    public AudioListener audioListener;
-    public Light sun;
-    public Canvas canvas;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public static EventSystem eventSystem;  
+    public static InputManager inputManager;
+    public static AudioListener audioListener;
+    public static Light sun;
+    public static Canvas canvas;
 }

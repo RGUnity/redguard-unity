@@ -575,6 +575,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eventSystem: {fileID: 1430973748}
+  inputManager: {fileID: 717069600}
   audioListener: {fileID: 218495399}
   sun: {fileID: 202247407}
   canvas: {fileID: 240108089}
@@ -1900,6 +1901,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pauseMenuLoader: {fileID: 1179373163}
+  xInput: 0
+  zInput: 0
 --- !u!1 &755830332
 GameObject:
   m_ObjectHideFlags: 0
