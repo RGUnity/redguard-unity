@@ -6,8 +6,10 @@ public class InputManager : MonoBehaviour
 {
     [SerializeField] private PauseMenuLoader _pauseMenuLoader;
 
-    public float xInput;
-    public float zInput;
+    public float horizontal;
+    public float vertical;
+    public float mouseX;
+    public bool jump;
     
     private UIWindowManager UiWindowManager;
     
@@ -48,7 +50,9 @@ public class InputManager : MonoBehaviour
             }
         }
         
-        xInput = Input.GetAxis("Horizontal");
-        zInput = Input.GetAxis("Vertical");
+        horizontal = Input.GetAxis("Horizontal");
+        vertical = Input.GetAxis("Vertical");
+        mouseX = Input.GetAxis("Mouse X");
+        jump = Input.GetButtonDown("Jump");
     }
 }

@@ -9,7 +9,9 @@ public class DummyCharacterController : MonoBehaviour
     public float gravity = -9.81f;
     public bool useMouseLook;
 
+    private Vector3 moveVector;
     private float currentGravity = 0f;
+    
     void FixedUpdate()
     {
         if (!Game.isPaused)
@@ -28,27 +30,34 @@ public class DummyCharacterController : MonoBehaviour
 
     private void MovePlayer()
     {
-        float xInput = Input.GetAxis("Horizontal") * moveSpeed;
-        float zInput = Input.GetAxis("Vertical") * moveSpeed;
-        //Vector3 move = new Vector3(x, 0f, z).normalized;
-        
-        
         if (useMouseLook)
         {
-            Vector3 moveVector = transform.right * xInput + transform.forward * zInput;
+            //Move the player with X and Z inputs
+            float xInput = LocalScene.inputManager.horizontal;
+            float zInput = LocalScene.inputManager.vertical;
+            
+            moveVector = transform.right * xInput + transform.forward * zInput;
+            moveVector = moveVector.normalized * moveSpeed;
             moveVector += ApplyGravity();
             moveVector *= Time.deltaTime;
-            //Move the player along with X and Z inputs
+            
             controller.Move(moveVector);
         }
 
         if (useMouseLook == false)
         {
             //Move the player only along the Z axis
-            Vector3 zMoveVector = transform.forward * zInput;
-            zMoveVector += ApplyGravity();
-            zMoveVector *= Time.deltaTime;
-            controller.Move(zMoveVector);
+            float zInput = LocalScene.inputManager.vertical;
+            
+            moveVector = transform.forward * zInput;
+            moveVector = moveVector.normalized * moveSpeed;
+            
+            moveVector += ApplyGravity();
+            moveVector *= Time.deltaTime;
+            
+            controller.Move(moveVector);
+            
+            
         }
     }
     
@@ -57,12 +66,14 @@ public class DummyCharacterController : MonoBehaviour
         if (useMouseLook)
         {
             //Rotate the player with the Mouse-X axis
-            transform.Rotate(0f,Input.GetAxis("Mouse X")* Time.deltaTime *100f, 0f);
+            float mouseX = LocalScene.inputManager.mouseX;
+            transform.Rotate(0f,mouseX * Time.deltaTime *100f, 0f);
         }
         else
         {
             //use the Horizontal buttons to rotate the player
-            transform.Rotate(0f,Input.GetAxisRaw("Horizontal")* Time.deltaTime*100, 0f);
+            float xInput = LocalScene.inputManager.horizontal;
+            transform.Rotate(0f,xInput * Time.deltaTime*100, 0f);
         }
     }
 
