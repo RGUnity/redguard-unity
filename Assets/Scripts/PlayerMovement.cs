@@ -1,3 +1,4 @@
+using UnityEditor.UIElements;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -16,6 +17,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float slopeSlideSpeed = 5f;
     [SerializeField] private float slopeTurnSpeed = 3f;
     
+    [Header("Moving Platforms")]
+    [SerializeField] private string _movingPlatformTag;
+    [SerializeField] private string _rotatingPlatformTag;
+    
     // General CC properties
     private bool _isGrounded;
     private bool _isSliding; 
@@ -28,8 +33,14 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _surfaceDownhill;
     private Vector3 _forwardOnSurface;
     
+    private Vector3 _platformPosition;
+    private bool _isOnMovingPlatform; 
+    private bool _isOnRotatingPlatform; 
+    private Vector3 _pointMovement;
+    private float _pointRotation;
     
-    void Update()
+    
+    void FixedUpdate()
     {
         GroundCheck();
         GetSurfaceVectors();
@@ -76,8 +87,12 @@ public class PlayerMovement : MonoBehaviour
             _moveDirection.y += groundMagnet;
         }
         
+        
         // Move the controller
         characterController.Move(_moveDirection * Time.deltaTime);
+
+        // Stick to moving and rotating platforms
+        StickToPlatforms();
     }
 
     private void GroundCheck()
@@ -117,6 +132,53 @@ public class PlayerMovement : MonoBehaviour
         Debug.DrawRay(_surfaceContact, flatSurfaceDownhill, Color.blue);
         Quaternion stepRotation = Quaternion.LookRotation(flatSurfaceDownhill, Vector3.up);
         transform.rotation = Quaternion.Slerp(transform.rotation, stepRotation, slopeTurnSpeed * Time.deltaTime);
+    }
+
+    private void StickToPlatforms()
+    {
+        // Moving platforms
+        if (_isOnMovingPlatform)
+        {
+            transform.position += _pointMovement;
+        }
+        
+        // Rotating platforms
+        if (_isOnRotatingPlatform)
+        {
+            transform.RotateAround(_platformPosition, Vector3.up, _pointRotation );
+        }
+    }
+    
+    
+    private void OnControllerColliderHit(ControllerColliderHit hit )
+    {
+        if (hit.collider.tag == _movingPlatformTag)
+        {
+            _isOnMovingPlatform = true;
+            _isOnRotatingPlatform = false;
+            
+            if (hit.rigidbody.transform.parent.TryGetComponent(out TEST_MovingPlatform pf))
+            {
+                _pointMovement = pf.moveStep;
+            }
+        }
+        else if (hit.collider.tag == _rotatingPlatformTag)
+        {
+            _isOnMovingPlatform = false;
+            _isOnRotatingPlatform = true;
+
+            if (hit.rigidbody.transform.parent.TryGetComponent(out TEST_RotatingPlatform pf))
+            {
+                _pointRotation = pf.yStepRotation;
+            }
+            
+            _platformPosition = hit.rigidbody.transform.position;
+        }
+        else
+        {
+            _isOnMovingPlatform = false;
+            _isOnRotatingPlatform = false;
+        }
     }
 }
 

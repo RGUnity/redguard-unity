@@ -6,6 +6,8 @@ public class TEST_RotatingPlatform : MonoBehaviour
 {   
     [SerializeField] private Rigidbody rb;
     [SerializeField] private float speed = 10f;
+
+    public float yStepRotation;
     
     // Start is called before the first frame update
     void Start()
@@ -23,6 +25,10 @@ public class TEST_RotatingPlatform : MonoBehaviour
     {
         angle = angle * Mathf.Deg2Rad; // Convert angle to radians
         Quaternion deltaRotation = Quaternion.AngleAxis(angle, axis);
+        
+        // stepRotation is used by the player to rotate around the pivot
+        yStepRotation = deltaRotation.eulerAngles.y;
+        
         Quaternion targetRotation = rb.rotation * deltaRotation;
         rb.MoveRotation(targetRotation);
     }
