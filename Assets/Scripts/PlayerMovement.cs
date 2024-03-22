@@ -1,3 +1,4 @@
+using System;
 using UnityEditor.UIElements;
 using UnityEngine;
 
@@ -6,16 +7,25 @@ public class PlayerMovement : MonoBehaviour
     [Header("Main Settings")]
     [SerializeField] private CharacterController characterController;
     [SerializeField] private LayerMask groundLayers;
-    
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float rotateSpeed = 1.2f;
-    [SerializeField] private float jumpSpeed = 7f;
-    [SerializeField] private float gravity = -9.81f;
+    [SerializeField] private float gravity = -15f;
     [SerializeField] private float groundMagnet = -4f;
+    
+    [Header("Basic Movement")]
+    [SerializeField] private float runSpeed = 5f;
+    [SerializeField] private float walkSpeed = 2f;
+    [SerializeField] private float velocitySmoothing = 12;
+    [SerializeField] private float turnSpeed = 3f;
+    
+    [Header("Jumping")]
+    [SerializeField] private float jumpHeight = 7f;
+    [SerializeField] private float longJumpDistance = 6f;
+    [SerializeField] private float shortJumpDistance = 4f;
+    [SerializeField] private float longJumpThreshold = 3.5f;
+    [SerializeField] private float shortJumpThreshold = 0.5f;
     
     [Header("Slope Sliding")]
     [SerializeField] private float slopeSlideSpeed = 5f;
-    [SerializeField] private float slopeTurnSpeed = 3f;
+    [SerializeField] private float slopeAlignmentSpeed = 3f;
     
     [Header("Moving Platforms")]
     [SerializeField] private string _movingPlatformTag;
@@ -24,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
     // General CC properties
     private bool _isGrounded;
     private bool _isSliding; 
-    private Vector3 _moveDirection;
+    private Vector3 _velocity;
     
     // Surface information
     private float _surfaceAngle;
@@ -32,6 +42,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _surfaceContact;
     private Vector3 _surfaceDownhill;
     private Vector3 _forwardOnSurface;
+    private Vector3 _rightOnSurface;
     
     private Vector3 _platformPosition;
     private bool _isOnMovingPlatform; 
@@ -39,7 +50,17 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _pointMovement;
     private float _pointRotation;
     
-    
+    // Other variables
+    private InputManager _input;
+    private Vector3 smoothVector;
+    private float speed;
+
+
+    private void Start()
+    {
+        _input = LocalScene.inputManager;
+    }
+
     void FixedUpdate()
     {
         GroundCheck();
@@ -59,79 +80,83 @@ public class PlayerMovement : MonoBehaviour
         // Basic movement
         if (_isGrounded && !_isSliding)
         {
-            _moveDirection = _forwardOnSurface;
-            _moveDirection *= LocalScene.inputManager.move.y * moveSpeed;
-        
             Debug.DrawRay(_surfaceContact, _forwardOnSurface, Color.yellow);
             
-            // Modified movement when left shift is held down
-            if (LocalScene.inputManager.sprint)
+            // Movement when moveModifier is pressed / is true
+            if (_input.moveModifier)
             {
-                if (LocalScene.inputManager.move.y == 0)
+                if (_input.move.y == 0
+                   || _input.move.x != 0)
                 {
-                    // Strafe Movement
-                    Vector3 _rightOnSurface = Vector3.Cross(_surfaceNormal, _forwardOnSurface);
-                    _moveDirection = _rightOnSurface * (LocalScene.inputManager.move.x * 2);
+                    // Strafe left or right
+                    _velocity = _rightOnSurface * (_input.move.x * walkSpeed);
                 }
                 else
                 {
-                    // Slow walking
-                    _moveDirection *= 0.5f;
+                    // Walk forward or backwards
+                    _velocity = _forwardOnSurface * (_input.move.y * walkSpeed);
                 }
             }
             else
             {
-                // Rotate the player
-                float yRotation = LocalScene.inputManager.move.x * rotateSpeed * Time.deltaTime * 60;
-                transform.Rotate(0, yRotation * rotateSpeed, 0);
-            }
-
-            Debug.LogWarning("Rework input here");
-            // This could probably be simplified to only use one single jump action
-            // ... and the checking if Shift or forward are pressed
-            
-            
-            // Make the player jump
-            if (LocalScene.inputManager.jump)
-            {
-                _moveDirection.y = jumpSpeed;
-                _isGrounded = false;
+                // Run Forward
+                _velocity = _forwardOnSurface * (_input.move.y * runSpeed);
+                
+                // Turn the player
+                float yRotation = _input.move.x * turnSpeed/2 * Time.deltaTime * 60;
+                transform.Rotate(0, yRotation, 0);
             }
             
-            if (LocalScene.inputManager.jumpDirectional)
+            // Apply smoothing with MoveTowards
+            smoothVector = Vector3.MoveTowards(smoothVector, _velocity, Time.deltaTime * velocitySmoothing);
+            _velocity.z = smoothVector.z;
+            _velocity.x = smoothVector.x;
+            
+            speed = _velocity.magnitude;
+            
+            if (_input.jump)
             {
-                if (LocalScene.inputManager.sprint)
+                if (_input.move.y > 0
+                    && speed > longJumpThreshold)
                 {
-                    // Short jump
-                    _moveDirection = _forwardOnSurface * jumpSpeed /2;
-                    _moveDirection.y = jumpSpeed;
+                    // Long forward jump 
+                    _velocity = _forwardOnSurface * longJumpDistance;
+                    _velocity.y = jumpHeight;
+                    _isGrounded = false;
+                }
+                else if(_input.move.y > 0
+                        && speed > shortJumpThreshold)
+                {
+                    // Short forward jump
+                    _velocity = _forwardOnSurface * shortJumpDistance;
+                    _velocity.y = jumpHeight;
                     _isGrounded = false;
                 }
                 else
                 {
-                    // Long jump
-                    _moveDirection = _forwardOnSurface * jumpSpeed;
-                    _moveDirection.y = jumpSpeed;
+                    // Standing jump
+                    _velocity = Vector3.zero;
+                    smoothVector = Vector3.zero;
+                    _velocity.y = jumpHeight;
                     _isGrounded = false;
                 }
-                
             }
         }
 
+        // Y Speed
         if (!_isGrounded)
         {
             // Apply gravity
-            _moveDirection.y += gravity * Time.deltaTime; 
+            _velocity.y += gravity * Time.deltaTime; 
         }
         else
         {
             // Apply ground magnet
-            _moveDirection.y += groundMagnet;
+            _velocity.y += groundMagnet;
         }
         
-        
         // Move the controller
-        characterController.Move(_moveDirection * Time.deltaTime);
+        characterController.Move(_velocity * Time.deltaTime);
 
         // Stick to moving and rotating platforms
         StickToPlatforms();
@@ -158,6 +183,7 @@ public class PlayerMovement : MonoBehaviour
             _surfaceContact = hit.point;
             _surfaceDownhill = Vector3.Cross((Vector3.Cross( Vector3.up, _surfaceNormal)), _surfaceNormal).normalized;
             _forwardOnSurface = Vector3.Cross(transform.right, hit.normal).normalized;
+            _rightOnSurface = Vector3.Cross(_surfaceNormal, _forwardOnSurface);
         }
     }
     
@@ -166,14 +192,14 @@ public class PlayerMovement : MonoBehaviour
         // This Vector points downhill
         Debug.DrawRay(_surfaceContact, _surfaceDownhill, Color.green);
         
-        _moveDirection = _surfaceDownhill * slopeSlideSpeed;
+        _velocity = _surfaceDownhill * slopeSlideSpeed;
         
         // Rotate the player towards the slideDirection
         Vector3 flatSurfaceDownhill = new Vector3(_surfaceDownhill.x, 0, _surfaceDownhill.z);
         
         Debug.DrawRay(_surfaceContact, flatSurfaceDownhill, Color.blue);
         Quaternion stepRotation = Quaternion.LookRotation(flatSurfaceDownhill, Vector3.up);
-        transform.rotation = Quaternion.Slerp(transform.rotation, stepRotation, slopeTurnSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, stepRotation, slopeAlignmentSpeed * Time.deltaTime);
     }
 
     private void StickToPlatforms()
@@ -194,7 +220,7 @@ public class PlayerMovement : MonoBehaviour
     
     private void OnControllerColliderHit(ControllerColliderHit hit )
     {
-        if (hit.collider.tag == _movingPlatformTag)
+        if (hit.collider.CompareTag(_movingPlatformTag))
         {
             _isOnMovingPlatform = true;
             _isOnRotatingPlatform = false;
@@ -204,17 +230,20 @@ public class PlayerMovement : MonoBehaviour
                 _pointMovement = pf.moveStep;
             }
         }
-        else if (hit.collider.tag == _rotatingPlatformTag)
+        else if (hit.collider.CompareTag(_rotatingPlatformTag))
         {
             _isOnMovingPlatform = false;
             _isOnRotatingPlatform = true;
-
-            if (hit.rigidbody.transform.parent.TryGetComponent(out TEST_RotatingPlatform pf))
-            {
-                _pointRotation = pf.yStepRotation;
-            }
             
-            _platformPosition = hit.rigidbody.transform.position;
+            if (hit.rigidbody != null)
+            {
+                
+                if (hit.rigidbody.transform.parent.TryGetComponent(out TEST_RotatingPlatform pf))
+                {
+                    _pointRotation = pf.yStepRotation;
+                }
+                _platformPosition = hit.rigidbody.transform.position;
+            }
         }
         else
         {

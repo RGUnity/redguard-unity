@@ -8,15 +8,13 @@ public class InputManager : MonoBehaviour
     [SerializeField] private PauseMenuLoader _pauseMenuLoader;
 
     public Vector2 move;
-    public bool sprint;
     public bool jump;
-    public bool jumpDirectional;
+    public bool moveModifier;
     
     // Input System Actions
     private InputAction moveAction;
-    private InputAction sprintAction;
     private InputAction jumpAction;
-    private InputAction jumpDirectionalAction;
+    private InputAction moveModifierAction;
     
     private UIWindowManager UiWindowManager;
     
@@ -28,9 +26,8 @@ public class InputManager : MonoBehaviour
         
         // Find input actions
         moveAction = InputSystem.actions.FindAction("Move");
-        sprintAction = InputSystem.actions.FindAction("Sprint");
         jumpAction = InputSystem.actions.FindAction("Jump");
-        jumpDirectionalAction = InputSystem.actions.FindAction("Jump Forward");
+        moveModifierAction = InputSystem.actions.FindAction("Move Modifier");
     }
 
     // Update is called once per frame
@@ -63,23 +60,8 @@ public class InputManager : MonoBehaviour
             }
         }
         
-        
         move = moveAction.ReadValue<Vector2>();
-        sprint = sprintAction.IsPressed();
-        
-        // Jump Actions
-        jump = false;
-        jumpDirectional = false;
-        
-        if (jumpAction.IsPressed())
-        {
-            jump = true;
-        }
-        
-        if (jumpDirectionalAction.IsPressed())
-        {
-            jump = false;
-            jumpDirectional = true;
-        }
+        jump = jumpAction.IsPressed();
+        moveModifier = moveModifierAction.IsPressed();
     }
 }

@@ -1187,7 +1187,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 640269852}
   - {fileID: 370977835}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1507,6 +1506,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 640269852}
   - {fileID: 1952061157}
   m_Father: {fileID: 254778200}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2168,12 +2168,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 640269851}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.52, z: 0}
   m_LocalScale: {x: 1, y: 0.57068, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 254778200}
+  m_Father: {fileID: 370977835}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &640269853
 CapsuleCollider:
@@ -4587,15 +4587,20 @@ MonoBehaviour:
   groundLayers:
     serializedVersion: 2
     m_Bits: 1
-  moveSpeed: 5
-  rotateSpeed: 1.2
-  jumpSpeed: 7
   gravity: -15
   groundMagnet: -4
+  runSpeed: 5
+  walkSpeed: 2
+  velocitySmoothing: 12
+  turnSpeed: 3
+  jumpHeight: 7
+  longJumpDistance: 6
+  shortJumpDistance: 2
   slopeSlideSpeed: 5
   slopeTurnSpeed: 3
   _movingPlatformTag: Moving Platform
   _rotatingPlatformTag: Rotating Platform
+  speed: 0
 --- !u!1 &1480689940
 GameObject:
   m_ObjectHideFlags: 0
@@ -5497,10 +5502,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pauseMenuLoader: {fileID: 1480689941}
-  horizontal: 0
-  vertical: 0
-  mouseX: 0
+  move: {x: 0, y: 0}
   jump: 0
+  moveModifier: 0
 --- !u!1001 &1651928045
 PrefabInstance:
   m_ObjectHideFlags: 0
