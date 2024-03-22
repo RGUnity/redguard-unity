@@ -49,7 +49,7 @@ public class PauseMenuLoader : MonoBehaviour
         LocalScene.canvas.enabled = false;
         
         // Hide the Gameplay GUI
-        FindObjectOfType<UIWindowManager>().HideGameplayGUI();
+        FindFirstObjectByType<UIWindowManager>().HideGameplayGUI();
 
         SceneManager.LoadScene("Menu", LoadSceneMode.Additive);
         
@@ -67,7 +67,7 @@ public class PauseMenuLoader : MonoBehaviour
         LocalScene.canvas.enabled = true;
         
         // Show Gameplay GUI
-        FindObjectOfType<UIWindowManager>().ShowGameplayGUI();
+        FindFirstObjectByType<UIWindowManager>().ShowGameplayGUI();
         
         Game.Menu.isLoadedAdditively = false;
         Game.ContinueGame();
