@@ -4600,7 +4600,7 @@ MonoBehaviour:
   gravity: -15
   groundMagnet: -4
   runSpeed: 5
-  walkSpeed: 2
+  walkSpeed: 1.5
   velocitySmoothing: 12
   turnSpeed: 3
   jumpHeight: 7

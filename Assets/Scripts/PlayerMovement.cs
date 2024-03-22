@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
     
     [Header("Basic Movement")]
     [SerializeField] private float runSpeed = 5f;
-    [SerializeField] private float walkSpeed = 2f;
+    [SerializeField] private float walkSpeed = 1.5f;
     [SerializeField] private float velocitySmoothing = 12;
     [SerializeField] private float turnSpeed = 3f;
     
@@ -97,10 +97,19 @@ public class PlayerMovement : MonoBehaviour
                     _velocity = _forwardOnSurface * (_input.move.y * walkSpeed);
                 }
             }
+            // Movement when moveModifier is NOT pressed / is false
             else
             {
                 // Run Forward
-                _velocity = _forwardOnSurface * (_input.move.y * runSpeed);
+                if (_input.move.y > 0)
+                {
+                    _velocity = _forwardOnSurface * (_input.move.y * runSpeed);
+                }
+                // Walk backwards
+                else
+                {
+                    _velocity = _forwardOnSurface * (_input.move.y * walkSpeed);
+                }
                 
                 // Turn the player
                 float yRotation = _input.move.x * turnSpeed/2 * Time.deltaTime * 60;
