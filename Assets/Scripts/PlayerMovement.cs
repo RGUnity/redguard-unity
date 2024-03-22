@@ -60,19 +60,61 @@ public class PlayerMovement : MonoBehaviour
         if (_isGrounded && !_isSliding)
         {
             _moveDirection = _forwardOnSurface;
-            
-            Debug.DrawRay(_surfaceContact, _forwardOnSurface, Color.yellow);
-            _moveDirection *= Input.GetAxis("Vertical") * moveSpeed;
+            _moveDirection *= LocalScene.inputManager.move.y * moveSpeed;
         
-            // Rotate the player
-            float yRotation = Input.GetAxis("Horizontal") * rotateSpeed * Time.deltaTime * 60;
-            transform.Rotate(0, yRotation * rotateSpeed, 0);
+            Debug.DrawRay(_surfaceContact, _forwardOnSurface, Color.yellow);
+            
+            // Modified movement when left shift is held down
+            if (LocalScene.inputManager.sprint)
+            {
+                if (LocalScene.inputManager.move.y == 0)
+                {
+                    // Strafe Movement
+                    Vector3 _rightOnSurface = Vector3.Cross(_surfaceNormal, _forwardOnSurface);
+                    _moveDirection = _rightOnSurface * (LocalScene.inputManager.move.x * 2);
+                }
+                else
+                {
+                    // Slow walking
+                    _moveDirection *= 0.5f;
+                }
+            }
+            else
+            {
+                // Rotate the player
+                float yRotation = LocalScene.inputManager.move.x * rotateSpeed * Time.deltaTime * 60;
+                transform.Rotate(0, yRotation * rotateSpeed, 0);
+            }
 
+            Debug.LogWarning("Rework input here");
+            // This could probably be simplified to only use one single jump action
+            // ... and the checking if Shift or forward are pressed
+            
+            
             // Make the player jump
-            if (Input.GetButton("Jump"))
+            if (LocalScene.inputManager.jump)
             {
                 _moveDirection.y = jumpSpeed;
                 _isGrounded = false;
+            }
+            
+            if (LocalScene.inputManager.jumpDirectional)
+            {
+                if (LocalScene.inputManager.sprint)
+                {
+                    // Short jump
+                    _moveDirection = _forwardOnSurface * jumpSpeed /2;
+                    _moveDirection.y = jumpSpeed;
+                    _isGrounded = false;
+                }
+                else
+                {
+                    // Long jump
+                    _moveDirection = _forwardOnSurface * jumpSpeed;
+                    _moveDirection.y = jumpSpeed;
+                    _isGrounded = false;
+                }
+                
             }
         }
 

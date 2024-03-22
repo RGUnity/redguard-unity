@@ -1,15 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
     [SerializeField] private PauseMenuLoader _pauseMenuLoader;
 
-    public float horizontal;
-    public float vertical;
-    public float mouseX;
+    public Vector2 move;
+    public bool sprint;
     public bool jump;
+    public bool jumpDirectional;
+    
+    // Input System Actions
+    private InputAction moveAction;
+    private InputAction sprintAction;
+    private InputAction jumpAction;
+    private InputAction jumpDirectionalAction;
     
     private UIWindowManager UiWindowManager;
     
@@ -17,7 +24,13 @@ public class InputManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UiWindowManager = FindObjectOfType<UIWindowManager>();
+        UiWindowManager = FindFirstObjectByType<UIWindowManager>();
+        
+        // Find input actions
+        moveAction = InputSystem.actions.FindAction("Move");
+        sprintAction = InputSystem.actions.FindAction("Sprint");
+        jumpAction = InputSystem.actions.FindAction("Jump");
+        jumpDirectionalAction = InputSystem.actions.FindAction("Jump Forward");
     }
 
     // Update is called once per frame
@@ -50,9 +63,23 @@ public class InputManager : MonoBehaviour
             }
         }
         
-        horizontal = Input.GetAxis("Horizontal");
-        vertical = Input.GetAxis("Vertical");
-        mouseX = Input.GetAxis("Mouse X");
-        jump = Input.GetButtonDown("Jump");
+        
+        move = moveAction.ReadValue<Vector2>();
+        sprint = sprintAction.IsPressed();
+        
+        // Jump Actions
+        jump = false;
+        jumpDirectional = false;
+        
+        if (jumpAction.IsPressed())
+        {
+            jump = true;
+        }
+        
+        if (jumpDirectionalAction.IsPressed())
+        {
+            jump = false;
+            jumpDirectional = true;
+        }
     }
 }
