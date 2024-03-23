@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpHeight = 7f;
     [SerializeField] private float longJumpDistance = 6f;
     [SerializeField] private float shortJumpDistance = 4f;
-    [SerializeField] private float longJumpThreshold = 3.5f;
+    [SerializeField] private float longJumpThreshold = 2.8f;
     [SerializeField] private float shortJumpThreshold = 0.5f;
     
     [Header("Slope Sliding")]
