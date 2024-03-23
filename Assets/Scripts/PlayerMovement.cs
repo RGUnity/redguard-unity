@@ -61,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
         _input = LocalScene.inputManager;
     }
 
-    void Update()
+    private void Update()
     {
         GroundCheck();
         GetSurfaceVectors();
