@@ -234,13 +234,13 @@ public class PlayerMovement : MonoBehaviour
         // Moving platforms
         if (_isOnMovingPlatform)
         {
-            transform.position += _pointMovement * (Time.deltaTime * 60);
+            transform.position += _pointMovement;
         }
         
         // Rotating platforms
         if (_isOnRotatingPlatform)
         {
-            transform.RotateAround(_platformPosition, Vector3.up, _pointRotation* (Time.deltaTime * 60));
+            transform.RotateAround(_platformPosition, Vector3.up, _pointRotation);
         }
     }
     

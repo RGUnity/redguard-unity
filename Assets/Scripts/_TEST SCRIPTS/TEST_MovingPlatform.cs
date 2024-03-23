@@ -11,31 +11,28 @@ public class TEST_MovingPlatform : MonoBehaviour
 
     public Vector3 moveStep;
     
-    private Transform target;
+    private Transform _target;
     
     
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        target = pointA;
+        _target = pointA;
     }
-
-    // Update is called once per frame
-    void FixedUpdate()
+    
+    private void Update()
     {
         if (rb.transform.position == pointA.position)
         {
-            target = pointB;
+            _target = pointB;
         }
         else
         {
             if (rb.transform.position == pointB.position)
             {
-                target = pointA;
+                _target = pointA;
             }
         }
-        
-        MoveTowardsTarget(target);
+        MoveTowardsTarget(_target);
     }
     
     private void MoveTowardsTarget(Transform target)

@@ -5,25 +5,20 @@ using UnityEngine;
 public class TEST_RotatingPlatform : MonoBehaviour
 {   
     [SerializeField] private Rigidbody rb;
-    [SerializeField] private float speed = 10f;
+    [SerializeField] private float speed = 50f;
 
     public float yStepRotation;
     
-    // Start is called before the first frame update
-    void Start()
+    
+    private void Update()
     {
-        
-    }
-
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        RotateAroundAxis(Vector3.up, speed * Time.fixedDeltaTime);
+        RotateAroundAxis(Vector3.up, speed);
     }
     
     void RotateAroundAxis(Vector3 axis, float angle)
     {
-        angle = angle * Mathf.Deg2Rad; // Convert angle to radians
+        angle *= Mathf.Deg2Rad; // Convert angle to radians
+        angle *= Time.deltaTime * 60; // Apply deltaTime
         Quaternion deltaRotation = Quaternion.AngleAxis(angle, axis);
         
         // stepRotation is used by the player to rotate around the pivot

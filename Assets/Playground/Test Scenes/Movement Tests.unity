@@ -1852,7 +1852,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 370977836}
-  speed: 500
+  speed: 20
   yStepRotation: 0
 --- !u!1 &276404313
 GameObject:
@@ -2998,7 +2998,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 1259514909}
-  speed: 800
+  speed: 50
   yStepRotation: 0
 --- !u!4 &553133758
 Transform:
