@@ -6,17 +6,17 @@ public class PlayerMovement : MonoBehaviour
     [Header("Main Settings")]
     [SerializeField] private CharacterController characterController;
     [SerializeField] private LayerMask groundLayers;
-    [SerializeField] private float gravity = -15f;
+    [SerializeField] private float gravity = -25f;
     [SerializeField] private float groundMagnet = -4f;
     
     [Header("Basic Movement")]
     [SerializeField] private float runSpeed = 5f;
     [SerializeField] private float walkSpeed = 1.5f;
     [SerializeField] private float velocitySmoothing = 12;
-    [SerializeField] private float turnSpeed = 3f;
+    [SerializeField] private float turnSpeed = 3.7f;
     
     [Header("Jumping")]
-    [SerializeField] private float jumpHeight = 7f;
+    [SerializeField] private float jumpHeight = 8f;
     [SerializeField] private float longJumpDistance = 6f;
     [SerializeField] private float shortJumpDistance = 4f;
     [SerializeField] private float longJumpThreshold = 2.8f;
