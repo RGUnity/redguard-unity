@@ -1919,7 +1919,7 @@ MonoBehaviour:
   moveTargetA: {fileID: 0}
   moveTargetB: {fileID: 0}
   allowRotation: 1
-  rotationSpeed: 1
+  rotationSpeed: 0.2
   linearVelocity: {x: 0, y: 0, z: 0}
   angularVelocityY: 0
 --- !u!1 &276404313
