@@ -5,7 +5,7 @@ using UnityEngine;
 public class TEST_MovingPlatform : MonoBehaviour
 {   
     [SerializeField] private Rigidbody rb;
-    [SerializeField] private float speed = 10f;
+    [SerializeField] private float speed = 2;
     [SerializeField] private Transform pointA;
     [SerializeField] private Transform pointB;
 
@@ -19,7 +19,7 @@ public class TEST_MovingPlatform : MonoBehaviour
         _target = pointA;
     }
     
-    private void Update()
+    private void FixedUpdate()
     {
         if (rb.transform.position == pointA.position)
         {
@@ -37,7 +37,7 @@ public class TEST_MovingPlatform : MonoBehaviour
     
     private void MoveTowardsTarget(Transform target)
     {
-        Vector3 newPosition = Vector3.MoveTowards(rb.position, target.position, speed * Time.fixedDeltaTime);
+        Vector3 newPosition = Vector3.MoveTowards(rb.position, target.position, speed/100);
 
         // moveStep is used by the player to move along with platforms
         moveStep = newPosition - rb.transform.position;
