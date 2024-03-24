@@ -61,7 +61,7 @@ public class InputManager : MonoBehaviour
         }
         
         move = moveAction.ReadValue<Vector2>();
-        jump = jumpAction.IsPressed();
+        jump = jumpAction.WasPressedThisFrame();
         moveModifier = moveModifierAction.IsPressed();
     }
 }
