@@ -97,8 +97,7 @@ public class PlayerMovement : MonoBehaviour
                 Jump();
             }
         }
-
-        // Y Speed
+        
         if (!_isGrounded)
         {
             if (characterController.velocity.y > 0)
@@ -115,15 +114,16 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
+            StickToPlatforms();
+            
             // Apply ground magnet
             _velocity.y += groundMagnet;
         }
         
-        // Stick to moving and rotating platforms
-        StickToPlatforms();
-        
         // Apply the velocity to the CC  
         characterController.Move(_velocity);
+        
+        Debug.DrawRay(transform.position - Vector3.up, characterController.velocity.normalized, Color.green);
         
         // I think this is in meters per second?
         _speed = characterController.velocity.magnitude;
@@ -236,15 +236,25 @@ public class PlayerMovement : MonoBehaviour
     
     private void GetSurfaceVectors()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.5f, groundLayers))
+        if (_isGrounded)
         {
-            _surfaceAngle = Vector3.Angle(Vector3.up, hit.normal);
-            _surfaceNormal = hit.normal;
-            _surfaceContact = hit.point;
-            _surfaceDownhill = Vector3.Cross((Vector3.Cross( Vector3.up, _surfaceNormal)), _surfaceNormal).normalized;
-            _forwardOnSurface = Vector3.Cross(transform.right, hit.normal).normalized;
-            _rightOnSurface = Vector3.Cross(_surfaceNormal, _forwardOnSurface);
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.5f, groundLayers))
+            {
+                _surfaceAngle = Vector3.Angle(Vector3.up, hit.normal);
+                _surfaceNormal = hit.normal;
+                _surfaceContact = hit.point;
+                _surfaceDownhill = Vector3.Cross((Vector3.Cross( Vector3.up, _surfaceNormal)), _surfaceNormal).normalized;
+                _forwardOnSurface = Vector3.Cross(transform.right, hit.normal).normalized;
+                _rightOnSurface = Vector3.Cross(_surfaceNormal, _forwardOnSurface);
+            }
+            else
+            {
+                // These are fallback vectors in case the Raycast doesn't hit anything
+                _forwardOnSurface = transform.forward;
+                _rightOnSurface = transform.right;
+            }
         }
+        
     }
     
     private void SlideDownhill()

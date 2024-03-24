@@ -199,22 +199,20 @@ MonoBehaviour:
   groundLayers:
     serializedVersion: 2
     m_Bits: 1
-  gravity: -4
+  gravity: -6.5
   groundMagnet: -0.1
-  runSpeed: 0.1
-  walkSpeed: 0.05
+  runSpeed: 5
+  walkSpeed: 2
   velocitySmoothing: 100
-  turnSpeed: 3.7
-  jumpHeight: 0.1
-  fallSpeedMultiplier: 1.6
-  longJumpDistance: 0.15
-  shortJumpDistance: 0.15
+  turnSpeed: 1.8
+  jumpHeight: 1.2
+  fallSpeedMultiplier: 1
+  longJumpDistance: 1.5
+  shortJumpDistance: 0.7
   longJumpThreshold: 3.5
   shortJumpThreshold: 0.1
   slopeSlideSpeed: 0.1
-  slopeAlignmentSpeed: 3
-  movingPlatformTag: Moving Platform
-  rotatingPlatformTag: Rotating Platform
+  slopeAlignmentSpeed: 100
 --- !u!114 &4619516045627391771
 MonoBehaviour:
   m_ObjectHideFlags: 0
