@@ -7,7 +7,6 @@ TagManager:
   - NPC
   - Item
   - Moving Platform
-  - Rotating Platform
   layers:
   - Default
   - TransparentFX

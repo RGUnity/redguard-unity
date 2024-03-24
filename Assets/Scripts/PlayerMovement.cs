@@ -27,11 +27,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float slopeSlideSpeed = 5f;
     [SerializeField] private float slopeAlignmentSpeed = 3f;
     
-    [FormerlySerializedAs("_movingPlatformTag")]
-    [Header("Moving Platforms")]
-    [SerializeField] private string movingPlatformTag;
-    [SerializeField] private string rotatingPlatformTag;
-    
     // General CC properties
     private bool _isGrounded;
     private bool _isSliding; 
@@ -46,16 +41,13 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _rightOnSurface;
     
     private bool _isOnMovingPlatform; 
-    private bool _isOnRotatingPlatform; 
     private float _pointRotation;
     
     // Other variables
     private InputManager _input;
     private Vector3 _smoothVelocity;
     private float _speed;
-    private Transform _currentPlatform;
-
-    private float maxHeight;
+    private TEST_MovingPlatform _currentPlatform;
 
 
     private void Start()
@@ -103,7 +95,6 @@ public class PlayerMovement : MonoBehaviour
             if (_input.jump)
             {
                 Jump();
-                maxHeight = 0;
             }
         }
 
@@ -128,22 +119,14 @@ public class PlayerMovement : MonoBehaviour
             _velocity.y += groundMagnet;
         }
         
-        
         // Stick to moving and rotating platforms
         StickToPlatforms();
         
-        
-        // Move the controller
+        // Apply the velocity to the CC  
         characterController.Move(_velocity);
         
         // I think this is in meters per second?
         _speed = characterController.velocity.magnitude;
-
-        if (transform.position.y > maxHeight)
-        {
-            maxHeight = transform.position.y;
-            print(maxHeight);
-        }
     }
 
     private void WalkMode()
@@ -151,17 +134,17 @@ public class PlayerMovement : MonoBehaviour
         if (_input.move.y != 0)
         {
             // Walk forward or backwards
-            _velocity = _forwardOnSurface * (_input.move.y * walkSpeed);
+            _velocity = _forwardOnSurface * (_input.move.y * walkSpeed /60);
                     
             // Turn the player
-            float yRotation = _input.move.x * turnSpeed/2 * Time.deltaTime;
+            float yRotation = _input.move.x * turnSpeed* Time.deltaTime * 60;
             transform.Rotate(0, yRotation, 0);
         }
         else if (_input.move.x != 0
                  && _input.move.y == 0)
         {
             // Strafe left or right
-            _velocity = _rightOnSurface * (_input.move.x * walkSpeed);
+            _velocity = _rightOnSurface * (_input.move.x * walkSpeed /60);
         }
         else
         {
@@ -174,12 +157,12 @@ public class PlayerMovement : MonoBehaviour
         // Run Forward
         if (_input.move.y > 0)
         {
-            _velocity = _forwardOnSurface * (_input.move.y * runSpeed);
+            _velocity = _forwardOnSurface * (_input.move.y * runSpeed /60);
         }
         // Walk backwards
         else if (_input.move.y < 0)
         {
-            _velocity = _forwardOnSurface * (_input.move.y * walkSpeed);
+            _velocity = _forwardOnSurface * (_input.move.y * walkSpeed /60);
         }
         else
         {
@@ -187,7 +170,7 @@ public class PlayerMovement : MonoBehaviour
         }
                 
         // Turn the player
-        float yRotation = _input.move.x * turnSpeed/2 * Time.deltaTime * 60;
+        float yRotation = _input.move.x * turnSpeed * Time.deltaTime * 60;
         transform.Rotate(0, yRotation, 0);
     }
     
@@ -197,8 +180,8 @@ public class PlayerMovement : MonoBehaviour
             && _speed > longJumpThreshold)
         {
             // Long forward jump 
-            _velocity = _forwardOnSurface * longJumpDistance;
-            _velocity.y = jumpHeight;
+            _velocity = _forwardOnSurface * longJumpDistance /10;
+            _velocity.y = jumpHeight /10;
             _isGrounded = false;
             print("Long jump");
         }
@@ -206,8 +189,8 @@ public class PlayerMovement : MonoBehaviour
                 && _speed > shortJumpThreshold)
         {
             // Short forward jump
-            _velocity = _forwardOnSurface * shortJumpDistance;
-            _velocity.y = jumpHeight;
+            _velocity = _forwardOnSurface * shortJumpDistance /10;
+            _velocity.y = jumpHeight /10;
             _isGrounded = false;
             print("Short jump");
         }
@@ -216,46 +199,38 @@ public class PlayerMovement : MonoBehaviour
             // Standing jump
             _velocity = Vector3.zero;
             _smoothVelocity = Vector3.zero;
-            _velocity.y = jumpHeight;
+            _velocity.y = jumpHeight /10;
             _isGrounded = false;
-            
             print("Standing jump");
         }
     }
 
     private void GroundCheck()
     {
-        if (Physics.SphereCast(transform.position, 0.18f, Vector3.down, out RaycastHit hit, 0.85f, groundLayers))
+        if (Physics.SphereCast(transform.position, 0.18f, Vector3.down, out RaycastHit hit, 0.9f, groundLayers))
         {
             _isGrounded = true;
             
-            if (hit.collider.CompareTag(movingPlatformTag))
+            if (hit.collider.CompareTag("Moving Platform"))
             {
-                _isOnMovingPlatform = true;
-                _isOnRotatingPlatform = false;
-                _currentPlatform = hit.transform;
-            }
-            else if (hit.collider.CompareTag(rotatingPlatformTag))
-            {
-                _isOnMovingPlatform = false;
-                _isOnRotatingPlatform = true;
-                _currentPlatform = hit.transform;
+                if (hit.transform.parent.parent.parent.TryGetComponent(out TEST_MovingPlatform platform))
+                {
+                    _currentPlatform = platform;
+                    _isOnMovingPlatform = true;
+                }
             }
             else
             {
-                _isOnMovingPlatform = false;
-                _isOnRotatingPlatform = false;
                 _currentPlatform = null;
+                _isOnMovingPlatform = false;
             }
-            
         }
         else
         {
             _isGrounded = false;
             
-            _isOnMovingPlatform = false;
-            _isOnRotatingPlatform = false;
             _currentPlatform = null;
+            _isOnMovingPlatform = false;
         }
     }
     
@@ -284,7 +259,7 @@ public class PlayerMovement : MonoBehaviour
         
         Debug.DrawRay(_surfaceContact, flatSurfaceDownhill, Color.blue);
         Quaternion stepRotation = Quaternion.LookRotation(flatSurfaceDownhill, Vector3.up);
-        transform.rotation = Quaternion.Slerp(transform.rotation, stepRotation, slopeAlignmentSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, stepRotation, slopeAlignmentSpeed * Time.deltaTime);
     }
 
     private void StickToPlatforms()
@@ -292,27 +267,16 @@ public class PlayerMovement : MonoBehaviour
         // Moving platforms
         if (_isOnMovingPlatform)
         {
-            if (_currentPlatform.parent.TryGetComponent(out TEST_MovingPlatform platform))
-            {
-                _velocity += platform.moveStep;
-            }
-        }
-        
-        // Rotating platforms
-        if (_isOnRotatingPlatform)
-        {
-            if (_currentPlatform.parent.TryGetComponent(out TEST_RotatingPlatform platform))
-            {
-                //transform.RotateAround(_platformPosition, Vector3.up, _pointRotation);
-                Vector3 newPosition = RotateVectorAroundTransform(transform.position, _currentPlatform, Vector3.up, platform.yStepRotation);
+            // Get the Velocity of the platform and add it to the player
+            _velocity += _currentPlatform.linearVelocity;
             
-                Vector3 movementVector = newPosition - transform.position;
-                //print("Current position: " + transform.position + ".  New position: " + newPosition);
-                Debug.DrawRay(transform.position, movementVector*10, Color.magenta);
-                _velocity += movementVector;
-                
-                transform.Rotate(transform.up, platform.yStepRotation);
-            }
+            // Get the rotation of the platform and rotate the player with it
+            Vector3 newPosition = RotateVectorAroundTransform(transform.position, _currentPlatform.rb.transform, Vector3.up, _currentPlatform.angularVelocityY);
+         
+            Vector3 movementVector = newPosition - transform.position;
+            Debug.DrawRay(transform.position, movementVector*10, Color.magenta);
+            _velocity += movementVector;
+            transform.Rotate(transform.up, _currentPlatform.angularVelocityY);
         }
     }
     
@@ -335,45 +299,6 @@ public class PlayerMovement : MonoBehaviour
         Vector3 finalPosition = transform.position + worldRotatedVector;
 
         return finalPosition;
-    }
-    
-
-    
-    private void OnControllerColliderHit(ControllerColliderHit hit )
-    {
-        // if (hit.collider.CompareTag(movingPlatformTag))
-        // {
-        //     _isOnMovingPlatform = true;
-        //     _isOnRotatingPlatform = false;
-        //     _currentPlatform = hit.transform;
-        //     
-        //     if (hit.rigidbody.transform.parent.TryGetComponent(out TEST_MovingPlatform pf))
-        //     {
-        //         _pointMovement = pf.moveStep;
-        //     }
-        // }
-        // else if (hit.collider.CompareTag(rotatingPlatformTag))
-        // {
-        //     _isOnMovingPlatform = false;
-        //     _isOnRotatingPlatform = true;
-        //     _currentPlatform = hit.transform;
-        //     
-        //     if (hit.rigidbody != null)
-        //     {
-        //         
-        //         if (hit.rigidbody.transform.parent.TryGetComponent(out TEST_RotatingPlatform pf))
-        //         {
-        //             _pointRotation = pf.yStepRotation;
-        //         }
-        //         _platformPosition = hit.rigidbody.transform.position;
-        //     }
-        // }
-        // else
-        // {
-        //     _isOnMovingPlatform = false;
-        //     _isOnRotatingPlatform = false;
-        //     _currentPlatform = null;
-        // }
     }
 }
 
