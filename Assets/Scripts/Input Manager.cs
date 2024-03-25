@@ -10,11 +10,13 @@ public class InputManager : MonoBehaviour
     public Vector2 move;
     public bool jump;
     public bool moveModifier;
+    public bool use;
     
     // Input System Actions
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction moveModifierAction;
+    private InputAction useAction;
     
     private UIWindowManager UiWindowManager;
     
@@ -28,6 +30,7 @@ public class InputManager : MonoBehaviour
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
         moveModifierAction = InputSystem.actions.FindAction("Move Modifier");
+        useAction = InputSystem.actions.FindAction("Use");
     }
 
     // Update is called once per frame
@@ -60,8 +63,10 @@ public class InputManager : MonoBehaviour
             }
         }
         
+        // Player Character Controls
         move = moveAction.ReadValue<Vector2>();
         jump = jumpAction.WasPressedThisFrame();
         moveModifier = moveModifierAction.IsPressed();
+        use = useAction.WasPressedThisFrame();
     }
 }
