@@ -4,47 +4,97 @@ using UnityEngine;
 
 public class TEST_MovingPlatform : MonoBehaviour
 {   
-    [SerializeField] private Rigidbody rb;
-    [SerializeField] private float speed = 10f;
-    [SerializeField] private Transform pointA;
-    [SerializeField] private Transform pointB;
+    [Header("Global Settings")]
+    public Rigidbody rb;
+    [SerializeField] private Transform movementRoot;
+    [SerializeField] private Transform rotationRoot;
+    
+    [Header("Moving Platform")]
+    [SerializeField] private bool allowMovement;
+    
+    [SerializeField] private float moveSpeed = 2;
+    [SerializeField] private Transform moveTargetA;
+    [SerializeField] private Transform moveTargetB;
+    
+    [Header("Rotating Platform")]
+    [SerializeField] private bool allowRotation;
+    [SerializeField] private float rotationSpeed = 1;
 
-    public Vector3 moveStep;
+    [HideInInspector] public Vector3 linearVelocity;
+    [HideInInspector] public float angularVelocityY;
     
-    private Transform target;
+    private Transform _currentTarget;
     
     
-    // Start is called before the first frame update
-    void Start()
+    
+    // This script must be higher than PlayerMovement in the script execution order...
+    // ...otherwise the player's movement will lag behind by one frame 
+    
+    
+    private void Start()
     {
-        target = pointA;
-    }
-
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        if (rb.transform.position == pointA.position)
+        if (allowMovement
+            && moveTargetA != null
+            && moveTargetB != null
+            && moveSpeed > 0)
         {
-            target = pointB;
+            _currentTarget = moveTargetA;
         }
         else
         {
-            if (rb.transform.position == pointB.position)
-            {
-                target = pointA;
-            }
+            allowMovement = false;
         }
-        
-        MoveTowardsTarget(target);
+
+        if (allowRotation
+            && rotationSpeed > 0)
+        {
+            
+        }
+        else
+        {
+            allowRotation = false;
+        }
     }
     
-    private void MoveTowardsTarget(Transform target)
+    private void FixedUpdate()
     {
-        Vector3 newPosition = Vector3.MoveTowards(rb.position, target.position, speed * Time.fixedDeltaTime);
+        if (allowMovement)
+        {
+            if (movementRoot.position == moveTargetA.position)
+            {
+                _currentTarget = moveTargetB;
+            }
+            else
+            {
+                if (movementRoot.position == moveTargetB.position)
+                {
+                    _currentTarget = moveTargetA;
+                }
+            }
+            MovePlatform();
+        }
 
-        // moveStep is used by the player to move along with platforms
-        moveStep = newPosition - rb.transform.position;
+        if (allowRotation)
+        {
+            RotatePlatform();
+        }
+    }
+    
+    private void MovePlatform()
+    {
+        Vector3 newPosition = Vector3.MoveTowards(movementRoot.position, _currentTarget.position, moveSpeed/100);
+        
+        // linearVelocity is used by the player to move along with platforms
+        linearVelocity = newPosition - movementRoot.position;
+        
+        movementRoot.position = newPosition;
+    }
 
-        rb.MovePosition(newPosition);
+    private void RotatePlatform()
+    {
+        // angularVelocityY is used by the player to rotate with platforms
+        angularVelocityY = rotationSpeed;
+        
+        rotationRoot.Rotate(Vector3.up, rotationSpeed);
     }
 }

@@ -27,7 +27,7 @@ public class GenericUIWindow : MonoBehaviour
                 // print("Failed to SetSelectedGameObject ");
             }
         }
-        else
+        else if (gameObject.name != "Load Page")
         {
             Debug.LogWarning(gameObject.name + " has no firstSelectedButton! All pages (except for LoadPage) need one, for keyboard and gamepads to work");
         }

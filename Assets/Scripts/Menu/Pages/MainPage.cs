@@ -17,7 +17,7 @@ public class MainPage : GenericUIWindow
     
     void Start()
     {
-        if (FindObjectOfType<Game>() == null)
+        if (FindFirstObjectByType<Game>() == null)
         {
             // This means we started from the menu scene
             
@@ -54,7 +54,7 @@ public class MainPage : GenericUIWindow
             // This means a level is our active scene and the game is already running
             print(Game.Menu.isLoadedAdditively);
             
-            FindObjectOfType<PauseMenuLoader>().HideMainMenu();
+            FindFirstObjectByType<PauseMenuLoader>().HideMainMenu();
             
             // PauseMenuLoader handles this control when using the pause button
 

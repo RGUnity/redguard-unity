@@ -5,25 +5,25 @@ using UnityEngine;
 
 public class PlayerInteractionManager : MonoBehaviour
 {
-    public GameObject selectedObject;
+    public Interactable selectedObject;
 
     void Update()
     {
-        // When "interact" is pressed, trigger "Interact()" on the selectedObject
-        if (Input.GetButtonDown("Fire1"))
+        // When "Use" is pressed, trigger "Interact()" on the selectedObject
+        if (LocalScene.inputManager.use
+            && selectedObject != null)
         {
-            if(selectedObject!=null)
-            {
-                selectedObject.GetComponent<Interactable>().Interact();
-            }
+            selectedObject.Interact();
         }
     }
 
     // Set selectedObject variable
     private void OnTriggerEnter(Collider detectedCollider)
     {
-        //print("Entered Trigger: " + detectedCollider.gameObject.name);
-        selectedObject = detectedCollider.gameObject;
+        if (detectedCollider.TryGetComponent(out Interactable interactable))
+        {
+            selectedObject = interactable;
+        }
     }
 
     private void OnTriggerExit(Collider other)
