@@ -17,13 +17,7 @@ MonoBehaviour:
   m_ModuleName: WindowsStandalone
   m_PlatformBuildProfile:
     rid: 7032174514074550438
-  m_Scenes:
-  - m_enabled: 1
-    m_path: Assets/Playground/Test Scenes/Movement Tests.unity
-  - m_enabled: 1
-    m_path: Assets/Playground/Test Scenes/Interaction Tests.unity
-  - m_enabled: 1
-    m_path: Assets/Playground/Test Scenes/ExampleScene01.unity
+  m_Scenes: []
   references:
     version: 2
     RefIds:
