@@ -20,6 +20,10 @@ MonoBehaviour:
   m_Scenes:
   - m_enabled: 1
     m_path: Assets/Playground/Test Scenes/Movement Tests.unity
+  - m_enabled: 1
+    m_path: Assets/Playground/Test Scenes/Interaction Tests.unity
+  - m_enabled: 1
+    m_path: Assets/Playground/Test Scenes/ExampleScene01.unity
   references:
     version: 2
     RefIds:
