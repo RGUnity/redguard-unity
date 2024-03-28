@@ -2741,7 +2741,7 @@ Transform:
   m_GameObject: {fileID: 423100366}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3, y: 2.17, z: -0.29}
+  m_LocalPosition: {x: -3, y: 2.3, z: -0.29}
   m_LocalScale: {x: 2, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2857,11 +2857,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 459837424}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &485721137 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2230608995947149769, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
-  m_PrefabInstance: {fileID: 3616321019469933516}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &506306172
 GameObject:
   m_ObjectHideFlags: 0
@@ -4149,7 +4144,7 @@ Transform:
   m_GameObject: {fileID: 757481406}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5, y: 2, z: -0.29}
+  m_LocalPosition: {x: -5, y: 2.2, z: -0.29}
   m_LocalScale: {x: 2, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4509,37 +4504,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 2925108754254220236, guid: d3e9e07f529de8a4b83222520ccc9d83, type: 3}
---- !u!1 &830043143
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 830043144}
-  m_Layer: 0
-  m_Name: Raycast Root
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &830043144
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 830043143}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.25, z: 0.225}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 485721137}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &849270207
 GameObject:
   m_ObjectHideFlags: 0
@@ -10732,17 +10696,18 @@ PrefabInstance:
     - target: {fileID: 4631366212702092740, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
       propertyPath: raycastRoot
       value: 
-      objectReference: {fileID: 830043144}
+      objectReference: {fileID: 0}
     - target: {fileID: 4860966003268461612, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5481755865862611780, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 2230608995947149769, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 830043144}
+    m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
 --- !u!1001 &7717900808166449114

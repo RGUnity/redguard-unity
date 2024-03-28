@@ -213,6 +213,10 @@ MonoBehaviour:
   shortJumpThreshold: 0.1
   slopeSlideSpeed: 0.1
   slopeAlignmentSpeed: 100
+  raycastRoot: {fileID: 0}
+  localRaycastOrigin: {x: 0, y: 2.25, z: 0.25}
+  highLedgeStart: 2.1
+  lowLedgeStart: 0.9
 --- !u!114 &4619516045627391771
 MonoBehaviour:
   m_ObjectHideFlags: 0
