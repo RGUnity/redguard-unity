@@ -26,6 +26,9 @@ public class PlayerMovement : MonoBehaviour
     [Header("Slope Sliding")]
     [SerializeField] private float slopeSlideSpeed = 5f;
     [SerializeField] private float slopeAlignmentSpeed = 3f;
+
+    [Header("Ledge Climbing")] 
+    [SerializeField] private Transform raycastRoot;
     
     // General CC properties
     private bool _isGrounded;
@@ -48,6 +51,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _smoothVelocity;
     private float _speed;
     private TEST_MovingPlatform _currentPlatform;
+    private bool _inFrontOfLedge;
+    private Vector3 _ledgeTargetPosition;
+    private bool _inClimbingUpLedge;
 
 
     private void Start()
@@ -59,6 +65,7 @@ public class PlayerMovement : MonoBehaviour
     {
         GroundCheck();
         GetSurfaceVectors();
+        LedgeClimbing();
         
         // Slope sliding
         if (_surfaceAngle > characterController.slopeLimit)
@@ -95,6 +102,7 @@ public class PlayerMovement : MonoBehaviour
             if (_input.jump)
             {
                 Jump();
+                _input.jump = false;
             }
         }
         
@@ -104,7 +112,6 @@ public class PlayerMovement : MonoBehaviour
             {
                 // Apply gravity
                 _velocity.y += gravity / 1000;
-                //print(_velocity.y);
             }
             else
             {
@@ -196,12 +203,23 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            // Standing jump
-            _velocity = Vector3.zero;
-            _smoothVelocity = Vector3.zero;
-            _velocity.y = jumpHeight /10;
-            _isGrounded = false;
-            print("Standing jump");
+            // this may get called twice because input run in Update, but physics in fixed update
+            if (_inFrontOfLedge)
+            {
+                // Climb ledge
+                //print("Climb now! at " + Time.fixedTime);
+                ClimbLowerLedge();
+            }
+            else
+            {
+                // Standing jump
+                _velocity = Vector3.zero;
+                _smoothVelocity = Vector3.zero;
+                _velocity.y = jumpHeight /10;
+                _isGrounded = false;
+                //print("Standing jump at " + Time.fixedTime);
+            }
+            print("Jump at " + Time.fixedTime);
         }
     }
 
@@ -309,6 +327,45 @@ public class PlayerMovement : MonoBehaviour
         Vector3 finalPosition = transform.position + worldRotatedVector;
 
         return finalPosition;
+    }
+    
+    private void LedgeClimbing()
+    {
+        Vector3 origin = raycastRoot.position;
+        float originHeight = raycastRoot.localPosition.y - characterController.center.y + characterController.height / 2 ;
+        float raycastStartHeight = 0.9f;
+        float finalHeight = originHeight - raycastStartHeight;
+        
+        Debug.DrawRay(origin, Vector3.down * finalHeight, Color.magenta);
+        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, finalHeight, groundLayers))
+        {
+            _ledgeTargetPosition = hit.point;
+            Vector3 surfaceNormal = hit.normal;
+            
+            // Check if the surface is flat enough
+            float dot = Vector3.Dot(surfaceNormal, transform.up);
+            //print(dot);
+            if (dot > 0.5f)
+            {
+                _inFrontOfLedge = true;
+            }
+            else
+            {
+                _inFrontOfLedge = false;
+            }
+        }
+        else
+        {
+            _inFrontOfLedge = false;
+        }
+    }
+
+    private void ClimbLowerLedge()
+    {
+        characterController.enabled = false;
+        transform.position = _ledgeTargetPosition + transform.forward/4 + Vector3.up;
+        characterController.enabled = true;
+        _velocity = Vector3.zero;
     }
 }
 
