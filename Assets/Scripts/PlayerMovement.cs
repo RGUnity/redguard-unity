@@ -195,6 +195,12 @@ public class PlayerMovement : MonoBehaviour
     
     private void Jump()
     {
+        if (IsNearLowLedge())
+        {
+            ClimbLowerLedge();
+            return;
+        }
+        
         if (_input.move.y > 0
             && _speed > longJumpThreshold)
         {
@@ -213,19 +219,11 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            if (IsNearLowLedge())
-            {
-                ClimbLowerLedge();
-            }
-            
-            else
-            {
-                // Standing jump
-                _velocity = Vector3.zero;
-                _smoothVelocity = Vector3.zero;
-                _velocity.y = jumpHeight /10;
-                _isGrounded = false;
-            }
+            // Standing jump
+            _velocity = Vector3.zero;
+            _smoothVelocity = Vector3.zero;
+            _velocity.y = jumpHeight /10;
+            _isGrounded = false;
         }
     }
 
