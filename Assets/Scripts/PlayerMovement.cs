@@ -213,7 +213,7 @@ public class PlayerMovement : MonoBehaviour
             
             if (hit.collider.CompareTag("Moving Platform"))
             {
-                if (hit.transform.parent.parent.parent.TryGetComponent(out TEST_MovingPlatform platform))
+                if (hit.transform.TryGetComponent(out TEST_MovingPlatform platform))
                 {
                     _currentPlatform = platform;
                     _isOnMovingPlatform = true;
@@ -281,7 +281,7 @@ public class PlayerMovement : MonoBehaviour
             _velocity += _currentPlatform.linearVelocity;
             
             // Get the rotation of the platform and rotate the player with it
-            Vector3 newPosition = RotateVectorAroundTransform(transform.position, _currentPlatform.rb.transform, Vector3.up, _currentPlatform.angularVelocityY);
+            Vector3 newPosition = RotateVectorAroundTransform(transform.position, _currentPlatform.rotationRoot, Vector3.up, _currentPlatform.angularVelocityY);
          
             Vector3 movementVector = newPosition - transform.position;
             Debug.DrawRay(transform.position, movementVector*10, Color.magenta);

@@ -5,9 +5,8 @@ using UnityEngine;
 public class TEST_MovingPlatform : MonoBehaviour
 {   
     [Header("Global Settings")]
-    public Rigidbody rb;
-    [SerializeField] private Transform movementRoot;
-    [SerializeField] private Transform rotationRoot;
+    public Transform movementRoot;
+    public Transform rotationRoot;
     
     [Header("Moving Platform")]
     [SerializeField] private bool allowMovement;
@@ -24,8 +23,6 @@ public class TEST_MovingPlatform : MonoBehaviour
     [HideInInspector] public float angularVelocityY;
     
     private Transform _currentTarget;
-    
-    
     
     // This script must be higher than PlayerMovement in the script execution order...
     // ...otherwise the player's movement will lag behind by one frame 
