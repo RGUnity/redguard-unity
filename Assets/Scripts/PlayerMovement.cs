@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -29,6 +30,11 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Ledge Climbing")] 
     [SerializeField] private Transform raycastRoot;
+    [SerializeField] private float raycastZOffset = 0.225f;
+
+    [SerializeField] private float maxLedgeHeight = 3.25f;
+    [SerializeField] private float lowLedgeStart = 0.9f;
+    [SerializeField] private float highLedgeStart = 3.25f;
     
     // General CC properties
     private bool _isGrounded;
@@ -51,7 +57,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _smoothVelocity;
     private float _speed;
     private TEST_MovingPlatform _currentPlatform;
-    private bool _inFrontOfLedge;
+    private bool _inFrontOfLowLedge;
+    private bool _inFrontOfHighLedge;
     private Vector3 _ledgeTargetPosition;
     private bool _inClimbingUpLedge;
 
@@ -190,7 +197,6 @@ public class PlayerMovement : MonoBehaviour
             _velocity = _forwardOnSurface * longJumpDistance /10;
             _velocity.y = jumpHeight /10;
             _isGrounded = false;
-            print("Long jump");
         }
         else if(_input.move.y > 0
                 && _speed > shortJumpThreshold)
@@ -199,16 +205,19 @@ public class PlayerMovement : MonoBehaviour
             _velocity = _forwardOnSurface * shortJumpDistance /10;
             _velocity.y = jumpHeight /10;
             _isGrounded = false;
-            print("Short jump");
         }
         else
         {
             // this may get called twice because input run in Update, but physics in fixed update
-            if (_inFrontOfLedge)
+            if (_inFrontOfLowLedge)
             {
                 // Climb ledge
-                //print("Climb now! at " + Time.fixedTime);
                 ClimbLowerLedge();
+            }
+            else if (_inFrontOfHighLedge)
+            {
+                // Jump and hold on to ledge
+                AttachToLedge();
             }
             else
             {
@@ -217,9 +226,7 @@ public class PlayerMovement : MonoBehaviour
                 _smoothVelocity = Vector3.zero;
                 _velocity.y = jumpHeight /10;
                 _isGrounded = false;
-                //print("Standing jump at " + Time.fixedTime);
             }
-            print("Jump at " + Time.fixedTime);
         }
     }
 
@@ -332,31 +339,48 @@ public class PlayerMovement : MonoBehaviour
     private void LedgeClimbing()
     {
         Vector3 origin = raycastRoot.position;
-        float originHeight = raycastRoot.localPosition.y - characterController.center.y + characterController.height / 2 ;
-        float raycastStartHeight = 0.9f;
-        float finalHeight = originHeight - raycastStartHeight;
+        float rayOriginHeight = raycastRoot.localPosition.y - characterController.center.y + characterController.height / 2 ;
+        float lowLedgeStart = 0.9f;
+        float highLedgeStart = 3.25f;
+        float rayLength = rayOriginHeight - lowLedgeStart;
+        float playerRootHeight = transform.position.y - characterController.height / 2 + characterController.center.y - characterController.skinWidth;
+        playerRootHeight = (float)Math.Round(playerRootHeight, 2);
         
-        Debug.DrawRay(origin, Vector3.down * finalHeight, Color.magenta);
-        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, finalHeight, groundLayers))
+        Debug.DrawRay(origin, Vector3.down * rayLength, Color.magenta);
+        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, rayLength, groundLayers))
         {
             _ledgeTargetPosition = hit.point;
             Vector3 surfaceNormal = hit.normal;
             
             // Check if the surface is flat enough
-            float dot = Vector3.Dot(surfaceNormal, transform.up);
-            //print(dot);
-            if (dot > 0.5f)
+            if (Vector3.Dot(surfaceNormal, transform.up) > 0.5f)
             {
-                _inFrontOfLedge = true;
+                _inFrontOfLowLedge = hit.point.y >= playerRootHeight + lowLedgeStart && hit.point.y < playerRootHeight + highLedgeStart;
+                _inFrontOfHighLedge = hit.point.y >= playerRootHeight + highLedgeStart;
+                // if (_inFrontOfLowLedge)
+                // {
+                //     if (!_isGrounded)
+                //     {
+                //         // vault
+                //         print("vault");
+                //     }
+                //     else if (_input.jump)
+                //     {
+                //         // hang
+                //         print("hang");
+                //     }
+                // }
             }
             else
             {
-                _inFrontOfLedge = false;
+                _inFrontOfLowLedge = false;
+                _inFrontOfHighLedge = false;
             }
         }
         else
         {
-            _inFrontOfLedge = false;
+            _inFrontOfLowLedge = false;
+            _inFrontOfHighLedge = false;
         }
     }
 
@@ -366,6 +390,11 @@ public class PlayerMovement : MonoBehaviour
         transform.position = _ledgeTargetPosition + transform.forward/4 + Vector3.up;
         characterController.enabled = true;
         _velocity = Vector3.zero;
+    }
+
+    private void AttachToLedge()
+    {
+        print("Attach to ledge pls");
     }
 }
 
