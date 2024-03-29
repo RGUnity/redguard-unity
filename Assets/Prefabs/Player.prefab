@@ -207,7 +207,7 @@ MonoBehaviour:
   turnSpeed: 1.8
   jumpHeight: 1.2
   fallSpeedMultiplier: 1
-  longJumpDistance: 1.5
+  longJumpDistance: 1.3
   shortJumpDistance: 0.7
   longJumpThreshold: 3.5
   shortJumpThreshold: 0.1
