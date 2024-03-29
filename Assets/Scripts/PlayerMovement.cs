@@ -40,7 +40,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _velocity;
     
     // Surface information
-    private float _surfaceAngle;
+    private float _surfaceAngle1;
+    private float _surfaceAngle2;
     private Vector3 _surfaceNormal;
     private Vector3 _surfaceContact;
     private Vector3 _surfaceDownhill;
@@ -71,15 +72,16 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         GroundCheck();
-        GetSurfaceVectors();
         
         // Slope sliding
-        if (_surfaceAngle > characterController.slopeLimit)
+        if (_surfaceAngle1 > characterController.slopeLimit
+            && _surfaceAngle2 > characterController.slopeLimit)
         {
             _isSliding = true;
             SlideDownhill();
         }
-        else
+        else if (_surfaceAngle1 < characterController.slopeLimit
+                 && _surfaceAngle2 < characterController.slopeLimit)
         {
             _isSliding = false;
         }
@@ -117,12 +119,12 @@ public class PlayerMovement : MonoBehaviour
             
             if (characterController.velocity.y > 0)
             {
-                // Apply gravity
+                // Apply gravity when jumping up
                 _velocity.y += gravity / 1000;
             }
             else
             {
-                // Apply gravity
+                // Apply gravity when falling down
                 _velocity.y += gravity / 1000 * fallSpeedMultiplier;
             }
 
@@ -229,13 +231,18 @@ public class PlayerMovement : MonoBehaviour
 
     private void GroundCheck()
     {
-        if (Physics.SphereCast(transform.position, 0.18f, Vector3.down, out RaycastHit hit, 0.9f, groundLayers))
+        Vector3 surfaceDownhill1 = default;
+        Vector3 surfaceDownhill2 = default;
+        
+        if (Physics.SphereCast(transform.position, 0.34f, Vector3.down, out RaycastHit sphereHit, 0.7f, groundLayers))
         {
             _isGrounded = true;
+            _surfaceAngle1 = Vector3.Angle(Vector3.up, sphereHit.normal);
+            surfaceDownhill1 = Vector3.Cross((Vector3.Cross( Vector3.up, _surfaceNormal)), _surfaceNormal).normalized;
             
-            if (hit.collider.CompareTag("Moving Platform"))
+            if (sphereHit.collider.CompareTag("Moving Platform"))
             {
-                if (hit.transform.TryGetComponent(out TEST_MovingPlatform platform))
+                if (sphereHit.transform.TryGetComponent(out TEST_MovingPlatform platform))
                 {
                     _currentPlatform = platform;
                     _isOnMovingPlatform = true;
@@ -254,34 +261,34 @@ public class PlayerMovement : MonoBehaviour
             _currentPlatform = null;
             _isOnMovingPlatform = false;
         }
-    }
-    
-    private void GetSurfaceVectors()
-    {
-        if (_isGrounded)
+        
+        Debug.DrawRay(transform.position, Vector3.down * 1.7f, Color.red);   
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit rayHit, 1.7f, groundLayers))
         {
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.5f, groundLayers))
-            {
-                _surfaceAngle = Vector3.Angle(Vector3.up, hit.normal);
-                _surfaceNormal = hit.normal;
-                _surfaceContact = hit.point;
-                _surfaceDownhill = Vector3.Cross((Vector3.Cross( Vector3.up, _surfaceNormal)), _surfaceNormal).normalized;
-                _forwardOnSurface = Vector3.Cross(transform.right, hit.normal).normalized;
-                _rightOnSurface = Vector3.Cross(_surfaceNormal, _forwardOnSurface);
-            }
-            else
-            {
-                // These are fallback vectors in case the Raycast doesn't hit anything
-                _forwardOnSurface = transform.forward;
-                _rightOnSurface = transform.right;
-            }
+            _surfaceAngle2 = Vector3.Angle(Vector3.up, rayHit.normal);
+            _surfaceNormal = rayHit.normal;
+            _surfaceContact = rayHit.point;
+            surfaceDownhill2 = Vector3.Cross((Vector3.Cross( Vector3.up, _surfaceNormal)), _surfaceNormal).normalized;
+            _forwardOnSurface = Vector3.Cross(transform.right, rayHit.normal).normalized;
+            _rightOnSurface = Vector3.Cross(_surfaceNormal, _forwardOnSurface);
         }
+        else
+        {
+            // These are fallback vectors in case the Raycast doesn't hit anything
+            _forwardOnSurface = transform.forward;
+            _rightOnSurface = transform.right;
+        }
+
+        _surfaceDownhill = Vector3.Normalize(surfaceDownhill1 + surfaceDownhill2);
     }
     
     private void SlideDownhill()
     {
+        // Todo: try this - get surface vectors from both spherecast AND raycast, and only if both report a steep surface, slide.
+        // call this the "SurfaceCheck()" or something. or just GroundCheck also
+        
         // This Vector points downhill
-        Debug.DrawRay(_surfaceContact, _surfaceDownhill, Color.green);
+        //Debug.DrawRay(_surfaceContact, _surfaceDownhill, Color.green);
         
         _velocity = _surfaceDownhill * slopeSlideSpeed;
         
@@ -339,7 +346,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(localRaycastOrigin);
         float raycastLength = localRaycastOrigin.y - lowLedgeStart;
         
-        //Debug.DrawRay(raycastOrigin, Vector3.down * raycastLength, Color.magenta);
+        Debug.DrawRay(raycastOrigin, Vector3.down * raycastLength, Color.magenta);
         if (Physics.Raycast(raycastOrigin, Vector3.down, out RaycastHit hitLow, raycastLength, groundLayers))
         {
             _ledgeTargetPosition = hitLow.point;
@@ -360,7 +367,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(localRaycastOrigin);
         float raycastLength = localRaycastOrigin.y - highLedgeStart;
         
-        //Debug.DrawRay(raycastOrigin, Vector3.down * raycastLength, Color.red);
+        Debug.DrawRay(raycastOrigin, Vector3.down * raycastLength, Color.red);
         if (Physics.Raycast(raycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, groundLayers))
         {
             _ledgeTargetPosition = hitHigh.point;
