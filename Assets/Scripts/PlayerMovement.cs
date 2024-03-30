@@ -252,7 +252,6 @@ public class PlayerMovement : MonoBehaviour
             //Block stepping over object
             cc.stepOffset = 0;
         }
-        print(Math.Round(_playerRootPosition.y, 2));
     }
     
     private void Jump()
