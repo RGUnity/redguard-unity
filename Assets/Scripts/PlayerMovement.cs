@@ -1,11 +1,10 @@
-using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Main Settings")]
-    [SerializeField] private CharacterController characterController;
+    [SerializeField] private CharacterController cc;
     [SerializeField] private LayerMask groundLayers;
     [SerializeField] private float gravity = -25f;
     [SerializeField] private float groundMagnet = -4f;
@@ -40,10 +39,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _velocity;
     
     // Surface information
-    private float _surfaceAngle1;
-    private float _surfaceAngle2;
-    private Vector3 _surfaceNormal;
-    private Vector3 _surfaceContact;
+    private float _surfaceAngleSphere;
+    private float _surfaceAngleRay;
     private Vector3 _surfaceDownhill;
     private Vector3 _forwardOnSurface;
     private Vector3 _rightOnSurface;
@@ -74,14 +71,14 @@ public class PlayerMovement : MonoBehaviour
         GroundCheck();
         
         // Slope sliding
-        if (_surfaceAngle1 > characterController.slopeLimit
-            && _surfaceAngle2 > characterController.slopeLimit)
+        if (_surfaceAngleSphere > cc.slopeLimit
+            && _surfaceAngleRay > cc.slopeLimit)
         {
             _isSliding = true;
             SlideDownhill();
         }
-        else if (_surfaceAngle1 < characterController.slopeLimit
-                 && _surfaceAngle2 < characterController.slopeLimit)
+        else if (_surfaceAngleSphere < cc.slopeLimit
+                 && _surfaceAngleRay < cc.slopeLimit)
         {
             _isSliding = false;
         }
@@ -89,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
         // Basic movement
         if (_isGrounded && !_isSliding)
         {
-            Debug.DrawRay(_surfaceContact, _forwardOnSurface, Color.yellow);
+            Debug.DrawRay(transform.position + Vector3.down, _forwardOnSurface, Color.yellow);
             
             // Movement when moveModifier is pressed / is true
             if (_input.moveModifier)
@@ -117,7 +114,7 @@ public class PlayerMovement : MonoBehaviour
         if (!_isGrounded)
         {
             
-            if (characterController.velocity.y > 0)
+            if (cc.velocity.y > 0)
             {
                 // Apply gravity when jumping up
                 _velocity.y += gravity / 1000;
@@ -142,12 +139,12 @@ public class PlayerMovement : MonoBehaviour
         }
         
         // Apply the velocity to the CC  
-        characterController.Move(_velocity);
+        cc.Move(_velocity);
         
-        Debug.DrawRay(transform.position - Vector3.up, characterController.velocity.normalized, Color.green);
+        Debug.DrawRay(transform.position - Vector3.up, cc.velocity.normalized, Color.green);
         
         // I think this is in meters per second?
-        _speed = characterController.velocity.magnitude;
+        _speed = cc.velocity.magnitude;
     }
 
     private void WalkMode()
@@ -231,14 +228,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void GroundCheck()
     {
-        Vector3 surfaceDownhill1 = default;
-        Vector3 surfaceDownhill2 = default;
+        Vector3 surfaceDownhillSphere = default;
+        Vector3 surfaceDownhillRay = default;
         
         if (Physics.SphereCast(transform.position, 0.34f, Vector3.down, out RaycastHit sphereHit, 0.7f, groundLayers))
         {
             _isGrounded = true;
-            _surfaceAngle1 = Vector3.Angle(Vector3.up, sphereHit.normal);
-            surfaceDownhill1 = Vector3.Cross((Vector3.Cross( Vector3.up, _surfaceNormal)), _surfaceNormal).normalized;
+            _surfaceAngleSphere = Vector3.Angle(Vector3.up, sphereHit.normal);
+            surfaceDownhillSphere = Vector3.Cross((Vector3.Cross( Vector3.up, sphereHit.normal)), sphereHit.normal).normalized;
             
             if (sphereHit.collider.CompareTag("Moving Platform"))
             {
@@ -265,37 +262,33 @@ public class PlayerMovement : MonoBehaviour
         Debug.DrawRay(transform.position, Vector3.down * 1.7f, Color.red);   
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit rayHit, 1.7f, groundLayers))
         {
-            _surfaceAngle2 = Vector3.Angle(Vector3.up, rayHit.normal);
-            _surfaceNormal = rayHit.normal;
-            _surfaceContact = rayHit.point;
-            surfaceDownhill2 = Vector3.Cross((Vector3.Cross( Vector3.up, _surfaceNormal)), _surfaceNormal).normalized;
+            _surfaceAngleRay = Vector3.Angle(Vector3.up, rayHit.normal);
+            surfaceDownhillRay = Vector3.Cross((Vector3.Cross( Vector3.up, rayHit.normal)), rayHit.normal).normalized;
             _forwardOnSurface = Vector3.Cross(transform.right, rayHit.normal).normalized;
-            _rightOnSurface = Vector3.Cross(_surfaceNormal, _forwardOnSurface);
+            _rightOnSurface = Vector3.Cross(rayHit.normal, _forwardOnSurface);
+            
+            _surfaceDownhill = Vector3.Normalize(surfaceDownhillSphere + surfaceDownhillRay);
+            print(surfaceDownhillRay);
         }
         else
         {
             // These are fallback vectors in case the Raycast doesn't hit anything
             _forwardOnSurface = transform.forward;
             _rightOnSurface = transform.right;
-        }
 
-        _surfaceDownhill = Vector3.Normalize(surfaceDownhill1 + surfaceDownhill2);
+            _surfaceDownhill = surfaceDownhillSphere;
+        }
     }
     
     private void SlideDownhill()
     {
-        // Todo: try this - get surface vectors from both spherecast AND raycast, and only if both report a steep surface, slide.
-        // call this the "SurfaceCheck()" or something. or just GroundCheck also
-        
-        // This Vector points downhill
-        //Debug.DrawRay(_surfaceContact, _surfaceDownhill, Color.green);
-        
+        // Add velocity in the downhill direction
         _velocity = _surfaceDownhill * slopeSlideSpeed;
         
         // Rotate the player towards the slideDirection
         Vector3 flatSurfaceDownhill = new Vector3(_surfaceDownhill.x, 0, _surfaceDownhill.z);
         
-        Debug.DrawRay(_surfaceContact, flatSurfaceDownhill, Color.blue);
+        Debug.DrawRay(transform.position + Vector3.down, flatSurfaceDownhill, Color.blue);
         Quaternion stepRotation = Quaternion.LookRotation(flatSurfaceDownhill, Vector3.up);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, stepRotation, slopeAlignmentSpeed * Time.deltaTime);
     }
@@ -341,7 +334,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsNearLowLedge()
     {
-        float playerRootHeight = transform.position.y - characterController.height / 2 + characterController.center.y - characterController.skinWidth;
+        float playerRootHeight = transform.position.y - cc.height / 2 + cc.center.y - cc.skinWidth;
         Vector3 playerRootPosition = new Vector3(transform.position.x, playerRootHeight, transform.position.z);
         Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(localRaycastOrigin);
         float raycastLength = localRaycastOrigin.y - lowLedgeStart;
@@ -362,7 +355,7 @@ public class PlayerMovement : MonoBehaviour
     
     private bool IsNearHighLedge()
     {
-        float playerRootHeight = transform.position.y - characterController.height / 2 + characterController.center.y - characterController.skinWidth;
+        float playerRootHeight = transform.position.y - cc.height / 2 + cc.center.y - cc.skinWidth;
         Vector3 playerRootPosition = new Vector3(transform.position.x, playerRootHeight, transform.position.z);
         Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(localRaycastOrigin);
         float raycastLength = localRaycastOrigin.y - highLedgeStart;
@@ -383,9 +376,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void ClimbLowerLedge()
     {
-        characterController.enabled = false;
+        cc.enabled = false;
         transform.position = _ledgeTargetPosition + transform.forward/4 + Vector3.up;
-        characterController.enabled = true;
+        cc.enabled = true;
         _velocity = Vector3.zero;
     }
 
