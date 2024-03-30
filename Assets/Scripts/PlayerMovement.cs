@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -22,7 +20,6 @@ public class PlayerMovement : MonoBehaviour
     
     [Header("Jumping")]
     [SerializeField] private float jumpHeight = 8f;
-    [SerializeField] private float fallSpeedMultiplier = 2f;
     [SerializeField] private float longJumpDistance = 6f;
     [SerializeField] private float shortJumpDistance = 4f;
     [SerializeField] private float longJumpThreshold = 2.8f;
@@ -37,14 +34,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float highLedgeStart = 2.1f;
     [SerializeField] private float lowLedgeStart = 0.9f;
     
-    
     // General CC properties
     private Vector3 _velocity;
     private bool _isGrounded;
     private bool _feetVisiblyGrounded;
-    private bool _isSliding;
+    private bool _allowInputs;
     private Vector3 _playerRootPosition;
-    
     
     // Surface information
     private float _surfaceAngleSphere;
@@ -68,7 +63,6 @@ public class PlayerMovement : MonoBehaviour
     private bool _isHanginOnLedge;
     
 
-
     private void Start()
     {
         _input = LocalScene.inputManager;
@@ -88,28 +82,28 @@ public class PlayerMovement : MonoBehaviour
             && _surfaceAngleSphere > cc.slopeLimit
             && _surfaceAngleRay > cc.slopeLimit) 
         {
-            _isSliding = true;
             SlideDownhill();
+            _allowInputs = false;
         }
         else
         {
-            _isSliding = false;
+            _allowInputs = true;
         }
         
         // Step dropping
         if (_isGrounded
-            && !_isSliding
+            && _allowInputs
             && !_feetVisiblyGrounded
             && _velocity.magnitude < 1
             && cc.velocity.y < 0)
         {
-            print("Drop!");
             ForceDropDown();
-            _isSliding = true;
+            _allowInputs = false;
         }
         
         // Basic movement
-        if (_isGrounded && !_isSliding)
+        if (_isGrounded 
+            && _allowInputs)
         {
             Debug.DrawRay(transform.position + Vector3.down, _forwardOnSurface, Color.yellow);
             
@@ -124,11 +118,17 @@ public class PlayerMovement : MonoBehaviour
                 RunMode();
             }
             
+            StickToPlatforms();
+            
+            // Apply ground magnet
+            _velocity.y += groundMagnet;
+            
             // Apply smoothing with MoveTowards
             _smoothVelocity = Vector3.MoveTowards(_smoothVelocity, _velocity, (1/velocitySmoothing));
             _velocity.z = _smoothVelocity.z;
             _velocity.x = _smoothVelocity.x;
             
+            // Jump
             if (_input.jump)
             {
                 Jump();
@@ -136,31 +136,18 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         
+        // Gravity
         if (!_isGrounded)
         {
-            
-            if (cc.velocity.y > 0)
-            {
-                // Apply gravity when jumping up
-                _velocity.y += gravity / 1000;
-            }
-            else
-            {
-                // Apply gravity when falling down
-                _velocity.y += gravity / 1000 * fallSpeedMultiplier;
-            }
-
-            if (IsNearHighLedge())
-            {
-                AttachToLedge();
-            }
+            // Apply gravity when jumping up
+            _velocity.y += gravity / 1000;
         }
-        else
+        
+        // High ledge detection
+        if (!_isGrounded
+            && IsNearHighLedge())
         {
-            StickToPlatforms();
-            
-            // Apply ground magnet
-            _velocity.y += groundMagnet;
+            AttachToLedge();
         }
         
         // Apply the velocity to the CC  

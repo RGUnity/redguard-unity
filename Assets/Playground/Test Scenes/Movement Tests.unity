@@ -10701,6 +10701,10 @@ PrefabInstance:
       propertyPath: raycastRoot
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 4631366212702092740, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
+      propertyPath: fallSpeedMultiplier
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4860966003268461612, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
       propertyPath: m_Name
       value: Player
