@@ -84,22 +84,18 @@ public class PlayerMovement : MonoBehaviour
 
         // Slope sliding
         if (_isGrounded
-            && _feetVisiblyGrounded)
+            && _feetVisiblyGrounded
+            && _surfaceAngleSphere > cc.slopeLimit
+            && _surfaceAngleRay > cc.slopeLimit) 
         {
-            if (_surfaceAngleSphere > cc.slopeLimit
-                && _surfaceAngleRay > cc.slopeLimit)
-            {
-                _isSliding = true;
-                SlideDownhill();
-            
-            }
-            else if (_surfaceAngleSphere < cc.slopeLimit
-                     && _surfaceAngleRay < cc.slopeLimit)
-            {
-                _isSliding = false;
-            }
+            _isSliding = true;
+            SlideDownhill();
         }
-
+        else
+        {
+            _isSliding = false;
+        }
+        
         // Step dropping
         if (_isGrounded
             && !_isSliding
@@ -341,7 +337,7 @@ public class PlayerMovement : MonoBehaviour
         }
         
         // Overhang check - returns true if the players feet are not visibly touching ground
-        if (Physics.SphereCast(transform.position, 0.16f, Vector3.down, out RaycastHit sphereHit2, 1.84f, groundLayers))
+        if (Physics.SphereCast(transform.position, 0.15f, Vector3.down, out RaycastHit sphereHit2, 1.84f, groundLayers))
         {
             _feetVisiblyGrounded = true;
         }
