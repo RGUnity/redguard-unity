@@ -34,9 +34,11 @@ public class PlayerMovement : MonoBehaviour
     
     
     // General CC properties
-    private bool _isGrounded;
-    private bool _isSliding; 
     private Vector3 _velocity;
+    private bool _isGrounded;
+    private bool _feetVisiblyGrounded;
+    private bool _isSliding;
+    
     
     // Surface information
     private float _surfaceAngleSphere;
@@ -69,20 +71,37 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         GroundCheck();
-        
+
         // Slope sliding
-        if (_surfaceAngleSphere > cc.slopeLimit
-            && _surfaceAngleRay > cc.slopeLimit)
+        if (_isGrounded
+            && _feetVisiblyGrounded)
         {
-            _isSliding = true;
-            SlideDownhill();
-        }
-        else if (_surfaceAngleSphere < cc.slopeLimit
-                 && _surfaceAngleRay < cc.slopeLimit)
-        {
-            _isSliding = false;
+            if (_surfaceAngleSphere > cc.slopeLimit
+                && _surfaceAngleRay > cc.slopeLimit)
+            {
+                _isSliding = true;
+                SlideDownhill();
+            
+            }
+            else if (_surfaceAngleSphere < cc.slopeLimit
+                     && _surfaceAngleRay < cc.slopeLimit)
+            {
+                _isSliding = false;
+            }
         }
 
+        // Step dropping
+        if (_isGrounded
+            && !_isSliding
+            && !_feetVisiblyGrounded
+            && _velocity.magnitude < 1
+            && cc.velocity.y < 0)
+        {
+            print("Drop!");
+            ForceDropDown();
+            _isSliding = true;
+        }
+        
         // Basic movement
         if (_isGrounded && !_isSliding)
         {
@@ -277,6 +296,17 @@ public class PlayerMovement : MonoBehaviour
             _rightOnSurface = transform.right;
 
             _surfaceDownhill = surfaceDownhillSphere;
+            print(surfaceDownhillSphere);
+        }
+        
+        // Overhang check - returns true if the players feet are not visibly touching ground
+        if (Physics.SphereCast(transform.position, 0.16f, Vector3.down, out RaycastHit sphereHit2, 1.84f, groundLayers))
+        {
+            _feetVisiblyGrounded = true;
+        }
+        else
+        {
+            _feetVisiblyGrounded = false;
         }
     }
     
@@ -288,9 +318,16 @@ public class PlayerMovement : MonoBehaviour
         // Rotate the player towards the slideDirection
         Vector3 flatSurfaceDownhill = new Vector3(_surfaceDownhill.x, 0, _surfaceDownhill.z);
         
-        Debug.DrawRay(transform.position + Vector3.down, flatSurfaceDownhill, Color.blue);
+        //Debug.DrawRay(transform.position + Vector3.down, flatSurfaceDownhill, Color.blue);
         Quaternion stepRotation = Quaternion.LookRotation(flatSurfaceDownhill, Vector3.up);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, stepRotation, slopeAlignmentSpeed * Time.deltaTime);
+    }
+    
+    private void ForceDropDown()
+    {
+        // Add velocity in the downhill direction
+        _surfaceDownhill += Vector3.down *2;
+        _velocity = _surfaceDownhill.normalized * (slopeSlideSpeed);
     }
 
     private void StickToPlatforms()
