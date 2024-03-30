@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -14,6 +15,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float walkSpeed = 1.5f;
     [SerializeField] private float velocitySmoothing = 12;
     [SerializeField] private float turnSpeed = 3.7f;
+    
+    [Header("Step Handling (Corner-Jumps Fix)")]
+    [SerializeField] private float stepOffset = 0.9f;
+    [SerializeField] private float rayDistance = 1f;
     
     [Header("Jumping")]
     [SerializeField] private float jumpHeight = 8f;
@@ -38,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     private bool _isGrounded;
     private bool _feetVisiblyGrounded;
     private bool _isSliding;
+    private Vector3 _playerRootPosition;
     
     
     // Surface information
@@ -70,7 +76,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        float playerRootHeight = transform.position.y - cc.height / 2 + cc.center.y;
+        _playerRootPosition = new Vector3(transform.position.x, playerRootHeight, transform.position.z);
+        
         GroundCheck();
+        HandleStepOffset();
 
         // Slope sliding
         if (_isGrounded
@@ -211,6 +221,40 @@ public class PlayerMovement : MonoBehaviour
         transform.Rotate(0, yRotation, 0);
     }
     
+    // There is a bug in Unity's CC where it ignores the step limit and jumps upwards when walking near some edges.
+    // Here is a forum thread that explains more and also offers a workaround, which is implemented below.
+    // Link: https://forum.unity.com/threads/character-controller-unexpected-step-offset-behaviour.640828/
+    
+    private void HandleStepOffset()
+    { 
+        float distance = cc.radius + cc.skinWidth + rayDistance;
+        //Position of player's ground level + StepOffset
+        Vector3 bottomWithStepOffset = _playerRootPosition + new Vector3(0, stepOffset, 0);
+        //Raycast at player's ground level in direction of movement
+        bool bottomRaycast = Physics.Raycast(_playerRootPosition, _forwardOnSurface, out _, distance);
+        //Raycast at player's ground level + StepOffset in direction of movement
+        bool bottomWithStepOffsetRaycast = Physics.Raycast(bottomWithStepOffset, _forwardOnSurface, out _, distance);
+        if (bottomRaycast && bottomWithStepOffsetRaycast)
+        {
+            //Wall in move direction
+            //Block stepping over object
+            cc.stepOffset = 0;
+        }
+        else if (bottomRaycast && !bottomWithStepOffsetRaycast)
+        {
+            //Step in move direction
+            //Allow stepping over object
+            cc.stepOffset = stepOffset;
+        }
+        else
+        {
+            //Nothing in move direction
+            //Block stepping over object
+            cc.stepOffset = 0;
+        }
+        print(Math.Round(_playerRootPosition.y, 2));
+    }
+    
     private void Jump()
     {
         if (IsNearLowLedge())
@@ -287,7 +331,6 @@ public class PlayerMovement : MonoBehaviour
             _rightOnSurface = Vector3.Cross(rayHit.normal, _forwardOnSurface);
             
             _surfaceDownhill = Vector3.Normalize(surfaceDownhillSphere + surfaceDownhillRay);
-            print(surfaceDownhillRay);
         }
         else
         {
@@ -296,7 +339,6 @@ public class PlayerMovement : MonoBehaviour
             _rightOnSurface = transform.right;
 
             _surfaceDownhill = surfaceDownhillSphere;
-            print(surfaceDownhillSphere);
         }
         
         // Overhang check - returns true if the players feet are not visibly touching ground
@@ -371,8 +413,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsNearLowLedge()
     {
-        float playerRootHeight = transform.position.y - cc.height / 2 + cc.center.y - cc.skinWidth;
-        Vector3 playerRootPosition = new Vector3(transform.position.x, playerRootHeight, transform.position.z);
+        Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
         Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(localRaycastOrigin);
         float raycastLength = localRaycastOrigin.y - lowLedgeStart;
         
@@ -392,8 +433,7 @@ public class PlayerMovement : MonoBehaviour
     
     private bool IsNearHighLedge()
     {
-        float playerRootHeight = transform.position.y - cc.height / 2 + cc.center.y - cc.skinWidth;
-        Vector3 playerRootPosition = new Vector3(transform.position.x, playerRootHeight, transform.position.z);
+        Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
         Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(localRaycastOrigin);
         float raycastLength = localRaycastOrigin.y - highLedgeStart;
         
