@@ -101,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
             _allowInputs = false;
         }
         
-        // Basic movement
+        // Movement when grounded
         if (_isGrounded 
             && _allowInputs)
         {
@@ -118,8 +118,6 @@ public class PlayerMovement : MonoBehaviour
                 RunMode();
             }
             
-            StickToPlatforms();
-            
             // Apply ground magnet
             _velocity.y += groundMagnet;
             
@@ -127,6 +125,9 @@ public class PlayerMovement : MonoBehaviour
             _smoothVelocity = Vector3.MoveTowards(_smoothVelocity, _velocity, (1/velocitySmoothing));
             _velocity.z = _smoothVelocity.z;
             _velocity.x = _smoothVelocity.x;
+            
+            // Stay on moving and rotating platforms
+            StickToPlatforms();
             
             // Jump
             if (_input.jump)
