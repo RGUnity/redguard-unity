@@ -61,6 +61,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _ledgeTargetPosition;
     private bool _isClimbingUpLedge;
     private bool _isHanginOnLedge;
+    private Vector3 _ledgeWallNormal;
     
 
     private void Start()
@@ -103,7 +104,8 @@ public class PlayerMovement : MonoBehaviour
         
         // Movement when grounded
         if (_isGrounded 
-            && _allowInputs)
+            && _allowInputs
+            && !_isHanginOnLedge)
         {
             Debug.DrawRay(transform.position + Vector3.down, _forwardOnSurface, Color.yellow);
             
@@ -138,17 +140,48 @@ public class PlayerMovement : MonoBehaviour
         }
         
         // Gravity
-        if (!_isGrounded)
+        if (!_isGrounded
+            && !_isHanginOnLedge)
         {
             // Apply gravity when jumping up
             _velocity.y += gravity / 1000;
         }
         
         // High ledge detection
-        if (!_isGrounded
-            && IsNearHighLedge())
+        if (!_isGrounded)
         {
-            AttachToLedge();
+            if (IsNearHighLedge())
+            {
+                _isHanginOnLedge = true;
+                AttachToLedge();
+            }
+            else
+            {
+                _isHanginOnLedge = false;
+            }
+        }
+        
+        // Movement when hanging on ledge
+        if (!_isGrounded
+            && _allowInputs
+            && _isHanginOnLedge)
+        {
+            // Cast a ray from the player to the _ledgeTargetPosition
+            if (Physics.Raycast(transform.position, _ledgeTargetPosition - transform.position, out RaycastHit hit, 2f, groundLayers))
+            {
+                _ledgeWallNormal = hit.normal;
+                Debug.DrawRay(transform.position, _ledgeWallNormal, Color.magenta);
+            }
+            
+            // Player should always be facing the wall
+            transform.rotation = Quaternion.LookRotation(-_ledgeWallNormal, transform.up);
+            
+            print(_input.move.x);
+            Vector3 rightOnWall = Vector3.Cross(transform.up, -_ledgeWallNormal);
+            _velocity = rightOnWall * _input.move.x;
+            _velocity = _velocity.normalized * 0.05f;
+            _velocity += -_ledgeWallNormal.normalized * 0.05f;
+
         }
         
         // Apply the velocity to the CC  
@@ -444,8 +477,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void AttachToLedge()
     {
-        _isHanginOnLedge = true;
         print("Attach to ledge pls");
+        gravity = 0;
+        _velocity = Vector3.zero;
     }
 }
 
