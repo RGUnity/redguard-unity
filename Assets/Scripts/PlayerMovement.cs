@@ -56,8 +56,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _smoothVelocity;
     private float _speed;
     private TEST_MovingPlatform _currentPlatform;
-    private bool _inFrontOfLowLedge;
-    private bool _inFrontOfHighLedge;
+    // private bool _inFrontOfLowLedge;
+    // private bool _inFrontOfHighLedge;
     private Vector3 _ledgeTargetPosition;
     private bool _isClimbingUpLedge;
     private bool _isHanginOnLedge;
