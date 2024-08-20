@@ -158,6 +158,7 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 _isHanginOnLedge = false;
+                print("Stop Ledge climbing here by resetting gravity and _velocity");
             }
         }
         
