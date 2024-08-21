@@ -62,11 +62,13 @@ public class PlayerMovement : MonoBehaviour
     private bool _isClimbingUpLedge;
     private bool _isHanginOnLedge;
     private Vector3 _ledgeWallNormal;
+    private float _defaultGravity;
     
 
     private void Start()
     {
         _input = LocalScene.inputManager;
+        _defaultGravity = gravity;
     }
 
     private void FixedUpdate()
@@ -158,6 +160,7 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 _isHanginOnLedge = false;
+                DetachFromLedge();
                 print("Stop Ledge climbing here by resetting gravity and _velocity");
             }
         }
@@ -428,6 +431,7 @@ public class PlayerMovement : MonoBehaviour
         return finalPosition;
     }
 
+    // Cyrus can climb directly over low ledges
     private bool IsNearLowLedge()
     {
         Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
@@ -448,6 +452,7 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
     
+    // Cyrus can jump and hang on to high ledges
     private bool IsNearHighLedge()
     {
         Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
@@ -482,5 +487,13 @@ public class PlayerMovement : MonoBehaviour
         gravity = 0;
         _velocity = Vector3.zero;
     }
+    
+    private void DetachFromLedge()
+    {
+        print("Detach from ledge pls");
+        gravity = _defaultGravity;
+    }
+    
+    //todo: Add ledge sensors on the left and right to see where ledges end
 }
 
