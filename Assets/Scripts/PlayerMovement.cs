@@ -161,7 +161,6 @@ public class PlayerMovement : MonoBehaviour
             {
                 _isHanginOnLedge = false;
                 DetachFromLedge();
-                print("Stop Ledge climbing here by resetting gravity and _velocity");
             }
         }
         
@@ -490,7 +489,6 @@ public class PlayerMovement : MonoBehaviour
     
     private void DetachFromLedge()
     {
-        print("Detach from ledge pls");
         gravity = _defaultGravity;
     }
     
