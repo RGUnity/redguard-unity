@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -37,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Vector3 rightLedgeRaycastOrigin = new (0.3f, 2.25f, 0.5f);
     [SerializeField] private float highLedgeStart = 2.1f;
     [SerializeField] private float lowLedgeStart = 0.9f;
+    [SerializeField] private float ledgeStrafeSpeed = 2f;
 
     // General CC properties
     private Vector3 _velocity;
@@ -182,31 +184,21 @@ public class PlayerMovement : MonoBehaviour
 
             // Player should always be facing the wall
             transform.rotation = Quaternion.LookRotation(-_ledgeWallNormal, transform.up);
-
-            print("Can climb left: " + CanClimbLeft() + ". Can climb right: " + CanClimbRight());
             
-            // Move right on Ledge
-            if (_input.move.x > 0
-                && CanClimbRight())
+            // Calculate movement direction on ledge
+            Vector3 wallRight = Vector3.Cross(transform.up, -_ledgeWallNormal);
+
+            // Move on ledge
+            if (_input.move.x > 0 && CanClimbRight())
             {
-                Vector3 rightOnWall = Vector3.Cross(transform.up, -_ledgeWallNormal);
-                _velocity = rightOnWall * (_input.move.x * 1f);
-                _velocity = _velocity.normalized * 0.05f;
-                _velocity += -_ledgeWallNormal.normalized * 0.05f;
+                _velocity = wallRight - _ledgeWallNormal;
             }
-            // Move left on Ledge
-            else if (_input.move.x < 0
-                     && CanClimbLeft())
+            else if (_input.move.x < 0 && CanClimbLeft())
             {
-                Vector3 rightOnWall = Vector3.Cross(transform.up, -_ledgeWallNormal);
-                _velocity = rightOnWall * (_input.move.x * 1f);
-                _velocity = _velocity.normalized * 0.05f;
-                _velocity += -_ledgeWallNormal.normalized * 0.05f;
+                _velocity = -wallRight - _ledgeWallNormal;
             }
-            else
-            {
-                // do fuck all
-            }
+
+            _velocity *= Mathf.Abs(_input.move.x) * 0.0334f;
         }
 
         // Apply the velocity to the CC
