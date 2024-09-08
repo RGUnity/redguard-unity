@@ -32,9 +32,9 @@ public class PlayerMovement : MonoBehaviour
 
     [FormerlySerializedAs("localRaycastOrigin")]
     [Header("Ledge Climbing")]
-    [SerializeField] private Vector3 centerLedgeRaycastOrigin = new Vector3(0, 2.25f, 0.25f);
-    [SerializeField] private Vector3 leftLedgeRaycastOrigin = new Vector3(-0.3f, 2.25f, 0.25f);
-    [SerializeField] private Vector3 rightLedgeRaycastOrigin = new Vector3(0.3f, 2.25f, 0.25f);
+    [SerializeField] private Vector3 centerLedgeRaycastOrigin = new (0, 2.25f, 0.4f);
+    [SerializeField] private Vector3 leftLedgeRaycastOrigin = new (-0.3f, 2.25f, 0.5f);
+    [SerializeField] private Vector3 rightLedgeRaycastOrigin = new (0.3f, 2.25f, 0.5f);
     [SerializeField] private float highLedgeStart = 2.1f;
     [SerializeField] private float lowLedgeStart = 0.9f;
 
@@ -183,15 +183,29 @@ public class PlayerMovement : MonoBehaviour
             // Player should always be facing the wall
             transform.rotation = Quaternion.LookRotation(-_ledgeWallNormal, transform.up);
 
-            //print(_input.move.x);
-            Vector3 rightOnWall = Vector3.Cross(transform.up, -_ledgeWallNormal);
-            _velocity = rightOnWall * _input.move.x;
-            _velocity = _velocity.normalized * 0.05f;
-            _velocity += -_ledgeWallNormal.normalized * 0.05f;
-
-            if (IsOnLedgeEnd())
+            print("Can climb left: " + CanClimbLeft() + ". Can climb right: " + CanClimbRight());
+            
+            // Move right on Ledge
+            if (_input.move.x > 0
+                && CanClimbRight())
             {
-                // Stop
+                Vector3 rightOnWall = Vector3.Cross(transform.up, -_ledgeWallNormal);
+                _velocity = rightOnWall * (_input.move.x * 1f);
+                _velocity = _velocity.normalized * 0.05f;
+                _velocity += -_ledgeWallNormal.normalized * 0.05f;
+            }
+            // Move left on Ledge
+            else if (_input.move.x < 0
+                     && CanClimbLeft())
+            {
+                Vector3 rightOnWall = Vector3.Cross(transform.up, -_ledgeWallNormal);
+                _velocity = rightOnWall * (_input.move.x * 1f);
+                _velocity = _velocity.normalized * 0.05f;
+                _velocity += -_ledgeWallNormal.normalized * 0.05f;
+            }
+            else
+            {
+                // do fuck all
             }
         }
 
@@ -496,16 +510,14 @@ public class PlayerMovement : MonoBehaviour
         _velocity = Vector3.zero;
     }
 
-    private bool IsOnLedgeEnd()
+    // Check if there is space to climb to the left
+    private bool CanClimbLeft()
     {
         Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
         Vector3 leftRaycastOrigin = playerRootPosition + transform.TransformVector(leftLedgeRaycastOrigin);
-        Vector3 rightRaycastOrigin = playerRootPosition + transform.TransformVector(rightLedgeRaycastOrigin);
         float raycastLength = centerLedgeRaycastOrigin.y - highLedgeStart;
         Debug.DrawRay(leftRaycastOrigin, Vector3.down * raycastLength, Color.red);
-        Debug.DrawRay(rightRaycastOrigin, Vector3.down * raycastLength, Color.red);
         
-        // Left raycast
         if (Physics.Raycast(leftRaycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, groundLayers))
         {
             _ledgeTargetPosition = hitHigh.point;
@@ -517,10 +529,27 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         return false;
+    }
+    
+    // Check if there is space to climb to the right
+    private bool CanClimbRight()
+    {
+        Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
+        Vector3 rightRaycastOrigin = playerRootPosition + transform.TransformVector(rightLedgeRaycastOrigin);
+        float raycastLength = centerLedgeRaycastOrigin.y - highLedgeStart;
+        Debug.DrawRay(rightRaycastOrigin, Vector3.down * raycastLength, Color.red);
         
-        // Right raycast
-        
-        // Todo: check if we need a separate bool for each direction
+        if (Physics.Raycast(rightRaycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, groundLayers))
+        {
+            _ledgeTargetPosition = hitHigh.point;
+            Vector3 surfaceNormal = hitHigh.normal;
+            if (Vector3.Dot(surfaceNormal, transform.up) > 0.5f
+                && !_isGrounded)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void DetachFromLedge()

@@ -215,8 +215,8 @@ MonoBehaviour:
   slopeSlideSpeed: 0.1
   slopeAlignmentSpeed: 100
   centerLedgeRaycastOrigin: {x: 0, y: 2.25, z: 0.4}
-  leftLedgeRaycastOrigin: {x: -0.3, y: 2.25, z: 0.25}
-  rightLedgeRaycastOrigin: {x: 0.3, y: 2.25, z: 0.25}
+  leftLedgeRaycastOrigin: {x: -0.3, y: 2.25, z: 0.5}
+  rightLedgeRaycastOrigin: {x: 0.3, y: 2.25, z: 0.5}
   highLedgeStart: 2.1
   lowLedgeStart: 0.9
 --- !u!114 &4619516045627391771
