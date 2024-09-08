@@ -64,7 +64,7 @@ public class PlayerMovement : MonoBehaviour
     // private bool _inFrontOfHighLedge;
     private Vector3 _ledgeTargetPosition;
     private bool _isClimbingUpLedge;
-    private bool _isHanginOnLedge;
+    private bool _isHangingOnLedge;
     private Vector3 _ledgeWallNormal;
     private float _defaultGravity;
 
@@ -111,7 +111,7 @@ public class PlayerMovement : MonoBehaviour
         // Movement when grounded
         if (_isGrounded
             && _allowInputs
-            && !_isHanginOnLedge)
+            && !_isHangingOnLedge)
         {
             Debug.DrawRay(transform.position + Vector3.down, _forwardOnSurface, Color.yellow);
 
@@ -147,7 +147,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Gravity
         if (!_isGrounded
-            && !_isHanginOnLedge)
+            && !_isHangingOnLedge)
         {
             // Apply gravity when jumping up
             _velocity.y += gravity / 1000;
@@ -158,12 +158,12 @@ public class PlayerMovement : MonoBehaviour
         {
             if (IsNearHighLedge())
             {
-                _isHanginOnLedge = true;
+                _isHangingOnLedge = true;
                 AttachToLedge();
             }
             else
             {
-                _isHanginOnLedge = false;
+                _isHangingOnLedge = false;
                 DetachFromLedge();
             }
         }
@@ -171,7 +171,7 @@ public class PlayerMovement : MonoBehaviour
         // Movement when hanging on ledge
         if (!_isGrounded
             && _allowInputs
-            && _isHanginOnLedge)
+            && _isHangingOnLedge)
         {
             // Cast a ray from the player to the _ledgeTargetPosition
             if (Physics.Raycast(transform.position, _ledgeTargetPosition - transform.position, out RaycastHit hit, 2f, groundLayers))
@@ -183,7 +183,7 @@ public class PlayerMovement : MonoBehaviour
             // Player should always be facing the wall
             transform.rotation = Quaternion.LookRotation(-_ledgeWallNormal, transform.up);
 
-            print(_input.move.x);
+            //print(_input.move.x);
             Vector3 rightOnWall = Vector3.Cross(transform.up, -_ledgeWallNormal);
             _velocity = rightOnWall * _input.move.x;
             _velocity = _velocity.normalized * 0.05f;
