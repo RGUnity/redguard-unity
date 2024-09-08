@@ -175,10 +175,12 @@ public class PlayerMovement : MonoBehaviour
             && _allowInputs
             && _isHangingOnLedge)
         {
-            // Cast a ray from the player to the _ledgeTargetPosition
-            if (Physics.Raycast(transform.position, _ledgeTargetPosition - transform.position, out RaycastHit hit, 2f, groundLayers))
+            // Cast a sphere from the player to the _ledgeTargetPosition
+            if (Physics.SphereCast(transform.position, 0.1f, _ledgeTargetPosition - transform.position, out RaycastHit hit, 2f, groundLayers))
             {
-                _ledgeWallNormal = hit.normal;
+                Vector3 newNormal = hit.normal;
+                // Lerp it to reduce jitters
+                _ledgeWallNormal = Vector3.Lerp(_ledgeWallNormal, newNormal, 0.2f);
                 Debug.DrawRay(transform.position, _ledgeWallNormal, Color.magenta);
             }
 
