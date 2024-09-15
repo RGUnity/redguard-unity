@@ -121,6 +121,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Drop Down",
+                    "type": "Button",
+                    "id": "f74294cc-da07-48a8-837a-b33d3b64f1bd",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -517,6 +526,28 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Quick Load",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d408c6eb-f971-4691-b992-027f3ddb8193",
+                    "path": "<Gamepad>/leftStick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Drop Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e8e5c9fc-83d2-4946-8b7e-4f57e3003666",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Drop Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

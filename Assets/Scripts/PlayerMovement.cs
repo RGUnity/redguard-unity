@@ -38,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Vector3 rightLedgeRaycastOrigin = new (0.3f, 2.25f, 0.5f);
     [SerializeField] private float highLedgeStart = 2.1f;
     [SerializeField] private float lowLedgeStart = 0.9f;
-    [SerializeField] private float ledgeStrafeSpeed = 2f;
+    [SerializeField] private float ledgeStrafeSpeed = 1f;
 
     // General CC properties
     private Vector3 _velocity;

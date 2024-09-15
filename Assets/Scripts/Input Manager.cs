@@ -16,6 +16,7 @@ public class InputManager : MonoBehaviour
     public bool quickSave;
     public bool quickLoad;
     public bool togglePauseMenu;
+    public bool dropDown;
     
     // Input System Actions
     private InputAction _moveAction;
@@ -28,6 +29,7 @@ public class InputManager : MonoBehaviour
     private InputAction _quickSaveAction;
     private InputAction _quickLoadAction;
     private InputAction _togglePauseMenuAction;
+    private InputAction _dropDownAction;
     
     private UIWindowManager UiWindowManager;
     
@@ -48,6 +50,7 @@ public class InputManager : MonoBehaviour
         _quickSaveAction = InputSystem.actions.FindAction("Quick Save");
         _quickLoadAction = InputSystem.actions.FindAction("Quick Load");
         _togglePauseMenuAction = InputSystem.actions.FindAction("Toggle Pause Menu");
+        _dropDownAction = InputSystem.actions.FindAction("Drop Down");
     }
 
     // Update is called once per frame
@@ -69,6 +72,7 @@ public class InputManager : MonoBehaviour
         toggleMap = _toggleMapAction.WasPressedThisFrame();
         quickSave = _quickSaveAction.WasPressedThisFrame();
         quickLoad = _quickLoadAction.WasPressedThisFrame();
+        dropDown = _dropDownAction.WasPressedThisFrame();
         
         if (quickSave)
         {
