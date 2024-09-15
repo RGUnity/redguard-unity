@@ -200,7 +200,7 @@ public class PlayerMovement : MonoBehaviour
                 _velocity = -wallRight - _ledgeWallNormal;
             }
 
-            _velocity *= Mathf.Abs(_input.move.x) * 0.0334f;
+            _velocity *= Mathf.Abs(_input.move.x) * 0.0334f * ledgeStrafeSpeed;
         }
 
         // Apply the velocity to the CC
