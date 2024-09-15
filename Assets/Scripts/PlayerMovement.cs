@@ -130,6 +130,9 @@ public class PlayerMovement : MonoBehaviour
             _currentMovementState = PlayerMovementStates.Walking;
         }
 
+        
+        // Todo: Put these in their state
+        
         // Movement when grounded
         if (_isGrounded
             && !_isHangingOnLedge)
@@ -206,6 +209,8 @@ public class PlayerMovement : MonoBehaviour
     
     private void WalkMode()
     {
+        // Todo: Compress the two walk modes. I guess simply increase the speed when moveModifier is held?
+        
         // Movement when moveModifier is pressed / is true
         if (_input.moveModifier)
         {
