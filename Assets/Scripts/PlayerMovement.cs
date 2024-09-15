@@ -41,10 +41,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float ledgeStrafeSpeed = 1f;
 
     // General CC properties
+    private PlayerMovementStates _currentMovementState = PlayerMovementStates.Walking;
     private Vector3 _velocity;
     private bool _isGrounded;
     private bool _feetVisiblyGrounded;
-    private bool _allowInputs;
     private Vector3 _playerRootPosition;
 
     // Surface information
@@ -62,8 +62,6 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _smoothVelocity;
     private float _speed;
     private TEST_MovingPlatform _currentPlatform;
-    // private bool _inFrontOfLowLedge;
-    // private bool _inFrontOfHighLedge;
     private Vector3 _ledgeTargetPosition;
     private bool _isClimbingUpLedge;
     private bool _isHangingOnLedge;
@@ -79,54 +77,64 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        switch (_currentMovementState)
+        {
+            case PlayerMovementStates.Walking:
+                WalkMode();
+                break;
+            case PlayerMovementStates.Airborne:
+                AirborneMode();
+                break;
+            case PlayerMovementStates.Climbing:
+                ClimbMode();
+                break;
+            case PlayerMovementStates.Sliding:
+                SlideMode();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        
+        // This shows where the feet of the player are currently in the 3D space.
         float playerRootHeight = transform.position.y - cc.height / 2 + cc.center.y;
         _playerRootPosition = new Vector3(transform.position.x, playerRootHeight, transform.position.z);
 
         GroundCheck();
         HandleStepOffset();
 
-        // Slope sliding
+        // Airborne State Entry and Exit
+        if (!_isGrounded)
+        {
+            _currentMovementState = PlayerMovementStates.Airborne;
+        }
+        
+        if (_isGrounded 
+            && _currentMovementState == PlayerMovementStates.Airborne)
+        {
+            _currentMovementState = PlayerMovementStates.Walking;
+        }
+        
+        // Slide State Entry and Exit
         if (_isGrounded
             && _feetVisiblyGrounded
             && _surfaceAngleSphere > cc.slopeLimit
             && _surfaceAngleRay > cc.slopeLimit)
         {
-            SlideDownhill();
-            _allowInputs = false;
+            _currentMovementState = PlayerMovementStates.Sliding;
         }
-        else
+        else if (_isGrounded
+                 && _feetVisiblyGrounded
+                 && _surfaceAngleSphere <= cc.slopeLimit
+                 && _surfaceAngleRay <= cc.slopeLimit)
         {
-            _allowInputs = true;
-        }
-
-        // Step dropping
-        if (_isGrounded
-            && _allowInputs
-            && !_feetVisiblyGrounded
-            && _velocity.magnitude < 1
-            && cc.velocity.y < 0)
-        {
-            ForceDropDown();
-            _allowInputs = false;
+            _currentMovementState = PlayerMovementStates.Walking;
         }
 
         // Movement when grounded
         if (_isGrounded
-            && _allowInputs
             && !_isHangingOnLedge)
         {
             Debug.DrawRay(transform.position + Vector3.down, _forwardOnSurface, Color.yellow);
-
-            // Movement when moveModifier is pressed / is true
-            if (_input.moveModifier)
-            {
-                WalkMode();
-            }
-            // Movement when moveModifier is NOT pressed / is false
-            else
-            {
-                RunMode();
-            }
 
             // Apply ground magnet
             _velocity.y += groundMagnet;
@@ -145,17 +153,18 @@ public class PlayerMovement : MonoBehaviour
                 Jump();
                 _input.jump = false;
             }
+            
+            // Step dropping
+            if (_isGrounded
+                && !_feetVisiblyGrounded
+                && _velocity.magnitude < 1
+                && cc.velocity.y < 0)
+            {
+                ForceDropDown();
+            }
         }
-
-        // Gravity
-        if (!_isGrounded
-            && !_isHangingOnLedge)
-        {
-            // Apply gravity when jumping up
-            _velocity.y += gravity / 1000;
-        }
-
-        // High ledge detection
+        
+        // Movement when in the air
         if (!_isGrounded)
         {
             if (IsNearHighLedge())
@@ -169,39 +178,22 @@ public class PlayerMovement : MonoBehaviour
                 DetachFromLedge();
             }
         }
-
+        
         // Movement when hanging on ledge
         if (!_isGrounded
-            && _allowInputs
             && _isHangingOnLedge)
         {
-            // Cast a sphere from the player to the _ledgeTargetPosition
-            if (Physics.SphereCast(transform.position, 0.1f, _ledgeTargetPosition - transform.position, out RaycastHit hit, 2f, groundLayers))
-            {
-                Vector3 newNormal = hit.normal;
-                // Lerp it to reduce jitters
-                _ledgeWallNormal = Vector3.Lerp(_ledgeWallNormal, newNormal, 0.2f);
-                Debug.DrawRay(transform.position, _ledgeWallNormal, Color.magenta);
-            }
-
-            // Player should always be facing the wall
-            transform.rotation = Quaternion.LookRotation(-_ledgeWallNormal, transform.up);
-            
-            // Calculate movement direction on ledge
-            Vector3 wallRight = Vector3.Cross(transform.up, -_ledgeWallNormal);
-
-            // Move on ledge
-            if (_input.move.x > 0 && CanClimbRight())
-            {
-                _velocity = wallRight - _ledgeWallNormal;
-            }
-            else if (_input.move.x < 0 && CanClimbLeft())
-            {
-                _velocity = -wallRight - _ledgeWallNormal;
-            }
-
-            _velocity *= Mathf.Abs(_input.move.x) * 0.0334f * ledgeStrafeSpeed;
+            ClimbMode();
         }
+
+        // Gravity
+        if (!_isGrounded
+            && !_isHangingOnLedge)
+        {
+            // Apply gravity when jumping up
+            _velocity.y += gravity / 1000;
+        }
+        
 
         // Apply the velocity to the CC
         cc.Move(_velocity);
@@ -211,51 +203,103 @@ public class PlayerMovement : MonoBehaviour
         // I think this is in meters per second?
         _speed = cc.velocity.magnitude;
     }
-
+    
     private void WalkMode()
     {
-        if (_input.move.y != 0)
+        // Movement when moveModifier is pressed / is true
+        if (_input.moveModifier)
         {
-            // Walk forward or backwards
-            _velocity = _forwardOnSurface * (_input.move.y * walkSpeed / 60);
+            if (_input.move.y != 0)
+            {
+                // Walk forward or backwards
+                _velocity = _forwardOnSurface * (_input.move.y * walkSpeed / 60);
+
+                // Turn the player
+                float yRotation = _input.move.x * turnSpeed * Time.deltaTime * 60;
+                transform.Rotate(0, yRotation, 0);
+            }
+            else if (_input.move.x != 0
+                     && _input.move.y == 0)
+            {
+                // Strafe left or right
+                _velocity = _rightOnSurface * (_input.move.x * walkSpeed / 60);
+            }
+            else
+            {
+                _velocity = Vector3.zero;
+            }
+        }
+        // Movement when moveModifier is NOT pressed / is false
+        else
+        {
+            // Run Forward
+            if (_input.move.y > 0)
+            {
+                _velocity = _forwardOnSurface * (_input.move.y * runSpeed / 60);
+            }
+            // Walk backwards
+            else if (_input.move.y < 0)
+            {
+                _velocity = _forwardOnSurface * (_input.move.y * walkSpeed / 60);
+            }
+            else
+            {
+                _velocity = Vector3.zero;
+            }
 
             // Turn the player
             float yRotation = _input.move.x * turnSpeed * Time.deltaTime * 60;
             transform.Rotate(0, yRotation, 0);
         }
-        else if (_input.move.x != 0
-                 && _input.move.y == 0)
-        {
-            // Strafe left or right
-            _velocity = _rightOnSurface * (_input.move.x * walkSpeed / 60);
-        }
-        else
-        {
-            _velocity = Vector3.zero;
-        }
     }
 
-    private void RunMode()
+    private void AirborneMode()
     {
-        // Run Forward
-        if (_input.move.y > 0)
+        
+    }
+    private void ClimbMode()
+    {
+        // Cast a sphere from the player to the _ledgeTargetPosition
+        if (Physics.SphereCast(transform.position, 0.1f, _ledgeTargetPosition - transform.position, out RaycastHit hit, 2f, groundLayers))
         {
-            _velocity = _forwardOnSurface * (_input.move.y * runSpeed / 60);
-        }
-        // Walk backwards
-        else if (_input.move.y < 0)
-        {
-            _velocity = _forwardOnSurface * (_input.move.y * walkSpeed / 60);
-        }
-        else
-        {
-            _velocity = Vector3.zero;
+            Vector3 newNormal = hit.normal;
+            // Lerp it to reduce jitters
+            _ledgeWallNormal = Vector3.Lerp(_ledgeWallNormal, newNormal, 0.2f);
+            Debug.DrawRay(transform.position, _ledgeWallNormal, Color.magenta);
         }
 
-        // Turn the player
-        float yRotation = _input.move.x * turnSpeed * Time.deltaTime * 60;
-        transform.Rotate(0, yRotation, 0);
+        // Player should always be facing the wall
+        transform.rotation = Quaternion.LookRotation(-_ledgeWallNormal, transform.up);
+            
+        // Calculate movement direction on ledge
+        Vector3 wallRight = Vector3.Cross(transform.up, -_ledgeWallNormal);
+
+        // Move on ledge
+        if (_input.move.x > 0 && CanClimbRight())
+        {
+            _velocity = wallRight - _ledgeWallNormal;
+        }
+        else if (_input.move.x < 0 && CanClimbLeft())
+        {
+            _velocity = -wallRight - _ledgeWallNormal;
+        }
+
+        _velocity *= Mathf.Abs(_input.move.x) * 0.0334f * ledgeStrafeSpeed;
     }
+
+    private void SlideMode()
+    {
+        // Add velocity in the downhill direction
+        _velocity = _surfaceDownhill * slopeSlideSpeed;
+
+        // Rotate the player towards the slideDirection
+        Vector3 flatSurfaceDownhill = new Vector3(_surfaceDownhill.x, 0, _surfaceDownhill.z);
+
+        //Debug.DrawRay(transform.position + Vector3.down, flatSurfaceDownhill, Color.blue);
+        Quaternion stepRotation = Quaternion.LookRotation(flatSurfaceDownhill, Vector3.up);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, stepRotation, slopeAlignmentSpeed * Time.deltaTime);
+    }
+    
 
     // There is a bug in Unity's CC where it ignores the step limit and jumps upwards when walking near some edges.
     // Here is a forum thread that explains more and also offers a workaround, which is implemented below.
@@ -292,6 +336,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
+        _currentMovementState = PlayerMovementStates.Airborne;
+        
         if (IsNearLowLedge())
         {
             ClimbLowerLedge();
@@ -377,6 +423,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Overhang check - returns true if the players feet are not visibly touching ground
+        // todo: This ray is too long. Sometimes Cyrus is visibly floating when the next low ground is not deep enough
         if (Physics.SphereCast(transform.position, 0.15f, Vector3.down, out RaycastHit sphereHit2, 1.84f, groundLayers))
         {
             _feetVisiblyGrounded = true;
@@ -385,19 +432,6 @@ public class PlayerMovement : MonoBehaviour
         {
             _feetVisiblyGrounded = false;
         }
-    }
-
-    private void SlideDownhill()
-    {
-        // Add velocity in the downhill direction
-        _velocity = _surfaceDownhill * slopeSlideSpeed;
-
-        // Rotate the player towards the slideDirection
-        Vector3 flatSurfaceDownhill = new Vector3(_surfaceDownhill.x, 0, _surfaceDownhill.z);
-
-        //Debug.DrawRay(transform.position + Vector3.down, flatSurfaceDownhill, Color.blue);
-        Quaternion stepRotation = Quaternion.LookRotation(flatSurfaceDownhill, Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, stepRotation, slopeAlignmentSpeed * Time.deltaTime);
     }
 
     private void ForceDropDown()
@@ -550,6 +584,4 @@ public class PlayerMovement : MonoBehaviour
     {
         gravity = _defaultGravity;
     }
-
-    //todo: Add ledge sensors on the left and right to see where ledges end
 }
