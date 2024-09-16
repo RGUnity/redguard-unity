@@ -115,8 +115,6 @@ public class PlayerMovement : MonoBehaviour
             _currentMovementState = PlayerMovementStates.Walking;
         }
         
-        // Todo: Put these in their state
-        
         // Climbing State Entry and Exit
         if (_currentMovementState == PlayerMovementStates.Airborne)
         {
@@ -127,6 +125,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         
+        // Switch to desired state
         switch (_currentMovementState)
         {
             case PlayerMovementStates.Walking:
