@@ -7,29 +7,29 @@ public class PlayerMovement : MonoBehaviour
     [Header("Main Settings")]
     [SerializeField] private CharacterController cc;
     [SerializeField] private LayerMask groundLayers;
-    [SerializeField] private float gravity = -25f;
-    [SerializeField] private float groundMagnet = -4f;
+    [SerializeField] private float gravity = -6.5f;
+    [SerializeField] private float groundMagnet = -0.1f;
 
     [Header("Basic Movement")]
     [SerializeField] private float runSpeed = 5f;
-    [SerializeField] private float walkSpeed = 1.5f;
-    [SerializeField] private float velocitySmoothing = 12;
-    [SerializeField] private float turnSpeed = 3.7f;
+    [SerializeField] private float walkSpeed = 2;
+    [SerializeField] private float velocitySmoothing = 100;
+    [SerializeField] private float turnSpeed = 1.8f;
 
     [Header("Step Handling (Corner-Jumps Fix)")]
     [SerializeField] private float stepOffset = 0.9f;
     [SerializeField] private float rayDistance = 1f;
 
     [Header("Jumping")]
-    [SerializeField] private float jumpHeight = 8f;
-    [SerializeField] private float longJumpDistance = 6f;
-    [SerializeField] private float shortJumpDistance = 4f;
-    [SerializeField] private float longJumpThreshold = 2.8f;
-    [SerializeField] private float shortJumpThreshold = 0.5f;
+    [SerializeField] private float jumpHeight = 1.2f;
+    [SerializeField] private float longJumpDistance = 1.3f;
+    [SerializeField] private float shortJumpDistance = 0.7f;
+    [SerializeField] private float longJumpThreshold = 3.5f;
+    [SerializeField] private float shortJumpThreshold = 0.1f;
 
     [Header("Slope Sliding")]
-    [SerializeField] private float slopeSlideSpeed = 5f;
-    [SerializeField] private float slopeAlignmentSpeed = 3f;
+    [SerializeField] private float slopeSlideSpeed = 0.1f;
+    [SerializeField] private float slopeAlignmentSpeed = 100f;
 
     [FormerlySerializedAs("localRaycastOrigin")]
     [Header("Ledge Climbing")]
