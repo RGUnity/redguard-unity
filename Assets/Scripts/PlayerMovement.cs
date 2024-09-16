@@ -64,15 +64,11 @@ public class PlayerMovement : MonoBehaviour
     private TEST_MovingPlatform _currentPlatform;
     private Vector3 _ledgeTargetPosition;
     private bool _isClimbingUpLedge;
-    private bool _isHangingOnLedge;
     private Vector3 _ledgeWallNormal;
-    private float _defaultGravity;
-
 
     private void Start()
     {
         _input = LocalScene.inputManager;
-        _defaultGravity = gravity;
     }
 
     private void FixedUpdate()
@@ -126,7 +122,6 @@ public class PlayerMovement : MonoBehaviour
         {
             if (IsNearHighLedge())
             {
-                _isHangingOnLedge = true;
                 _velocity = Vector3.zero;
                 _currentMovementState = PlayerMovementStates.Climbing;
             }
@@ -551,10 +546,5 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         return false;
-    }
-
-    private void DetachFromLedge()
-    {
-        gravity = _defaultGravity;
     }
 }
