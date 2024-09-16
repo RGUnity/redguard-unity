@@ -122,10 +122,14 @@ public class PlayerMovement : MonoBehaviour
         // Todo: Put these in their state
         
         // Climbing State Entry and Exit
-        if (!_isGrounded
-            && _isHangingOnLedge)
+        if (_currentMovementState == PlayerMovementStates.Airborne)
         {
-            _currentMovementState = PlayerMovementStates.Climbing;
+            if (IsNearHighLedge())
+            {
+                _isHangingOnLedge = true;
+                _velocity = Vector3.zero;
+                _currentMovementState = PlayerMovementStates.Climbing;
+            }
         }
         
         switch (_currentMovementState)
@@ -232,17 +236,6 @@ public class PlayerMovement : MonoBehaviour
     {
         // Apply gravity
         _velocity.y += gravity / 1000;
-        
-        if (IsNearHighLedge())
-        {
-            _isHangingOnLedge = true;
-            AttachToLedge();
-        }
-        else
-        {
-            _isHangingOnLedge = false;
-            DetachFromLedge();
-        }
     }
     
     private void ClimbMode()
@@ -517,13 +510,7 @@ public class PlayerMovement : MonoBehaviour
         cc.enabled = true;
         _velocity = Vector3.zero;
     }
-
-    private void AttachToLedge()
-    {
-        gravity = 0;
-        _velocity = Vector3.zero;
-    }
-
+    
     // Check if there is space to climb to the left
     private bool CanClimbLeft()
     {
