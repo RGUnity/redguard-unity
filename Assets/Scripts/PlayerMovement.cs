@@ -77,6 +77,57 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // This shows where the feet of the player are currently in the 3D space.
+        float playerRootHeight = transform.position.y - cc.height / 2 + cc.center.y;
+        _playerRootPosition = new Vector3(transform.position.x, playerRootHeight, transform.position.z);
+
+        GroundCheck();
+        HandleStepOffset();
+
+        // Airborne State Entry and Exit
+        if (!_isGrounded)
+        {
+            _currentMovementState = PlayerMovementStates.Airborne;
+        }
+        
+        if (_input.jump)
+        {
+            _input.jump = false;
+            _currentMovementState = PlayerMovementStates.Airborne;
+            Jump();
+        }
+        
+        if (_isGrounded 
+            && _currentMovementState == PlayerMovementStates.Airborne)
+        {
+            _currentMovementState = PlayerMovementStates.Walking;
+        }
+        
+        // Slide state Entry and Exit
+        if (_isGrounded
+            && _feetVisiblyGrounded
+            && _surfaceAngleSphere > cc.slopeLimit
+            && _surfaceAngleRay > cc.slopeLimit)
+        {
+            _currentMovementState = PlayerMovementStates.Sliding;
+        }
+        else if (_isGrounded
+                 && _feetVisiblyGrounded
+                 && _surfaceAngleSphere <= cc.slopeLimit
+                 && _surfaceAngleRay <= cc.slopeLimit)
+        {
+            _currentMovementState = PlayerMovementStates.Walking;
+        }
+        
+        // Todo: Put these in their state
+        
+        // Climbing State Entry and Exit
+        if (!_isGrounded
+            && _isHangingOnLedge)
+        {
+            _currentMovementState = PlayerMovementStates.Climbing;
+        }
+        
         switch (_currentMovementState)
         {
             case PlayerMovementStates.Walking:
@@ -94,122 +145,21 @@ public class PlayerMovement : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        
-        // This shows where the feet of the player are currently in the 3D space.
-        float playerRootHeight = transform.position.y - cc.height / 2 + cc.center.y;
-        _playerRootPosition = new Vector3(transform.position.x, playerRootHeight, transform.position.z);
-
-        GroundCheck();
-        HandleStepOffset();
-
-        // Airborne State Entry and Exit
-        if (!_isGrounded)
-        {
-            _currentMovementState = PlayerMovementStates.Airborne;
-        }
-        
-        if (_isGrounded 
-            && _currentMovementState == PlayerMovementStates.Airborne)
-        {
-            _currentMovementState = PlayerMovementStates.Walking;
-        }
-        
-        // Slide State Entry and Exit
-        if (_isGrounded
-            && _feetVisiblyGrounded
-            && _surfaceAngleSphere > cc.slopeLimit
-            && _surfaceAngleRay > cc.slopeLimit)
-        {
-            _currentMovementState = PlayerMovementStates.Sliding;
-        }
-        else if (_isGrounded
-                 && _feetVisiblyGrounded
-                 && _surfaceAngleSphere <= cc.slopeLimit
-                 && _surfaceAngleRay <= cc.slopeLimit)
-        {
-            _currentMovementState = PlayerMovementStates.Walking;
-        }
-
-        
-        // Todo: Put these in their state
-        
-        // Movement when grounded
-        if (_isGrounded
-            && !_isHangingOnLedge)
-        {
-            Debug.DrawRay(transform.position + Vector3.down, _forwardOnSurface, Color.yellow);
-
-            // Apply ground magnet
-            _velocity.y += groundMagnet;
-
-            // Apply smoothing with MoveTowards
-            _smoothVelocity = Vector3.MoveTowards(_smoothVelocity, _velocity, (1 / velocitySmoothing));
-            _velocity.z = _smoothVelocity.z;
-            _velocity.x = _smoothVelocity.x;
-
-            // Stay on moving and rotating platforms
-            StickToPlatforms();
-
-            // Jump
-            if (_input.jump)
-            {
-                Jump();
-                _input.jump = false;
-            }
-            
-            // Step dropping
-            if (_isGrounded
-                && !_feetVisiblyGrounded
-                && _velocity.magnitude < 1
-                && cc.velocity.y < 0)
-            {
-                ForceDropDown();
-            }
-        }
-        
-        // Movement when in the air
-        if (!_isGrounded)
-        {
-            if (IsNearHighLedge())
-            {
-                _isHangingOnLedge = true;
-                AttachToLedge();
-            }
-            else
-            {
-                _isHangingOnLedge = false;
-                DetachFromLedge();
-            }
-        }
-        
-        // Movement when hanging on ledge
-        if (!_isGrounded
-            && _isHangingOnLedge)
-        {
-            ClimbMode();
-        }
-
-        // Gravity
-        if (!_isGrounded
-            && !_isHangingOnLedge)
-        {
-            // Apply gravity when jumping up
-            _velocity.y += gravity / 1000;
-        }
-        
 
         // Apply the velocity to the CC
         cc.Move(_velocity);
 
-        Debug.DrawRay(transform.position - Vector3.up, cc.velocity.normalized, Color.green);
+        // This ray represents the direction velocity
+        //Debug.DrawRay(transform.position - Vector3.up, cc.velocity.normalized, Color.green);
 
-        // I think this is in meters per second?
+        // This is mainly a readonly variable to validate the resulting movement speed
         _speed = cc.velocity.magnitude;
     }
     
     private void WalkMode()
     {
-        // Todo: Compress the two walk modes. I guess simply increase the speed when moveModifier is held?
+        // A debug ray pointing in Cyrus forward direction
+        //Debug.DrawRay(transform.position + Vector3.down, _forwardOnSurface, Color.yellow);
         
         // Movement when moveModifier is pressed / is true
         if (_input.moveModifier)
@@ -256,12 +206,45 @@ public class PlayerMovement : MonoBehaviour
             float yRotation = _input.move.x * turnSpeed * Time.deltaTime * 60;
             transform.Rotate(0, yRotation, 0);
         }
+        
+        // Apply ground magnet
+        _velocity.y += groundMagnet;
+        
+        // Apply smoothing with MoveTowards
+        _smoothVelocity = Vector3.MoveTowards(_smoothVelocity, _velocity, (1 / velocitySmoothing));
+        _velocity.z = _smoothVelocity.z;
+        _velocity.x = _smoothVelocity.x;
+        
+        // Stay on moving and rotating platforms
+        StickToPlatforms();
+        
+        // Step dropping
+        if (_isGrounded
+            && !_feetVisiblyGrounded
+            && _velocity.magnitude < 1
+            && cc.velocity.y < 0)
+        {
+            ForceDropDown();
+        }
     }
 
     private void AirborneMode()
     {
+        // Apply gravity
+        _velocity.y += gravity / 1000;
         
+        if (IsNearHighLedge())
+        {
+            _isHangingOnLedge = true;
+            AttachToLedge();
+        }
+        else
+        {
+            _isHangingOnLedge = false;
+            DetachFromLedge();
+        }
     }
+    
     private void ClimbMode()
     {
         // Cast a sphere from the player to the _ledgeTargetPosition
@@ -341,8 +324,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
-        _currentMovementState = PlayerMovementStates.Airborne;
-        
         if (IsNearLowLedge())
         {
             ClimbLowerLedge();
