@@ -196,29 +196,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cc: {fileID: 5460861568075509288}
-  groundLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  gravity: -6.5
-  groundMagnet: -0.1
-  runSpeed: 5
-  walkSpeed: 2
-  velocitySmoothing: 100
-  turnSpeed: 1.8
-  stepOffset: 0.9
-  rayDistance: 1
-  jumpHeight: 1.2
-  longJumpDistance: 1.3
-  shortJumpDistance: 0.7
-  longJumpThreshold: 3.5
-  shortJumpThreshold: 0.1
-  slopeSlideSpeed: 0.1
-  slopeAlignmentSpeed: 100
-  centerLedgeRaycastOrigin: {x: 0, y: 2.25, z: 0.4}
-  leftLedgeRaycastOrigin: {x: -0.3, y: 2.25, z: 0.5}
-  rightLedgeRaycastOrigin: {x: 0.3, y: 2.25, z: 0.5}
-  highLedgeStart: 2.1
-  lowLedgeStart: 0.9
+  config: {fileID: 11400000, guid: c71b60b0d8cb67e449c69f963be683a6, type: 2}
 --- !u!114 &4619516045627391771
 MonoBehaviour:
   m_ObjectHideFlags: 0

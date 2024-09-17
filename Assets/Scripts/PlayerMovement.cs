@@ -4,40 +4,8 @@ using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Main Settings")]
     [SerializeField] private CharacterController cc;
-    [SerializeField] private LayerMask groundLayers;
-    [SerializeField] private float gravity = -6.5f;
-    [SerializeField] private float groundMagnet = -0.1f;
-
-    [Header("Basic Movement")]
-    [SerializeField] private float runSpeed = 5f;
-    [SerializeField] private float walkSpeed = 2;
-    [SerializeField] private float velocitySmoothing = 100;
-    [SerializeField] private float turnSpeed = 1.8f;
-
-    [Header("Step Handling (Corner-Jumps Fix)")]
-    [SerializeField] private float stepOffset = 0.9f;
-    [SerializeField] private float rayDistance = 1f;
-
-    [Header("Jumping")]
-    [SerializeField] private float jumpHeight = 1.2f;
-    [SerializeField] private float longJumpDistance = 1.3f;
-    [SerializeField] private float shortJumpDistance = 0.7f;
-    [SerializeField] private float longJumpThreshold = 3.5f;
-    [SerializeField] private float shortJumpThreshold = 0.1f;
-
-    [Header("Slope Sliding")]
-    [SerializeField] private float slopeSlideSpeed = 0.1f;
-    [SerializeField] private float slopeAlignmentSpeed = 100f;
-    
-    [Header("Ledge Climbing")]
-    [SerializeField] private Vector3 centerLedgeRaycastOrigin = new (0, 2.25f, 0.4f);
-    [SerializeField] private Vector3 leftLedgeRaycastOrigin = new (-0.3f, 2.25f, 0.5f);
-    [SerializeField] private Vector3 rightLedgeRaycastOrigin = new (0.3f, 2.25f, 0.5f);
-    [SerializeField] private float highLedgeStart = 2.1f;
-    [SerializeField] private float lowLedgeStart = 0.9f;
-    [SerializeField] private float ledgeStrafeSpeed = 1f;
+    [SerializeField] private PlayerMovementConfig config;
 
     // General CC properties
     private PlayerMovementStates _currentMovementState = PlayerMovementStates.Walking;
@@ -164,17 +132,17 @@ public class PlayerMovement : MonoBehaviour
             if (_input.move.y != 0)
             {
                 // Walk forward or backwards
-                _velocity = _forwardOnSurface * (_input.move.y * walkSpeed / 60);
+                _velocity = _forwardOnSurface * (_input.move.y * config.walkSpeed / 60);
 
                 // Turn the player
-                float yRotation = _input.move.x * turnSpeed * Time.deltaTime * 60;
+                float yRotation = _input.move.x * config.turnSpeed * Time.deltaTime * 60;
                 transform.Rotate(0, yRotation, 0);
             }
             else if (_input.move.x != 0
                      && _input.move.y == 0)
             {
                 // Strafe left or right
-                _velocity = _rightOnSurface * (_input.move.x * walkSpeed / 60);
+                _velocity = _rightOnSurface * (_input.move.x * config.walkSpeed / 60);
             }
             else
             {
@@ -187,12 +155,12 @@ public class PlayerMovement : MonoBehaviour
             // Run Forward
             if (_input.move.y > 0)
             {
-                _velocity = _forwardOnSurface * (_input.move.y * runSpeed / 60);
+                _velocity = _forwardOnSurface * (_input.move.y * config.runSpeed / 60);
             }
             // Walk backwards
             else if (_input.move.y < 0)
             {
-                _velocity = _forwardOnSurface * (_input.move.y * walkSpeed / 60);
+                _velocity = _forwardOnSurface * (_input.move.y * config.walkSpeed / 60);
             }
             else
             {
@@ -200,15 +168,15 @@ public class PlayerMovement : MonoBehaviour
             }
 
             // Turn the player
-            float yRotation = _input.move.x * turnSpeed * Time.deltaTime * 60;
+            float yRotation = _input.move.x * config.turnSpeed * Time.deltaTime * 60;
             transform.Rotate(0, yRotation, 0);
         }
         
         // Apply ground magnet
-        _velocity.y += groundMagnet;
+        _velocity.y += config.groundMagnet;
         
         // Apply smoothing with MoveTowards
-        _smoothVelocity = Vector3.MoveTowards(_smoothVelocity, _velocity, (1 / velocitySmoothing));
+        _smoothVelocity = Vector3.MoveTowards(_smoothVelocity, _velocity, (1 / config.velocitySmoothing));
         _velocity.z = _smoothVelocity.z;
         _velocity.x = _smoothVelocity.x;
         
@@ -228,13 +196,13 @@ public class PlayerMovement : MonoBehaviour
     private void AirborneMode()
     {
         // Apply gravity
-        _velocity.y += gravity / 1000;
+        _velocity.y += config.gravity / 1000;
     }
     
     private void ClimbMode()
     {
         // Cast a sphere from the player to the _ledgeTargetPosition
-        if (Physics.SphereCast(transform.position, 0.1f, _ledgeTargetPosition - transform.position, out RaycastHit hit, 2f, groundLayers))
+        if (Physics.SphereCast(transform.position, 0.1f, _ledgeTargetPosition - transform.position, out RaycastHit hit, 2f, config.groundLayers))
         {
             Vector3 newNormal = hit.normal;
             // Lerp it to reduce jitters
@@ -258,20 +226,20 @@ public class PlayerMovement : MonoBehaviour
             _velocity = -wallRight - _ledgeWallNormal;
         }
 
-        _velocity *= Mathf.Abs(_input.move.x) * 0.0334f * ledgeStrafeSpeed;
+        _velocity *= Mathf.Abs(_input.move.x) * 0.0334f * config.ledgeStrafeSpeed;
     }
 
     private void SlideMode()
     {
         // Add velocity in the downhill direction
-        _velocity = _surfaceDownhill * slopeSlideSpeed;
+        _velocity = _surfaceDownhill * config.slopeSlideSpeed;
 
         // Rotate the player towards the slideDirection
         Vector3 flatSurfaceDownhill = new Vector3(_surfaceDownhill.x, 0, _surfaceDownhill.z);
 
         //Debug.DrawRay(transform.position + Vector3.down, flatSurfaceDownhill, Color.blue);
         Quaternion stepRotation = Quaternion.LookRotation(flatSurfaceDownhill, Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, stepRotation, slopeAlignmentSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, stepRotation, config.slopeAlignmentSpeed * Time.deltaTime);
     }
     
 
@@ -281,9 +249,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleStepOffset()
     {
-        float distance = cc.radius + cc.skinWidth + rayDistance;
+        float distance = cc.radius + cc.skinWidth + config.rayDistance;
         //Position of player's ground level + StepOffset
-        Vector3 bottomWithStepOffset = _playerRootPosition + new Vector3(0, stepOffset, 0);
+        Vector3 bottomWithStepOffset = _playerRootPosition + new Vector3(0,config.stepOffset, 0);
         //Raycast at player's ground level in direction of movement
         bool bottomRaycast = Physics.Raycast(_playerRootPosition, _forwardOnSurface, out _, distance);
         //Raycast at player's ground level + StepOffset in direction of movement
@@ -298,7 +266,7 @@ public class PlayerMovement : MonoBehaviour
         {
             //Step in move direction
             //Allow stepping over object
-            cc.stepOffset = stepOffset;
+            cc.stepOffset =config.stepOffset;
         }
         else
         {
@@ -317,19 +285,19 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if (_input.move.y > 0
-            && _speed > longJumpThreshold)
+            && _speed > config.longJumpThreshold)
         {
             // Long forward jump
-            _velocity = _forwardOnSurface * longJumpDistance / 10;
-            _velocity.y = jumpHeight / 10;
+            _velocity = _forwardOnSurface * config.longJumpDistance / 10;
+            _velocity.y = config.jumpHeight / 10;
             _isGrounded = false;
         }
         else if (_input.move.y > 0
-                && _speed > shortJumpThreshold)
+                && _speed > config.shortJumpThreshold)
         {
             // Short forward jump
-            _velocity = _forwardOnSurface * shortJumpDistance / 10;
-            _velocity.y = jumpHeight / 10;
+            _velocity = _forwardOnSurface * config.shortJumpDistance / 10;
+            _velocity.y = config.jumpHeight / 10;
             _isGrounded = false;
         }
         else
@@ -337,7 +305,7 @@ public class PlayerMovement : MonoBehaviour
             // Standing jump
             _velocity = Vector3.zero;
             _smoothVelocity = Vector3.zero;
-            _velocity.y = jumpHeight / 10;
+            _velocity.y = config.jumpHeight / 10;
             _isGrounded = false;
         }
     }
@@ -347,7 +315,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 surfaceDownhillSphere = default;
         Vector3 surfaceDownhillRay = default;
 
-        if (Physics.SphereCast(transform.position, 0.34f, Vector3.down, out RaycastHit sphereHit, 0.7f, groundLayers))
+        if (Physics.SphereCast(transform.position, 0.34f, Vector3.down, out RaycastHit sphereHit, 0.7f, config.groundLayers))
         {
             _isGrounded = true;
             _surfaceAngleSphere = Vector3.Angle(Vector3.up, sphereHit.normal);
@@ -376,7 +344,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Debug.DrawRay(transform.position, Vector3.down * 1.7f, Color.red);
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit rayHit, 1.7f, groundLayers))
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit rayHit, 1.7f, config.groundLayers))
         {
             _surfaceAngleRay = Vector3.Angle(Vector3.up, rayHit.normal);
             surfaceDownhillRay = Vector3.Cross((Vector3.Cross(Vector3.up, rayHit.normal)), rayHit.normal).normalized;
@@ -396,7 +364,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Overhang check - returns true if the players feet are not visibly touching ground
         // todo: This ray is too long. Sometimes Cyrus is visibly floating when the next low ground is not deep enough
-        if (Physics.SphereCast(transform.position, 0.15f, Vector3.down, out RaycastHit sphereHit2, 1.84f, groundLayers))
+        if (Physics.SphereCast(transform.position, 0.15f, Vector3.down, out RaycastHit sphereHit2, 1.84f, config.groundLayers))
         {
             _feetVisiblyGrounded = true;
         }
@@ -410,7 +378,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // Add velocity in the downhill direction
         _surfaceDownhill += Vector3.down * 2;
-        _velocity = _surfaceDownhill.normalized * (slopeSlideSpeed);
+        _velocity = _surfaceDownhill.normalized * (config.slopeSlideSpeed);
     }
 
     private void StickToPlatforms()
@@ -456,11 +424,11 @@ public class PlayerMovement : MonoBehaviour
     private bool IsNearLowLedge()
     {
         Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
-        Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(centerLedgeRaycastOrigin);
-        float raycastLength = centerLedgeRaycastOrigin.y - lowLedgeStart;
+        Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(config.centerLedgeRaycastOrigin);
+        float raycastLength = config.centerLedgeRaycastOrigin.y - config.lowLedgeStart;
 
         Debug.DrawRay(raycastOrigin, Vector3.down * raycastLength, Color.magenta);
-        if (Physics.Raycast(raycastOrigin, Vector3.down, out RaycastHit hitLow, raycastLength, groundLayers))
+        if (Physics.Raycast(raycastOrigin, Vector3.down, out RaycastHit hitLow, raycastLength, config.groundLayers))
         {
             _ledgeTargetPosition = hitLow.point;
             Vector3 ledgeSurfaceNormal = hitLow.normal;
@@ -477,13 +445,13 @@ public class PlayerMovement : MonoBehaviour
     private bool IsNearHighLedge()
     {
         Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
-        Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(centerLedgeRaycastOrigin);
-        float raycastLength = centerLedgeRaycastOrigin.y - highLedgeStart;
+        Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(config.centerLedgeRaycastOrigin);
+        float raycastLength = config.centerLedgeRaycastOrigin.y - config.highLedgeStart;
 
         Debug.DrawRay(raycastOrigin, Vector3.down * raycastLength, Color.red);
 
         // This is the center raycast that starts ledge climbing
-        if (Physics.Raycast(raycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, groundLayers))
+        if (Physics.Raycast(raycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, config.groundLayers))
         {
             _ledgeTargetPosition = hitHigh.point;
             Vector3 surfaceNormal = hitHigh.normal;
@@ -508,11 +476,11 @@ public class PlayerMovement : MonoBehaviour
     private bool CanClimbLeft()
     {
         Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
-        Vector3 leftRaycastOrigin = playerRootPosition + transform.TransformVector(leftLedgeRaycastOrigin);
-        float raycastLength = centerLedgeRaycastOrigin.y - highLedgeStart;
+        Vector3 leftRaycastOrigin = playerRootPosition + transform.TransformVector(config.leftLedgeRaycastOrigin);
+        float raycastLength = config.centerLedgeRaycastOrigin.y - config.highLedgeStart;
         Debug.DrawRay(leftRaycastOrigin, Vector3.down * raycastLength, Color.red);
         
-        if (Physics.Raycast(leftRaycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, groundLayers))
+        if (Physics.Raycast(leftRaycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, config.groundLayers))
         {
             _ledgeTargetPosition = hitHigh.point;
             Vector3 surfaceNormal = hitHigh.normal;
@@ -529,11 +497,11 @@ public class PlayerMovement : MonoBehaviour
     private bool CanClimbRight()
     {
         Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
-        Vector3 rightRaycastOrigin = playerRootPosition + transform.TransformVector(rightLedgeRaycastOrigin);
-        float raycastLength = centerLedgeRaycastOrigin.y - highLedgeStart;
+        Vector3 rightRaycastOrigin = playerRootPosition + transform.TransformVector(config.rightLedgeRaycastOrigin);
+        float raycastLength = config.centerLedgeRaycastOrigin.y - config.highLedgeStart;
         Debug.DrawRay(rightRaycastOrigin, Vector3.down * raycastLength, Color.red);
         
-        if (Physics.Raycast(rightRaycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, groundLayers))
+        if (Physics.Raycast(rightRaycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, config.groundLayers))
         {
             _ledgeTargetPosition = hitHigh.point;
             Vector3 surfaceNormal = hitHigh.normal;
