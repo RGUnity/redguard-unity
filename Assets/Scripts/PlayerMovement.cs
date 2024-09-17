@@ -30,8 +30,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Slope Sliding")]
     [SerializeField] private float slopeSlideSpeed = 0.1f;
     [SerializeField] private float slopeAlignmentSpeed = 100f;
-
-    [FormerlySerializedAs("localRaycastOrigin")]
+    
     [Header("Ledge Climbing")]
     [SerializeField] private Vector3 centerLedgeRaycastOrigin = new (0, 2.25f, 0.4f);
     [SerializeField] private Vector3 leftLedgeRaycastOrigin = new (-0.3f, 2.25f, 0.5f);
