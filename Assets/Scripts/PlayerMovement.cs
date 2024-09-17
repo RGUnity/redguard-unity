@@ -227,6 +227,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         _velocity *= Mathf.Abs(_input.move.x) * 0.0334f * config.ledgeStrafeSpeed;
+        
+        // Todo: add button to drop down from ledges
     }
 
     private void SlideMode()
@@ -249,6 +251,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleStepOffset()
     {
+        // Todo: Make this also work when walking in other directions than just forward
+        
         float distance = cc.radius + cc.skinWidth + config.rayDistance;
         //Position of player's ground level + StepOffset
         Vector3 bottomWithStepOffset = _playerRootPosition + new Vector3(0,config.stepOffset, 0);
