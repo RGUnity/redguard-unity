@@ -92,6 +92,13 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         
+        if (_currentMovementState == PlayerMovementStates.Climbing 
+            && _input.dropDown)
+        {
+            _currentMovementState = PlayerMovementStates.Walking;
+            _velocity = Vector3.zero;
+        }
+        
         // Switch to desired state
         switch (_currentMovementState)
         {
