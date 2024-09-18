@@ -97,6 +97,13 @@ public class PlayerMovement : MonoBehaviour
         {
             _currentMovementState = PlayerMovementStates.Walking;
             _velocity = Vector3.zero;
+            _smoothVelocity = Vector3.zero;
+        }
+        else if (_currentMovementState == PlayerMovementStates.Climbing 
+                 && _input.climbUp)
+        {
+            PullUpLedge();
+            print("pull up now");
         }
         
         // Switch to desired state
@@ -120,6 +127,8 @@ public class PlayerMovement : MonoBehaviour
 
         // Apply the velocity to the CC
         cc.Move(_velocity);
+
+        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
 
         // This ray represents the direction velocity
         //Debug.DrawRay(transform.position - Vector3.up, cc.velocity.normalized, Color.green);
@@ -291,7 +300,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (IsNearLowLedge())
         {
-            ClimbLowerLedge();
+            PullUpLedge();
             return;
         }
 
@@ -475,7 +484,7 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
-    private void ClimbLowerLedge()
+    private void PullUpLedge()
     {
         cc.enabled = false;
         transform.position = _ledgeTargetPosition + transform.forward / 4 + Vector3.up;
