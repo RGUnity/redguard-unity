@@ -130,6 +130,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Climb Up",
+                    "type": "Button",
+                    "id": "3ce5b40b-0084-4cb6-8893-081e2989380d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -548,6 +557,28 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Drop Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fd55a7cc-f3a6-4892-929c-55b14e9f4aab",
+                    "path": "<Gamepad>/leftStick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Climb Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f9055e94-5353-4134-84f5-951975275545",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Climb Up",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
