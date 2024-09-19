@@ -98,6 +98,7 @@ public class PlayerMovement : MonoBehaviour
             _currentMovementState = PlayerMovementStates.Walking;
             _velocity = Vector3.zero;
             _smoothVelocity = Vector3.zero;
+            // Todo: Disable the ledge detection for a short time to avoid the player getting stuck
         }
         else if (_currentMovementState == PlayerMovementStates.Climbing 
                  && _input.climbUp)
@@ -243,8 +244,6 @@ public class PlayerMovement : MonoBehaviour
         }
 
         _velocity *= Mathf.Abs(_input.move.x) * 0.0334f * config.ledgeStrafeSpeed;
-        
-        // Todo: add button to drop down from ledges
     }
 
     private void SlideMode()
