@@ -249,7 +249,9 @@ public class PlayerMovement : MonoBehaviour
             _velocity = -wallRight - _ledgeWallNormal;
         }
 
-        _velocity *= Mathf.Abs(_input.move.x) * 0.0334f * config.ledgeStrafeSpeed;
+        // Keep the value positive and also hammer it towards full numbers
+        float moveDir = Mathf.Sign(Mathf.Abs(_input.move.x));
+        _velocity *= moveDir * 0.0334f * config.ledgeStrafeSpeed;
     }
 
     private void SlideMode()
