@@ -53,11 +53,16 @@ public class PlayerMovement : MonoBehaviour
             _currentMovementState = PlayerMovementStates.Airborne;
         }
         
-        if (_input.jump)
+        if (_input.jump
+            && _currentMovementState == PlayerMovementStates.Walking)
         {
             _input.jump = false;
             _currentMovementState = PlayerMovementStates.Airborne;
             Jump();
+        }
+        else if (_input.jump)
+        {
+            _input.jump = false;
         }
         
         if (_isGrounded 
