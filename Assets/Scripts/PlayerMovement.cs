@@ -104,12 +104,12 @@ public class PlayerMovement : MonoBehaviour
             _velocity = Vector3.zero;
             _smoothVelocity = Vector3.zero;
             // Todo: Disable the ledge detection for a short time to avoid the player getting stuck
+            // OR shorten the ledge detection ray.
         }
         else if (_currentMovementState == PlayerMovementStates.Climbing 
                  && _input.climbUp)
         {
             PullUpLedge();
-            print("pull up now");
         }
         
         // Switch to desired state
