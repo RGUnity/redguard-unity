@@ -110,6 +110,7 @@ public class PlayerMovement : MonoBehaviour
                  && _input.climbUp)
         {
             PullUpLedge();
+            // Todo: Check if the player has enough space to climb up
         }
         
         // Switch to desired state
