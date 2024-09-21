@@ -482,7 +482,9 @@ public class PlayerMovement : MonoBehaviour
         {
             _ledgeTargetPosition = hitHigh.point;
             Vector3 surfaceNormal = hitHigh.normal;
-            if (Vector3.Dot(surfaceNormal, transform.up) > 0.5f
+            float angleCheck = Vector3.Dot(surfaceNormal, transform.up);
+            // A perfectly even  ground has angleCheck = 1
+            if (angleCheck > 0.9f
                 && !_isGrounded)
             {
                 return true;
