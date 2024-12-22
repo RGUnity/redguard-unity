@@ -370,7 +370,7 @@ public class PlayerMovement : MonoBehaviour
             _isOnMovingPlatform = false;
         }
 
-        Debug.DrawRay(transform.position, Vector3.down * 1.7f, Color.red);
+        //Debug.DrawRay(transform.position, Vector3.down * 1.7f, Color.red);
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit rayHit, 1.7f, config.groundLayers))
         {
             _surfaceAngleRay = Vector3.Angle(Vector3.up, rayHit.normal);
@@ -454,7 +454,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(config.centerLedgeRaycastOrigin);
         float raycastLength = config.centerLedgeRaycastOrigin.y - config.lowLedgeStart;
 
-        Debug.DrawRay(raycastOrigin, Vector3.down * raycastLength, Color.magenta);
+        //Debug.DrawRay(raycastOrigin, Vector3.down * raycastLength, Color.magenta);
         if (Physics.Raycast(raycastOrigin, Vector3.down, out RaycastHit hitLow, raycastLength, config.groundLayers))
         {
             _ledgeTargetPosition = hitLow.point;
