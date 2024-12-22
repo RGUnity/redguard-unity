@@ -405,7 +405,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // Add velocity in the downhill direction
         _surfaceDownhill += Vector3.down * 2;
-        _velocity = _surfaceDownhill.normalized * (config.slopeSlideSpeed);
+        _velocity = _surfaceDownhill.normalized * (config.slopeSlideSpeed*2);
     }
 
     private void StickToPlatforms()
