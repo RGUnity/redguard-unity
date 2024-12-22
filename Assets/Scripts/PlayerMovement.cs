@@ -274,8 +274,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleStepOffset()
     {
-        // Todo: Make this also work when walking in other directions than just forward
-        
         float distance = cc.radius + cc.skinWidth + config.rayDistance;
         Vector3 targetDirection = _forwardOnSurface * _input.move.y + transform.right * _input.move.x;
         
