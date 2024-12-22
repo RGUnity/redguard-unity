@@ -277,28 +277,30 @@ public class PlayerMovement : MonoBehaviour
         // Todo: Make this also work when walking in other directions than just forward
         
         float distance = cc.radius + cc.skinWidth + config.rayDistance;
-        //Position of player's ground level + StepOffset
-        Vector3 bottomWithStepOffset = _playerRootPosition + new Vector3(0,config.stepOffset, 0);
+        Vector3 targetDirection = _forwardOnSurface * _input.move.y + transform.right * _input.move.x;
+        
         //Raycast at player's ground level in direction of movement
-        bool bottomRaycast = Physics.Raycast(_playerRootPosition, _forwardOnSurface, out _, distance);
+        bool bottomRaycast = Physics.Raycast(_playerRootPosition, targetDirection, out _, distance);
+        
         //Raycast at player's ground level + StepOffset in direction of movement
-        bool bottomWithStepOffsetRaycast = Physics.Raycast(bottomWithStepOffset, _forwardOnSurface, out _, distance);
-        if (bottomRaycast && bottomWithStepOffsetRaycast)
+        Vector3 bottomWithStepOffset = _playerRootPosition + new Vector3(0,config.stepOffset, 0);
+        bool upperRaycast = Physics.Raycast(bottomWithStepOffset, targetDirection, out _, distance/2);
+        
+        if (bottomRaycast && upperRaycast)
         {
-            //Wall in move direction
-            //Block stepping over object
+            // When both the lower and high ray hit something, we are probably in front of a wall.
+            // In this case, set stepOffset to 0 to avoid the player glitching over it
             cc.stepOffset = 0;
         }
-        else if (bottomRaycast && !bottomWithStepOffsetRaycast)
+        else if (bottomRaycast && !upperRaycast)
         {
-            //Step in move direction
-            //Allow stepping over object
-            cc.stepOffset =config.stepOffset;
+            // if only the lower ray hits something, we are probably in front of a step.
+            // In this case, set stepOffset to the desired value
+            cc.stepOffset = config.stepOffset;
         }
         else
         {
-            //Nothing in move direction
-            //Block stepping over object
+            // In all other cases, set stepOffset to 0 just to be sure
             cc.stepOffset = 0;
         }
     }
