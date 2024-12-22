@@ -390,7 +390,6 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Overhang check - returns true if the players feet are not visibly touching ground
-        // todo: This ray is too long. Sometimes Cyrus is visibly floating when the next low ground is not deep enough
         if (Physics.SphereCast(transform.position, 0.15f, Vector3.down, out RaycastHit sphereHit2, 1f, config.groundLayers))
         {
             _feetVisiblyGrounded = true;
