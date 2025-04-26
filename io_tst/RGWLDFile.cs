@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace RGFileImport
@@ -10,11 +11,11 @@ namespace RGFileImport
 		public static float PI = 3.14159265358979f;
 		public static float Cos(float a)
 		{
-			return a;
+			return (float)Math.Cos(a);
 		}
 		public static float Sin(float a)
 		{
-			return a;
+			return (float)Math.Sin(a);
 		}
 	}
 	public class Vector2
@@ -224,9 +225,9 @@ IO_WLD_data_t
 		}
 		public struct WLDMesh
 		{
-			List<Vector3> vertices;
-			List<Vector2> uv;
-			int TextureId;
+			public List<Vector3> vertices;
+			public List<Vector2> uv;
+			public int TextureId;
 			
 			public WLDMesh(int texid)
 			{
@@ -385,8 +386,8 @@ IO_WLD_data_t
 
 
 					tex_id = (int)maps_data.texturemap[x+y*map_size];
-					meshes[tex_id] = AppendTri(a1, b1, c1, uva1, uvb1, uvc1);
-					meshes[tex_id] = AppendTri(a2, b2, c2, uva2, uvb2, uvc2);
+					meshes[tex_id].AppendTri(a1, b1, c1, uva1, uvb1, uvc1);
+					meshes[tex_id].AppendTri(a2, b2, c2, uva2, uvb2, uvc2);
 				}
 			}
 
@@ -407,20 +408,34 @@ IO_WLD_data_t
 		public static void Main(string[] args)
 		{
 			RGWLDFile io = new RGWLDFile();
-			io.ReadWLD("../maps/NECRISLE.WLD");
-			io.PrintWLD();
-			BinaryWriter bw = new BinaryWriter(new FileStream("map_HM.data", FileMode.Create));
-			bw.Write(io.maps_data.heightmap);
-			bw.Close();
-			bw = new BinaryWriter(new FileStream("map_HMF.data", FileMode.Create));
-			bw.Write(io.maps_data.heightmap_flag);
-			bw.Close();
-			bw = new BinaryWriter(new FileStream("map_TM.data", FileMode.Create));
-			bw.Write(io.maps_data.texturemap);
-			bw.Close();
-			bw = new BinaryWriter(new FileStream("map_TMF.data", FileMode.Create));
-			bw.Write(io.maps_data.texturemap_flag);
-			bw.Close();
+			io.ReadWLD("../maps/ISLAND.WLD");
+			io.BuildMeshes();
+			int vs = 0;
+			for(int i=0;i<64;i++)
+			{
+				RGWLDFile.WLDMesh mesh = io.meshes[i];
+				//Console.WriteLine($"o mesh_{i}");
+				Console.WriteLine($"// MESH{i}");
+				var v_uv = mesh.vertices.Zip(mesh.uv, (vert, uv) => new {v=vert, t=uv});
+				int j = vs;
+				foreach (var vt in v_uv)
+				{
+					float x = vt.v.X;
+					float y = vt.v.Y;
+					float z = vt.v.Z;
+
+					float u = vt.t.X;
+					float v = vt.t.Y;
+					Console.WriteLine($"v {x:0.00} {y:0.00} {z:0.00}");
+					Console.WriteLine($"vt {u:0.00} {v:0.00}");
+					j++;
+					if(j>0 && j%3 == 0)
+					{
+						Console.WriteLine($"f {j-2}/{j-2} {j-1}/{j-1} {j-0}/{j-0}");
+					}
+				}
+				vs += j;
+			}
 
 		}
 	}
