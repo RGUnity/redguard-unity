@@ -330,32 +330,32 @@ IO_WLD_data_t
 
 				// vertices
 					// tri 1;
-					a1 = new Vector3((float)(x+0)*scale_size,
-							    	 (float)maps_data.heightmap[(x+0)+(y+0)*map_size]*scale_height,
-							    	 (float)(y+0)*scale_size);
-
-					b1 = new Vector3((float)(x+0)*scale_size,
-							    	 (float)maps_data.heightmap[(x+0)+(y+1)*map_size]*scale_height,
-							    	 (float)(y+1)*scale_size);
-
-					c1 = new Vector3((float)(x+1)*scale_size,
-							    	 (float)maps_data.heightmap[(x+1)+(y+0)*map_size]*scale_height,
-							    	 (float)(y+0)*scale_size);
-					// tri 2
-					a2 = c1;
-					b2 = b1;
-					c2 = new Vector3((float)(x+1)*scale_size,
+					a1 = new Vector3((float)(x+1)*scale_size,
 							    	 (float)maps_data.heightmap[(x+1)+(y+1)*map_size]*scale_height,
 							    	 (float)(y+1)*scale_size);
 
+					b1 = new Vector3((float)(x+1)*scale_size,
+							    	 (float)maps_data.heightmap[(x+1)+(y+0)*map_size]*scale_height,
+							    	 (float)(y+0)*scale_size);
+
+					c1 = new Vector3((float)(x+0)*scale_size,
+							    	 (float)maps_data.heightmap[(x+0)+(y+0)*map_size]*scale_height,
+							    	 (float)(y+0)*scale_size);
+					// tri 2
+					a2 = c1;
+					b2 = new Vector3((float)(x+0)*scale_size,
+							    	 (float)maps_data.heightmap[(x+0)+(y+0)*map_size]*scale_height,
+							    	 (float)(y+1)*scale_size);
+					c2 = a1;
+
 				// uvs
 					// tri 1;
-					uva1 = new Vector2(0.0f, 0.0f);
-					uvb1 = new Vector2(0.0f, 1.0f);
-					uvc1 = new Vector2(1.0f, 0.0f);
+					uva1 = new Vector2(1.0f, 1.0f);
+					uvb1 = new Vector2(1.0f, 0.0f);
+					uvc1 = new Vector2(0.0f, 0.0f);
 
 					// tri 2;
-					uva2 = new Vector2(1.0f, 0.0f);
+					uva2 = new Vector2(0.0f, 0.0f);
 					uvb2 = new Vector2(0.0f, 1.0f);
 					uvc2 = new Vector2(1.0f, 1.0f);
 
