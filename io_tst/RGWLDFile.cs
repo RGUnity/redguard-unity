@@ -345,7 +345,7 @@ IO_WLD_data_t
 					a2 = c1;
 					b2 = b1;
 					c2 = new Vector3((float)(x+1)*scale_size,
-							    	 (float)maps_data.heightmap[(x+1)+(y+0)*map_size]*scale_height,
+							    	 (float)maps_data.heightmap[(x+1)+(y+1)*map_size]*scale_height,
 							    	 (float)(y+1)*scale_size);
 
 				// uvs
