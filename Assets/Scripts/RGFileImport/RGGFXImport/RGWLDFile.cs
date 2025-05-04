@@ -329,7 +329,7 @@ IO_WLD_data_t
 					uvc2 = new Vector2(1.0f, 1.0f);
 
 					// rotate them here so no fancy shaders needed
-					tex_rot = (float)maps_data.texturemap_flag[x+y*map_size]*Mathf.PI;
+					tex_rot = (float)maps_data.texturemap_flag[x+y*map_size]*(Mathf.PI/2);
 
 					uv_tmp = uva1;
 					uva1.x = uv_tmp.x*Mathf.Cos(tex_rot)-uv_tmp.y*Mathf.Sin(tex_rot);

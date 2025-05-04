@@ -40,6 +40,7 @@ public static class RG2Mesh
         }
 
         mesh.vertices = vec_lst.ToArray();
+        mesh.uv = uv_lst.ToArray();
         for(int i=0;i<mesh.subMeshCount;i++)
             mesh.SetTriangles(tri_lst[i],i);
         mesh.RecalculateNormals();

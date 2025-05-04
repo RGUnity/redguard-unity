@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,13 @@ using Assets.Scripts.RGFileImport;
 using Assets.Scripts.RGFileImport.RGGFXImport;
 public class ModelViewer_Model : MonoBehaviour
 {
+    public static void Swap<T>(IList<T> list, int indexA, int indexB)
+    {
+        T tmp = list[indexA];
+        list[indexA] = list[indexB];
+        list[indexB] = tmp;
+    }
+
     Mesh mesh;
     MeshRenderer mren;
     public void SetModel_wld(/*GameObject target,*/)
@@ -30,24 +38,26 @@ public class ModelViewer_Model : MonoBehaviour
             materials[materials.Count-1].mainTexture = textures[i];
         }
         GetComponent<MeshRenderer>().SetMaterials(materials);
-
-        //UpdateMesh();
     }
     private List<Texture2D> LoadTexture(string filename)
     {
         List<Texture2D> tex_lst = new List<Texture2D>();
+        Texture2D[] tex_lst_sorted;
         // todo: palette
         RGPaletteFile.RGColor[] palette = RGPaletteFile.Load("./game_3dfx/fxart/ISLAND.COL");
         RGTextureBSIFile bsif = new RGTextureBSIFile(palette);
 
         bsif.LoadFile(filename);
 
+        tex_lst_sorted = new Texture2D[bsif.Images.Count];
         for(int i =0;i<bsif.Images.Count;i++)
         {
-            tex_lst.Add(GraphicsConverter.RGTextureToTexture2D(bsif.Images[i])[0]);
+            Texture2D cur_tex = GraphicsConverter.RGTextureToTexture2D(bsif.Images[i])[0];
+            tex_lst_sorted[Int32.Parse(bsif.Images[i].Name.Substring(3))] = cur_tex;
         }
+        // put tex_lst in order
 
-        return tex_lst;
+        return new List<Texture2D>(tex_lst_sorted);
     }
    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
