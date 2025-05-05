@@ -253,7 +253,12 @@ namespace RGFileImport
                     z = binaryReader.ReadInt32()
                 };
 
-                coords.Add(coord);
+                coords.Add(new Coord3DInt()
+                {
+                    x = coord.x,
+                    y = coord.y,
+                    z = coord.z
+                });
                 if (i == 0)
                 {
                     minCoord = coord;
