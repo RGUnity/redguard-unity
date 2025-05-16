@@ -115,29 +115,27 @@ public static class RG2Mesh
 
     private static Mesh LoadMesh_3D(string filename_3d)
     {
-        float scale = 1/8000;
         Mesh mesh = new Mesh();
         RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
         file_3d.LoadFile(filename_3d);
+
         List<Vector3> vec_lst = new List<Vector3>();
         List<int> tri_lst = new List<int>();
+
         for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
         {
             // big scale down so it fits
-            vec_lst.Add(new Vector3(file_3d.VertexCoordinates[i].x*scale,
-                                    file_3d.VertexCoordinates[i].y*scale,
-                                    file_3d.VertexCoordinates[i].z*scale));
+            vec_lst.Add(new Vector3(file_3d.VertexCoordinates[i].x/1000.0f,
+                                    file_3d.VertexCoordinates[i].y/1000.0f,
+                                    file_3d.VertexCoordinates[i].z/1000.0f));
         }
+
         for(int i=0;i<file_3d.FaceDataCollection.Count;i++)
         {
             List<int> tris = new List<int>();
-            tris.Add((int)file_3d.FaceDataCollection[i].VertexData[0].VertexIndex);
-            tris.Add((int)file_3d.FaceDataCollection[i].VertexData[1].VertexIndex);
-            tris.Add((int)file_3d.FaceDataCollection[i].VertexData[2].VertexIndex);
-
-            for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count-3;j++)
+            for(int j=0;j<=file_3d.FaceDataCollection[i].VertexData.Count-3;j++)
             {
-                int vert_ofs = 2;
+                int vert_ofs = 1;
                 tris.Add((int)file_3d.FaceDataCollection[i].VertexData[0].VertexIndex);
                 tris.Add((int)file_3d.FaceDataCollection[i].VertexData[vert_ofs+j].VertexIndex);
                 tris.Add((int)file_3d.FaceDataCollection[i].VertexData[vert_ofs+j+1].VertexIndex);

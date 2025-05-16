@@ -4,47 +4,48 @@ using System.IO;
 
 namespace RGFileImport
 {
+    public struct FrameDataHeader
+    {
+        public uint u1;
+        public uint u2;
+        public uint u3;
+        public uint u4;
+    }
+
+    public struct FaceVertexData
+    {
+        public uint VertexIndex;
+        public short U;
+        public short V;
+    }
+
+    public class FaceData
+    {
+        public byte VertexCount;
+        public ushort U1;
+        public ushort U2;
+        public byte U3;
+        public uint U4;
+        public List<FaceVertexData> VertexData;
+    }
+
+    public class Coord3DInt
+    {
+        public int x;
+        public int y;
+        public int z;
+    }
+
+    public class Coord3DFloat
+    {
+        public float x;
+        public float y;
+        public float z;
+    }
+
+
     public class RG3DFile
     {
-        public struct FrameDataHeader
-        {
-            public uint u1;
-            public uint u2;
-            public uint u3;
-            public uint u4;
-        }
-
-        public struct FaceVertexData
-        {
-            public uint VertexIndex;
-            public short U;
-            public short V;
-        }
-
-        public class FaceData
-        {
-            public byte VertexCount;
-            public ushort U1;
-            public ushort U2;
-            public byte U3;
-            public uint U4;
-            public List<FaceVertexData> VertexData;
-        }
-
-        public class Coord3DInt
-        {
-            public int x;
-            public int y;
-            public int z;
-        }
-
-        public class Coord3DFloat
-        {
-            public float x;
-            public float y;
-            public float z;
-        }
-
         const uint RedguardHeaderSize = 64;
         const float CoordTranformFactor = 256f;
         const float NormalTransformFactor = 256f;
@@ -83,7 +84,7 @@ namespace RGFileImport
             fullName = path;
             name = Path.GetFileName(path);
             is3DCFile = name.ToLower().EndsWith(".3dc");
-            using var binaryReader = new BinaryReader(File.OpenRead(path));
+            var binaryReader = new BinaryReader(File.OpenRead(path));
             fileSize = binaryReader.BaseStream.Length;
             header = GetHeader(binaryReader);
             frameDataHeader = GetFrameDataHeader(binaryReader);
@@ -131,13 +132,24 @@ namespace RGFileImport
                 OffsetFaceData = binaryReader.ReadUInt32()
             };
 
-            version = header.Version switch
+            version = 0;
+			switch(header.Version)
             {
-                0x362E3276 => 26, // v2.6
-                0x372E3276 => 27, // v2.7
-                0x302E3476 => 40, // v4.0
-                0x302E3576 => 50, // v5.0
-                _ => 0,
+                case 0x362E3276: 
+					version = 26; // v2.6
+					break;
+                case 0x372E3276:
+					version = 27; // v2.7
+					break;
+                case 0x302E3476:
+					version = 40; // v4.0
+					break;
+                case 0x302E3576:
+					version = 50; // v5.0
+					break;
+				default:
+					version = 0;
+					break;
             };
 
             if (version <= 27)
@@ -206,6 +218,7 @@ namespace RGFileImport
                     faceData.VertexData.Add(new FaceVertexData()
                     {
                         VertexIndex = version <= 27 ? vertexIndex / 12 : vertexIndex,
+                        // why the +u/v?
                         U = (short)(binaryReader.ReadInt16() + u),
                         V = (short)(binaryReader.ReadInt16() + v)
                     });
@@ -269,9 +282,9 @@ namespace RGFileImport
                     if (minCoord.x > coord.x) minCoord.x = coord.x;
                     if (minCoord.y > coord.y) minCoord.y = coord.y;
                     if (minCoord.z > coord.z) minCoord.z = coord.z;
-                    if (maxCoord.x < coord.x) minCoord.x = coord.x;
-                    if (maxCoord.y < coord.y) minCoord.y = coord.y;
-                    if (maxCoord.z < coord.z) minCoord.z = coord.z;
+                    if (maxCoord.x < coord.x) maxCoord.x = coord.x;
+                    if (maxCoord.y < coord.y) maxCoord.y = coord.y;
+                    if (maxCoord.z < coord.z) maxCoord.z = coord.z;
                 }
             }
 
@@ -336,6 +349,7 @@ namespace RGFileImport
             {
                 uvCoordinates.Add(new Coord3DFloat()
                 {
+                    // why single and not int?
                     x = binaryReader.ReadSingle(),
                     y = binaryReader.ReadSingle(),
                     z = binaryReader.ReadSingle()
