@@ -26,6 +26,10 @@ namespace RGFileImport
         public uint TextureData;
         public uint U4;
         public List<FaceVertexData> VertexData;
+
+        public uint TextureId;
+        public uint ImageId;
+        public byte ColorIndex;
     }
 
     public class Coord3DInt
@@ -201,6 +205,37 @@ namespace RGFileImport
                 else
 					faceData.TextureData = (uint)binaryReader.ReadUInt16();
 
+                if(version > 27)
+                {
+                    if((faceData.TextureData >> 20) == 0x0FFF)
+                    {
+                        faceData.ColorIndex = (byte)(faceData.TextureData>>8);
+                    }
+                    else
+                    {
+                        uint tmp = (faceData.TextureData >>8)-4000000;
+                        uint one = (tmp/250)%40;
+                        uint ten = ((tmp-(one*250))/1000)%100;
+                        uint hundred = (tmp-(one*250)-(ten*1000))/4000;
+                        faceData.TextureId = one+ten+hundred;
+
+                        one = (faceData.TextureData& 0xFF)%10;
+                        ten = ((faceData.TextureData& 0xFF)/40)*10;
+                        faceData.ImageId = one+ten;
+                    }
+                }
+                else
+                {
+                    faceData.TextureId = (faceData.TextureData >> 7);
+                    if(faceData.TextureId < 2)
+                    {
+                        faceData.ColorIndex = (byte)(faceData.TextureData);
+                    }
+                    else
+                    {
+                        faceData.ImageId = (byte)(faceData.TextureData & 0x7f);
+                    }
+                }
 
                 faceData.U4 = binaryReader.ReadUInt32();
                 if (!faceVectorSizes.ContainsKey(faceData.VertexCount))

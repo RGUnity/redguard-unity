@@ -119,32 +119,79 @@ public static class RG2Mesh
         RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
         file_3d.LoadFile(filename_3d);
 
-        List<Vector3> vec_lst = new List<Vector3>();
-        List<int> tri_lst = new List<int>();
-
+        const float UV_TRANSFORM_FACTOR = 4069.0f;
+// intermediate step: shared vertices/normals for the faces
+        List<Vector3> vec_tmp_lst = new List<Vector3>();
+        List<int> tri_tmp_lst = new List<int>();
+        List<Vector3> norm_tmp_lst = new List<Vector3>();
+        List<Vector2> uv_tmp_lst = new List<Vector2>();
         for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
         {
             // big scale down so it fits
-            vec_lst.Add(new Vector3(file_3d.VertexCoordinates[i].x/1000.0f,
+            vec_tmp_lst.Add(new Vector3(file_3d.VertexCoordinates[i].x/1000.0f,
                                     file_3d.VertexCoordinates[i].y/1000.0f,
                                     file_3d.VertexCoordinates[i].z/1000.0f));
         }
-
+        for(int i=0;i<file_3d.FaceNormals.Count;i++)
+        {
+            // add 3 normals for every tri we make so they match the split vertex index later
+            // bit hacky but whatchu gonna do
+            for(int j=0;j<=file_3d.FaceDataCollection[i].VertexData.Count-3;j++)
+            {
+                norm_tmp_lst.Add(new Vector3(file_3d.FaceNormals[i].x,
+                                         file_3d.FaceNormals[i].y,
+                                         file_3d.FaceNormals[i].z));
+                norm_tmp_lst.Add(new Vector3(file_3d.FaceNormals[i].x,
+                                         file_3d.FaceNormals[i].y,
+                                         file_3d.FaceNormals[i].z));
+                norm_tmp_lst.Add(new Vector3(file_3d.FaceNormals[i].x,
+                                         file_3d.FaceNormals[i].y,
+                                         file_3d.FaceNormals[i].z));
+            }
+        }
         for(int i=0;i<file_3d.FaceDataCollection.Count;i++)
         {
             List<int> tris = new List<int>();
+            List<Vector2> uvs = new List<Vector2>();
             for(int j=0;j<=file_3d.FaceDataCollection[i].VertexData.Count-3;j++)
             {
                 int vert_ofs = 1;
                 tris.Add((int)file_3d.FaceDataCollection[i].VertexData[0].VertexIndex);
                 tris.Add((int)file_3d.FaceDataCollection[i].VertexData[vert_ofs+j].VertexIndex);
                 tris.Add((int)file_3d.FaceDataCollection[i].VertexData[vert_ofs+j+1].VertexIndex);
+
+                uvs.Add(new Vector2(
+                                (UV_TRANSFORM_FACTOR-file_3d.FaceDataCollection[i].VertexData[0].U)/UV_TRANSFORM_FACTOR,
+                                (UV_TRANSFORM_FACTOR-file_3d.FaceDataCollection[i].VertexData[0].V)/UV_TRANSFORM_FACTOR));
+                uvs.Add(new Vector2(
+                                (UV_TRANSFORM_FACTOR-file_3d.FaceDataCollection[i].VertexData[vert_ofs+j].U)/UV_TRANSFORM_FACTOR,
+                                (UV_TRANSFORM_FACTOR-file_3d.FaceDataCollection[i].VertexData[vert_ofs+j].V)/UV_TRANSFORM_FACTOR));
+                uvs.Add(new Vector2(
+                                (UV_TRANSFORM_FACTOR-file_3d.FaceDataCollection[i].VertexData[vert_ofs+j+1].U)/UV_TRANSFORM_FACTOR,
+                                (UV_TRANSFORM_FACTOR-file_3d.FaceDataCollection[i].VertexData[vert_ofs+j+1].V)/UV_TRANSFORM_FACTOR));
             }
-            tri_lst.AddRange(tris);
-            Debug.Log($"CUR: {string.Join(", ", tris)}");
+            tri_tmp_lst.AddRange(tris);
+            uv_tmp_lst.AddRange(uvs);
         }
+// split the tris with corresponding vertices and normals
+        List<Vector3> vec_lst = new List<Vector3>();
+        List<int> tri_lst = new List<int>();
+        List<Vector3> norm_lst = new List<Vector3>();
+        List<Vector2> uv_lst = new List<Vector2>();
+        for(int i=0;i<tri_tmp_lst.Count;i++)
+        {
+            vec_lst.Add(vec_tmp_lst[tri_tmp_lst[i]]);
+            uv_lst.Add(uv_tmp_lst[i]);
+            // could do normal smoothing here, but would need rewrite
+            // OI: is normal smoothing controlled by a flag somewhere?
+            norm_lst.Add(norm_tmp_lst[i]);
+            tri_lst.Add(i);
+        }
+
         mesh.vertices = vec_lst.ToArray();
+        mesh.normals = norm_lst.ToArray();
         mesh.triangles = tri_lst.ToArray();
+        mesh.uv = uv_lst.ToArray();
 
         return mesh;
     }
