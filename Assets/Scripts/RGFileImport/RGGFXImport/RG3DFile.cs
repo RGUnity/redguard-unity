@@ -22,9 +22,8 @@ namespace RGFileImport
     public class FaceData
     {
         public byte VertexCount;
-        public ushort U1;
-        public ushort U2;
-        public byte U3;
+        public byte U1;
+        public uint TextureData;
         public uint U4;
         public List<FaceVertexData> VertexData;
     }
@@ -68,7 +67,7 @@ namespace RGFileImport
         long fileSize;
         uint endFaceDataOffset;
         int totalFaceVertexes;
-        int version;
+        public int version;
         Dictionary<int, int> faceVectorSizes;
 
         public List<FaceData> FaceDataCollection { get; set; }
@@ -195,15 +194,14 @@ namespace RGFileImport
                 faceDatas.Add(new FaceData());
                 var faceData = faceDatas[i];
                 faceData.VertexCount = binaryReader.ReadByte();
+
+				faceData.U1 = binaryReader.ReadByte();
                 if (version > 27)
-                    faceData.U1 = binaryReader.ReadUInt16();
+					faceData.TextureData = (uint)binaryReader.ReadUInt32();
                 else
-                    faceData.U1 = binaryReader.ReadByte();
-                faceData.U2 = binaryReader.ReadUInt16();
-                if (version > 27)
-                    faceData.U3 = binaryReader.ReadByte();
-                else
-                    faceData.U3 = 0;
+					faceData.TextureData = (uint)binaryReader.ReadUInt16();
+
+
                 faceData.U4 = binaryReader.ReadUInt32();
                 if (!faceVectorSizes.ContainsKey(faceData.VertexCount))
                     faceVectorSizes[faceData.VertexCount] = 0;

@@ -18,8 +18,7 @@ namespace xyz
         {
 			Console.WriteLine($"VertexCount: {i.VertexCount}");
 			Console.WriteLine($"U1: {i.U1}");
-			Console.WriteLine($"U2: {i.U2}");
-			Console.WriteLine($"U3: {i.U3}");
+			Console.WriteLine($"TextureData: {i.TextureData}");
 			Console.WriteLine($"U4: {i.U4}");
             //public uint U4;
 			for(int j=0;j<i.VertexData.Count;j++)
@@ -59,6 +58,44 @@ namespace xyz
 			Console.WriteLine($"vn {i.x} {i.y} {i.z}");
         }
 
+		static void print_TextureId(FaceData i, int version)
+		{
+			if(version > 27)
+			{
+				if((i.TextureData >> 20) == 0x0FFF)
+				{
+					byte ColorIndex = (byte)(i.TextureData>>8);
+					Console.WriteLine($"COLOR: {ColorIndex}");
+				}
+				else
+				{
+					uint tmp = (i.TextureData >>8)-4000000;
+					uint one = (tmp/250)%40;
+					uint ten = ((tmp-(one*250))/1000)%100;
+					uint hundred = (tmp-(one*250)-(ten*1000))/4000;
+					uint TextureId = one+ten+hundred;
+
+					one = (i.TextureData& 0xFF)%10;
+					ten = ((i.TextureData& 0xFF)/40)*10;
+					uint ImageId = one+ten;
+					Console.WriteLine($"TEX: {TextureId} IMG: {ImageId}");
+				}
+			}
+			else
+			{
+				uint TextureId = (i.TextureData >> 7);
+				if(TextureId < 2)
+				{
+					byte ColorIndex = (byte)(i.TextureData);
+					Console.WriteLine($"COLOR: {ColorIndex}");
+				}
+				else
+				{
+					byte ImageId = (byte)(i.TextureData & 0x7f);
+					Console.WriteLine($"TEX: {TextureId} IMG: {ImageId}");
+				}
+			}
+		}
 
 
 		 public static void Main(string[] args)
@@ -66,6 +103,33 @@ namespace xyz
 			RG3DFile file3d = new RG3DFile();
 			file3d.LoadFile("../../game_3dfx/fxart/CYRSA001.3DC");
 
+			for(int i=0;i<file3d.FaceDataCollection.Count;i++)
+			{
+				print_TextureId(file3d.FaceDataCollection[i], file3d.version);
+			}
+
+			for(int i=0;i<file3d.FaceDataCollection.Count;i++)
+			{
+				for(int j=0;j<file3d.FaceDataCollection[i].VertexCount;j++)
+				{
+					uint vert = file3d.FaceDataCollection[i].VertexData[j].VertexIndex;
+					if(vert == 6)
+					{
+						float UV_TRANSFORM_FACTOR = 4096.0f;
+						float u = (UV_TRANSFORM_FACTOR-file3d.FaceDataCollection[i].VertexData[j].U)/UV_TRANSFORM_FACTOR;
+						float v = (UV_TRANSFORM_FACTOR-file3d.FaceDataCollection[i].VertexData[j].V)/UV_TRANSFORM_FACTOR;
+						Console.WriteLine($"f uv: {u} {v}");
+
+						u = file3d.UvCoordinates[i].x;
+						v = file3d.UvCoordinates[i].y;
+						float w  = file3d.UvCoordinates[i].z;
+						Console.WriteLine($"v uvw: {u} {v} {w}");
+				print_TextureId(file3d.FaceDataCollection[i], file3d.version);
+					}
+				}
+			}
+			Console.WriteLine($"o FACE: {file3d.FaceDataCollection.Count} UV: {file3d.UvCoordinates.Count} VERT: {file3d.VertexCoordinates.Count}");
+			/*
 			Console.WriteLine($"o CYR");
 			for(int i=0;i<file3d.VertexCoordinates.Count;i++)
 				print_Coord3DInt_vert_obj(file3d.VertexCoordinates[i]);
@@ -82,6 +146,7 @@ namespace xyz
 
 
 			Console.WriteLine($"#{file3d.FaceNormals.Count},{file3d.FaceDataCollection.Count}");
+			*/
 			/*
 			for(int i=0;i<file3d.FaceDataCollection.Count;i++)
 			{
