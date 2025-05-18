@@ -27,6 +27,7 @@ namespace RGFileImport
         public uint U4;
         public List<FaceVertexData> VertexData;
 
+        public bool solid_color;
         public uint TextureId;
         public uint ImageId;
         public byte ColorIndex;
@@ -210,6 +211,7 @@ namespace RGFileImport
                     if((faceData.TextureData >> 20) == 0x0FFF)
                     {
                         faceData.ColorIndex = (byte)(faceData.TextureData>>8);
+                        faceData.solid_color = true;
                     }
                     else
                     {
@@ -222,6 +224,7 @@ namespace RGFileImport
                         one = (faceData.TextureData& 0xFF)%10;
                         ten = ((faceData.TextureData& 0xFF)/40)*10;
                         faceData.ImageId = one+ten;
+                        faceData.solid_color = false;
                     }
                 }
                 else
@@ -230,10 +233,12 @@ namespace RGFileImport
                     if(faceData.TextureId < 2)
                     {
                         faceData.ColorIndex = (byte)(faceData.TextureData);
+                        faceData.solid_color = true;
                     }
                     else
                     {
                         faceData.ImageId = (byte)(faceData.TextureData & 0x7f);
+                        faceData.solid_color = false;
                     }
                 }
 
