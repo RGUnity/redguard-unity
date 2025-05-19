@@ -88,12 +88,24 @@ namespace RGFileImport
             fullName = path;
             name = Path.GetFileName(path);
             is3DCFile = name.ToLower().EndsWith(".3dc");
-            var binaryReader = new BinaryReader(File.OpenRead(path));
+
+
+
+            byte[] buffer;
+            BinaryReader binaryReader = new BinaryReader(File.OpenRead(path));
             fileSize = binaryReader.BaseStream.Length;
-            header = GetHeader(binaryReader);
-            frameDataHeader = GetFrameDataHeader(binaryReader);
-            FaceDataCollection = GetFaceData(binaryReader);
-            VertexCoordinates = GetVertexCoordinates(binaryReader);
+            buffer = binaryReader.ReadBytes((int)fileSize);
+			binaryReader.Close();
+            LoadMemory(buffer);
+
+        }
+        public void LoadMemory(byte[] buffer)
+        {
+            MemoryReader memoryReader = new MemoryReader(buffer);
+            header = GetHeader(memoryReader);
+            frameDataHeader = GetFrameDataHeader(memoryReader);
+            FaceDataCollection = GetFaceData(memoryReader);
+            VertexCoordinates = GetVertexCoordinates(memoryReader);
             if (is3DCFile && version <= 27 && !useAltVertexOffset && tryReloadOld3dcFileVertex)
             {
                 // Reload if coordinates are outside maximums
@@ -105,35 +117,36 @@ namespace RGFileImport
                     minCoord.z > MaxCoordValueForOld3DCReload)
                 {
                     useAltVertexOffset = true;
-                    VertexCoordinates = GetVertexCoordinates(binaryReader);
+                    VertexCoordinates = GetVertexCoordinates(memoryReader);
                 }
             }
 
-            FaceNormals = GetFaceNormals(binaryReader);
-            UvOffsets = GetUVOffsets(binaryReader);
-            UvCoordinates = GetUVCoordinates(binaryReader);
+            FaceNormals = GetFaceNormals(memoryReader);
+            UvOffsets = GetUVOffsets(memoryReader);
+            UvCoordinates = GetUVCoordinates(memoryReader);
+
         }
 
-        private RG3DHeader GetHeader(BinaryReader binaryReader)
+        private RG3DHeader GetHeader(MemoryReader memoryReader)
         {
             var header = new RG3DHeader
             {
-                Version = binaryReader.ReadUInt32(),
-                NumVertices = binaryReader.ReadUInt32(),
-                NumFaces = binaryReader.ReadUInt32(),
-                Radius = binaryReader.ReadUInt32(),
-                NumFrames = binaryReader.ReadUInt32(),
-                OffsetFrameData = binaryReader.ReadUInt32(),
-                NumUVOffsets = binaryReader.ReadUInt32(),
-                OffsetSection4 = binaryReader.ReadUInt32(),
-                Section4Count = binaryReader.ReadUInt32(),
-                Unknown4 = binaryReader.ReadUInt32(),
-                OffsetUVOffsets = binaryReader.ReadUInt32(),
-                OffsetUVData = binaryReader.ReadUInt32(),
-                OffsetVertexCoords = binaryReader.ReadUInt32(),
-                OffsetFaceNormals = binaryReader.ReadUInt32(),
-                NumUVOffsets2 = binaryReader.ReadUInt32(),
-                OffsetFaceData = binaryReader.ReadUInt32()
+                Version = memoryReader.ReadUInt32(),
+                NumVertices = memoryReader.ReadUInt32(),
+                NumFaces = memoryReader.ReadUInt32(),
+                Radius = memoryReader.ReadUInt32(),
+                NumFrames = memoryReader.ReadUInt32(),
+                OffsetFrameData = memoryReader.ReadUInt32(),
+                NumUVOffsets = memoryReader.ReadUInt32(),
+                OffsetSection4 = memoryReader.ReadUInt32(),
+                Section4Count = memoryReader.ReadUInt32(),
+                Unknown4 = memoryReader.ReadUInt32(),
+                OffsetUVOffsets = memoryReader.ReadUInt32(),
+                OffsetUVData = memoryReader.ReadUInt32(),
+                OffsetVertexCoords = memoryReader.ReadUInt32(),
+                OffsetFaceNormals = memoryReader.ReadUInt32(),
+                NumUVOffsets2 = memoryReader.ReadUInt32(),
+                OffsetFaceData = memoryReader.ReadUInt32()
             };
 
             version = 0;
@@ -167,25 +180,25 @@ namespace RGFileImport
             return header;
         }
 
-        private FrameDataHeader GetFrameDataHeader(BinaryReader binaryReader)
+        private FrameDataHeader GetFrameDataHeader(MemoryReader memoryReader)
         {
-            if (header.OffsetFrameData == 0 || header.OffsetFrameData >= binaryReader.BaseStream.Length)
+            if (header.OffsetFrameData == 0 || header.OffsetFrameData >= memoryReader.Length)
                 return new FrameDataHeader();
-            if (header.OffsetFrameData >= binaryReader.BaseStream.Length)
+            if (header.OffsetFrameData >= memoryReader.Length)
                 throw new EndOfStreamException("OffsetFrameData is beyond stream length.");
-            binaryReader.BaseStream.Seek(header.OffsetFrameData, SeekOrigin.Begin);
+            memoryReader.Seek(header.OffsetFrameData, 0);
             return new FrameDataHeader
             {
-                u1 = binaryReader.ReadUInt32(),
-                u2 = binaryReader.ReadUInt32(),
-                u3 = binaryReader.ReadUInt32(),
-                u4 = binaryReader.ReadUInt32()
+                u1 = memoryReader.ReadUInt32(),
+                u2 = memoryReader.ReadUInt32(),
+                u3 = memoryReader.ReadUInt32(),
+                u4 = memoryReader.ReadUInt32()
             };
         }
 
-        private List<FaceData> GetFaceData(BinaryReader binaryReader)
+        private List<FaceData> GetFaceData(MemoryReader memoryReader)
         {
-            var fileLength = (uint)binaryReader.BaseStream.Length;
+            var fileLength = (uint)memoryReader.Length;
             uint dataSize = FindNextOffsetAfter(header.OffsetFaceData, fileLength, header) - header.OffsetFaceData;
             var faceDatas = new List<FaceData>();
             if (header.NumFaces == 0)
@@ -193,18 +206,18 @@ namespace RGFileImport
             if (header.OffsetFaceData > fileLength)
                 throw new EndOfStreamException("OffsetFaceData is beyond stream length.");
             faceVectorSizes = new Dictionary<int, int>();
-            binaryReader.BaseStream.Seek(header.OffsetFaceData, SeekOrigin.Begin);
+            memoryReader.Seek(header.OffsetFaceData, 0);
             for (var i = 0; i < header.NumFaces; ++i)
             {
                 faceDatas.Add(new FaceData());
                 var faceData = faceDatas[i];
-                faceData.VertexCount = binaryReader.ReadByte();
+                faceData.VertexCount = memoryReader.ReadByte();
 
-				faceData.U1 = binaryReader.ReadByte();
+				faceData.U1 = memoryReader.ReadByte();
                 if (version > 27)
-					faceData.TextureData = (uint)binaryReader.ReadUInt32();
+					faceData.TextureData = (uint)memoryReader.ReadUInt32();
                 else
-					faceData.TextureData = (uint)binaryReader.ReadUInt16();
+					faceData.TextureData = (uint)memoryReader.ReadUInt16();
 
                 if(version > 27)
                 {
@@ -242,7 +255,7 @@ namespace RGFileImport
                     }
                 }
 
-                faceData.U4 = binaryReader.ReadUInt32();
+                faceData.U4 = memoryReader.ReadUInt32();
                 if (!faceVectorSizes.ContainsKey(faceData.VertexCount))
                     faceVectorSizes[faceData.VertexCount] = 0;
                 faceVectorSizes[faceData.VertexCount]++;
@@ -252,13 +265,13 @@ namespace RGFileImport
                 faceData.VertexData = new List<FaceVertexData>();
                 for (var j = 0; j < faceData.VertexCount; ++j)
                 {
-                    var vertexIndex = binaryReader.ReadUInt32();
+                    var vertexIndex = memoryReader.ReadUInt32();
                     faceData.VertexData.Add(new FaceVertexData()
                     {
                         VertexIndex = version <= 27 ? vertexIndex / 12 : vertexIndex,
                         // why the +u/v?
-                        U = (short)(binaryReader.ReadInt16() + u),
-                        V = (short)(binaryReader.ReadInt16() + v)
+                        U = (short)(memoryReader.ReadInt16() + u),
+                        V = (short)(memoryReader.ReadInt16() + v)
                     });
 
                     u = faceData.VertexData[j].U;
@@ -266,7 +279,7 @@ namespace RGFileImport
                 }
             }
 
-            var endOffset = (uint)binaryReader.BaseStream.Position;
+            var endOffset = (uint)memoryReader.Position;
             var readSize = endOffset - header.OffsetFaceData;
             endFaceDataOffset = endOffset;
             if (readSize != dataSize && (!is3DCFile || version > 27))
@@ -274,9 +287,9 @@ namespace RGFileImport
             return faceDatas;
         }
 
-        private List<Coord3DInt> GetVertexCoordinates(BinaryReader binaryReader)
+        private List<Coord3DInt> GetVertexCoordinates(MemoryReader memoryReader)
         {
-            uint dataSize = FindNextOffsetAfter(header.OffsetVertexCoords, (uint)binaryReader.BaseStream.Length, header) - header.OffsetVertexCoords;
+            uint dataSize = FindNextOffsetAfter(header.OffsetVertexCoords, (uint)memoryReader.Length, header) - header.OffsetVertexCoords;
             var coords = new List<Coord3DInt>();
             if (header.NumVertices <= 0)
                 return coords;
@@ -291,17 +304,17 @@ namespace RGFileImport
                     offset += frameDataHeader.u3;
                 if (offset >= fileSize)
                     throw new EndOfStreamException("Vertex coordinates are beyond end of file.");
-                binaryReader.BaseStream.Seek(offset, SeekOrigin.Begin);
+                memoryReader.Seek(offset, 0);
             }
             else
-                binaryReader.BaseStream.Seek(header.OffsetVertexCoords, SeekOrigin.Begin);
+                memoryReader.Seek(header.OffsetVertexCoords, 0);
             for (var i = 0; i < header.NumVertices; ++i)
             {
                 var coord = new Coord3DInt()
                 {
-                    x = binaryReader.ReadInt32(),
-                    y = binaryReader.ReadInt32(),
-                    z = binaryReader.ReadInt32()
+                    x = memoryReader.ReadInt32(),
+                    y = memoryReader.ReadInt32(),
+                    z = memoryReader.ReadInt32()
                 };
 
                 coords.Add(new Coord3DInt()
@@ -326,55 +339,55 @@ namespace RGFileImport
                 }
             }
 
-            if (binaryReader.BaseStream.Position - header.OffsetVertexCoords != dataSize && (!is3DCFile || version > 27))
+            if (memoryReader.Position - header.OffsetVertexCoords != dataSize && (!is3DCFile || version > 27))
                 throw new Exception("Did not read all bytes from 3d file vertex coordinates section.");
 
             return coords;
         }
 
-        private List<Coord3DInt> GetFaceNormals(BinaryReader binaryReader)
+        private List<Coord3DInt> GetFaceNormals(MemoryReader memoryReader)
         {
-            var fileLength = (uint)binaryReader.BaseStream.Length;
+            var fileLength = (uint)memoryReader.Length;
             var dataSize = FindNextOffsetAfter(header.OffsetFaceNormals, fileLength, header) - header.OffsetFaceNormals;
-            binaryReader.BaseStream.Seek(header.OffsetFaceNormals, SeekOrigin.Begin);
+            memoryReader.Seek(header.OffsetFaceNormals, 0);
             var faceNormals = new List<Coord3DInt>();
             for (var i = 0; i < header.NumFaces; ++i)
             {
                 faceNormals.Add(new Coord3DInt()
                 {
-                    x = binaryReader.ReadInt32(),
-                    y = binaryReader.ReadInt32(),
-                    z = binaryReader.ReadInt32()
+                    x = memoryReader.ReadInt32(),
+                    y = memoryReader.ReadInt32(),
+                    z = memoryReader.ReadInt32()
                 });
             }
 
-            var readSize = binaryReader.BaseStream.Position - header.OffsetFaceNormals;
+            var readSize = memoryReader.Position - header.OffsetFaceNormals;
             if (readSize != dataSize && (!is3DCFile || version > 27))
                 throw new Exception("Did not read all bytes from 3D file face normal section.");
             return faceNormals;
         }
 
-        private List<uint> GetUVOffsets(BinaryReader binaryReader)
+        private List<uint> GetUVOffsets(MemoryReader memoryReader)
         {
             var uvOffsets = new List<uint>();
             if (header.OffsetUVOffsets == 0)
                 return uvOffsets;
-            var fileLength = (uint)binaryReader.BaseStream.Length;
+            var fileLength = (uint)memoryReader.Length;
             var dataSize = FindNextOffsetAfter(header.OffsetUVOffsets, fileLength, header) - header.OffsetUVOffsets;
             if (header.NumUVOffsets == 0)
                 return uvOffsets;
-            binaryReader.BaseStream.Seek(header.OffsetUVOffsets, SeekOrigin.Begin);
+            memoryReader.Seek(header.OffsetUVOffsets, 0);
             for (var i = 0; i < header.NumUVOffsets; ++i)
-                uvOffsets.Add(binaryReader.ReadUInt32());
-            if (binaryReader.BaseStream.Position - header.OffsetUVOffsets != dataSize)
+                uvOffsets.Add(memoryReader.ReadUInt32());
+            if (memoryReader.Position - header.OffsetUVOffsets != dataSize)
                 throw new Exception("Did not read all bytes from 3d file UV offset data.");
 
             return uvOffsets;
         }
 
-        private List<Coord3DFloat> GetUVCoordinates(BinaryReader binaryReader)
+        private List<Coord3DFloat> GetUVCoordinates(MemoryReader memoryReader)
         {
-            var fileLength = (uint)binaryReader.BaseStream.Length;
+            var fileLength = (uint)memoryReader.Length;
             var uvCoordinates = new List<Coord3DFloat>();
             if (header.OffsetUVData == 0 || header.OffsetUVData >= fileSize)
                 return uvCoordinates;
@@ -382,19 +395,19 @@ namespace RGFileImport
             var numUVCoordinates = dataSize / 12;
             if (numUVCoordinates == 0)
                 return uvCoordinates;
-            binaryReader.BaseStream.Seek(header.OffsetUVData, SeekOrigin.Begin);
+            memoryReader.Seek(header.OffsetUVData, 0);
             for (var i = 0; i < numUVCoordinates; ++i)
             {
                 uvCoordinates.Add(new Coord3DFloat()
                 {
                     // why single and not int?
-                    x = binaryReader.ReadSingle(),
-                    y = binaryReader.ReadSingle(),
-                    z = binaryReader.ReadSingle()
+                    x = memoryReader.ReadSingle(),
+                    y = memoryReader.ReadSingle(),
+                    z = memoryReader.ReadSingle()
                 });
             }
 
-            if (binaryReader.BaseStream.Position - header.OffsetUVData != dataSize)
+            if (memoryReader.Position - header.OffsetUVData != dataSize)
                 throw new Exception("Did not read all bytes from 3d file UV coordinate data.");
 
             return uvCoordinates;

@@ -27,6 +27,7 @@ namespace RGFileImport
 				// is there a better way to do this? probably
 				// can i be bothered to find a better way to do this? probably not
 				// should C# man up and let me dump binary data into memory with no sanitychecks? resounding yes
+                // update: I made a MemoryReader class that handles reading from memory, *someone* should update this *sometime*
 				int ptr = 0;
 				unknown1 = new int[unknown1_size];
 				for(int i=0;i<unknown1_size;i++)
