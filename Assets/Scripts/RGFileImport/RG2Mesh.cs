@@ -167,8 +167,9 @@ public static class RG2Mesh
             {
                 cur_face.verts.Add(vec_tmp_lst[(int)file_3d.FaceDataCollection[i].VertexData[j].VertexIndex]);
                 cur_face.uvs.Add(new Vector2(
-                                (UV_TRANSFORM_FACTOR-file_3d.FaceDataCollection[i].VertexData[j].U)/UV_TRANSFORM_FACTOR,
-                                (UV_TRANSFORM_FACTOR-file_3d.FaceDataCollection[i].VertexData[j].V)/UV_TRANSFORM_FACTOR));
+                                file_3d.FaceDataCollection[i].VertexData[j].U,
+                                file_3d.FaceDataCollection[i].VertexData[j].V
+								));
             }
             face_lst.Add(cur_face);
         }
@@ -177,8 +178,24 @@ public static class RG2Mesh
         List<Vector3> norm_lst = new List<Vector3>();
         List<Vector2> uv_lst = new List<Vector2>();
         List<int>[] tri_lst = new List<int>[texid_cnt];
+        Vector2[] uv_scale_lst = new Vector2[texid_cnt];
+
         for(int i=0;i<texid_cnt;i++)
+        {
             tri_lst[i] = new List<int>();
+            uv_scale_lst[i] = new Vector2(0.0f, 0.0f);
+        }
+
+        for(int i=0;i<face_lst.Count;i++)
+        {
+			for(int j=0;j<face_lst[i].uvs.Count;j++)
+			{
+				if(face_lst[i].uvs[j].y > uv_scale_lst[face_lst[i].texid].y)
+					uv_scale_lst[face_lst[i].texid] = new Vector2(uv_scale_lst[face_lst[i].texid].x, face_lst[i].uvs[j].y);
+				if(face_lst[i].uvs[j].x > uv_scale_lst[face_lst[i].texid].x)
+					uv_scale_lst[face_lst[i].texid] = new Vector2(face_lst[i].uvs[j].x, uv_scale_lst[face_lst[i].texid].y);
+			}
+		}
 
         int tri_cnt = 0;
         for(int i=0;i<face_lst.Count;i++)
@@ -194,9 +211,23 @@ public static class RG2Mesh
                 norm_lst.Add(face_lst[i].norm);
                 norm_lst.Add(face_lst[i].norm);
 
-                uv_lst.Add(face_lst[i].uvs[0]);
-                uv_lst.Add(face_lst[i].uvs[vert_ofs+j]);
-                uv_lst.Add(face_lst[i].uvs[vert_ofs+j+1]);
+                float UV_TRANSFORM_FACTOR_X = uv_scale_lst[face_lst[i].texid].x;
+                float UV_TRANSFORM_FACTOR_Y = uv_scale_lst[face_lst[i].texid].y;
+
+                uv_lst.Add(new Vector2(
+                                ((face_lst[i].uvs[0].x)/(UV_TRANSFORM_FACTOR_X)),
+                                -((UV_TRANSFORM_FACTOR_Y)-face_lst[i].uvs[0].y)/(UV_TRANSFORM_FACTOR_Y)
+								));
+                uv_lst.Add(new Vector2(
+                                ((face_lst[i].uvs[vert_ofs+j].x)/(UV_TRANSFORM_FACTOR_X)),
+                                -((UV_TRANSFORM_FACTOR_Y)-face_lst[i].uvs[vert_ofs+j].y)/(UV_TRANSFORM_FACTOR_Y)
+								));
+                uv_lst.Add(new Vector2(
+                                ((face_lst[i].uvs[vert_ofs+j+1].x)/(UV_TRANSFORM_FACTOR_X)),
+                                -((UV_TRANSFORM_FACTOR_Y)-face_lst[i].uvs[vert_ofs+j+1].y)/(UV_TRANSFORM_FACTOR_Y)
+								));
+
+
                 
                 tri_lst[face_lst[i].texid].Add(tri_cnt*3);
                 tri_lst[face_lst[i].texid].Add(tri_cnt*3+1);
