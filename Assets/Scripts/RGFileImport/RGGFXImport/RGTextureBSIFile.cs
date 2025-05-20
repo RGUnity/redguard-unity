@@ -10,6 +10,10 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
         public List<RGTextureImage> Images { get; protected set; }
         static private RGPaletteFile.RGColor[] defaultPalette;
 
+        public RGTextureBSIFile()
+        {
+            defaultPalette = new RGPaletteFile.RGColor[256];
+        }
         public RGTextureBSIFile(RGPaletteFile.RGColor[] colors)
         {
             if (colors == null)

@@ -96,11 +96,12 @@ namespace RGFileImport
             fileSize = binaryReader.BaseStream.Length;
             buffer = binaryReader.ReadBytes((int)fileSize);
 			binaryReader.Close();
-            LoadMemory(buffer);
+            LoadMemory(buffer, is3DCFile);
 
         }
-        public void LoadMemory(byte[] buffer)
+        public void LoadMemory(byte[] buffer, bool is3DC)
         {
+            is3DCFile = is3DC;
             MemoryReader memoryReader = new MemoryReader(buffer);
             header = GetHeader(memoryReader);
             frameDataHeader = GetFrameDataHeader(memoryReader);

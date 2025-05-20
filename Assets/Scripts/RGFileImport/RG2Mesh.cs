@@ -20,7 +20,13 @@ public static class RG2Mesh
     public static UnityData_WLD WLD2Mesh(string filename_wld, string filename_texbsi, string filename_col)
     {
         Mesh mesh_wld = LoadMesh_WLD(filename_wld);
-        List<Material> materials = LoadMaterials(filename_texbsi, filename_col);
+        //List<Material> materials = LoadMaterials(filename_texbsi, filename_col);
+
+        List<Material> materials = new List<Material>();
+        for(int i=0;i<64;i++)
+        {
+            materials.Add(RGTexStore.GetMaterial("ISLAND",302,i));
+        }
 
         UnityData_WLD data = new UnityData_WLD();
         data.mesh = mesh_wld;
@@ -130,7 +136,7 @@ public static class RG2Mesh
         RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
         file_3d.LoadFile(filename_3d);
 
-        const float UV_TRANSFORM_FACTOR = 4069.0f;
+        const float MESH_SCALE_FACTOR = 1/500.0f;
 // 1st pass: load verts/normals/faces
         List<Vector3> vec_tmp_lst = new List<Vector3>();
         List<int> tri_tmp_lst = new List<int>();
@@ -139,14 +145,14 @@ public static class RG2Mesh
         for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
         {
             // big scale down so it fits
-            vec_tmp_lst.Add(new Vector3(file_3d.VertexCoordinates[i].x/500.0f,
-                                    file_3d.VertexCoordinates[i].y/500.0f,
-                                    file_3d.VertexCoordinates[i].z/500.0f));
+            vec_tmp_lst.Add(new Vector3(-file_3d.VertexCoordinates[i].x*MESH_SCALE_FACTOR,
+                                    -file_3d.VertexCoordinates[i].y*MESH_SCALE_FACTOR,
+                                    file_3d.VertexCoordinates[i].z*MESH_SCALE_FACTOR));
         }
         for(int i=0;i<file_3d.FaceNormals.Count;i++)
         {
-            norm_tmp_lst.Add(new Vector3(file_3d.FaceNormals[i].x,
-                                     file_3d.FaceNormals[i].y,
+            norm_tmp_lst.Add(new Vector3(-file_3d.FaceNormals[i].x,
+                                     -file_3d.FaceNormals[i].y,
                                      file_3d.FaceNormals[i].z));
         }
         List<Face_3DC> face_lst = new List<Face_3DC>();
@@ -229,7 +235,7 @@ public static class RG2Mesh
 
 
                 
-                tri_lst[face_lst[i].texid].Add(tri_cnt*3);
+                tri_lst[face_lst[i].texid].Add(tri_cnt*3+0);
                 tri_lst[face_lst[i].texid].Add(tri_cnt*3+1);
                 tri_lst[face_lst[i].texid].Add(tri_cnt*3+2);
                 tri_cnt++;

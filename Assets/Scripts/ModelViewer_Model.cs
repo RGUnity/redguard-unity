@@ -34,8 +34,8 @@ public class ModelViewer_Model : MonoBehaviour
    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //SetModel_wld(/*GameObject target,*/);
-        SetModel_3D(/*GameObject target,*/);
+        SetModel_wld(/*GameObject target,*/);
+        //SetModel_3D(/*GameObject target,*/);
         
     }
 
