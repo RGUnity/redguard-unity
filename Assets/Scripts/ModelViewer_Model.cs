@@ -23,19 +23,36 @@ public class ModelViewer_Model : MonoBehaviour
     }
     public void SetModel_3D(/*GameObject target,*/)
     {
-        string filename_3d = new string("CYRSA001");
-        string filename_col = new String("ISLAND");
-        RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(filename_3d, filename_col);
+        RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh("CYRSA001", "ISLAND");
         GetComponent<MeshFilter>().mesh = data_3D.mesh;
         GetComponent<MeshRenderer>().SetMaterials(data_3D.materials);
+    }
+    public void add3DToScene(string name_3d, string name_pal)
+    {
+        GameObject spawned = new GameObject(name_3d);
+        MeshRenderer meshRenderer = spawned.AddComponent<MeshRenderer>();
+        MeshFilter meshFilter = spawned.AddComponent<MeshFilter>();
+
+        RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(name_3d, name_pal);
+        meshFilter.mesh = data_3D.mesh;
+        meshRenderer.SetMaterials(data_3D.materials);
+ 
     }
 
    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //SetModel_wld(/*GameObject target,*/);
         SetModel_3D(/*GameObject target,*/);
-        
+
+        // hell yeah single-line objects
+        // just need to figure out how to set their position
+        add3DToScene("GYPTENT", "ISLAND");
+        add3DToScene("GYPCART", "ISLAND");
+        add3DToScene("TOBIAS", "ISLAND");
+        add3DToScene("NFARA002", "ISLAND");
+        add3DToScene("AVIKA001", "ISLAND");
+        add3DToScene("NIDAA001", "ISLAND");
+        add3DToScene("VILEGARD", "ISLAND");
     }
 
     // Update is called once per frame
