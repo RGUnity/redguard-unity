@@ -39,7 +39,7 @@ UnknownId: {UnknownId:X}
 		public struct ROBSegmentHeader
 		{
             public uint Unknown0;
-            public char[] SegmentID;
+            public string SegmentID; // read as char[]
             public uint UnknownType;
             public uint Unknown1;
             public uint Unknown2;
@@ -61,8 +61,12 @@ UnknownId: {UnknownId:X}
 
             public ROBSegmentHeader(MemoryReader memoryReader)
             {
+                char[] SegmentID_char;
                 Unknown0 = memoryReader.ReadUInt32();
-                SegmentID = memoryReader.ReadChars(8);
+                SegmentID_char = memoryReader.ReadChars(8);
+                string[] segment_strs = new string(SegmentID_char).Split('\0');
+                SegmentID = segment_strs[0];
+
                 UnknownType = memoryReader.ReadUInt32();
                 Unknown1 = memoryReader.ReadUInt32();
                 Unknown2 = memoryReader.ReadUInt32();
@@ -84,7 +88,7 @@ UnknownId: {UnknownId:X}
             }
 			public override string ToString()
 			{
-				return $@"SegmentId: {Unknown0},{new string(SegmentID)},{UnknownType},{Unknown1},{Unknown2},{Unknown3},{UnknownInt1},{UnknownInt2},{UnknownInt3},{Unknown4},{Unknown5},{Unknown6},{UnknownInt4},{UnknownInt5},{UnknownInt6},{UnknownInt7},{UnknownInt8},{UnknownInt9}, {Size}";
+				return $@"SegmentId: {Unknown0},{SegmentID},{UnknownType},{Unknown1},{Unknown2},{Unknown3},{UnknownInt1},{UnknownInt2},{UnknownInt3},{Unknown4},{Unknown5},{Unknown6},{UnknownInt4},{UnknownInt5},{UnknownInt6},{UnknownInt7},{UnknownInt8},{UnknownInt9}, {Size}";
 			}
 
 		}

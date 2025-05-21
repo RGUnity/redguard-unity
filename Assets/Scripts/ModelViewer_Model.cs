@@ -23,10 +23,9 @@ public class ModelViewer_Model : MonoBehaviour
     }
     public void SetModel_3D(/*GameObject target,*/)
     {
-        string filename_3d = new string("./game_3dfx/fxart/CYRSA001.3DC");
-        string filename_texbsi = new string("./game_3dfx/fxart/TEXBSI.412");
-        string filename_col = new String("./game_3dfx/fxart/ISLAND.COL");
-        RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(filename_3d, filename_texbsi, filename_col);
+        string filename_3d = new string("CYRSA001");
+        string filename_col = new String("ISLAND");
+        RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(filename_3d, filename_col);
         GetComponent<MeshFilter>().mesh = data_3D.mesh;
         GetComponent<MeshRenderer>().SetMaterials(data_3D.materials);
     }
@@ -34,8 +33,8 @@ public class ModelViewer_Model : MonoBehaviour
    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        SetModel_wld(/*GameObject target,*/);
-        //SetModel_3D(/*GameObject target,*/);
+        //SetModel_wld(/*GameObject target,*/);
+        SetModel_3D(/*GameObject target,*/);
         
     }
 
