@@ -8,6 +8,10 @@ namespace RGFileImport
 {
 	public class RGWLDFile
 	{
+        // map scale; needs a look in-game to see what fits
+        const float WLD_SIZE_SCALE = 10.0f;
+        const float WLD_SIZE_SCALE_HEIGHT = 0.5f*1.6f;
+
 		public struct WLDHeader
 		{
 			const int unknown1_size = 6;
@@ -168,8 +172,6 @@ unknown2: [{string.Join(", ", unknown2)}]
 						Array.Copy(sections[s].map1, y*size_half, heightmap_flag, mx+(my*mw), size_half);
 						Array.Copy(sections[s].map3, y*size_half, texturemap, mx+(my*mw), size_half);
 						Array.Copy(sections[s].map3, y*size_half, texturemap_flag, mx+(my*mw), size_half);
-
-
 					}
 				}
 				for(int i=0;i<size*size;i++)
@@ -267,9 +269,6 @@ IO_WLD_data_t
 		{
 			// assuming always 64 textures; safe bet?
 			const int texid_cnt = 64;
-			// map scale; needs a look in-game to see what fits
-			const float scale_size = 1.0f;
-			const float scale_height = 0.05f;
 			int map_size =  maps_data.map_size;
 
 			meshes = new WLDMesh[texid_cnt];
@@ -300,22 +299,22 @@ IO_WLD_data_t
 
 				// vertices
 					// tri 1;
-					a1 = new Vector3((float)(x+1)*scale_size,
-							    	 (float)maps_data.heightmap[(x+1)+(y+1)*map_size]*scale_height,
-							    	 (float)(y+1)*scale_size);
+					a1 = new Vector3((float)(x+1)*WLD_SIZE_SCALE,
+							    	 (float)maps_data.heightmap[(x+1)+(y+1)*map_size]*WLD_SIZE_SCALE_HEIGHT,
+							    	 -(float)(y+1)*WLD_SIZE_SCALE);
 
-					b1 = new Vector3((float)(x+1)*scale_size,
-							    	 (float)maps_data.heightmap[(x+1)+(y+0)*map_size]*scale_height,
-							    	 (float)(y+0)*scale_size);
+					b1 = new Vector3((float)(x+1)*WLD_SIZE_SCALE,
+							    	 (float)maps_data.heightmap[(x+1)+(y+0)*map_size]*WLD_SIZE_SCALE_HEIGHT,
+							    	 -(float)(y+0)*WLD_SIZE_SCALE);
 
-					c1 = new Vector3((float)(x+0)*scale_size,
-							    	 (float)maps_data.heightmap[(x+0)+(y+0)*map_size]*scale_height,
-							    	 (float)(y+0)*scale_size);
+					c1 = new Vector3((float)(x+0)*WLD_SIZE_SCALE,
+							    	 (float)maps_data.heightmap[(x+0)+(y+0)*map_size]*WLD_SIZE_SCALE_HEIGHT,
+							    	 -(float)(y+0)*WLD_SIZE_SCALE);
 					// tri 2
 					a2 = c1;
-					b2 = new Vector3((float)(x+0)*scale_size,
-							    	 (float)maps_data.heightmap[(x+0)+(y+1)*map_size]*scale_height,
-							    	 (float)(y+1)*scale_size);
+					b2 = new Vector3((float)(x+0)*WLD_SIZE_SCALE,
+							    	 (float)maps_data.heightmap[(x+0)+(y+1)*map_size]*WLD_SIZE_SCALE_HEIGHT,
+							    	 -(float)(y+1)*WLD_SIZE_SCALE);
 					c2 = a1;
 
 				// uvs
@@ -357,8 +356,8 @@ IO_WLD_data_t
 
 
 					tex_id = (int)maps_data.texturemap[x+y*map_size];
-					meshes[tex_id].AppendTri(a1, b1, c1, uva1, uvb1, uvc1);
-					meshes[tex_id].AppendTri(a2, b2, c2, uva2, uvb2, uvc2);
+					meshes[tex_id].AppendTri(c1, b1, a1, uvc1, uvb1, uva1);
+					meshes[tex_id].AppendTri(c2, b2, a2, uvc2, uvb2, uva2);
 				}
 			}
 

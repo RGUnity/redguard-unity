@@ -48,8 +48,6 @@ public static class RG2Mesh
         int i = 0;
         foreach(var submesh in mesh_i.submeshes)
         {
-            // TODO: split Key into texid and imgid
-            //submesh.Key
             string[] keys = submesh.Key.Split("/");
             materials.Add(RGTexStore.GetMaterial(palettename,Int32.Parse(keys[0]),Int32.Parse(keys[1])));
             List<int> tri_lst = submesh.Value;

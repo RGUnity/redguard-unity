@@ -42,7 +42,12 @@ size: {SectionSize:X}
 		{
 			public byte[] flags;    //  8 bytes
             public string name;     // 12 bytes
-            public byte[] unknown;  // 46 bytes
+            public byte[] unknown1; //  1 byte
+            public byte posx;       //  1 byte
+            public int  height ;    //  4 bytes
+            public byte[] unknown2; //  3 bytes
+            public byte posy;       //  1 byte
+            public byte[] unknown4; // 36 bytes
                                     // for whoevers keeping track: 66 bytes
                                     // this is not 4-byte aligned, so if
                                     // youre implementing this in c/c++ thats
@@ -55,11 +60,16 @@ size: {SectionSize:X}
                 name_char = memoryReader.ReadChars(12);
                 string[] name_strs = new string(name_char).Split('\0');
                 name = name_strs[0];
-                unknown = memoryReader.ReadBytes(46);
+                unknown1 = memoryReader.ReadBytes(1);
+                posx = memoryReader.ReadByte();
+                height = (int)ReverseBytes(memoryReader.ReadUInt32());
+                unknown2 = memoryReader.ReadBytes(3);
+                posy = memoryReader.ReadByte();
+                unknown4 = memoryReader.ReadBytes(36);
             }
 			public override string ToString()
 			{
-				return $@"name: {name}";
+				return $@"name: {name} x: {posx} y: {posy}";
 			}
 		}
 		public struct RGMMPSOSection

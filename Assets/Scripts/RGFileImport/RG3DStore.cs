@@ -6,6 +6,7 @@ using Assets.Scripts.RGFileImport.RGGFXImport;
 
 public static class RG3DStore
 {
+    const float MESH_SCALE_FACTOR = 1/5000.0f;
     public struct Mesh3D_intermediate
     {
         public int subMeshCount;
@@ -40,7 +41,6 @@ public static class RG3DStore
         else
         {
             string filename = fxart_path + meshname + ".3DC";
-            Debug.Log($"FN: {filename}");
             RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
             file_3d.LoadFile(filename);
 
@@ -62,12 +62,10 @@ public static class RG3DStore
                 {
                     RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
                     file_3d.LoadMemory(file_rob.segments[i].Data, false);
-                    Debug.Log($"LOAD 3D: {file_rob.segments[i].SegmentID}");
                     MeshIntermediateDict.Add(file_rob.segments[i].SegmentID, LoadMesh_3D_intermediate(file_3d));
                 }
                 else
                 {
-                    Debug.Log($"LOAD 3DC: {file_rob.segments[i].SegmentID}");
                     try{
                         LoadMeshIntermediate3DC(file_rob.segments[i].SegmentID);
                     }
@@ -94,7 +92,6 @@ public static class RG3DStore
 
     private static Mesh3D_intermediate LoadMesh_3D_intermediate(RGFileImport.RG3DFile file_3d)
     {
-        const float MESH_SCALE_FACTOR = 1/500.0f;
         Mesh3D_intermediate mesh = new Mesh3D_intermediate();
 
 // 1st pass: load verts/normals/faces
@@ -220,20 +217,4 @@ public static class RG3DStore
 
         return mesh;
     }
-/*
-    private static RGPaletteFile LoadPalette(string palname)
-    {
-        RGPaletteFile o;
-        if(PaletteDict.TryGetValue(palname, out o))
-        {
-            return o;
-        }
-        else
-        {
-            PaletteDict.Add(palname, new RGPaletteFile());
-            PaletteDict[palname].LoadFile(fxart_path + palname + ".COL");
-            return PaletteDict[palname];
-        }
-    }
-*/
 }
