@@ -25,7 +25,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
         public void LoadFile(string path)
         {
             if (!File.Exists(path))
-                throw new FileNotFoundException();
+                throw new FileNotFoundException($"FNF: {path}");
             using (var binaryReader = new BinaryReader(File.OpenRead(path)))
             {
                 Images = new List<RGTextureImage>();

@@ -35,7 +35,6 @@ public static class RG2Mesh
     }
     public static UnityData_3D f3D2Mesh(string meshname, string palettename)
     {
-        RG3DStore.LoadMeshIntermediatesROB("ISLAND");
         RG3DStore.Mesh3D_intermediate mesh_i = RG3DStore.LoadMeshIntermediate3DC(meshname);
         
         List<Material> materials = new List<Material>();

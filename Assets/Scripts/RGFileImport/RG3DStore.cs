@@ -17,9 +17,15 @@ public static class RG3DStore
                                                         // texture/imageid
                                                         // -1/colorid
     }
+    public struct UnityData_mesh
+    {
+        public Mesh mesh;
+        public List<Material> materials;
+    }
 
 
-    static Dictionary<string, Mesh3D_intermediate> MeshIntermediateDict; // key: mesh filename
+    static Dictionary<string, Mesh3D_intermediate> MeshIntermediateDict; // key: meshname
+    static Dictionary<string, UnityData_mesh> UnityData_meshDict; // dict key is meshname/palettename
 
     static string path_to_game = "./game_3dfx";
     static string fxart_path = path_to_game + "/fxart/";
@@ -28,7 +34,23 @@ public static class RG3DStore
     static RG3DStore()
     {
         MeshIntermediateDict = new Dictionary<string, Mesh3D_intermediate>();
+        UnityData_meshDict = new Dictionary<string, UnityData_mesh>();
     }
+    /*
+    public static UnityData_mesh LoadMesh(string meshname, string palettename)
+    {
+        string mesh_key = $"{meshname}/{palettename}";
+        Mesh o;
+        if(UnityData_meshDict.TryGetValue(mesh_key, out o))
+        {
+            return o;
+        }
+        else
+        {
+            return UnityData_meshDict[meshname];
+        }
+    }
+    */
 
     // for now, assuming we only want to explicitly load 3dc files and that all 3d files are in the ROB files
     public static Mesh3D_intermediate LoadMeshIntermediate3DC(string meshname)
@@ -102,7 +124,7 @@ public static class RG3DStore
         for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
         {
             // big scale down so it fits
-            vec_tmp_lst.Add(new Vector3(-file_3d.VertexCoordinates[i].x*MESH_SCALE_FACTOR,
+            vec_tmp_lst.Add(new Vector3(file_3d.VertexCoordinates[i].x*MESH_SCALE_FACTOR,
                                     -file_3d.VertexCoordinates[i].y*MESH_SCALE_FACTOR,
                                     file_3d.VertexCoordinates[i].z*MESH_SCALE_FACTOR));
         }
@@ -121,7 +143,6 @@ public static class RG3DStore
             cur_face.uvs = new List<Vector2>();
             cur_face.norm = norm_tmp_lst[i];
 
-            // TODO: how to deal with solid colors?
             if(file_3d.FaceDataCollection[i].solid_color)
             {
                 cur_face.texid = $"-1/{file_3d.FaceDataCollection[i].ColorIndex}";
@@ -202,9 +223,9 @@ public static class RG3DStore
                     tri_lst.Add(face_lst[i].texid, new List<int>());
                 }
                 
-                tri_lst[face_lst[i].texid].Add(tri_cnt*3+0);
-                tri_lst[face_lst[i].texid].Add(tri_cnt*3+1);
                 tri_lst[face_lst[i].texid].Add(tri_cnt*3+2);
+                tri_lst[face_lst[i].texid].Add(tri_cnt*3+1);
+                tri_lst[face_lst[i].texid].Add(tri_cnt*3+0);
                 tri_cnt++;
             }
         }
