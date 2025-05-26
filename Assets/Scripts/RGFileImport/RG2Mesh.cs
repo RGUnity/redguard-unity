@@ -17,14 +17,18 @@ public static class RG2Mesh
         public List<Material> materials;
     }
 
-    public static UnityData_WLD WLD2Mesh(string filename_wld, string filename_texbsi, string filename_col)
+    public static UnityData_WLD WLD2Mesh(string filename_wld, string name_col)
     {
-        Mesh mesh_wld = LoadMesh_WLD(filename_wld);
+
+        RGFileImport.RGWLDFile file_wld = new RGFileImport.RGWLDFile();
+        file_wld.LoadFile(filename_wld);
+        Mesh mesh_wld = LoadMesh_WLD(file_wld);
+        
 
         List<Material> materials = new List<Material>();
         for(int i=0;i<64;i++)
         {
-            materials.Add(RGTexStore.GetMaterial("ISLAND",302,i));
+            materials.Add(RGTexStore.GetMaterial(name_col,file_wld.sec[0].texbsi_file,i));
         }
 
         UnityData_WLD data = new UnityData_WLD();
@@ -64,15 +68,12 @@ public static class RG2Mesh
     }
 
 
-    private static Mesh LoadMesh_WLD(string filename_wld)
+    private static Mesh LoadMesh_WLD(RGFileImport.RGWLDFile file_wld)
     {
         const int texid_cnt = 64;
         Mesh mesh = new Mesh();
-        RGFileImport.RGWLDFile file = new RGFileImport.RGWLDFile();
 
-        // load file and build internal mesh
-        file.LoadFile(filename_wld);
-        file.BuildMeshes();
+        file_wld.BuildMeshes();
 
         mesh.indexFormat = IndexFormat.UInt32;
         mesh.subMeshCount = texid_cnt;
@@ -83,10 +84,10 @@ public static class RG2Mesh
         int tri_ofs = 0;
         for(int i=0;i<mesh.subMeshCount;i++)
         {
-            vec_lst.AddRange(file.meshes[i].vertices);
-            uv_lst.AddRange(file.meshes[i].uv);
+            vec_lst.AddRange(file_wld.meshes[i].vertices);
+            uv_lst.AddRange(file_wld.meshes[i].uv);
 
-            int[] tri_tmp = file.meshes[i].triangles.ToArray();
+            int[] tri_tmp = file_wld.meshes[i].triangles.ToArray();
             int j = 0;
             for(j=0;j<tri_tmp.Length;j++)
             {

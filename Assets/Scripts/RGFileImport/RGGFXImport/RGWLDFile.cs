@@ -234,7 +234,7 @@ IO_WLD_data_t
 
 	// data
 		WLDHeader hdr;
-		WLDSection[] sec;
+		public WLDSection[] sec;
 		public WLDMaps maps_data;
 		public WLDMesh[] meshes;
 

@@ -114,8 +114,6 @@ UnknownId: {UnknownId:X}
             hdr = new ROBHeader(memoryReader);
 
             segments = new ROBSegmentHeader[hdr.NumSegments];
-
-            segments = new ROBSegmentHeader[hdr.NumSegments];
             const int rob_seg_hdr_size = 80;
             int ptr = 0;
             for(int i=0;i<hdr.NumSegments;i++)

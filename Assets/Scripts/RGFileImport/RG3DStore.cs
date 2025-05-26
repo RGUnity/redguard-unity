@@ -36,21 +36,6 @@ public static class RG3DStore
         MeshIntermediateDict = new Dictionary<string, Mesh3D_intermediate>();
         UnityData_meshDict = new Dictionary<string, UnityData_mesh>();
     }
-    /*
-    public static UnityData_mesh LoadMesh(string meshname, string palettename)
-    {
-        string mesh_key = $"{meshname}/{palettename}";
-        Mesh o;
-        if(UnityData_meshDict.TryGetValue(mesh_key, out o))
-        {
-            return o;
-        }
-        else
-        {
-            return UnityData_meshDict[meshname];
-        }
-    }
-    */
 
     // for now, assuming we only want to explicitly load 3dc files and that all 3d files are in the ROB files
     public static Mesh3D_intermediate LoadMeshIntermediate3DC(string meshname)
