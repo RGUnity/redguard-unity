@@ -26,7 +26,7 @@ public static class RGTexStore
 
     public static Material GetMaterial(string palname, int texbsi, int img)
     {
-        string mat_key = $"{palname}/{texbsi}/{img}";
+        string mat_key = $"{palname}/{texbsi:D3}/{img:D3}";
         Material o;
         if(MaterialDict.TryGetValue(mat_key, out o))
         {
@@ -42,7 +42,7 @@ public static class RGTexStore
                 List<Texture2D>[] tex_lst_sorted = new List<Texture2D>[bsif.Images.Count];
                 for(int i =0;i<bsif.Images.Count;i++)
                 {
-                    string new_mat_key = $"{palname}/{texbsi}/{Int32.Parse(bsif.Images[i].Name.Substring(3))}";
+                    string new_mat_key = $"{palname}/{texbsi:D3}/{Int32.Parse(bsif.Images[i].Name.Substring(3)):D3}";
 
                     List<Texture2D> cur_tex = GraphicsConverter.RGTextureToTexture2D(bsif.Images[i], palette);
 
@@ -72,7 +72,7 @@ public static class RGTexStore
     }
     private static RGTextureBSIFile LoadTEXBSI(int texbsi)
     {
-        string texbsiname = texbsi.ToString();
+        string texbsiname = $"{texbsi:D3}";
         RGTextureBSIFile o;
         if(BSIFDict.TryGetValue(texbsiname, out o))
         {

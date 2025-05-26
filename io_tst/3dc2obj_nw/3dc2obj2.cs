@@ -313,7 +313,7 @@ namespace xyz
                 Console.WriteLine($"SEG: {i}/{new string(filerob.segments[i].SegmentID)}");
                 if(filerob.segments[i].Size > 0)
                 {
-                    file_3d.LoadMemory(filerob.segments[i].Data);
+                    file_3d.LoadMemory(filerob.segments[i].Data, false);
 
                     Mesh_data mesh = LoadMesh_3D(file_3d, $"{i}");
                     print_obj(mesh);

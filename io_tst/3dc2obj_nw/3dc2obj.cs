@@ -6,6 +6,7 @@ namespace xyz
 {
     public class test
 	{
+        public static string FILETOLOAD = "HUNDING";
 
         static void print_FaceVertexData(FaceVertexData i)
         {
@@ -100,14 +101,23 @@ namespace xyz
 
 		 public static void Main(string[] args)
 		{
-			RG3DFile file3d = new RG3DFile();
-			file3d.LoadFile("../../game_3dfx/fxart/CYRSA001.3DC");
+            RGROBFile filerob = new RGROBFile();
+            filerob.LoadFile("../../game_3dfx/fxart/ISLAND.ROB");
+            RGFileImport.RG3DFile file3d = new RGFileImport.RG3DFile();
+            for(int i=0;i<filerob.hdr.NumSegments;i++)
+            {
+                if(filerob.segments[i].SegmentID == FILETOLOAD)
+                {
+                    Console.WriteLine(filerob.segments[i].SegmentID);
+                    file3d.LoadMemory(filerob.segments[i].Data, false);
+                }
+            }
 
 			for(int i=0;i<file3d.FaceDataCollection.Count;i++)
 			{
 				print_TextureId(file3d.FaceDataCollection[i], file3d.version);
 			}
-
+/*
 			for(int i=0;i<file3d.FaceDataCollection.Count;i++)
 			{
 				for(int j=0;j<file3d.FaceDataCollection[i].VertexCount;j++)
@@ -129,6 +139,7 @@ namespace xyz
 				}
 			}
 			Console.WriteLine($"o FACE: {file3d.FaceDataCollection.Count} UV: {file3d.UvCoordinates.Count} VERT: {file3d.VertexCoordinates.Count}");
+*/
 			/*
 			Console.WriteLine($"o CYR");
 			for(int i=0;i<file3d.VertexCoordinates.Count;i++)
