@@ -14,18 +14,25 @@ namespace RGFileImport
 
 			public RGMSectionHeader(MemoryReader memoryReader)
             {
-                char[] sectionName_char;
-                sectionName_char = memoryReader.ReadChars(4);
-                string[] name_strs = new string(sectionName_char).Split('\0');
-                sectionName = name_strs[0];
+                try
+                {
+                    char[] sectionName_char;
+                    sectionName_char = memoryReader.ReadChars(4);
+                    string[] name_strs = new string(sectionName_char).Split('\0');
+                    sectionName = name_strs[0];
 
-                if(sectionName == "END ") // yeah theres a space there
-                {
-                    SectionSize = 0;
+                    if(sectionName == "END ") // yeah theres a space there
+                    {
+                        SectionSize = 0;
+                    }
+                    else
+                    {
+                        SectionSize = MemoryReader.ReverseBytes(memoryReader.ReadUInt32());
+                    }
                 }
-                else
+                catch(Exception ex)
                 {
-                    SectionSize = ReverseBytes(memoryReader.ReadUInt32());
+                    throw new Exception($"Failed to load RGM section header with error:\n{ex.Message}");
                 }
             }
 			public override string ToString()
@@ -47,12 +54,19 @@ size: {SectionSize:X}
             const int MPOBItem_size = 66; // heres that magic number again
 			public RGMMPOBSection(MemoryReader memoryReader, uint size)
             {
-                num_items = memoryReader.ReadUInt32();
-
-                items = new List<RGMMPOBItem>();
-                for(int i=0;i<(int)num_items;i++)
+                try
                 {
-                    items.Add(new RGMMPOBItem(memoryReader));
+                    num_items = memoryReader.ReadUInt32();
+
+                    items = new List<RGMMPOBItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMMPOBItem(memoryReader));
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPOB section with error:\n{ex.Message}");
                 }
             }
 			public override string ToString()
@@ -77,16 +91,23 @@ size: {SectionSize:X}
 
 			public RGMMPOBItem(MemoryReader memoryReader)
             {
-                flags = memoryReader.ReadBytes(6);
-                char[] name_char;
-                name_char = memoryReader.ReadChars(9);
-                string[] name_strs = new string(name_char).Split('\0');
-                name = name_strs[0];
-                name_char = memoryReader.ReadChars(12);
-                name_strs = new string(name_char).Split('\0');
-                name_2 = name_strs[0];
-                
-                unknown = memoryReader.ReadBytes(39);
+                try
+                {
+                    flags = memoryReader.ReadBytes(6);
+                    char[] name_char;
+                    name_char = memoryReader.ReadChars(9);
+                    string[] name_strs = new string(name_char).Split('\0');
+                    name = name_strs[0];
+                    name_char = memoryReader.ReadChars(12);
+                    name_strs = new string(name_char).Split('\0');
+                    name_2 = name_strs[0];
+                    
+                    unknown = memoryReader.ReadBytes(39);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPOB item with error:\n{ex.Message}");
+                }
             }
 			public override string ToString()
 			{
@@ -98,14 +119,11 @@ size: {SectionSize:X}
 		{
 			public byte[] flags;           //  4 bytes
             public string name;            // 12 bytes
-            public ushort posx;            //  2 bytes; increasing moves position east
-            public byte[] unknown2;        //  2 bytes always 0?
-            public ushort height ;         //  2 bytes increasing moves position up
-            public byte[] unknown3;        //  2 bytes 
-            public ushort posy;            //  2 bytes increasing moves position north
-            public byte[] unknown4;        //  2 bytes always 0
+            public uint posx;              //  4 bytes; increasing moves position east
+            public uint height ;           //  4 bytes increasing moves position up
+            public uint posy;              //  4 bytes increasing moves position north
             public int[] rotation_matrix;  // 36 bytes => 3x3 matrix, uses Q4.28 fixed-point
-            public byte[] unknown5;        //  2 bytes always 0
+            public byte[] unknown;        //  2 bytes always 0
                                            // for whoevers keeping track: 66 bytes
                                            // this is not 4-byte aligned, so if
                                            // youre implementing this in c/c++ thats
@@ -113,23 +131,27 @@ size: {SectionSize:X}
 
 			public RGMMPSOItem(MemoryReader memoryReader)
             {
-                flags = memoryReader.ReadBytes(4);
-                char[] name_char;
-                name_char = memoryReader.ReadChars(12);
-                string[] name_strs = new string(name_char).Split('\0');
-                name = name_strs[0];
-                posx = memoryReader.ReadUInt16();
-                unknown2 = memoryReader.ReadBytes(2);
-                height = memoryReader.ReadUInt16();
-                unknown3 = memoryReader.ReadBytes(2);
-                posy = memoryReader.ReadUInt16();
-                unknown4 = memoryReader.ReadBytes(2);
-                rotation_matrix = new int[9];
-                for(int i=0;i<9;i++)
+                try
                 {
-                    rotation_matrix[i] = memoryReader.ReadInt32();
+                    flags = memoryReader.ReadBytes(4);
+                    char[] name_char;
+                    name_char = memoryReader.ReadChars(12);
+                    string[] name_strs = new string(name_char).Split('\0');
+                    name = name_strs[0];
+                    posx = memoryReader.ReadUInt32();
+                    height = memoryReader.ReadUInt32();
+                    posy = memoryReader.ReadUInt32();
+                    rotation_matrix = new int[9];
+                    for(int i=0;i<9;i++)
+                    {
+                        rotation_matrix[i] = memoryReader.ReadInt32();
+                    }
+                    unknown = memoryReader.ReadBytes(2);
                 }
-                unknown5 = memoryReader.ReadBytes(2);
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPSO item with error:\n{ex.Message}");
+                }
             }
 			public override string ToString()
 			{
@@ -149,11 +171,19 @@ size: {SectionSize:X}
             const int MPSOItem_size = 66; // heres that magic number again
 			public RGMMPSOSection(MemoryReader memoryReader, uint size)
             {
-                num_items = memoryReader.ReadUInt32(); // why the extra 4 bytes? no idea
-                items = new List<RGMMPSOItem>();
-                for(int i=0;i<(int)num_items;i++)
+                try
                 {
-                    items.Add(new RGMMPSOItem(memoryReader));
+                    num_items = memoryReader.ReadUInt32(); // why the extra 4 bytes? no idea
+                    items = new List<RGMMPSOItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMMPSOItem(memoryReader));
+                    }
+
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPSO section with error:\n{ex.Message}");
                 }
             }
 			public override string ToString()
@@ -171,14 +201,6 @@ size: {SectionSize:X}
 
 
 
-        // TODO: copy from BSIF
-        static protected uint ReverseBytes(uint n)
-        {
-            var bytes = BitConverter.GetBytes(n);
-            Array.Reverse(bytes, 0, bytes.Length);
-            return BitConverter.ToUInt32(bytes, 0);
-        }
-
 	// data
 		public List<RGMSectionHeader> Sections;
         public RGMMPSOSection MPSO;
@@ -187,38 +209,53 @@ size: {SectionSize:X}
 
 		public void LoadFile(string filename)
         {
-            byte[] buffer;
-            BinaryReader binaryReader = new BinaryReader(File.OpenRead(filename));
-            fileSize = binaryReader.BaseStream.Length;
-            buffer = binaryReader.ReadBytes((int)fileSize);
-			binaryReader.Close();
-            LoadMemory(buffer);
+            try
+            {
+                byte[] buffer;
+                BinaryReader binaryReader = new BinaryReader(File.OpenRead(filename));
+                fileSize = binaryReader.BaseStream.Length;
+                buffer = binaryReader.ReadBytes((int)fileSize);
+                binaryReader.Close();
+                LoadMemory(buffer);
+
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"Failed to load RGM file {filename} with error:\n{ex.Message}");
+            }
         }
 
 		public void LoadMemory(byte[] buffer)
         {
-            MemoryReader memoryReader = new MemoryReader(buffer);
-            Sections = new List<RGMSectionHeader>();
-            bool end = false;
-            while(!end)
+            try
             {
-                Sections.Add(new RGMSectionHeader(memoryReader));
-                if(Sections[Sections.Count-1].sectionName == "END ")
+                MemoryReader memoryReader = new MemoryReader(buffer);
+                Sections = new List<RGMSectionHeader>();
+                bool end = false;
+                while(!end)
                 {
-                    end = true;
+                    Sections.Add(new RGMSectionHeader(memoryReader));
+                    if(Sections[Sections.Count-1].sectionName == "END ")
+                    {
+                        end = true;
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "MPOB")
+                    {
+                        MPOB = new RGMMPOBSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "MPSO")
+                    {
+                        MPSO = new RGMMPSOSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                    }
+                    else
+                    {
+                        memoryReader.Seek(Sections[Sections.Count-1].SectionSize, (uint)memoryReader.Position);
+                    }
                 }
-                else if(Sections[Sections.Count-1].sectionName == "MPOB")
-                {
-                    MPOB = new RGMMPOBSection(memoryReader, Sections[Sections.Count-1].SectionSize);
-                }
-                else if(Sections[Sections.Count-1].sectionName == "MPSO")
-                {
-                    MPSO = new RGMMPSOSection(memoryReader, Sections[Sections.Count-1].SectionSize);
-                }
-                else
-                {
-                    memoryReader.Seek(Sections[Sections.Count-1].SectionSize, (uint)memoryReader.Position);
-                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"Failed to load RGM file from memory with error:\n{ex.Message}");
             }
         }
 

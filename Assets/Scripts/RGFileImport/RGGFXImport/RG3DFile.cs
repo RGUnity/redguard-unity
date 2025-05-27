@@ -83,49 +83,63 @@ namespace RGFileImport
 
         public void LoadFile(string path)
         {
-            if (!File.Exists(path))
-                throw new FileNotFoundException();
-            fullName = path;
-            name = Path.GetFileName(path);
-            is3DCFile = name.ToLower().EndsWith(".3dc");
+            try
+            {
+                if (!File.Exists(path))
+                    throw new FileNotFoundException();
+                fullName = path;
+                name = Path.GetFileName(path);
+                is3DCFile = name.ToLower().EndsWith(".3dc");
 
 
 
-            byte[] buffer;
-            BinaryReader binaryReader = new BinaryReader(File.OpenRead(path));
-            fileSize = binaryReader.BaseStream.Length;
-            buffer = binaryReader.ReadBytes((int)fileSize);
-			binaryReader.Close();
-            LoadMemory(buffer, is3DCFile);
+                byte[] buffer;
+                BinaryReader binaryReader = new BinaryReader(File.OpenRead(path));
+                fileSize = binaryReader.BaseStream.Length;
+                buffer = binaryReader.ReadBytes((int)fileSize);
+                binaryReader.Close();
+                LoadMemory(buffer, is3DCFile);
 
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"Failed to load 3D file {path} with error:\n{ex.Message}");
+            }
         }
         public void LoadMemory(byte[] buffer, bool is3DC)
         {
-            is3DCFile = is3DC;
-            MemoryReader memoryReader = new MemoryReader(buffer);
-            header = GetHeader(memoryReader);
-            frameDataHeader = GetFrameDataHeader(memoryReader);
-            FaceDataCollection = GetFaceData(memoryReader);
-            VertexCoordinates = GetVertexCoordinates(memoryReader);
-            if (is3DCFile && version <= 27 && !useAltVertexOffset && tryReloadOld3dcFileVertex)
+            try
             {
-                // Reload if coordinates are outside maximums
-                if (minCoord.x < -MaxCoordValueForOld3DCReload ||
-                    minCoord.y < -MaxCoordValueForOld3DCReload ||
-                    minCoord.z < -MaxCoordValueForOld3DCReload ||
-                    minCoord.x > MaxCoordValueForOld3DCReload ||
-                    minCoord.y > MaxCoordValueForOld3DCReload ||
-                    minCoord.z > MaxCoordValueForOld3DCReload)
+                is3DCFile = is3DC;
+                MemoryReader memoryReader = new MemoryReader(buffer);
+                header = GetHeader(memoryReader);
+                frameDataHeader = GetFrameDataHeader(memoryReader);
+                FaceDataCollection = GetFaceData(memoryReader);
+                VertexCoordinates = GetVertexCoordinates(memoryReader);
+                if (is3DCFile && version <= 27 && !useAltVertexOffset && tryReloadOld3dcFileVertex)
                 {
-                    useAltVertexOffset = true;
-                    VertexCoordinates = GetVertexCoordinates(memoryReader);
+                    // Reload if coordinates are outside maximums
+                    if (minCoord.x < -MaxCoordValueForOld3DCReload ||
+                        minCoord.y < -MaxCoordValueForOld3DCReload ||
+                        minCoord.z < -MaxCoordValueForOld3DCReload ||
+                        minCoord.x > MaxCoordValueForOld3DCReload ||
+                        minCoord.y > MaxCoordValueForOld3DCReload ||
+                        minCoord.z > MaxCoordValueForOld3DCReload)
+                    {
+                        useAltVertexOffset = true;
+                        VertexCoordinates = GetVertexCoordinates(memoryReader);
+                    }
                 }
+
+                FaceNormals = GetFaceNormals(memoryReader);
+                UvOffsets = GetUVOffsets(memoryReader);
+                UvCoordinates = GetUVCoordinates(memoryReader);
+
             }
-
-            FaceNormals = GetFaceNormals(memoryReader);
-            UvOffsets = GetUVOffsets(memoryReader);
-            UvCoordinates = GetUVCoordinates(memoryReader);
-
+            catch(Exception ex)
+            {
+                throw new Exception($"Failed to load 3D file from memory:\n{ex.Message}");
+            }
         }
 
         private RG3DHeader GetHeader(MemoryReader memoryReader)

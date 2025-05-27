@@ -12,7 +12,6 @@ public class ModelViewer_Model : MonoBehaviour
 {
     public void SetModel_wld(string name_wld, string texbsi, string name_col)
     {
-        // 6-line WLD loading, not bad
         string filename_wld = new string($"./game_3dfx/maps/{name_wld}.WLD");
         RG2Mesh.UnityData_WLD data_WLD = RG2Mesh.WLD2Mesh(filename_wld, name_col);
         GetComponent<MeshFilter>().mesh = data_WLD.mesh;
@@ -39,8 +38,8 @@ public class ModelViewer_Model : MonoBehaviour
         RGFileImport.RGRGMFile filergm = new RGFileImport.RGRGMFile();
         filergm.LoadFile(filename);
         const float RGM_SCALE = 1.0f/20.0f;
-        const float RGM_SCALE_HEIGHT = 1.0f/21.0f;
-        const float RGM_OFS_HEIGHT = 0.0f;
+        const float RGM_SCALE_HEIGHT = 0.0527f;
+        const float RGM_OFS_HEIGHT = -3450.0f;
         const float RGM_X_OFS = 29.8f;
         const float RGM_Y_OFS = -22.8f;
 
@@ -57,7 +56,8 @@ public class ModelViewer_Model : MonoBehaviour
             m[2,1] = (new RGFileImport.Q4_28(i.rotation_matrix[7])).ToFloat();
             m[2,2] = (new RGFileImport.Q4_28(i.rotation_matrix[8])).ToFloat();
             m[3,3] = 1;
-            return m.rotation.eulerAngles;
+            Vector3 eulers = Vector3.Scale(m.rotation.eulerAngles, RG3DStore.MESH_ROT_FLIP);
+            return eulers;
         }
 
         for(int i=0;i<filergm.MPSO.items.Count;i++)
@@ -83,8 +83,10 @@ public class ModelViewer_Model : MonoBehaviour
    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
- //       RG3DStore.LoadMeshIntermediatesROB("ISLAND");
-//        LoadRGM("./game_3dfx/maps/ISLAND.RGM");
+        /*
+        RG3DStore.LoadMeshIntermediatesROB("TAVERN");
+        LoadRGM("./game_3dfx/maps/TAVERN.RGM", "ISLAND");
+        */
         RG3DStore.LoadMeshIntermediatesROB("ISLAND");
         SetModel_wld("ISLAND", "302", "ISLAND");
         LoadRGM("./game_3dfx/maps/ISLAND.RGM", "ISLAND");

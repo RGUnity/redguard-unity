@@ -26,43 +26,22 @@ namespace RGFileImport
 			public int[] sec_ofs;   // 4*4 bytes
 			public int[] unknown3; // 256*4 bytes
 
-			public WLDHeader(byte[] buffer)
-			{
-				// is there a better way to do this? probably
-				// can i be bothered to find a better way to do this? probably not
-				// should C# man up and let me dump binary data into memory with no sanitychecks? resounding yes
-                // update: I made a MemoryReader class that handles reading from memory, *someone* should update this *sometime*
-				int ptr = 0;
-				unknown1 = new int[unknown1_size];
-				for(int i=0;i<unknown1_size;i++)
-				{
-					
-					unknown1[i] = BitConverter.ToInt32(buffer, ptr);
-					ptr += 4;
-				}
-				sec_hdr_size = BitConverter.ToInt32(buffer, ptr);
-				ptr += 4;
-				file_size = BitConverter.ToInt32(buffer, ptr);
-				ptr += 4;
-				unknown2 = new int[unknown2_size];
-				for(int i=0;i<unknown2_size;i++)
-				{
-					unknown2[i] = BitConverter.ToInt32(buffer, ptr);
-					ptr += 4;
-				}
-				sec_ofs= new int[num_sections];
-				for(int i=0;i<num_sections;i++)
-				{
-					sec_ofs[i] = BitConverter.ToInt32(buffer, ptr);
-					ptr += 4;
-				}
-				unknown3 = new int[unknown3_size];
-				for(int i=0;i<unknown3_size;i++)
-				{
-					unknown3[i] = BitConverter.ToInt32(buffer, ptr);
-					ptr += 4;
-				}
-			}
+			public WLDHeader(MemoryReader memoryReader)
+            {
+                try
+                {
+                    unknown1 = memoryReader.ReadInt32s(unknown1_size);
+                    sec_hdr_size = memoryReader.ReadInt32();
+                    file_size = memoryReader.ReadInt32();
+                    unknown2 = memoryReader.ReadInt32s(unknown2_size);
+                    sec_ofs = memoryReader.ReadInt32s(num_sections);
+                    unknown3 = memoryReader.ReadInt32s(unknown3_size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load WLD header with error:\n{ex.Message}");
+                }
+            }
 			public override string ToString()
 			{
 				return $@"###################################
@@ -95,40 +74,26 @@ unknown3: [{string.Join(", ", unknown3)}]
 			public byte[] map3;
 			public byte[] map4;
 
-			public WLDSection(byte[] buffer)
-			{
-				int ptr = 0;
-				unknown1 = new short[unknown1_size];
-				for(int i=0;i<unknown1_size;i++)
-				{
-					unknown1[i] = BitConverter.ToInt16(buffer, ptr);
-					ptr += 2;
-				}
-				texbsi_file = BitConverter.ToInt16(buffer, ptr);
-				ptr += 2;
-				size = (int)(BitConverter.ToInt16(buffer, ptr));
-				ptr += 2;
+			public WLDSection(MemoryReader memoryReader)
+            {
+                try
+                {
+                    unknown1 = memoryReader.ReadInt16s(unknown1_size);
+                    texbsi_file = memoryReader.ReadInt16();
+                    size = (int)memoryReader.ReadInt16();
+                    unknown2 = memoryReader.ReadInt16s(unknown2_size);
 
-				unknown2 = new short[unknown2_size];
-				for(int i=0;i<unknown2_size;i++)
-				{
-					unknown2[i] = BitConverter.ToInt16(buffer, ptr);
-					ptr += 2;
-				}
-				int size_half = size/2;
-				map1 = new byte[size_half*size_half];
-				Array.Copy(buffer, ptr, map1, 0, size_half*size_half);
-				ptr += size_half*size_half;
-				map2 = new byte[size_half*size_half];
-				Array.Copy(buffer, ptr, map2, 0, size_half*size_half);
-				ptr += size_half*size_half;
-				map3 = new byte[size_half*size_half];
-				Array.Copy(buffer, ptr, map3, 0, size_half*size_half);
-				ptr += size_half*size_half;
-				map4 = new byte[size_half*size_half];
-				Array.Copy(buffer, ptr, map4, 0, size_half*size_half);
-				ptr += size_half*size_half;
-			}
+                    int size_half = size/2;
+                    map1 = memoryReader.ReadBytes(size_half*size_half);
+                    map2 = memoryReader.ReadBytes(size_half*size_half);
+                    map3 = memoryReader.ReadBytes(size_half*size_half);
+                    map4 = memoryReader.ReadBytes(size_half*size_half);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load WLD section with error:\n{ex.Message}");
+                }
+            }
 			public override string ToString()
 			{
 				return $@"###################################
@@ -237,34 +202,46 @@ IO_WLD_data_t
 		public WLDSection[] sec;
 		public WLDMaps maps_data;
 		public WLDMesh[] meshes;
+        public long fileSize;
 
 		public void LoadFile(string filename)
-		{
-			const int WLD_hdr_size = 1184;
-			const int WLD_section_size = 65558;
-			byte[] buffer;
-			byte[] buffer_work;
+        {
+            try
+            {
+                const int WLD_hdr_size = 1184;
+                const int WLD_section_size = 65558;
+                byte[] buffer;
+                BinaryReader binaryReader = new BinaryReader(File.OpenRead(filename));
+                fileSize = binaryReader.BaseStream.Length;
+                buffer = binaryReader.ReadBytes((int)fileSize);
+                binaryReader.Close();
+                LoadMemory(buffer);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"Failed to load WLD file {filename} with error:\n{ex.Message}");
+            }
+        }
 
+		public void LoadMemory(byte[] buffer)
+        {
+            try
+            {
+                MemoryReader memoryReader = new MemoryReader(buffer);
+                hdr = new WLDHeader(memoryReader);
+                sec = new WLDSection[4];
+                for(int i=0;i<4;i++)
+                {
+                    sec[i] = new WLDSection(memoryReader);
+                }
+                maps_data = new WLDMaps(hdr, sec);
 
-			BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
-			buffer = br.ReadBytes((int)br.BaseStream.Length);
-			br.Close();
-
-			buffer_work = new byte[WLD_hdr_size];
-			Array.Copy(buffer, 0, buffer_work, 0, WLD_hdr_size);
-
-			hdr = new WLDHeader(buffer);
-			sec = new WLDSection[4];
-			for(int i=0;i<4;i++)
-			{
-				buffer_work = new byte[WLD_section_size];
-				Array.Copy(buffer, hdr.sec_ofs[i], buffer_work, 0, WLD_section_size);
-
-				sec[i] = new WLDSection(buffer_work);
-			}
-			maps_data = new WLDMaps(hdr, sec);
-		}
-
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"Failed to load WLD file from memory with error:\n{ex.Message}");
+            }
+        }
 		public void BuildMeshes()
 		{
 			// assuming always 64 textures; safe bet?

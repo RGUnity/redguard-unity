@@ -17,11 +17,18 @@ namespace RGFileImport
 
 			public ROBHeader(MemoryReader memoryReader)
             {
-                OARC = memoryReader.ReadChars(4);
-                Unknown4 = memoryReader.ReadUInt32();
-                NumSegments = memoryReader.ReadUInt32();
-                OARD = memoryReader.ReadUInt32();
-                UnknownId = memoryReader.ReadUInt32();
+                try
+                {
+                    OARC = memoryReader.ReadChars(4);
+                    Unknown4 = memoryReader.ReadUInt32();
+                    NumSegments = memoryReader.ReadUInt32();
+                    OARD = memoryReader.ReadUInt32();
+                    UnknownId = memoryReader.ReadUInt32();
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load ROB header with error:\n{ex.Message}");
+                }
             }
 			public override string ToString()
 			{
@@ -61,30 +68,37 @@ UnknownId: {UnknownId:X}
 
             public ROBSegmentHeader(MemoryReader memoryReader)
             {
-                char[] SegmentID_char;
-                Unknown0 = memoryReader.ReadUInt32();
-                SegmentID_char = memoryReader.ReadChars(8);
-                string[] segment_strs = new string(SegmentID_char).Split('\0');
-                SegmentID = segment_strs[0];
+                try
+                {
+                    char[] SegmentID_char;
+                    Unknown0 = memoryReader.ReadUInt32();
+                    SegmentID_char = memoryReader.ReadChars(8);
+                    string[] segment_strs = new string(SegmentID_char).Split('\0');
+                    SegmentID = segment_strs[0];
 
-                UnknownType = memoryReader.ReadUInt32();
-                Unknown1 = memoryReader.ReadUInt32();
-                Unknown2 = memoryReader.ReadUInt32();
-                Unknown3 = memoryReader.ReadUInt32();
-                UnknownInt1 = memoryReader.ReadUInt32();
-                UnknownInt2 = memoryReader.ReadUInt32();
-                UnknownInt3 = memoryReader.ReadUInt32();
-                Unknown4 = memoryReader.ReadUInt32();
-                Unknown5 = memoryReader.ReadUInt32();
-                Unknown6 = memoryReader.ReadUInt32();
-                UnknownInt4 = memoryReader.ReadUInt32();
-                UnknownInt5 = memoryReader.ReadUInt32();
-                UnknownInt6 = memoryReader.ReadUInt32();
-                UnknownInt7 = memoryReader.ReadUInt32();
-                UnknownInt8 = memoryReader.ReadUInt32();
-                UnknownInt9 = memoryReader.ReadUInt32();
-                Size = memoryReader.ReadUInt32();
-                Data = memoryReader.ReadBytes((int)Size);
+                    UnknownType = memoryReader.ReadUInt32();
+                    Unknown1 = memoryReader.ReadUInt32();
+                    Unknown2 = memoryReader.ReadUInt32();
+                    Unknown3 = memoryReader.ReadUInt32();
+                    UnknownInt1 = memoryReader.ReadUInt32();
+                    UnknownInt2 = memoryReader.ReadUInt32();
+                    UnknownInt3 = memoryReader.ReadUInt32();
+                    Unknown4 = memoryReader.ReadUInt32();
+                    Unknown5 = memoryReader.ReadUInt32();
+                    Unknown6 = memoryReader.ReadUInt32();
+                    UnknownInt4 = memoryReader.ReadUInt32();
+                    UnknownInt5 = memoryReader.ReadUInt32();
+                    UnknownInt6 = memoryReader.ReadUInt32();
+                    UnknownInt7 = memoryReader.ReadUInt32();
+                    UnknownInt8 = memoryReader.ReadUInt32();
+                    UnknownInt9 = memoryReader.ReadUInt32();
+                    Size = memoryReader.ReadUInt32();
+                    Data = memoryReader.ReadBytes((int)Size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load ROB segment header with error:\n{ex.Message}");
+                }
             }
 			public override string ToString()
 			{
@@ -101,29 +115,42 @@ UnknownId: {UnknownId:X}
 
 		public void LoadFile(string filename)
         {
-            byte[] buffer;
-            BinaryReader binaryReader = new BinaryReader(File.OpenRead(filename));
-            fileSize = binaryReader.BaseStream.Length;
-            buffer = binaryReader.ReadBytes((int)fileSize);
-			binaryReader.Close();
-            LoadMemory(buffer);
+            try
+            {
+                byte[] buffer;
+                BinaryReader binaryReader = new BinaryReader(File.OpenRead(filename));
+                fileSize = binaryReader.BaseStream.Length;
+                buffer = binaryReader.ReadBytes((int)fileSize);
+                binaryReader.Close();
+                LoadMemory(buffer);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"Failed to load ROB file {filename} with error:\n{ex.Message}");
+            }
         }
 		public void LoadMemory(byte[] buffer)
         {
-            MemoryReader memoryReader = new MemoryReader(buffer);
-            hdr = new ROBHeader(memoryReader);
-
-            segments = new ROBSegmentHeader[hdr.NumSegments];
-            const int rob_seg_hdr_size = 80;
-            int ptr = 0;
-            for(int i=0;i<hdr.NumSegments;i++)
+            try
             {
-                ptr = memoryReader.Position + rob_seg_hdr_size;
-                segments[i] = new ROBSegmentHeader(memoryReader);
-                memoryReader.Seek(segments[i].Size, (uint)ptr);
+                MemoryReader memoryReader = new MemoryReader(buffer);
+                hdr = new ROBHeader(memoryReader);
+
+                segments = new ROBSegmentHeader[hdr.NumSegments];
+                const int rob_seg_hdr_size = 80;
+                int ptr = 0;
+                for(int i=0;i<hdr.NumSegments;i++)
+                {
+                    ptr = memoryReader.Position + rob_seg_hdr_size;
+                    segments[i] = new ROBSegmentHeader(memoryReader);
+                    memoryReader.Seek(segments[i].Size, (uint)ptr);
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"Failed to load ROB file from memory with error:\n{ex.Message}");
             }
         }
-
 
 		public void PrintROB()
 		{

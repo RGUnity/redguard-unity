@@ -7,6 +7,8 @@ using Assets.Scripts.RGFileImport.RGGFXImport;
 public static class RG3DStore
 {
     const float MESH_SCALE_FACTOR = 1/5000.0f;
+    static public Vector3 MESH_VERT_FLIP = new Vector3(1.0f, -1.0f, 1.0f);
+    static public Vector3 MESH_ROT_FLIP = new Vector3(-1.0f, 1.0f, -1.0f);
     public struct Mesh3D_intermediate
     {
         public int subMeshCount;
@@ -17,15 +19,9 @@ public static class RG3DStore
                                                         // texture/imageid
                                                         // -1/colorid
     }
-    public struct UnityData_mesh
-    {
-        public Mesh mesh;
-        public List<Material> materials;
-    }
 
 
     static Dictionary<string, Mesh3D_intermediate> MeshIntermediateDict; // key: meshname
-    static Dictionary<string, UnityData_mesh> UnityData_meshDict; // dict key is meshname/palettename
 
     static string path_to_game = "./game_3dfx";
     static string fxart_path = path_to_game + "/fxart/";
@@ -34,7 +30,6 @@ public static class RG3DStore
     static RG3DStore()
     {
         MeshIntermediateDict = new Dictionary<string, Mesh3D_intermediate>();
-        UnityData_meshDict = new Dictionary<string, UnityData_mesh>();
     }
 
     // for now, assuming we only want to explicitly load 3dc files and that all 3d files are in the ROB files
@@ -109,15 +104,20 @@ public static class RG3DStore
         for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
         {
             // big scale down so it fits
-            vec_tmp_lst.Add(new Vector3(file_3d.VertexCoordinates[i].x*MESH_SCALE_FACTOR,
-                                    -file_3d.VertexCoordinates[i].y*MESH_SCALE_FACTOR,
-                                    file_3d.VertexCoordinates[i].z*MESH_SCALE_FACTOR));
+            Vector3 vec = new Vector3(file_3d.VertexCoordinates[i].x*MESH_SCALE_FACTOR,
+                                      file_3d.VertexCoordinates[i].y*MESH_SCALE_FACTOR,
+                                      file_3d.VertexCoordinates[i].z*MESH_SCALE_FACTOR);
+            vec = Vector3.Scale(vec, MESH_VERT_FLIP);
+            vec_tmp_lst.Add(vec);
         }
         for(int i=0;i<file_3d.FaceNormals.Count;i++)
         {
-            norm_tmp_lst.Add(new Vector3(-file_3d.FaceNormals[i].x,
-                                     -file_3d.FaceNormals[i].y,
-                                     file_3d.FaceNormals[i].z));
+            Vector3 normal = new Vector3( file_3d.FaceNormals[i].x,
+                                         file_3d.FaceNormals[i].y,
+                                          file_3d.FaceNormals[i].z);
+            normal.Normalize();
+            normal = Vector3.Scale(normal, MESH_VERT_FLIP);
+            norm_tmp_lst.Add(normal);
         }
         List<Face_3DC> face_lst = new List<Face_3DC>();
         for(int i=0;i<file_3d.FaceDataCollection.Count;i++)

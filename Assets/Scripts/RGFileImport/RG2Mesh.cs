@@ -6,6 +6,7 @@ using Assets.Scripts.RGFileImport.RGGFXImport;
 
 public static class RG2Mesh
 {
+    const int WLD_TEXID_CNT = 64;
     public struct UnityData_WLD
     {
         public Mesh mesh;
@@ -24,9 +25,8 @@ public static class RG2Mesh
         file_wld.LoadFile(filename_wld);
         Mesh mesh_wld = LoadMesh_WLD(file_wld);
         
-
         List<Material> materials = new List<Material>();
-        for(int i=0;i<64;i++)
+        for(int i=0;i<WLD_TEXID_CNT;i++)
         {
             materials.Add(RGTexStore.GetMaterial(name_col,file_wld.sec[0].texbsi_file,i));
         }
@@ -70,13 +70,12 @@ public static class RG2Mesh
 
     private static Mesh LoadMesh_WLD(RGFileImport.RGWLDFile file_wld)
     {
-        const int texid_cnt = 64;
         Mesh mesh = new Mesh();
 
         file_wld.BuildMeshes();
 
         mesh.indexFormat = IndexFormat.UInt32;
-        mesh.subMeshCount = texid_cnt;
+        mesh.subMeshCount = WLD_TEXID_CNT;
 
         List<Vector3> vec_lst = new List<Vector3>();
         List<Vector2> uv_lst  = new List<Vector2>();
@@ -103,13 +102,5 @@ public static class RG2Mesh
             mesh.SetTriangles(tri_lst[i],i);
         mesh.RecalculateNormals();
         return mesh;
-    }
-
-    // c# has no swap function in its lists apparently
-    private static void Swap<T>(IList<T> list, int indexA, int indexB)
-    {
-        T tmp = list[indexA];
-        list[indexA] = list[indexB];
-        list[indexB] = tmp;
     }
 }

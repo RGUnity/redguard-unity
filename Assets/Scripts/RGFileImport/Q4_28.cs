@@ -49,13 +49,13 @@ namespace RGFileImport
 
         public static Q4_28 operator *(Q4_28 a, Q4_28 b)
         {
-            // Multiply the two Q16.16 numbers, then shift right by 16 to maintain the Q16.16 format
+            // Multiply the two Q4.28 numbers, then shift right by 28 to maintain the Q4.28 format
             return new Q4_28((int)(((long)a.value * b.value) >> 28));
         }
 
         public static Q4_28 operator /(Q4_28 a, Q4_28 b)
         {
-            // Divide the two Q16.16 numbers, then shift left by 16 to maintain the Q16.16 format
+            // Divide the two Q4.28 numbers, then shift left by 28 to maintain the Q4.28 format
             return new Q4_28((int)(((long)a.value << 28) / b.value));
         }
 
