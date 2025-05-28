@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Assets.Scripts.RGFileImport.RGGFXImport
 {
@@ -10,28 +11,29 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
             public byte g;
             public byte b;
         };
-
-        public static RGColor[] Load(string path)
+        public RGColor[] colors;
+		public void LoadFile(string filename)
         {
-            var colors = new RGColor[256];
-            using (var binaryReader = new BinaryReader(File.OpenRead(path)))
+            try
             {
-                var fileSize = binaryReader.ReadUInt32();
-                var unknown = binaryReader.ReadUInt32();
-                const int readSize = 256 * 3;
-                var numEntries = fileSize - 8;
-                if (numEntries < readSize)
-                    return null;
-                var readBuffer = new byte[3];
-                for (int i = 0; i < 256; i++)
+                colors = new RGColor[256];
+                using (var binaryReader = new BinaryReader(File.OpenRead(filename)))
                 {
-                    if (binaryReader.Read(readBuffer, 0, 3) < 3)
-                        return null;
-                    colors[i] = new RGColor { r = readBuffer[0], g = readBuffer[1], b = readBuffer[2] };
+                    var fileSize = binaryReader.ReadUInt32();
+                    var unknown = binaryReader.ReadUInt32();
+                    var numEntries = fileSize - 8;
+                    var readBuffer = new byte[3];
+                    for (int i = 0; i < 256; i++)
+                    {
+                        binaryReader.Read(readBuffer, 0, 3);
+                        colors[i] = new RGColor { r = readBuffer[0], g = readBuffer[1], b = readBuffer[2] };
+                    }
                 }
             }
-
-            return colors;
+            catch(Exception ex)
+            {
+                throw new Exception($"Failed to load COL file {filename} with error:\n{ex.Message}");
+            }
         }
     }
 }

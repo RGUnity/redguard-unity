@@ -10,6 +10,10 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
         public List<RGTextureImage> Images { get; protected set; }
         static private RGPaletteFile.RGColor[] defaultPalette;
 
+        public RGTextureBSIFile()
+        {
+            defaultPalette = new RGPaletteFile.RGColor[256];
+        }
         public RGTextureBSIFile(RGPaletteFile.RGColor[] colors)
         {
             if (colors == null)
@@ -21,7 +25,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
         public void LoadFile(string path)
         {
             if (!File.Exists(path))
-                throw new FileNotFoundException();
+                throw new FileNotFoundException($"FNF: {path}");
             using (var binaryReader = new BinaryReader(File.OpenRead(path)))
             {
                 Images = new List<RGTextureImage>();
@@ -61,6 +65,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
             // Read subrecords
             const int recordNameLength = 4;
             bool reachedEnd = false;
+            string dbg = new string("");
             do
             {
                 var recordNameBuffer = new char[recordNameLength];
@@ -69,6 +74,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
                 // Read record size and convert from big to little endian
                 var recordSize = ReverseBytes(binaryReader.ReadUInt32());
                 var recordName = new string(recordNameBuffer);
+                dbg += $"\n{recordName}@{binaryReader.BaseStream.Position:X}:{recordSize:X}";
                 switch (recordName)
                 {
                     case "END ":
@@ -87,13 +93,16 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
                         ReadCMAP(rgTextureImage, binaryReader);
                         break;
                     case "DATA":
-                        if (rgTextureImage.HasIFHDData)
+                    // works for most models except PALMTR01/02:
+                    //    if (rgTextureImage.HasIFHDData)
+                    //    else if (rgTextureImage.HasBSIFData)
+                        if(rgTextureImage.Header.FrameCount > 1)
                             ReadAnimationData(rgTextureImage, recordSize, binaryReader);
-                        else if (rgTextureImage.HasBSIFData)
+                        else
                             ReadData(rgTextureImage, recordSize, binaryReader);
                         break;
                     default:
-                        throw new InvalidDataException("Invalid image subrecord name.");
+                        throw new InvalidDataException($"Invalid image subrecord name: {recordName} OUT: {dbg}");
                 }
 
                 if (reachedEnd)
