@@ -115,7 +115,8 @@ namespace xyz
 
 			for(int i=0;i<file3d.FaceDataCollection.Count;i++)
 			{
-				print_TextureId(file3d.FaceDataCollection[i], file3d.version);
+//				print_TextureId(file3d.FaceDataCollection[i], file3d.version);
+				Console.WriteLine(file3d.FaceDataCollection[i].TextureData & 0xFFFFFF00);
 			}
 /*
 			for(int i=0;i<file3d.FaceDataCollection.Count;i++)
