@@ -59,10 +59,10 @@ public class ModelViewer_Model : MonoBehaviour
    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        /*
+        
         RG3DStore.LoadMeshIntermediatesROB("TAVERN");
         LoadRGM("./game_3dfx/maps/TAVERN.RGM", "ISLAND");
-        */
+        
         RG3DStore.LoadMeshIntermediatesROB("ISLAND");
         SetModel_wld("ISLAND", "302", "ISLAND");
         LoadRGM("./game_3dfx/maps/ISLAND.RGM", "ISLAND");

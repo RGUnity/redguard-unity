@@ -45,6 +45,266 @@ size: {SectionSize:X}
 ###################################";
 			}
 		}
+		public struct RGMRAHDSection
+        {
+            public uint num_items;  // 4 bytes
+            public byte[] Unknown1 ;  // 3 bytes
+			public List<RGMRAHDItem> items;
+			public RGMRAHDSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    num_items = memoryReader.ReadUInt32();
+                    Unknown1 = memoryReader.ReadBytes(4);
+
+                    items = new List<RGMRAHDItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        int tmp = memoryReader.Position;
+                        items.Add(new RGMRAHDItem(memoryReader));
+                    Console.WriteLine($"AT: {i}/{num_items}:{tmp:X} {memoryReader.Position:X}");
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAHD section with error:\n{ex.Message}");
+                }
+            }
+			public override string ToString()
+			{
+                string o = new String($"###################################\nRAHD Data\n###################################");
+                for(int i=0;i<items.Count;i++)
+                {
+                    o += $"\n{items[i]}";
+                }
+                o += $"\nNUM_ITEMS:: {num_items}\n";
+                o += $"\n###################################";
+				return o;
+			}
+		}
+		public struct RGMRAHDItem
+		{
+            public byte[] tmp;
+            public byte[] Unknown1;      // 4 bytes
+            public string name;          // 9 bytes
+            public short instances;      // 2 bytes
+            public byte[] Unknown2;      // 50 bytes
+            public int stringCount;      // 4 bytes
+            public byte[] Unknown3;      // 4 bytes
+            public int stringOffsetIndex;// 4 bytes
+            public int scriptLength;     // 4 bytes
+            public int scriptDataOffset; // 4 bytes
+            public int scriptPC;         // 4 bytes
+            public byte[] Unknown4;      // 28 bytes
+            public int variableCount;    // 4 bytes
+            public byte[] Unknown5;      // 4 bytes
+            public int variableOffset;   // 4 bytes
+            public byte[] Unknown6;      // 37 bytes
+                                         // total: 165 bytes
+			public RGMRAHDItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    int pos = memoryReader.Position;
+                    tmp = memoryReader.ReadBytes(165);
+                    memoryReader.Seek((uint)pos ,0);
+
+                    Unknown1 = memoryReader.ReadBytes(4);
+                    char[] name_char = memoryReader.ReadChars(9);
+                    string[] name_strs = new string(name_char).Split('\0');
+                    name = name_strs[0];
+                    instances = memoryReader.ReadInt16();
+                    Unknown2 = memoryReader.ReadBytes(50);
+                    stringCount = memoryReader.ReadInt32();
+                    Unknown3 = memoryReader.ReadBytes(4);
+                    stringOffsetIndex = memoryReader.ReadInt32();
+                    scriptLength = memoryReader.ReadInt32();
+                    scriptDataOffset = memoryReader.ReadInt32();
+                    scriptPC = memoryReader.ReadInt32();
+                    Unknown4 = memoryReader.ReadBytes(28);
+                    variableCount = memoryReader.ReadInt32();
+                    Unknown5 = memoryReader.ReadBytes(4);
+                    variableOffset = memoryReader.ReadInt32();
+                    Unknown6 = memoryReader.ReadBytes(36);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAHD item with error:\n{ex.Message}");
+                }
+            }
+			public override string ToString()
+			{
+                string o1 = new string("");
+                for(int i=0;i<tmp.Length;i++)
+                {
+                    o1 += $"{tmp[i]:X2},";
+                }
+                Console.WriteLine(o1);
+
+                string o = new string("");
+                for(int i=0;i<Unknown1.Length;i++)
+                {
+                    o += $"{Unknown1[i]:X2},";
+                }
+                o += $"{name},";
+                for(int i=0;i<Unknown2.Length;i++)
+                {
+                    o += $"{Unknown2[i]:X2},";
+                }
+                o += $"{stringCount},";
+                for(int i=0;i<Unknown3.Length;i++)
+                {
+                    o += $"{Unknown3[i]:X2},";
+                }
+                o += $"{stringOffsetIndex},";
+                for(int i=0;i<Unknown4.Length;i++)
+                {
+                    o += $"{Unknown4[i]:X2},";
+                }
+                o += $"{instances:D4},";
+                o += $"{scriptLength:D4},";
+                o += $"{scriptDataOffset:D4},";
+                o += $"{scriptPC:D4},";
+                for(int i=0;i<Unknown5.Length;i++)
+                {
+                    o += $"{Unknown5[i]:X2},";
+                }
+                o += $"{variableCount:D4},";
+                for(int i=0;i<Unknown6.Length;i++)
+                {
+                    o += $"{Unknown6[i]:X2},";
+                }
+                o += $"{variableOffset:D4},";
+				return o;
+			}
+		}
+		public struct RGMRASTSection
+        {
+            public char[] text;     // its one big string
+			public RGMRASTSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    text = memoryReader.ReadChars((int)size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAST section with error:\n{ex.Message}");
+                }
+            }
+			public override string ToString()
+			{
+                string o = new String($"###################################\nRAST Data\n###################################");
+                for(int i=0;i<text.Length;i++)
+                {
+                    o += $"{text[i]}";
+                }
+                o += $"\n###################################";
+				return o;
+			}
+		}
+		public struct RGMRASBSection
+        {
+            public int[] offsets;     // its one big array of ints
+			public RGMRASBSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    offsets = memoryReader.ReadInt32s((int)size/4);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RASB section with error:\n{ex.Message}");
+                }
+            }
+			public override string ToString()
+			{
+                string o = new String($"###################################\nRASB Data\n###################################");
+                for(int i=0;i<offsets.Length;i++)
+                {
+                    o += $"{offsets[i]}";
+                }
+                o += $"\n###################################";
+				return o;
+			}
+		}
+		public struct RGMRAVASection
+        {
+            public int[] data;     // its one big array of ints
+			public RGMRAVASection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    data = memoryReader.ReadInt32s((int)size/4);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAVA section with error:\n{ex.Message}");
+                }
+            }
+			public override string ToString()
+			{
+                string o = new String($"###################################\nRAVA Data\n###################################");
+                for(int i=0;i<data.Length;i++)
+                {
+                    o += $"{data[i]}";
+                }
+                o += $"\n###################################";
+				return o;
+			}
+		}
+		public struct RGMRASCSection
+        {
+            public byte[] scripts;     // We read the scripts in one go, then process them later
+			public RGMRASCSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    scripts = memoryReader.ReadBytes((int)size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RASC section with error:\n{ex.Message}");
+                }
+            }
+			public override string ToString()
+			{
+                string o = new String($"###################################\nRASC Data\n###################################");
+                for(int i=0;i<scripts.Length;i++)
+                {
+                    o += $"{scripts[i]:X2}";
+                }
+                o += $"\n###################################";
+				return o;
+			}
+		}
+		public struct RGMRAATSection
+        {
+            public byte[] attributes;     // size bytes
+			public RGMRAATSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    attributes = memoryReader.ReadBytes((int)size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAAT section with error:\n{ex.Message}");
+                }
+            }
+			public override string ToString()
+			{
+                string o = new String($"###################################\nRAAT Data\n###################################");
+                for(int i=0;i<attributes.Length;i++)
+                {
+                    o += $"{attributes[i]:X2}";
+                }
+                o += $"\n###################################";
+				return o;
+			}
+		}
+
+
 		public struct RGMMPOBSection
 		{
             public uint num_items;  // 4 bytes
@@ -83,7 +343,6 @@ size: {SectionSize:X}
 		}
 		public struct RGMMPOBItem
 		{
-            // copied from MPSO, no idea if it fits
 			public byte[] flags;     // 6 bytes
             public string name;      // beginning until 00
             public string name2;     // from the end until 00
@@ -217,6 +476,12 @@ size: {SectionSize:X}
 
 	// data
 		public List<RGMSectionHeader> Sections;
+        public RGMRAHDSection RAHD;
+        public RGMRASTSection RAST;
+        public RGMRASBSection RASB;
+        public RGMRAVASection RAVA;
+        public RGMRASCSection RASC;
+        public RGMRAATSection RAAT;
         public RGMMPSOSection MPSO;
         public RGMMPOBSection MPOB;
         public long fileSize;
@@ -252,6 +517,30 @@ size: {SectionSize:X}
                     if(Sections[Sections.Count-1].sectionName == "END ")
                     {
                         end = true;
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "RAHD")
+                    {
+                        RAHD = new RGMRAHDSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "RAST")
+                    {
+                        RAST = new RGMRASTSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "RASB")
+                    {
+                        RASB = new RGMRASBSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "RAVA")
+                    {
+                        RAVA = new RGMRAVASection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "RASC")
+                    {
+                        RASC = new RGMRASCSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "RAAT")
+                    {
+                        RAAT = new RGMRAATSection(memoryReader, Sections[Sections.Count-1].SectionSize);
                     }
                     else if(Sections[Sections.Count-1].sectionName == "MPOB")
                     {

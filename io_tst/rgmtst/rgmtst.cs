@@ -46,10 +46,7 @@ namespace xyz
                     name_o2 += "_";
                 o += $"{i:D4}_{name_o},";
                 o += $"{name_o2},";
-                for(int j=0;j<it.unknown1.Length;j++)
-                {
-                    o += $"{it.unknown1[j]:X2},";
-                }
+                o += $"{it.unknown1:X2},";
                 o += $"{it.posx:X2},";
                 o += $"{it.posy:X2},";
                 o += $"{it.posz:X2},";
@@ -68,8 +65,9 @@ namespace xyz
 		{
 			RGRGMFile filergm = new RGRGMFile();
 			filergm.LoadFile("../../game_3dfx/maps/ISLAND.RGM");
+            Console.WriteLine(filergm.RAHD);
             //filergm.PrintRGM();
-            print_MPOB(filergm);
+//            print_MPOB(filergm);
 //            print_MPSO(filergm);
 //Q4_28 q1 = Q4_28.FromFloat(0.5f);
 /*
