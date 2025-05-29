@@ -208,8 +208,6 @@ IO_WLD_data_t
         {
             try
             {
-                const int WLD_hdr_size = 1184;
-                const int WLD_section_size = 65558;
                 byte[] buffer;
                 BinaryReader binaryReader = new BinaryReader(File.OpenRead(filename));
                 fileSize = binaryReader.BaseStream.Length;

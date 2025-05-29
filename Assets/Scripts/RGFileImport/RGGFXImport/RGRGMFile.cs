@@ -85,24 +85,38 @@ size: {SectionSize:X}
 		{
             // copied from MPSO, no idea if it fits
 			public byte[] flags;     // 6 bytes
-            public string name;      // 9 bytes
-            public string name_2;    // 12 bytes
-            public byte[] unknown;  // 39 bytes
-
+            public string name;      // beginning until 00
+            public string name2;     // from the end until 00
+                                     // 18 bytes combined
+            public byte hasmodel;    // 1 byte
+            public byte unknown1;    // 1 byte
+            public int  posx;        // 4 bytes
+            public int  posy;        // 4 bytes
+            public int  posz;        // 4 bytes
+            public uint  anglex;     // 4 bytes
+            public uint  angley;     // 4 bytes
+            public uint  anglez;     // 4 bytes
+            public byte[] unknown2;  // 16 bytes
 			public RGMMPOBItem(MemoryReader memoryReader)
             {
                 try
                 {
                     flags = memoryReader.ReadBytes(6);
-                    char[] name_char;
-                    name_char = memoryReader.ReadChars(9);
+
+                    char[] name_char = memoryReader.ReadChars(18);
                     string[] name_strs = new string(name_char).Split('\0');
                     name = name_strs[0];
-                    name_char = memoryReader.ReadChars(12);
-                    name_strs = new string(name_char).Split('\0');
-                    name_2 = name_strs[0];
-                    
-                    unknown = memoryReader.ReadBytes(39);
+                    name2 = name_strs[name_strs.Length-1];
+
+                    hasmodel = memoryReader.ReadByte();
+                    unknown1 = memoryReader.ReadByte();
+                    posx = memoryReader.ReadInt32();
+                    posy = memoryReader.ReadInt32();
+                    posz = memoryReader.ReadInt32();
+                    anglex = memoryReader.ReadUInt32();
+                    angley = memoryReader.ReadUInt32();
+                    anglez = memoryReader.ReadUInt32();
+                    unknown2 = memoryReader.ReadBytes(16);
                 }
                 catch(Exception ex)
                 {
@@ -111,7 +125,7 @@ size: {SectionSize:X}
             }
 			public override string ToString()
 			{
-				return $@"name: {name} name_2: {name_2}";
+				return $@"{String.Join(",", flags)},{name},{String.Join(",", unknown2)}";
 			}
 		}
 
@@ -119,9 +133,9 @@ size: {SectionSize:X}
 		{
 			public byte[] flags;           //  4 bytes
             public string name;            // 12 bytes
-            public uint posx;              //  4 bytes; increasing moves position east
-            public uint height ;           //  4 bytes increasing moves position up
-            public uint posy;              //  4 bytes increasing moves position north
+            public int posx;              //  4 bytes; increasing moves position east
+            public int posy;           //  4 bytes increasing moves position up
+            public int posz;              //  4 bytes increasing moves position north
             public int[] rotation_matrix;  // 36 bytes => 3x3 matrix, uses Q4.28 fixed-point
             public byte[] unknown;        //  2 bytes always 0
                                            // for whoevers keeping track: 66 bytes
@@ -138,9 +152,9 @@ size: {SectionSize:X}
                     name_char = memoryReader.ReadChars(12);
                     string[] name_strs = new string(name_char).Split('\0');
                     name = name_strs[0];
-                    posx = memoryReader.ReadUInt32();
-                    height = memoryReader.ReadUInt32();
-                    posy = memoryReader.ReadUInt32();
+                    posx = memoryReader.ReadInt32();
+                    posy = memoryReader.ReadInt32();
+                    posz = memoryReader.ReadInt32();
                     rotation_matrix = new int[9];
                     for(int i=0;i<9;i++)
                     {

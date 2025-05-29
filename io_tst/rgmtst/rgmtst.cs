@@ -15,23 +15,15 @@ namespace xyz
                 RGRGMFile.RGMMPSOItem it = filergm.MPSO.items[i];
                 for(int j=0;j<it.flags.Length;j++)
                 {
-                    o += $"{it.flags[j]:X},";
+                    o += $"{it.flags[j]:X2},";
                 }
                 o += $"{i}_{it.name},";
-                o += $"{it.posx},";
-                for(int j=0;j<it.unknown2.Length;j++)
+                o += $"{it.posx:X8},";
+                o += $"{it.posy:X8},";
+                o += $"{it.posz:X8},";
+                for(int j=0;j<it.unknown.Length;j++)
                 {
-                    o += $"{it.unknown2[j]:X},";
-                }
-                o += $"{it.height},";
-                for(int j=0;j<it.unknown3.Length;j++)
-                {
-                    o += $"{it.unknown3[j]:X},";
-                }
-                o += $"{it.posy},";
-                for(int j=0;j<it.unknown4.Length;j++)
-                {
-                    o += $"{it.unknown4[j]:X},";
+                    o += $"{it.unknown[j]:X2},";
                 }
                 Console.WriteLine($"{o}");
             }
@@ -44,13 +36,29 @@ namespace xyz
                 RGRGMFile.RGMMPOBItem it = filergm.MPOB.items[i];
                 for(int j=0;j<it.flags.Length;j++)
                 {
-                    o += $"{it.flags[j]:X},";
+                    o += $"{it.flags[j]:X2},";
                 }
-                o += $"{i}_{it.name},";
-                o += $"{it.name_2},";
-                for(int j=0;j<it.unknown.Length;j++)
+                string name_o = new String(it.name);
+                while(name_o.Length < 10)
+                    name_o += "_";
+                string name_o2 = new String(it.name2);
+                while(name_o2.Length < 10)
+                    name_o2 += "_";
+                o += $"{i:D4}_{name_o},";
+                o += $"{name_o2},";
+                for(int j=0;j<it.unknown1.Length;j++)
                 {
-                    o += $"{it.unknown[j]:X},";
+                    o += $"{it.unknown1[j]:X2},";
+                }
+                o += $"{it.posx:X2},";
+                o += $"{it.posy:X2},";
+                o += $"{it.posz:X2},";
+                o += $"{it.anglex:X2},";
+                o += $"{it.angley:X2},";
+                o += $"{it.anglez:X2},";
+                for(int j=0;j<it.unknown2.Length;j++)
+                {
+                    o += $"{it.unknown2[j]:X2},";
                 }
                 Console.WriteLine($"{o}");
             }
@@ -61,32 +69,8 @@ namespace xyz
 			RGRGMFile filergm = new RGRGMFile();
 			filergm.LoadFile("../../game_3dfx/maps/ISLAND.RGM");
             //filergm.PrintRGM();
-            for(int i=0;i<filergm.MPSO.items.Count;i++)
-            {
-                Q4_28[] qs = new Q4_28[9];
-                Console.WriteLine($"{i}_{filergm.MPSO.items[i].name}:");
-                for(int j=0;j<filergm.MPSO.items[i].rotation_matrix.Length;j++)
-                {
-                    qs[j] = new Q4_28(filergm.MPSO.items[i].rotation_matrix[j]);
-                    Console.WriteLine($"{(uint)filergm.MPSO.items[i].rotation_matrix[j]:X}:{qs[j]}");
-                }
-
-                float[,] rotationMatrix = new float[3, 3]
-                {
-
-                    {qs[0].ToFloat(), qs[1].ToFloat(), qs[2].ToFloat()},
-                    {qs[3].ToFloat(), qs[4].ToFloat(), qs[5].ToFloat()},
-                    {qs[6].ToFloat(), qs[7].ToFloat(), qs[8].ToFloat()}
-                };
-
-                RotationMatrix rm = new RotationMatrix(rotationMatrix);
-                rm.Normalize();
-//                Vector3 rotationAxes = rm.GetRotationAxes();
-//                Console.WriteLine($"{filergm.MPSO.items[i].name},{rotationAxes.X},{rotationAxes.Y},{rotationAxes.Z}");
-//                Console.WriteLine($"{filergm.MPSO.items[i].name},{String.Join(",",qs)}");
-
-            }
-            //print_MPOB(filergm);
+            print_MPOB(filergm);
+//            print_MPSO(filergm);
 //Q4_28 q1 = Q4_28.FromFloat(0.5f);
 /*
 float[,] rotationMatrix = new float[3, 3]
