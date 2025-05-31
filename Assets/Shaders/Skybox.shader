@@ -27,7 +27,7 @@ Shader "Redguard/Skybox"
 		AlphaToMask Off
 		Cull Back
 		ColorMask RGBA
-		ZWrite On
+		ZWrite Off
 		ZTest LEqual
 		Offset 0 , 0
 		
