@@ -60,9 +60,7 @@ size: {SectionSize:X}
                     items = new List<RGMRAHDItem>();
                     for(int i=0;i<(int)num_items;i++)
                     {
-                        int tmp = memoryReader.Position;
                         items.Add(new RGMRAHDItem(memoryReader));
-                    Console.WriteLine($"AT: {i}/{num_items}:{tmp:X} {memoryReader.Position:X}");
                     }
                 }
                 catch(Exception ex)
