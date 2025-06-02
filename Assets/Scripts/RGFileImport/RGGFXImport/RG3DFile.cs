@@ -4,12 +4,12 @@ using System.IO;
 
 namespace RGFileImport
 {
-    public struct FrameDataHeader
+    public struct FrameData
     {
+        public uint FrameVertexOffset;
+        public uint FrameNormalOffset;
         public uint u1;
         public uint u2;
-        public uint u3;
-        public uint u4;
     }
 
     public struct FaceVertexData
@@ -58,14 +58,14 @@ namespace RGFileImport
          * the vertex data if "invalid" coordinates are found. */
         const int MaxCoordValueForOld3DCReload = 1090519040;
 
-        RG3DHeader header;
+        public RG3DHeader header;
         bool useAltVertexOffset; // Set to true in some old v2.6 3DC files in order to correctly load the vertex data
         bool tryReloadOld3dcFileVertex; // This doesn't seem to always work  (only works with CV_ROPE.3DC and CV_SKUL3.3DC
         uint offsetUVZeroes;
         uint offsetUnknown27;
         Coord3DInt minCoord;
         Coord3DInt maxCoord;
-        FrameDataHeader frameDataHeader;
+        public List<FrameData> frameData;
         string fullName;
         string name;
         bool is3DCFile;
@@ -80,6 +80,8 @@ namespace RGFileImport
         public List<Coord3DInt> FaceNormals { get; set; }
         public List<uint> UvOffsets { get; set; }
         public List<Coord3DFloat> UvCoordinates { get; set; }
+
+        public List<List<Coord3DInt>> VertexFrameDeltas { get; set; }
 
         public void LoadFile(string path)
         {
@@ -113,9 +115,14 @@ namespace RGFileImport
                 is3DCFile = is3DC;
                 MemoryReader memoryReader = new MemoryReader(buffer);
                 header = GetHeader(memoryReader);
-                frameDataHeader = GetFrameDataHeader(memoryReader);
+                frameData = GetFrameData(memoryReader);
                 FaceDataCollection = GetFaceData(memoryReader);
                 VertexCoordinates = GetVertexCoordinates(memoryReader);
+                VertexFrameDeltas = new List<List<Coord3DInt>>();
+                for(int i=0;i<header.NumFrames;i++)
+                {
+                    VertexFrameDeltas.Add(GetVertexFrameOffsets(memoryReader, i));
+                }
                 if (is3DCFile && version <= 27 && !useAltVertexOffset && tryReloadOld3dcFileVertex)
                 {
                     // Reload if coordinates are outside maximums
@@ -129,6 +136,7 @@ namespace RGFileImport
                         useAltVertexOffset = true;
                         VertexCoordinates = GetVertexCoordinates(memoryReader);
                     }
+                    throw new Exception("NOPE");
                 }
 
                 FaceNormals = GetFaceNormals(memoryReader);
@@ -195,20 +203,24 @@ namespace RGFileImport
             return header;
         }
 
-        private FrameDataHeader GetFrameDataHeader(MemoryReader memoryReader)
+        private List<FrameData> GetFrameData(MemoryReader memoryReader)
         {
+            List<FrameData> fd_lst = new List<FrameData>();
             if (header.OffsetFrameData == 0 || header.OffsetFrameData >= memoryReader.Length)
-                return new FrameDataHeader();
+                return fd_lst;
             if (header.OffsetFrameData >= memoryReader.Length)
                 throw new EndOfStreamException("OffsetFrameData is beyond stream length.");
             memoryReader.Seek(header.OffsetFrameData, 0);
-            return new FrameDataHeader
+            for(int i=0;i<header.NumFrames;i++)
             {
-                u1 = memoryReader.ReadUInt32(),
-                u2 = memoryReader.ReadUInt32(),
-                u3 = memoryReader.ReadUInt32(),
-                u4 = memoryReader.ReadUInt32()
-            };
+                FrameData cur = new FrameData();
+                cur.FrameVertexOffset = memoryReader.ReadUInt32();
+                cur.FrameNormalOffset = memoryReader.ReadUInt32();
+                cur.u1 = memoryReader.ReadUInt32();
+                cur.u2 = memoryReader.ReadUInt32();
+                fd_lst.Add(cur);
+            }
+            return fd_lst;
         }
 
         private List<FaceData> GetFaceData(MemoryReader memoryReader)
@@ -301,14 +313,13 @@ namespace RGFileImport
                 throw new EndOfStreamException("Failed to read full face data section.");
             return faceDatas;
         }
-
         private List<Coord3DInt> GetVertexCoordinates(MemoryReader memoryReader)
         {
             uint dataSize = FindNextOffsetAfter(header.OffsetVertexCoords, (uint)memoryReader.Length, header) - header.OffsetVertexCoords;
             var coords = new List<Coord3DInt>();
             if (header.NumVertices <= 0)
                 return coords;
-            if (is3DCFile && version <= 27)
+            if (is3DCFile && version <= 27) 
             {
                 if (header.OffsetFrameData == 0)
                     throw new Exception("No frame data header found in old 3DC file data.");
@@ -316,13 +327,13 @@ namespace RGFileImport
                     throw new Exception("No vertex data offset found for old 3DC file data.");
                 var offset = endFaceDataOffset;
                 if (!useAltVertexOffset)
-                    offset += frameDataHeader.u3;
+                    offset += frameData[0].u1;
                 if (offset >= fileSize)
                     throw new EndOfStreamException("Vertex coordinates are beyond end of file.");
-                memoryReader.Seek(offset, 0);
+                memoryReader.Seek(offset, 0); 
             }
             else
-                memoryReader.Seek(header.OffsetVertexCoords, 0);
+                memoryReader.Seek(header.OffsetVertexCoords, 0); 
             for (var i = 0; i < header.NumVertices; ++i)
             {
                 var coord = new Coord3DInt()
@@ -359,6 +370,33 @@ namespace RGFileImport
 
             return coords;
         }
+        private List<Coord3DInt> GetVertexFrameOffsets(MemoryReader memoryReader, int frame)
+        {
+            var coords = new List<Coord3DInt>();
+            if (header.NumVertices <= 0)
+                return coords;
+            memoryReader.Seek(frameData[frame].FrameVertexOffset, 0); 
+            for (var i = 0; i < header.NumVertices; ++i)
+            {
+                var coord = new Coord3DInt()
+                {
+                    x = (int)memoryReader.ReadInt16(),
+                    y = (int)memoryReader.ReadInt16(),
+                    z = (int)memoryReader.ReadInt16()
+                };
+
+                coords.Add(new Coord3DInt()
+                {
+                    x = coord.x,
+                    y = coord.y,
+                    z = coord.z
+                });
+            }
+
+            return coords;
+        }
+
+
 
         private List<Coord3DInt> GetFaceNormals(MemoryReader memoryReader)
         {
