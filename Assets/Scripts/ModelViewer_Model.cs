@@ -10,6 +10,10 @@ using Assets.Scripts.RGFileImport;
 using Assets.Scripts.RGFileImport.RGGFXImport;
 public class ModelViewer_Model : MonoBehaviour
 {
+    static GameObject CYRSA;
+    static RG2Mesh.UnityData_3D CYRSA_DAT;
+    static float CYRSA_DT = 1.0f;
+    static int CYRSA_CURFRAME = 0;
     public void SetModel_wld(string name_wld, string texbsi, string name_col)
     {
         string filename_wld = new string($"./game_3dfx/maps/{name_wld}.WLD");
@@ -18,7 +22,7 @@ public class ModelViewer_Model : MonoBehaviour
         GetComponent<MeshRenderer>().SetMaterials(data_WLD.materials);
 
     }
-    public void add3DToScene(string prefix, string name_3d, string name_pal,Vector3 position, Vector3 eulers)
+    public GameObject add3DToScene(string prefix, string name_3d, string name_pal,Vector3 position, Vector3 eulers)
     {
         RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(name_3d, name_pal);
 
@@ -31,6 +35,7 @@ public class ModelViewer_Model : MonoBehaviour
 
         spawned.transform.position = position;
         spawned.transform.Rotate(eulers);
+        return spawned;
  
     }
     void LoadRGM(string filename, string name_col)
@@ -59,6 +64,8 @@ public class ModelViewer_Model : MonoBehaviour
    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        CYRSA_DAT = RG2Mesh.f3D2Mesh("CYRSA001", "ISLAND");
+        CYRSA = add3DToScene("0000_CYR","CYRSA001", "ISLAND", new Vector3(0.0f,0.0f,0.0f), new Vector3(0.0f,0.0f,0.0f));
         
         RG3DStore.LoadMeshIntermediatesROB("TAVERN");
         LoadRGM("./game_3dfx/maps/TAVERN.RGM", "ISLAND");
@@ -68,13 +75,29 @@ public class ModelViewer_Model : MonoBehaviour
         LoadRGM("./game_3dfx/maps/ISLAND.RGM", "ISLAND");
         // hell yeah single-line objects
 //        add3DToScene("PALMTR03", "ISLAND", new Vector3(100,0,0));
-//        add3DToScene("VILEGARD", "ISLAND", new Vector3(00,00,0));
 
+    }
+    // quick and dirty anims
+    static void AnimateGO(GameObject go, float dt)
+    {
+        const float FRAMETIME = 0.2f;
+
+        CYRSA_DT -= dt;
+        if(CYRSA_DT < 0)
+        {
+            CYRSA_DT = FRAMETIME;
+            CYRSA_CURFRAME++;
+            if(CYRSA_CURFRAME >= CYRSA_DAT.framecount)
+                CYRSA_CURFRAME = 0;
+            CYRSA.GetComponent<MeshFilter>().mesh.SetVertices(CYRSA_DAT.framevertices[CYRSA_CURFRAME]);
+            CYRSA.GetComponent<MeshFilter>().mesh.SetNormals(CYRSA_DAT.framenormals[CYRSA_CURFRAME]);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        AnimateGO(CYRSA, Time.deltaTime);
         
     }
 }

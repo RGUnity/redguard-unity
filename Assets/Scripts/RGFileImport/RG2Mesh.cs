@@ -16,6 +16,9 @@ public static class RG2Mesh
     {
         public Mesh mesh;
         public List<Material> materials;
+        public int framecount;
+        public Vector3[][] framevertices;
+        public Vector3[][] framenormals;
     }
 
     public static UnityData_WLD WLD2Mesh(string filename_wld, string name_col)
@@ -44,9 +47,9 @@ public static class RG2Mesh
         List<Material> materials = new List<Material>();
         Mesh mesh_3d = new Mesh();
         mesh_3d.subMeshCount = mesh_i.subMeshCount;
-        mesh_3d.vertices = mesh_i.vertices.ToArray();
+        mesh_3d.vertices = mesh_i.vertices[0].ToArray();
         mesh_3d.uv = mesh_i.uv.ToArray();
-        mesh_3d.normals = mesh_i.normals.ToArray();
+        mesh_3d.normals = mesh_i.normals[0].ToArray();
 
         int i = 0;
         foreach(var submesh in mesh_i.submeshes)
@@ -61,6 +64,14 @@ public static class RG2Mesh
 
 
         UnityData_3D data = new UnityData_3D();
+        data.framecount = mesh_i.framecount;
+        data.framevertices = new Vector3[data.framecount][];
+        data.framenormals = new Vector3[data.framecount][];
+        for(int j=0;j<data.framecount;j++)
+        {
+            data.framevertices[j] = mesh_i.vertices[j].ToArray();
+            data.framenormals[j] = mesh_i.normals[j].ToArray();
+        }
         data.mesh = mesh_3d;
         data.materials = materials;
 
