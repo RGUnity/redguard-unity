@@ -6,10 +6,15 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Assets.Scripts.RGFileImport;
-
 using Assets.Scripts.RGFileImport.RGGFXImport;
+
 public class ModelViewer2 : MonoBehaviour
 {
+    [SerializeField] private string redguardPath;
+    [SerializeField] private ModelViewer2_GUI gui;
+    private GameObject currentObject;
+    
+    
     public void SetModel_wld(string name_wld, string texbsi, string name_col)
     {
         string filename_wld = new string($"./game_3dfx/maps/{name_wld}.WLD");
@@ -23,6 +28,9 @@ public class ModelViewer2 : MonoBehaviour
         RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(name_3d, name_pal);
 
         GameObject spawned = new GameObject($"{prefix}_{name_3d}");
+        
+        // Save this as our currentObject
+        currentObject = spawned;
         MeshRenderer meshRenderer = spawned.AddComponent<MeshRenderer>();
         MeshFilter meshFilter = spawned.AddComponent<MeshFilter>();
 
@@ -55,9 +63,27 @@ public class ModelViewer2 : MonoBehaviour
             add3DToScene($"S{i:D3}", RGM_MPSOs[i].name, name_col, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
         }
     }
+
+    public void Load3DC(string filename)
+    {
+        Destroy(currentObject);
+        print(filename);
+        RG3DStore.LoadMeshIntermediate3DC(filename);
+        add3DToScene(filename +"_", filename, "OBSERVAT", Vector3.zero, Vector3.zero);
+    }
     
     void Start()
     {
+        RG3DStore.path_to_game = redguardPath;
+        print("Using Folder " + RG3DStore.path_to_game);
+        DirectoryInfo dirInfo = new DirectoryInfo(RG3DStore.path_to_game + "/fxart");
+        
+        foreach (var file in dirInfo.GetFiles("*.3DC"))
+        {
+            print(file.Name);
+            gui.GenerateButton3DC(file.Name);
+        }
+        
         // Island Example
         // RG3DStore.LoadMeshIntermediatesROB("ISLAND");
         // SetModel_wld("ISLAND", "302", "ISLAND");
@@ -72,7 +98,13 @@ public class ModelViewer2 : MonoBehaviour
         // LoadRGM("./game_3dfx/maps/CATACOMB.RGM", "CATACOMB");
 
         // Load 3DC
-        RG3DStore.LoadMeshIntermediate3DC("GOLMA001");
-        add3DToScene("Hey", "GOLMA001", "OBSERVAT", Vector3.zero, Vector3.zero);
+        // RG3DStore.LoadMeshIntermediate3DC("GOLMA001");
+        // add3DToScene("Hey", "GOLMA001", "OBSERVAT", Vector3.zero, Vector3.zero);
+        
+        // Load Goblin Caves
+        // RG3DStore.LoadMeshIntermediatesROB("CAVERNS");
+        // LoadRGM("./game_3dfx/maps/CAVERNS.RGM", "CAVETEST");
+        
+        //Load3DC("GOLMA001");
     }
 }
