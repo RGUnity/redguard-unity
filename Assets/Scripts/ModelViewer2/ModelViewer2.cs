@@ -1,24 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Rendering;
-using Assets.Scripts.RGFileImport;
-using Assets.Scripts.RGFileImport.RGGFXImport;
+
 
 public class ModelViewer2 : MonoBehaviour
 {
     [SerializeField] private string redguardPath;
     [SerializeField] private ModelViewer2_GUI gui;
+    [SerializeField] private ModelViewer2_Camera mv2Cam;
     [SerializeField] private GameObject objectRoot;
     [SerializeField] private GameObject cameraRoot;
     [SerializeField] private float scrollSpeed = 5;
-    
 
     private GameObject objectRootGenerated;
-    
+
     void Start()
     {
         ViewerMode_Levels();
@@ -125,31 +122,7 @@ public class ModelViewer2 : MonoBehaviour
         RG3DStore.LoadMeshIntermediate3DC(filename);
         add3DToScene(filename +"_", filename, "OBSERVAT", Vector3.zero, Vector3.zero);
 
-        FrameObject();
-    }
-
-    private void FrameObject()
-    {
-        var bounds = GetMaxBounds(objectRootGenerated);
-
-        // Move camera root to the center
-        cameraRoot.transform.position = bounds.center;
-
-        // Set camera distance
-        float distance = bounds.size.magnitude;
-        cameraRoot.transform.GetChild(0).transform.localPosition = new Vector3(0, 0, distance);
-    }
-    
-    
-    // Get bounding box of all spawned objects combined
-    Bounds GetMaxBounds(GameObject g) {
-        var renderers = g.GetComponentsInChildren<Renderer>();
-        if (renderers.Length == 0) return new Bounds(g.transform.position, Vector3.zero);
-        var b = renderers[0].bounds;
-        foreach (Renderer r in renderers) {
-            b.Encapsulate(r.bounds);
-        }
-        return b;
+        mv2Cam.FrameObject(objectRootGenerated);
     }
     
     // Stupid Hardcoded ROB Loading functions
@@ -331,22 +304,6 @@ public class ModelViewer2 : MonoBehaviour
                 break;
         }
         
-        FrameObject();
-    }
-    
-    void OnGUI()
-    {
-        GameObject _camera = cameraRoot.transform.GetChild(0).gameObject;
-            
-        // Calculate Zoom value
-        Vector3 pos = _camera.transform.localPosition;
-        float multiplier = _camera.transform.localPosition.z/100 * scrollSpeed *-1;
-        pos.z += Input.mouseScrollDelta.y * multiplier;
-        
-        // Clamp the zoom range
-        pos.z = Mathf.Clamp(pos.z, 1, 2000);
-        
-        // Move the camera by the new position
-        _camera.transform.localPosition = pos;
+        mv2Cam.FrameObject(objectRootGenerated);
     }
 }

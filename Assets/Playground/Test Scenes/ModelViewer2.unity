@@ -861,6 +861,38 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &679977276
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 679977277}
+  m_Layer: 0
+  m_Name: Camera Root X
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &679977277
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 679977276}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.976296, y: 0, z: 0, w: 0.2164397}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1613269919}
+  m_Father: {fileID: 1516451610}
+  m_LocalEulerAnglesHint: {x: 155, y: 0, z: 0}
 --- !u!1 &682604048
 GameObject:
   m_ObjectHideFlags: 0
@@ -1299,6 +1331,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   redguardPath: E:\Games\Redguard\Redguard
   gui: {fileID: 189839338}
+  mv2Cam: {fileID: 1516451609}
   objectRoot: {fileID: 2049337810}
   cameraRoot: {fileID: 1516451608}
   scrollSpeed: 5
@@ -1639,7 +1672,7 @@ GameObject:
   - component: {fileID: 1516451610}
   - component: {fileID: 1516451609}
   m_Layer: 0
-  m_Name: Camera Root
+  m_Name: Camera Root Y
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1657,6 +1690,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcd96bebc083c034083672c9c3ec4ade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gui: {fileID: 189839338}
+  eventSystem: {fileID: 1585982906}
+  _camera: {fileID: 1613269919}
+  rotationRootX: {fileID: 679977277}
+  rotationSpeed: 2
+  zoomSpeed: 5
 --- !u!4 &1516451610
 Transform:
   m_ObjectHideFlags: 0
@@ -1665,14 +1704,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1516451608}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.17216265, y: 0.12854317, z: 0.022665637, w: 0.9763827}
+  m_LocalRotation: {x: 0, y: -0.258819, z: 0, w: 0.9659259}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1613269919}
+  - {fileID: 679977277}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -20, y: 15, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -30, z: 0}
 --- !u!1 &1585982904
 GameObject:
   m_ObjectHideFlags: 0
@@ -1836,12 +1875,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1613269916}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 0, y: 1, z: 25.66}
+  m_LocalRotation: {x: -0, y: -0, z: -1, w: 0}
+  m_LocalPosition: {x: 0, y: -1, z: -25.659998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1516451610}
+  m_Father: {fileID: 679977277}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &1643965350
 GameObject:
