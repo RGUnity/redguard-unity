@@ -10,6 +10,10 @@ using Assets.Scripts.RGFileImport;
 using Assets.Scripts.RGFileImport.RGGFXImport;
 public class ModelViewer_Model : MonoBehaviour
 {
+    static GameObject CYRSA;
+    static RG2Mesh.UnityData_3D CYRSA_DAT;
+    static float CYRSA_DT = 1.0f;
+    static int CYRSA_CURFRAME = 0;
     public void SetModel_wld(string name_wld, string texbsi, string name_col)
     {
         string filename_wld = new string($"./game_3dfx/maps/{name_wld}.WLD");
@@ -18,7 +22,7 @@ public class ModelViewer_Model : MonoBehaviour
         GetComponent<MeshRenderer>().SetMaterials(data_WLD.materials);
 
     }
-    public void add3DToScene(string prefix, string name_3d, string name_pal,Vector3 position, Vector3 eulers)
+    public GameObject add3DToScene(string prefix, string name_3d, string name_pal,Vector3 position, Vector3 eulers)
     {
         RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(name_3d, name_pal);
 
@@ -31,74 +35,69 @@ public class ModelViewer_Model : MonoBehaviour
 
         spawned.transform.position = position;
         spawned.transform.Rotate(eulers);
+        return spawned;
  
     }
     void LoadRGM(string filename, string name_col)
     {
-        RGFileImport.RGRGMFile filergm = new RGFileImport.RGRGMFile();
-        filergm.LoadFile(filename);
-        const float RGM_SCALE = 1.0f/20.0f;
-        const float RGM_SCALE_HEIGHT = 0.0527f;
-        const float RGM_OFS_HEIGHT = -3450.0f;
-        const float RGM_X_OFS = 29.8f;
-        const float RGM_Y_OFS = -22.8f;
-
-        Vector3 eulers_from_RGM_data(RGFileImport.RGRGMFile.RGMMPSOItem i)
+        List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(filename);
+        List<RGRGMStore.RGRGMData> RGM_MPOBs = RGRGMStore.LoadMPOB(filename);
+        for(int i=0;i<RGM_MPOBs.Count;i++)
         {
-            Matrix4x4 m = new Matrix4x4();
-            m[0,0] = (new RGFileImport.Q4_28(i.rotation_matrix[0])).ToFloat();
-            m[0,1] = (new RGFileImport.Q4_28(i.rotation_matrix[1])).ToFloat();
-            m[0,2] = (new RGFileImport.Q4_28(i.rotation_matrix[2])).ToFloat();
-            m[1,0] = (new RGFileImport.Q4_28(i.rotation_matrix[3])).ToFloat();
-            m[1,1] = (new RGFileImport.Q4_28(i.rotation_matrix[4])).ToFloat();
-            m[1,2] = (new RGFileImport.Q4_28(i.rotation_matrix[5])).ToFloat();
-            m[2,0] = (new RGFileImport.Q4_28(i.rotation_matrix[6])).ToFloat();
-            m[2,1] = (new RGFileImport.Q4_28(i.rotation_matrix[7])).ToFloat();
-            m[2,2] = (new RGFileImport.Q4_28(i.rotation_matrix[8])).ToFloat();
-            m[3,3] = 1;
-            Vector3 eulers = Vector3.Scale(m.rotation.eulerAngles, RG3DStore.MESH_ROT_FLIP);
-            return eulers;
-        }
-
-        for(int i=0;i<filergm.MPSO.items.Count;i++)
-        {
-            try{
-                float posx =  ((float)(filergm.MPSO.items[i].posx)*RGM_SCALE);
-                float posy = -((float)((int)0xFFFF-(int)filergm.MPSO.items[i].posy)*RGM_SCALE);
-                float posz = ((float)(int)0xFFFF-(int)filergm.MPSO.items[i].height)*RGM_SCALE_HEIGHT;
-                posx += RGM_X_OFS;
-                posy += RGM_Y_OFS;
-                posz += RGM_OFS_HEIGHT;
-
-                Vector3 eulers = eulers_from_RGM_data(filergm.MPSO.items[i]);
-                add3DToScene($"{i}", filergm.MPSO.items[i].name, name_col, new Vector3(posx,posz,posy), eulers);
+            try
+            {
+                add3DToScene($"B{i:D3}", RGM_MPOBs[i].name2, name_col, RGM_MPOBs[i].position, RGM_MPOBs[i].rotation);
             }
             catch(Exception ex)
             {
-                Debug.Log($"BROKE {filergm.MPSO.items[i].name}: {ex}");
+                Debug.Log($"ERR: B{i:D3}: {ex.Message}");
             }
+        }
+
+
+        for(int i=0;i<RGM_MPSOs.Count;i++)
+        {
+            add3DToScene($"S{i:D3}", RGM_MPSOs[i].name, name_col, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
         }
     }
 
    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        /*
+        CYRSA_DAT = RG2Mesh.f3D2Mesh("CYRSA001", "ISLAND");
+        CYRSA = add3DToScene("0000_CYR","CYRSA001", "ISLAND", new Vector3(0.0f,0.0f,0.0f), new Vector3(0.0f,0.0f,0.0f));
+        
         RG3DStore.LoadMeshIntermediatesROB("TAVERN");
         LoadRGM("./game_3dfx/maps/TAVERN.RGM", "ISLAND");
-        */
+        
         RG3DStore.LoadMeshIntermediatesROB("ISLAND");
         SetModel_wld("ISLAND", "302", "ISLAND");
         LoadRGM("./game_3dfx/maps/ISLAND.RGM", "ISLAND");
         // hell yeah single-line objects
 //        add3DToScene("PALMTR03", "ISLAND", new Vector3(100,0,0));
-//        add3DToScene("VILEGARD", "ISLAND", new Vector3(00,00,0));
 
+    }
+    // quick and dirty anims
+    static void AnimateGO(GameObject go, float dt)
+    {
+        const float FRAMETIME = 0.2f;
+
+        CYRSA_DT -= dt;
+        if(CYRSA_DT < 0)
+        {
+            CYRSA_DT = FRAMETIME;
+            CYRSA_CURFRAME++;
+            if(CYRSA_CURFRAME >= CYRSA_DAT.framecount)
+                CYRSA_CURFRAME = 0;
+            CYRSA.GetComponent<MeshFilter>().mesh.SetVertices(CYRSA_DAT.framevertices[CYRSA_CURFRAME]);
+            CYRSA.GetComponent<MeshFilter>().mesh.SetNormals(CYRSA_DAT.framenormals[CYRSA_CURFRAME]);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        AnimateGO(CYRSA, Time.deltaTime);
         
     }
 }
