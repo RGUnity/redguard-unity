@@ -222,6 +222,7 @@ public class ModelViewer2 : MonoBehaviour
 
             case "HIDEOUT":
                 RG3DStore.LoadMeshIntermediatesROB("HIDEOUT");
+                SetModel_wld("HIDEOUT", "302", "HIDEOUT");
                 LoadRGM(redguardPath + "/maps/HIDEOUT.RGM", "ISLAND");
                 break;
 
@@ -258,12 +259,13 @@ public class ModelViewer2 : MonoBehaviour
 
             case "NECRISLE":
                 RG3DStore.LoadMeshIntermediatesROB("NECRISLE");
-                LoadRGM(redguardPath + "/maps/NECRISLE.RGM", "ISLAND");
+                SetModel_wld("NECRISLE", "302", "NECRO");
+                LoadRGM(redguardPath + "/maps/NECRISLE.RGM", "NECRO");
                 break;
 
-            case "NECTROWR":
-                RG3DStore.LoadMeshIntermediatesROB("NECTROWR");
-                LoadRGM(redguardPath + "/maps/NECTROWR.RGM", "ISLAND");
+            case "NECRTOWR":
+                RG3DStore.LoadMeshIntermediatesROB("NECRTOWR");
+                LoadRGM(redguardPath + "/maps/NECRTOWR.RGM", "NECRO");
                 break;
 
             case "OBSERVE":

@@ -109,7 +109,7 @@ public class ModelViewer2_GUI : MonoBehaviour
         SpawnButton_Level("MENU");
         SpawnButton_Level("MGUILD");
         SpawnButton_Level("NECRISLE");
-        SpawnButton_Level("NECTROWR");
+        SpawnButton_Level("NECRTOWR");
         SpawnButton_Level("OBSERVE");
         SpawnButton_Level("PALACE");
         SpawnButton_Level("PALATEST");
