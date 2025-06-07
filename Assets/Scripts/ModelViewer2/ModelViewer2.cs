@@ -14,6 +14,8 @@ public class ModelViewer2 : MonoBehaviour
     [SerializeField] private ModelViewer2_GUI gui;
     [SerializeField] private GameObject objectRoot;
     [SerializeField] private GameObject cameraRoot;
+    [SerializeField] private float scrollSpeed = 5;
+    
 
     private GameObject objectRootGenerated;
     
@@ -330,5 +332,21 @@ public class ModelViewer2 : MonoBehaviour
         }
         
         FrameObject();
+    }
+    
+    void OnGUI()
+    {
+        GameObject _camera = cameraRoot.transform.GetChild(0).gameObject;
+            
+        // Calculate Zoom value
+        Vector3 pos = _camera.transform.localPosition;
+        float multiplier = _camera.transform.localPosition.z/100 * scrollSpeed *-1;
+        pos.z += Input.mouseScrollDelta.y * multiplier;
+        
+        // Clamp the zoom range
+        pos.z = Mathf.Clamp(pos.z, 1, 2000);
+        
+        // Move the camera by the new position
+        _camera.transform.localPosition = pos;
     }
 }
