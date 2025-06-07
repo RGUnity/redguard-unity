@@ -33,6 +33,7 @@ public static class RG2Mesh
         {
             materials.Add(RGTexStore.GetMaterial(name_col,file_wld.sec[0].texbsi_file,i));
         }
+//        materials[0] = RGTexStore.LoadMaterialBSI("SKY001");
 
         UnityData_WLD data = new UnityData_WLD();
         data.mesh = mesh_wld;
