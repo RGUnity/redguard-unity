@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Assets.Scripts.RGFileImport.RGGFXImport;
@@ -25,7 +26,8 @@ public static class RG3DStore
 
     static Dictionary<string, Mesh3D_intermediate> MeshIntermediateDict; // key: meshname
 
-    static string path_to_game = "./game_3dfx";
+    //public static string path_to_game = "./game_3dfx";
+    public static string path_to_game;
     static string fxart_path = path_to_game + "/fxart/";
 
 
@@ -44,7 +46,9 @@ public static class RG3DStore
         }
         else
         {
-            string filename = fxart_path + meshname + ".3DC";
+            string filename = path_to_game + "/fxart/" + meshname + ".3DC";
+            Debug.Log("Loading 3DC File " + filename);
+            
             RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
             file_3d.LoadFile(filename);
 
@@ -54,7 +58,7 @@ public static class RG3DStore
     }
     public static void LoadMeshIntermediatesROB(string ROBname)
     {
-        string filename = fxart_path + ROBname+ ".ROB";
+        string filename = path_to_game + "/fxart/" + ROBname+ ".ROB";
         RGFileImport.RGROBFile file_rob = new RGFileImport.RGROBFile();
         file_rob.LoadFile(filename);
         for(int i=0;i<file_rob.hdr.NumSegments;i++)

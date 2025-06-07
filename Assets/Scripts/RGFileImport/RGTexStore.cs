@@ -14,8 +14,8 @@ public static class RGTexStore
     static Dictionary<string, RGPaletteFile> PaletteDict;
     static Dictionary<string, RGTEXBSIFile> BSIFDict;
 
-    static string path_to_game = "./game_3dfx";
-    static string fxart_path = path_to_game + "/fxart/";
+    public static string path_to_game;
+    static string fxart_path;
 
 
     static RGTexStore()
@@ -27,6 +27,8 @@ public static class RGTexStore
 
     public static Material GetMaterial(string palname, int texbsi, int img)
     {
+        fxart_path = path_to_game + "/fxart/";
+        
         string mat_key = $"{palname}/{texbsi:D3}/{img:D3}";
         Material o;
         if(MaterialDict.TryGetValue(mat_key, out o))
@@ -153,6 +155,8 @@ public static class RGTexStore
     }
     private static RGPaletteFile LoadPalette(string palname)
     {
+        fxart_path = path_to_game + "/fxart/";
+        
         RGPaletteFile o;
         if(PaletteDict.TryGetValue(palname, out o))
         {

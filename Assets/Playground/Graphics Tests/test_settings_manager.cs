@@ -99,12 +99,12 @@ public class test_settings_manager : MonoBehaviour
     }
 
     //Function to change pixel size with UI buttons
-    public void SetPixelScale(float overridePixelScale)
+    public void SetPixelScale(int overridePixelScale)
     {
         if (pixelateEffect != null)
         {
             pixelateEffect.pixelScale = overridePixelScale;
-            print(overridePixelScale);
+            print("Set pixelScale to " + overridePixelScale);
         }
         else
         {
