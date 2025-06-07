@@ -3,11 +3,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.RGFileImport;
 using Assets.Scripts.RGFileImport.RGGFXImport;
+using TMPro;
 
 public class ModelViewer2_GUI : MonoBehaviour
 {
     [SerializeField] private ModelViewer2 modelViewer2;
-    [SerializeField] private RectTransform Root_Button3DC;
+    [SerializeField] private RectTransform Button_ModeLevel;
+    [SerializeField] private RectTransform Button_ModeObjects;
+    [SerializeField] private RectTransform Button_ModeTexture;
+    [SerializeField] private RectTransform Root_ButtonList;
     [SerializeField] private GameObject button3DC_Prefab;
     [SerializeField] private GameObject buttonROB_Prefab;
     
@@ -22,14 +26,19 @@ public class ModelViewer2_GUI : MonoBehaviour
     }
     
     // Build the UI
-    public void BuildList_Models(FileInfo[]  fileList)
+    public void UpdateUI_Models(FileInfo[]  fileList)
     {
+        // Update Button appearance
+        Button_ModeLevel.GetComponent<Image>().color = Color.gray;
+        Button_ModeObjects.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
+        Button_ModeTexture.GetComponent<Image>().color = Color.gray;
+        
         // Clear all buttons
-        if (Root_Button3DC.transform.childCount > 0)
+        if (Root_ButtonList.transform.childCount > 0)
         {
-            for (int i = 0; i < Root_Button3DC.transform.childCount; i++)
+            for (int i = 0; i < Root_ButtonList.transform.childCount; i++)
             {
-                Transform childTransform = Root_Button3DC.transform.GetChild(i);
+                Transform childTransform = Root_ButtonList.transform.GetChild(i);
                 Destroy(childTransform.gameObject);
             }
         }
@@ -47,7 +56,7 @@ public class ModelViewer2_GUI : MonoBehaviour
     {
         var prettyFileName = fileName.Replace(".3DC", "");
         
-        var newButton = Instantiate(button3DC_Prefab, Root_Button3DC);
+        var newButton = Instantiate(button3DC_Prefab, Root_ButtonList);
         newButton.name = "Button_" + prettyFileName;
         
         if (newButton.TryGetComponent(out ModelViewer2_3DCButton component))
@@ -59,14 +68,19 @@ public class ModelViewer2_GUI : MonoBehaviour
     }
     
     
-    public void BuildList_Levels()
+    public void UpdateUI_Levels()
     {
+        // Update Button appearance
+        Button_ModeLevel.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
+        Button_ModeObjects.GetComponent<Image>().color = Color.gray;
+        Button_ModeTexture.GetComponent<Image>().color = Color.gray;
+        
         // Clear all buttons
-        if (Root_Button3DC.transform.childCount > 0)
+        if (Root_ButtonList.transform.childCount > 0)
         {
-            for (int i = 0; i < Root_Button3DC.transform.childCount; i++)
+            for (int i = 0; i < Root_ButtonList.transform.childCount; i++)
             {
-                Transform childTransform = Root_Button3DC.transform.GetChild(i);
+                Transform childTransform = Root_ButtonList.transform.GetChild(i);
                 Destroy(childTransform.gameObject);
             }
         }
@@ -113,7 +127,7 @@ public class ModelViewer2_GUI : MonoBehaviour
     public void SpawnButton_Level(string fileName)
     {
         
-        var newButton = Instantiate(buttonROB_Prefab, Root_Button3DC);
+        var newButton = Instantiate(buttonROB_Prefab, Root_ButtonList);
         newButton.name = "Button_" + fileName;
         
         if (newButton.TryGetComponent(out ModelViewer2_ROBButton component))
@@ -122,6 +136,26 @@ public class ModelViewer2_GUI : MonoBehaviour
             component.filename = fileName;
             component.SetButtonText(fileName + ".ROB");
         }
+    }
+    
+    public void UpdateUI_Textures()
+    {
+        // Update Button appearance
+        Button_ModeLevel.GetComponent<Image>().color = Color.gray;
+        Button_ModeObjects.GetComponent<Image>().color = Color.gray;
+        Button_ModeTexture.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
+        
+        // Clear all buttons
+        if (Root_ButtonList.transform.childCount > 0)
+        {
+            for (int i = 0; i < Root_ButtonList.transform.childCount; i++)
+            {
+                Transform childTransform = Root_ButtonList.transform.GetChild(i);
+                Destroy(childTransform.gameObject);
+            }
+        }
+        
+        // todo: Show Textures
     }
     
     // Button Signals
@@ -138,6 +172,11 @@ public class ModelViewer2_GUI : MonoBehaviour
     public void ModeButton_Textures()
     {
         modelViewer2.ViewerMode_Textures();
+        
+        // Update Button appearance
+        Button_ModeLevel.GetComponent<Image>().color = Color.gray;
+        Button_ModeObjects.GetComponent<Image>().color = Color.gray;
+        Button_ModeTexture.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
     }
     
 

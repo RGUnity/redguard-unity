@@ -102,7 +102,7 @@ public class ModelViewer2 : MonoBehaviour
         print("Using Folder " + RG3DStore.path_to_game);
         DirectoryInfo dirInfo = new DirectoryInfo(RG3DStore.path_to_game + "/fxart");
         
-        gui.BuildList_Levels();
+        gui.UpdateUI_Levels();
     }
     
     public void ViewerMode_Models()
@@ -113,12 +113,17 @@ public class ModelViewer2 : MonoBehaviour
         DirectoryInfo dirInfo = new DirectoryInfo(RG3DStore.path_to_game + "/fxart");
         
         // Ask the GUI build a list of buttons with that file list
-        gui.BuildList_Models(dirInfo.GetFiles("*.3DC"));
+        gui.UpdateUI_Models(dirInfo.GetFiles("*.3DC"));
     }
     
     public void ViewerMode_Textures()
     {
+        RG3DStore.path_to_game = redguardPath;
+        RGTexStore.path_to_game = redguardPath;
+        print("Using Folder " + RG3DStore.path_to_game);
+        DirectoryInfo dirInfo = new DirectoryInfo(RG3DStore.path_to_game + "/fxart");
         
+        gui.UpdateUI_Textures();
     }
     
     // Stupid Hardcoded ROB Loading functions
