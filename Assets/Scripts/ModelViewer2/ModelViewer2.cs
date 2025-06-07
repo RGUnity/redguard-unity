@@ -16,24 +16,24 @@ public class ModelViewer2 : MonoBehaviour
     [SerializeField] private GameObject cameraRoot;
 
     private GameObject objectRootGenerated;
-    private GameObject wldGenerated;
-    private Vector3 debugBounds;
     
     void Start()
     {
         ViewerMode_Levels();
     }
     
+    // Mode to for viewing full levels
     public void ViewerMode_Levels()
     {
         RG3DStore.path_to_game = redguardPath;
         RGTexStore.path_to_game = redguardPath;
         print("Using Folder " + RG3DStore.path_to_game);
-        DirectoryInfo dirInfo = new DirectoryInfo(RG3DStore.path_to_game + "/fxart");
         
+        // Switch the GUI to level mode
         gui.UpdateUI_Levels();
     }
     
+    // Mode to viewing individual Models
     public void ViewerMode_Models()
     {
         RG3DStore.path_to_game = redguardPath;
@@ -41,17 +41,18 @@ public class ModelViewer2 : MonoBehaviour
         print("Using Folder " + RG3DStore.path_to_game);
         DirectoryInfo dirInfo = new DirectoryInfo(RG3DStore.path_to_game + "/fxart");
         
-        // Ask the GUI build a list of buttons with that file list
+        // Switch the GUI to model mode
         gui.UpdateUI_Models(dirInfo.GetFiles("*.3DC"));
     }
     
+    // Mode to viewing textures
     public void ViewerMode_Textures()
     {
         RG3DStore.path_to_game = redguardPath;
         RGTexStore.path_to_game = redguardPath;
         print("Using Folder " + RG3DStore.path_to_game);
-        DirectoryInfo dirInfo = new DirectoryInfo(RG3DStore.path_to_game + "/fxart");
         
+        // Switch the GUI to texture mode
         gui.UpdateUI_Textures();
     }
     
@@ -63,12 +64,12 @@ public class ModelViewer2 : MonoBehaviour
         RG2Mesh.UnityData_WLD data_WLD = RG2Mesh.WLD2Mesh(filename_wld, name_col);
         
         // Build the GameObject
-        GameObject wldGenerated = new GameObject();
-        wldGenerated.name = "Terrain";
-        wldGenerated.transform.SetParent(objectRootGenerated.transform);
+        GameObject obj_wld = new GameObject();
+        obj_wld.name = "Terrain";
+        obj_wld.transform.SetParent(objectRootGenerated.transform);
         
-        wldGenerated.AddComponent<MeshFilter>().mesh = data_WLD.mesh;
-        wldGenerated.AddComponent<MeshRenderer>().SetMaterials(data_WLD.materials);
+        obj_wld.AddComponent<MeshFilter>().mesh = data_WLD.mesh;
+        obj_wld.AddComponent<MeshRenderer>().SetMaterials(data_WLD.materials);
     }
     
     // Spawns 3D or ROB objects
@@ -116,22 +117,29 @@ public class ModelViewer2 : MonoBehaviour
     public void Load3DC(string filename)
     {
         Destroy(objectRootGenerated);
-        Destroy(wldGenerated);
         
         objectRootGenerated = new GameObject();
         
         RG3DStore.LoadMeshIntermediate3DC(filename);
         add3DToScene(filename +"_", filename, "OBSERVAT", Vector3.zero, Vector3.zero);
 
+        FrameObject();
+    }
+
+    private void FrameObject()
+    {
         var bounds = GetMaxBounds(objectRootGenerated);
-        debugBounds = bounds.size;
-        
+
+        // Move camera root to the center
         cameraRoot.transform.position = bounds.center;
 
+        // Set camera distance
         float distance = bounds.size.magnitude;
         cameraRoot.transform.GetChild(0).transform.localPosition = new Vector3(0, 0, distance);
     }
     
+    
+    // Get bounding box of all spawned objects combined
     Bounds GetMaxBounds(GameObject g) {
         var renderers = g.GetComponentsInChildren<Renderer>();
         if (renderers.Length == 0) return new Bounds(g.transform.position, Vector3.zero);
@@ -142,21 +150,11 @@ public class ModelViewer2 : MonoBehaviour
         return b;
     }
     
-    // Debug Gizmos
-    private void OnDrawGizmos()
-    {
-        // Draw a wire cube outline.
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(transform.position, debugBounds);
-    }
-    
-    
     // Stupid Hardcoded ROB Loading functions
     public void LoadROB(string filename)
     {
         // Destroy last objects
         Destroy(objectRootGenerated);
-        Destroy(wldGenerated);
         
         objectRootGenerated = new GameObject();
         
@@ -329,12 +327,6 @@ public class ModelViewer2 : MonoBehaviour
                 break;
         }
         
-        var bounds = GetMaxBounds(objectRoot);
-        debugBounds = bounds.size;
-        
-        cameraRoot.transform.position = bounds.center;
-
-        float distance = bounds.size.magnitude;
-        cameraRoot.transform.GetChild(0).transform.localPosition = new Vector3(0, 0, distance);
+        FrameObject();
     }
 }
