@@ -13,85 +13,14 @@ public class ModelViewer2 : MonoBehaviour
     [SerializeField] private string redguardPath;
     [SerializeField] private ModelViewer2_GUI gui;
     [SerializeField] private GameObject objectRoot;
-    
-    // Spawns the terrain
-    public void SetModel_wld(string name_wld, string texbsi, string name_col)
-    {
-        // Load the WLD data
-        string filename_wld = new string(redguardPath + $"/maps/{name_wld}.WLD");
-        RG2Mesh.UnityData_WLD data_WLD = RG2Mesh.WLD2Mesh(filename_wld, name_col);
-        
-        // Build the GameObject
-        GameObject obj_wld = new GameObject();
-        obj_wld.name = "Terrain";
-        obj_wld.transform.SetParent(objectRoot.transform);
-        
-        obj_wld.AddComponent<MeshFilter>().mesh = data_WLD.mesh;
-        obj_wld.AddComponent<MeshRenderer>().SetMaterials(data_WLD.materials);
-    }
-    
-    // Spawns 3D or ROB objects
-    public void add3DToScene(string prefix, string name_3d, string name_pal,Vector3 position, Vector3 eulers)
-    {
-        RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(name_3d, name_pal);
+    [SerializeField] private GameObject cameraRoot;
 
-        GameObject spawned = new GameObject($"{prefix}_{name_3d}");
-        spawned.transform.SetParent(objectRoot.transform);
-        
-        MeshRenderer meshRenderer = spawned.AddComponent<MeshRenderer>();
-        MeshFilter meshFilter = spawned.AddComponent<MeshFilter>();
-
-        meshFilter.mesh = data_3D.mesh;
-        meshRenderer.SetMaterials(data_3D.materials);
-
-        spawned.transform.position = position;
-        spawned.transform.Rotate(eulers);
- 
-    }
-    void LoadRGM(string filename, string name_col)
-    {
-        List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(filename);
-        List<RGRGMStore.RGRGMData> RGM_MPOBs = RGRGMStore.LoadMPOB(filename);
-        for(int i=0;i<RGM_MPOBs.Count;i++)
-        {
-            try
-            {
-                add3DToScene($"B{i:D3}", RGM_MPOBs[i].name2, name_col, RGM_MPOBs[i].position, RGM_MPOBs[i].rotation);
-            }
-            catch(Exception ex)
-            {
-                Debug.LogWarning($"ERR: B{i:D3}: {ex.Message}");
-            }
-        }
-        for(int i=0;i<RGM_MPSOs.Count;i++)
-        {
-            add3DToScene($"S{i:D3}", RGM_MPSOs[i].name, name_col, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
-        }
-    }
-
-    public void Load3DC(string filename)
-    {
-        ClearAllModels();
-        print(filename);
-        RG3DStore.LoadMeshIntermediate3DC(filename);
-        add3DToScene(filename +"_", filename, "OBSERVAT", Vector3.zero, Vector3.zero);
-    }
-
-    private void ClearAllModels()
-    {
-        if (objectRoot.transform.childCount > 0)
-        {
-            for (int i = 0; i < objectRoot.transform.childCount; i++)
-            {
-                Transform childTransform = objectRoot.transform.GetChild(i);
-                Destroy(childTransform.gameObject);
-            }
-        }
-    }
+    private GameObject objectRootGenerated;
+    private GameObject wldGenerated;
+    private Vector3 debugBounds;
     
     void Start()
     {
-        //ViewerMode_Models();
         ViewerMode_Levels();
     }
     
@@ -126,15 +55,116 @@ public class ModelViewer2 : MonoBehaviour
         gui.UpdateUI_Textures();
     }
     
+    // Spawns the terrain
+    public void SetModel_wld(string name_wld, string texbsi, string name_col)
+    {
+        // Load the WLD data
+        string filename_wld = new string(redguardPath + $"/maps/{name_wld}.WLD");
+        RG2Mesh.UnityData_WLD data_WLD = RG2Mesh.WLD2Mesh(filename_wld, name_col);
+        
+        // Build the GameObject
+        GameObject wldGenerated = new GameObject();
+        wldGenerated.name = "Terrain";
+        wldGenerated.transform.SetParent(objectRootGenerated.transform);
+        
+        wldGenerated.AddComponent<MeshFilter>().mesh = data_WLD.mesh;
+        wldGenerated.AddComponent<MeshRenderer>().SetMaterials(data_WLD.materials);
+    }
+    
+    // Spawns 3D or ROB objects
+    public void add3DToScene(string prefix, string name_3d, string name_pal,Vector3 position, Vector3 eulers)
+    {
+        RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(name_3d, name_pal);
+
+        GameObject spawned = new GameObject($"{prefix}_{name_3d}");
+        
+        objectRootGenerated.transform.SetParent(objectRoot.transform);
+        objectRootGenerated.name = "Root_Generated_" + name_3d;
+        spawned.transform.SetParent(objectRootGenerated.transform);
+        
+        MeshRenderer meshRenderer = spawned.AddComponent<MeshRenderer>();
+        MeshFilter meshFilter = spawned.AddComponent<MeshFilter>();
+
+        meshFilter.mesh = data_3D.mesh;
+        meshRenderer.SetMaterials(data_3D.materials);
+
+        spawned.transform.position = position;
+        spawned.transform.Rotate(eulers);
+ 
+    }
+    void LoadRGM(string filename, string name_col)
+    {
+        List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(filename);
+        List<RGRGMStore.RGRGMData> RGM_MPOBs = RGRGMStore.LoadMPOB(filename);
+        for(int i=0;i<RGM_MPOBs.Count;i++)
+        {
+            try
+            {
+                add3DToScene($"B{i:D3}", RGM_MPOBs[i].name2, name_col, RGM_MPOBs[i].position, RGM_MPOBs[i].rotation);
+            }
+            catch(Exception ex)
+            {
+                Debug.LogWarning($"ERR: B{i:D3}: {ex.Message}");
+            }
+        }
+        for(int i=0;i<RGM_MPSOs.Count;i++)
+        {
+            add3DToScene($"S{i:D3}", RGM_MPSOs[i].name, name_col, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
+        }
+    }
+
+    public void Load3DC(string filename)
+    {
+        Destroy(objectRootGenerated);
+        Destroy(wldGenerated);
+        
+        objectRootGenerated = new GameObject();
+        
+        RG3DStore.LoadMeshIntermediate3DC(filename);
+        add3DToScene(filename +"_", filename, "OBSERVAT", Vector3.zero, Vector3.zero);
+
+        var bounds = GetMaxBounds(objectRootGenerated);
+        debugBounds = bounds.size;
+        
+        cameraRoot.transform.position = bounds.center;
+
+        float distance = bounds.size.magnitude;
+        cameraRoot.transform.GetChild(0).transform.localPosition = new Vector3(0, 0, distance);
+    }
+    
+    Bounds GetMaxBounds(GameObject g) {
+        var renderers = g.GetComponentsInChildren<Renderer>();
+        if (renderers.Length == 0) return new Bounds(g.transform.position, Vector3.zero);
+        var b = renderers[0].bounds;
+        foreach (Renderer r in renderers) {
+            b.Encapsulate(r.bounds);
+        }
+        return b;
+    }
+    
+    // Debug Gizmos
+    private void OnDrawGizmos()
+    {
+        // Draw a wire cube outline.
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(transform.position, debugBounds);
+    }
+    
+    
     // Stupid Hardcoded ROB Loading functions
     public void LoadROB(string filename)
     {
-        ClearAllModels();
+        // Destroy last objects
+        Destroy(objectRootGenerated);
+        Destroy(wldGenerated);
+        
+        objectRootGenerated = new GameObject();
         
         // ROBs without RGM currently dont work:
         // INVENTRY
         // MENU
         // PALATEST
+        // TEMPTEST
         
         switch (filename)
         {
@@ -198,8 +228,8 @@ public class ModelViewer2 : MonoBehaviour
                 break;
 
             case "INVENTRY":
-                RG3DStore.LoadMeshIntermediatesROB("INVENTRY");
-                LoadRGM(redguardPath + "/maps/INVENTRY.RGM", "ISLAND");
+                // RG3DStore.LoadMeshIntermediatesROB("INVENTRY");
+                // LoadRGM(redguardPath + "/maps/INVENTRY.RGM", "ISLAND");
                 break;
 
             case "ISLAND":
@@ -219,8 +249,8 @@ public class ModelViewer2 : MonoBehaviour
                 break;
 
             case "MENU":
-                RG3DStore.LoadMeshIntermediatesROB("MENU");
-                LoadRGM(redguardPath + "/maps/MENU.RGM", "ISLAND");
+                // RG3DStore.LoadMeshIntermediatesROB("MENU");
+                // LoadRGM(redguardPath + "/maps/MENU.RGM", "ISLAND");
                 break;
 
             case "MGUILD":
@@ -249,8 +279,8 @@ public class ModelViewer2 : MonoBehaviour
                 break;
 
             case "PALATEST":
-                RG3DStore.LoadMeshIntermediatesROB("PALATEST");
-                LoadRGM(redguardPath + "/maps/PALATEST.RGM", "ISLAND");
+                // RG3DStore.LoadMeshIntermediatesROB("PALATEST");
+                // LoadRGM(redguardPath + "/maps/PALATEST.RGM", "ISLAND");
                 break;
 
             case "ROLLOS":
@@ -288,9 +318,9 @@ public class ModelViewer2 : MonoBehaviour
                 LoadRGM(redguardPath + "/maps/TEMPLE.RGM", "ISLAND");
                 break;
 
-            case "TEMPEST":
-                RG3DStore.LoadMeshIntermediatesROB("TEMPEST");
-                LoadRGM(redguardPath + "/maps/TEMPEST.RGM", "ISLAND");
+            case "TEMPTEST":
+                // RG3DStore.LoadMeshIntermediatesROB("TEMPTEST");
+                // LoadRGM(redguardPath + "/maps/TEMPTEST.RGM", "ISLAND");
                 break;
 
             case "VILE":
@@ -298,7 +328,13 @@ public class ModelViewer2 : MonoBehaviour
                 LoadRGM(redguardPath + "/maps/VILE.RGM", "ISLAND");
                 break;
         }
+        
+        var bounds = GetMaxBounds(objectRoot);
+        debugBounds = bounds.size;
+        
+        cameraRoot.transform.position = bounds.center;
 
+        float distance = bounds.size.magnitude;
+        cameraRoot.transform.GetChild(0).transform.localPosition = new Vector3(0, 0, distance);
     }
-    
 }
