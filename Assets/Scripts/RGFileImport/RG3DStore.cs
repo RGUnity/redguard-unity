@@ -56,7 +56,7 @@ public static class RG3DStore
     }
     public static void LoadMeshIntermediatesROB(string ROBname)
     {
-        string filename = fxart_path + ROBname+ ".ROB";
+        string filename = path_to_game + "/fxart/" + ROBname+ ".ROB";
         RGFileImport.RGROBFile file_rob = new RGFileImport.RGROBFile();
         file_rob.LoadFile(filename);
         for(int i=0;i<file_rob.hdr.NumSegments;i++)

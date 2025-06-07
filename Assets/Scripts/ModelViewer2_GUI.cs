@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.RGFileImport;
@@ -18,7 +19,30 @@ public class ModelViewer2_GUI : MonoBehaviour
     {
         
     }
-
+    
+    // Build the UI
+    public void BuildButton3DCList(FileInfo[]  fileList)
+    {
+        foreach (var file in fileList)
+        {
+            //print(file.Name);
+            GenerateButton3DC(file.Name);
+        }
+        
+        // todo: generate other button lists
+    }
+    
+    public void BuildButtonROBList(FileInfo[]  fileList)
+    {
+        foreach (var file in fileList)
+        {
+            print(file.Name);
+            //GenerateButtonROB(file.Name);
+        }
+        
+        // todo: generate other button lists
+    }
+    
     public void GenerateButton3DC(string fileName)
     {
         var prettyFileName = fileName.Replace(".3DC", "");
@@ -30,10 +54,11 @@ public class ModelViewer2_GUI : MonoBehaviour
         {
             component.mv2_GUI = this;
             component.filename = prettyFileName;
-            component.SetButtonText(prettyFileName);
+            component.SetButtonText(fileName);
         }
     }
-
+    
+    // Simply a method to redirect the file loading process to the main modelViewer2
     public void Request3DCFile(string filename)
     {
         print(filename);

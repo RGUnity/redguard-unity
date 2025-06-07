@@ -78,21 +78,19 @@ public class ModelViewer2 : MonoBehaviour
         print("Using Folder " + RG3DStore.path_to_game);
         DirectoryInfo dirInfo = new DirectoryInfo(RG3DStore.path_to_game + "/fxart");
         
-        foreach (var file in dirInfo.GetFiles("*.3DC"))
-        {
-            print(file.Name);
-            gui.GenerateButton3DC(file.Name);
-        }
-        
+        // Ask the GUI build a list of buttons with that file list
+        gui.BuildButton3DCList(dirInfo.GetFiles("*.3DC"));
+        gui.BuildButtonROBList(dirInfo.GetFiles("*.ROB"));
+
         // Island Example
         // RG3DStore.LoadMeshIntermediatesROB("ISLAND");
         // SetModel_wld("ISLAND", "302", "ISLAND");
         // LoadRGM("./game_3dfx/maps/ISLAND.RGM", "ISLAND");
-        
+
         // Tavern Example 
         // RG3DStore.LoadMeshIntermediatesROB("TAVERN");
-        // LoadRGM("./game_3dfx/maps/TAVERN.RGM", "ISLAND");
-        
+        // LoadRGM(redguardPath + "/maps/TAVERN.RGM", "ISLAND");
+
         // Load Catacombs
         // RG3DStore.LoadMeshIntermediatesROB("CATACOMB");
         // LoadRGM("./game_3dfx/maps/CATACOMB.RGM", "CATACOMB");
@@ -100,11 +98,15 @@ public class ModelViewer2 : MonoBehaviour
         // Load 3DC
         // RG3DStore.LoadMeshIntermediate3DC("GOLMA001");
         // add3DToScene("Hey", "GOLMA001", "OBSERVAT", Vector3.zero, Vector3.zero);
-        
+
         // Load Goblin Caves
         // RG3DStore.LoadMeshIntermediatesROB("CAVERNS");
         // LoadRGM("./game_3dfx/maps/CAVERNS.RGM", "CAVETEST");
-        
+
         //Load3DC("GOLMA001");
+     
+        // Tavern Example 
+        RG3DStore.LoadMeshIntermediatesROB("INVENTRY");
+        //LoadRGM(redguardPath + "/maps/ISLAND.RGM", "ISLAND");
     }
 }
