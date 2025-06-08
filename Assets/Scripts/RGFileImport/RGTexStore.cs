@@ -48,7 +48,7 @@ public static class RGTexStore
 
                     List<Texture2D> cur_tex = GraphicsConverter.RGTextureToTexture2D(bsif.Images[i], palette);
 
-                    MaterialDict.Add(new_mat_key, new Material(Shader.Find("Legacy Shaders/Diffuse Fast")));
+                    MaterialDict.Add(new_mat_key, new Material(Shader.Find("Redguard/Diffuse")));
                     MaterialDict[new_mat_key].mainTexture = cur_tex[0];
 
                     // note that FRAME_0 does not exist, its called _MainTex or smt
@@ -64,7 +64,7 @@ public static class RGTexStore
                 // make 8x8 material from palette color
                 RGPaletteFile palette = LoadPalette(palname);
                 Texture2D cur_tex = GraphicsConverter.RGPaletteColorToTexture2D(palette, img);
-                MaterialDict.Add(mat_key, new Material(Shader.Find("Legacy Shaders/Diffuse Fast")));
+                MaterialDict.Add(mat_key, new Material(Shader.Find("Redguard/Diffuse")));
                 MaterialDict[mat_key].mainTexture = cur_tex;
 
             }
