@@ -103,7 +103,7 @@ public class ModelViewer2_Camera : MonoBehaviour
                 pos.z += Input.mouseScrollDelta.y * multiplier;
         
                 // Clamp the zoom range
-                pos.z = Mathf.Clamp(pos.z, -5000, -1);
+                pos.z = Mathf.Clamp(pos.z, -100000, -1);
         
                 // Move the camera by the new position
                 cameraRootZ.localPosition = pos;
