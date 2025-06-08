@@ -192,13 +192,14 @@ public class ModelViewer2 : MonoBehaviour
 
             case "HIDEINT":
                 RG3DStore.LoadMeshIntermediatesROB("HIDEINT");
-                LoadRGM(redguardPath + "/maps/HIDEINT.RGM", "ISLAND");
+                SetModel_wld("HIDEOUT", "302", "HIDEOUT");
+                LoadRGM(redguardPath + "/maps/HIDEINT.RGM", "HIDEOUT");
                 break;
 
             case "HIDEOUT":
                 RG3DStore.LoadMeshIntermediatesROB("HIDEOUT");
                 SetModel_wld("HIDEOUT", "302", "HIDEOUT");
-                LoadRGM(redguardPath + "/maps/HIDEOUT.RGM", "ISLAND");
+                LoadRGM(redguardPath + "/maps/HIDEOUT.RGM", "HIDEOUT");
                 break;
 
             case "INVENTRY":
