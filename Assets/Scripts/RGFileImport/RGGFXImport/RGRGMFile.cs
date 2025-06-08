@@ -48,133 +48,154 @@ size: {dataLength:X}
 		public struct RGMRAHDSection
         {
             public uint num_items;  // 4 bytes
-            public byte[] Unknown1 ;  // 3 bytes
 			public List<RGMRAHDItem> items;
 			public RGMRAHDSection(MemoryReader memoryReader, uint size)
             {
                 try
                 {
                     num_items = memoryReader.ReadUInt32();
-                    Unknown1 = memoryReader.ReadBytes(4);
-
                     items = new List<RGMRAHDItem>();
                     for(int i=0;i<(int)num_items;i++)
                     {
                         items.Add(new RGMRAHDItem(memoryReader));
                     }
+                    memoryReader.ReadUInt32(); // no idea what this one is?
                 }
                 catch(Exception ex)
                 {
                     throw new Exception($"Failed to load RGM RAHD section with error:\n{ex.Message}");
                 }
             }
-			public override string ToString()
-			{
-                string o = new String($"###################################\nRAHD Data\n###################################");
-                for(int i=0;i<items.Count;i++)
-                {
-                    o += $"\n{items[i]}";
-                }
-                o += $"\nNUM_ITEMS:: {num_items}\n";
-                o += $"\n###################################";
-				return o;
-			}
 		}
 		public struct RGMRAHDItem
 		{
-            public byte[] tmp;
-            public byte[] Unknown1;      // 4 bytes
-            public string name;          // 9 bytes
-            public short instances;      // 2 bytes
-            public byte[] Unknown2;      // 50 bytes
-            public int stringCount;      // 4 bytes
-            public byte[] Unknown3;      // 4 bytes
-            public int stringOffsetIndex;// 4 bytes
-            public int scriptLength;     // 4 bytes
-            public int scriptDataOffset; // 4 bytes
-            public int scriptPC;         // 4 bytes
-            public byte[] Unknown4;      // 28 bytes
-            public int variableCount;    // 4 bytes
-            public byte[] Unknown5;      // 4 bytes
-            public int variableOffset;   // 4 bytes
-            public byte[] Unknown6;      // 37 bytes
-                                         // total: 165 bytes
+
+            public int unknown0;
+            public int unknown1;
+            public string scriptName;
+            public int MPOBCount;
+            public int unknown2;
+
+            public int RAMNLength;
+            public int RAMNOffset;
+
+            public int RAATOffset;
+
+            public int RAANCount;
+            public int RAANLength;
+            public int RAANOffset;
+
+            public int RAGRMaxGroup;
+            public int RAGROffset;
+
+            public int unknown3;
+            public int unknown4;
+            public int unknown5;
+
+            public int RASBCount;
+            public int RASBLength;
+            public int RASBOffset;
+
+            public int RASCLength;
+            public int RASCOffset;
+            public int RASCStartAt;
+
+            public int RAHKLength;
+            public int RAHKOffset;
+
+            public int RALCCount;
+            public int RALCLength;
+            public int RALCOffset;
+
+            public int RAEXLength;
+            public int RAEXOffset;
+
+            public int RAVACount;
+            public int RAVALength;
+            public int RAVAOffset;
+
+            public int unknown6;
+            public int frameCount;
+
+            public int MPSZNormalId;
+            public int MPSZCombatId;
+            public int MPSZDeadId;
+
+            public short unknown7;
+            public short unknown8;
+            public short unknown9;
+            public short textureId;
+            public int RAVCOffset;
+
 			public RGMRAHDItem(MemoryReader memoryReader)
             {
                 try
                 {
-                    int pos = memoryReader.Position;
-                    tmp = memoryReader.ReadBytes(165);
-                    memoryReader.Seek((uint)pos ,0);
+                    unknown0 = memoryReader.ReadInt32();
+                    unknown1 = memoryReader.ReadInt32();
 
-                    Unknown1 = memoryReader.ReadBytes(4);
                     char[] name_char = memoryReader.ReadChars(9);
                     string[] name_strs = new string(name_char).Split('\0');
-                    name = name_strs[0];
-                    instances = memoryReader.ReadInt16();
-                    Unknown2 = memoryReader.ReadBytes(50);
-                    stringCount = memoryReader.ReadInt32();
-                    Unknown3 = memoryReader.ReadBytes(4);
-                    stringOffsetIndex = memoryReader.ReadInt32();
-                    scriptLength = memoryReader.ReadInt32();
-                    scriptDataOffset = memoryReader.ReadInt32();
-                    scriptPC = memoryReader.ReadInt32();
-                    Unknown4 = memoryReader.ReadBytes(28);
-                    variableCount = memoryReader.ReadInt32();
-                    Unknown5 = memoryReader.ReadBytes(4);
-                    variableOffset = memoryReader.ReadInt32();
-                    Unknown6 = memoryReader.ReadBytes(36);
+                    scriptName = name_strs[0];
+                    MPOBCount = memoryReader.ReadInt32();
+                    unknown2 = memoryReader.ReadInt32();
+
+                    RAMNLength = memoryReader.ReadInt32();
+                    RAMNOffset = memoryReader.ReadInt32();
+
+                    RAATOffset = memoryReader.ReadInt32();
+
+                    RAANCount = memoryReader.ReadInt32();
+                    RAANLength = memoryReader.ReadInt32();
+                    RAANOffset = memoryReader.ReadInt32();
+
+                    RAGRMaxGroup = memoryReader.ReadInt32();
+                    RAGROffset = memoryReader.ReadInt32();
+
+                    unknown3 = memoryReader.ReadInt32();
+                    unknown4 = memoryReader.ReadInt32();
+                    unknown5 = memoryReader.ReadInt32();
+
+                    RASBCount = memoryReader.ReadInt32();
+                    RASBLength = memoryReader.ReadInt32();
+                    RASBOffset = memoryReader.ReadInt32();
+
+                    RASCLength = memoryReader.ReadInt32();
+                    RASCOffset = memoryReader.ReadInt32();
+                    RASCStartAt = memoryReader.ReadInt32();
+
+                    RAHKLength = memoryReader.ReadInt32();
+                    RAHKOffset = memoryReader.ReadInt32();
+
+                    RALCCount = memoryReader.ReadInt32();
+                    RALCLength = memoryReader.ReadInt32();
+                    RALCOffset = memoryReader.ReadInt32();
+
+                    RAEXLength = memoryReader.ReadInt32();
+                    RAEXOffset = memoryReader.ReadInt32();
+
+                    RAVACount = memoryReader.ReadInt32();
+                    RAVALength = memoryReader.ReadInt32();
+                    RAVAOffset = memoryReader.ReadInt32();
+
+                    unknown6 = memoryReader.ReadInt32();
+                    frameCount = memoryReader.ReadInt32();
+
+                    MPSZNormalId = memoryReader.ReadInt32();
+                    MPSZCombatId = memoryReader.ReadInt32();
+                    MPSZDeadId = memoryReader.ReadInt32();
+
+                    unknown7 = memoryReader.ReadInt16();
+                    unknown8 = memoryReader.ReadInt16();
+                    unknown9 = memoryReader.ReadInt16();
+                    textureId = memoryReader.ReadInt16();
+                    RAVCOffset = memoryReader.ReadInt32();
                 }
                 catch(Exception ex)
                 {
                     throw new Exception($"Failed to load RGM RAHD item with error:\n{ex.Message}");
                 }
             }
-			public override string ToString()
-			{
-                string o1 = new string("");
-                for(int i=0;i<tmp.Length;i++)
-                {
-                    o1 += $"{tmp[i]:X2},";
-                }
-                Console.WriteLine(o1);
-
-                string o = new string("");
-                for(int i=0;i<Unknown1.Length;i++)
-                {
-                    o += $"{Unknown1[i]:X2},";
-                }
-                o += $"{name},";
-                for(int i=0;i<Unknown2.Length;i++)
-                {
-                    o += $"{Unknown2[i]:X2},";
-                }
-                o += $"{stringCount},";
-                for(int i=0;i<Unknown3.Length;i++)
-                {
-                    o += $"{Unknown3[i]:X2},";
-                }
-                o += $"{stringOffsetIndex},";
-                for(int i=0;i<Unknown4.Length;i++)
-                {
-                    o += $"{Unknown4[i]:X2},";
-                }
-                o += $"{instances:D4},";
-                o += $"{scriptLength:D4},";
-                o += $"{scriptDataOffset:D4},";
-                o += $"{scriptPC:D4},";
-                for(int i=0;i<Unknown5.Length;i++)
-                {
-                    o += $"{Unknown5[i]:X2},";
-                }
-                o += $"{variableCount:D4},";
-                for(int i=0;i<Unknown6.Length;i++)
-                {
-                    o += $"{Unknown6[i]:X2},";
-                }
-                o += $"{variableOffset:D4},";
-				return o;
-			}
 		}
 		public struct RGMRASTSection
         {
@@ -341,11 +362,12 @@ size: {dataLength:X}
 		}
 		public struct RGMMPOBItem
 		{
-			public byte[] flags;     // 6 bytes
-            public string name;      // beginning until 00
-            public string name2;     // from the end until 00
-                                     // 18 bytes combined
-            public byte hasmodel;    // 1 byte
+			public int id;     // 4 bytes
+			public byte typeId;      // 1 byte
+			public byte isActive;    // 1 byte
+            public string name;      // 9 bytes
+            public string name2;     // 9 bytes
+            public byte isStatic;    // 1 byte
             public byte unknown1;    // 1 byte
             public int  posx;        // 4 bytes
             public int  posy;        // 4 bytes
@@ -353,19 +375,28 @@ size: {dataLength:X}
             public uint  anglex;     // 4 bytes
             public uint  angley;     // 4 bytes
             public uint  anglez;     // 4 bytes
-            public byte[] unknown2;  // 16 bytes
+            public byte textureId;
+            public byte imageId;
+            public short intensity;
+            public short radius;
+            public short modelId;
+            public byte[] unknown2;  // 8 bytes
 			public RGMMPOBItem(MemoryReader memoryReader)
             {
                 try
                 {
-                    flags = memoryReader.ReadBytes(6);
+                    id = memoryReader.ReadInt32();
+                    typeId =  memoryReader.ReadByte();
+                    isActive =  memoryReader.ReadByte();
 
-                    char[] name_char = memoryReader.ReadChars(18);
+                    char[] name_char = memoryReader.ReadChars(9);
                     string[] name_strs = new string(name_char).Split('\0');
                     name = name_strs[0];
-                    name2 = name_strs[name_strs.Length-1];
+                    name_char = memoryReader.ReadChars(9);
+                    name_strs = new string(name_char).Split('\0');
+                    name2 = name_strs[0];
 
-                    hasmodel = memoryReader.ReadByte();
+                    isStatic = memoryReader.ReadByte();
                     unknown1 = memoryReader.ReadByte();
                     posx = memoryReader.ReadInt32();
                     posy = memoryReader.ReadInt32();
@@ -373,7 +404,13 @@ size: {dataLength:X}
                     anglex = memoryReader.ReadUInt32();
                     angley = memoryReader.ReadUInt32();
                     anglez = memoryReader.ReadUInt32();
-                    unknown2 = memoryReader.ReadBytes(16);
+                    short textureData = memoryReader.ReadInt16();
+                    textureId = (byte)(textureData >> 7);
+                    imageId = (byte)(textureData&127);
+                    intensity = memoryReader.ReadInt16();
+                    radius = memoryReader.ReadInt16();
+                    modelId = memoryReader.ReadInt16();
+                    unknown2 = memoryReader.ReadBytes(8);
                 }
                 catch(Exception ex)
                 {
@@ -382,13 +419,13 @@ size: {dataLength:X}
             }
 			public override string ToString()
 			{
-				return $@"{String.Join(",", flags)},{name},{String.Join(",", unknown2)}";
+				return $@"{name},{String.Join(",", unknown2)}";
 			}
 		}
 
 		public struct RGMMPSOItem
 		{
-			public byte[] flags;           //  4 bytes
+			public int id;           //  4 bytes
             public string name;            // 12 bytes
             public int posx;              //  4 bytes; increasing moves position east
             public int posy;           //  4 bytes increasing moves position up
@@ -404,7 +441,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    flags = memoryReader.ReadBytes(4);
+                    id = memoryReader.ReadInt32();
                     char[] name_char;
                     name_char = memoryReader.ReadChars(12);
                     string[] name_strs = new string(name_char).Split('\0');
@@ -469,6 +506,506 @@ size: {dataLength:X}
 				return o;
 			}
 		}
+		public struct RGMMPSZItem
+		{
+			public byte unknown;
+            public int sizeX;
+            public int sizeY;
+            public int sizeZ;
+            public int posX;
+            public int posY;
+            public int posZ;
+            public int pSizeX;
+            public int pSizeY;
+            public int pSizeZ;
+            public int mSizeX;
+            public int mSizeY;
+            public int mSizeZ;
+
+			public RGMMPSZItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    unknown = memoryReader.ReadByte();
+                    sizeX = memoryReader.ReadInt32();
+                    sizeY = memoryReader.ReadInt32();
+                    sizeZ = memoryReader.ReadInt32();
+                    posX = memoryReader.ReadInt32();
+                    posY = memoryReader.ReadInt32();
+                    posZ = memoryReader.ReadInt32();
+                    pSizeX = memoryReader.ReadInt32();
+                    pSizeY = memoryReader.ReadInt32();
+                    pSizeZ = memoryReader.ReadInt32();
+                    mSizeX = memoryReader.ReadInt32();
+                    mSizeY = memoryReader.ReadInt32();
+                    mSizeZ = memoryReader.ReadInt32();
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPSZ item with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMMPSZSection
+		{
+
+            public uint num_items;
+			public List<RGMMPSZItem> items;
+            const int MPSZItem_size = 49; // heres that magic number again
+			public RGMMPSZSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    num_items = size/MPSZItem_size;
+                    items = new List<RGMMPSZItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMMPSZItem(memoryReader));
+                    }
+
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPSZ section with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMMPMKItem
+		{
+            public int posX;
+            public int posY;
+            public int posZ;
+
+			public RGMMPMKItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    posX = memoryReader.ReadInt32();
+                    posY = memoryReader.ReadInt32();
+                    posZ = memoryReader.ReadInt32();
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPMK item with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMMPMKSection
+		{
+
+            public uint num_items;
+			public List<RGMMPMKItem> items;
+			public RGMMPMKSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    num_items = memoryReader.ReadUInt32();
+                    items = new List<RGMMPMKItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMMPMKItem(memoryReader));
+                    }
+                    // unused flags?
+                    memoryReader.ReadBytes((int)num_items);
+
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPMK section with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMMPSFItem
+		{
+            public int id;
+            public int unknown0;
+            public int posX;
+            public int posY;
+            public int posZ;
+            public byte textureId;
+            public byte imageId;
+            public short unknown1;
+
+			public RGMMPSFItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    id = memoryReader.ReadInt32();
+                    unknown0 = memoryReader.ReadInt32();
+                    posX = memoryReader.ReadInt32();
+                    posY = memoryReader.ReadInt32();
+                    posZ = memoryReader.ReadInt32();
+                    short textureData = memoryReader.ReadInt16();
+                    textureId = (byte)(textureData >> 7);
+                    imageId = (byte)(textureData&127);
+                    unknown1 = memoryReader.ReadInt16();
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPSF item with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMMPSFSection
+		{
+
+            public uint num_items;
+			public List<RGMMPSFItem> items;
+			public RGMMPSFSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    num_items = memoryReader.ReadUInt32();
+                    items = new List<RGMMPSFItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMMPSFItem(memoryReader));
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPSF section with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMMPSLItem
+		{
+            public int id;
+            public int worldId;
+            public int posX;
+            public int posY;
+            public int posZ;
+            public short radius;
+            public short intensity;
+            public short red;
+            public short green;
+            public short blue;
+            public byte[] unknown; // 12 bytes
+
+			public RGMMPSLItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    id = memoryReader.ReadInt32();
+                    worldId = memoryReader.ReadInt32();
+                    posX = memoryReader.ReadInt32();
+                    posY = memoryReader.ReadInt32();
+                    posZ = memoryReader.ReadInt32();
+                    radius = memoryReader.ReadInt16();
+                    intensity= memoryReader.ReadInt16();
+                    red = memoryReader.ReadInt16();
+                    green = memoryReader.ReadInt16();
+                    blue = memoryReader.ReadInt16();
+                    unknown = memoryReader.ReadBytes(12);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPSL item with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMMPSLSection
+		{
+
+            public uint num_items;
+			public List<RGMMPSLItem> items;
+			public RGMMPSLSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    num_items = memoryReader.ReadUInt32();
+                    items = new List<RGMMPSLItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMMPSLItem(memoryReader));
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPSL section with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMMPRPItem
+		{
+            public int id;
+            public byte unknown0;
+            public int posX;
+            public int posY;
+            public int posZ;
+            public int angleY;
+            public int type;
+            public int swing;
+            public int speed;
+            public short length;
+            public string staticModel;
+            public string ropeModel;
+            public int[] unknown1; // 28 bytes
+
+			public RGMMPRPItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    id = memoryReader.ReadInt32();
+                    unknown0 = memoryReader.ReadByte();
+                    posX = memoryReader.ReadInt32();
+                    posY = memoryReader.ReadInt32();
+                    posZ = memoryReader.ReadInt24();
+                    angleY = memoryReader.ReadInt32();
+                    type = memoryReader.ReadInt32();
+                    swing = memoryReader.ReadInt32();
+                    speed = memoryReader.ReadInt32();
+                    length = memoryReader.ReadInt16();
+
+                    char[] name_char;
+                    name_char = memoryReader.ReadChars(9);
+                    string[] name_strs = new string(name_char).Split('\0');
+                    staticModel = new string(name_strs[0]);
+
+                    name_char = memoryReader.ReadChars(9);
+                    name_strs = new string(name_char).Split('\0');
+                    ropeModel = new string(name_strs[0]);
+
+                    unknown1 = memoryReader.ReadInt32s(7);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPRP item with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMMPRPSection
+		{
+
+            public uint num_items;
+			public List<RGMMPRPItem> items;
+			public RGMMPRPSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    num_items = memoryReader.ReadUInt32();
+                    items = new List<RGMMPRPItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMMPRPItem(memoryReader));
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM MPRP section with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMRALCItem
+		{
+            public int offsetX;
+            public int offsetY;
+            public int offsetZ;
+
+			public RGMRALCItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    offsetX = memoryReader.ReadInt32();
+                    offsetY = memoryReader.ReadInt32();
+                    offsetZ = memoryReader.ReadInt32();
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RALC item with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMRALCSection
+		{
+
+            public uint num_items;
+			public List<RGMRALCItem> items;
+			public RGMRALCSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    num_items = size/12;
+                    items = new List<RGMRALCItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMRALCItem(memoryReader));
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RALC section with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMRAEXItem
+		{
+            public short grip0;
+            public short grip1;
+            public short scabbard0;
+            public short scabbard1;
+            public short unknown0;
+            public short textureId;
+            public short vVertex;
+            public short vSize;
+            public short tauntId;
+            public short unknown1;
+            public short unknown2;
+            public short unknown3;
+            public short rangeMin;
+            public short rangeIdeal;
+            public short rangeMax;
+
+			public RGMRAEXItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    grip0 = memoryReader.ReadInt16();
+                    grip1 = memoryReader.ReadInt16();
+                    scabbard0 = memoryReader.ReadInt16();
+                    scabbard1 = memoryReader.ReadInt16();
+                    unknown0 = memoryReader.ReadInt16();
+                    textureId = memoryReader.ReadInt16();
+                    vVertex = memoryReader.ReadInt16();
+                    vSize = memoryReader.ReadInt16();
+                    tauntId = memoryReader.ReadInt16();
+                    unknown1 = memoryReader.ReadInt16();
+                    unknown2 = memoryReader.ReadInt16();
+                    unknown3 = memoryReader.ReadInt16();
+                    rangeMin = memoryReader.ReadInt16();
+                    rangeIdeal = memoryReader.ReadInt16();
+                    rangeMax = memoryReader.ReadInt16();
+
+
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAEX item with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMRAEXSection
+		{
+
+            public uint num_items;
+			public List<RGMRAEXItem> items;
+			public RGMRAEXSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    num_items = size/30;
+                    items = new List<RGMRAEXItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMRAEXItem(memoryReader));
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAEX section with error:\n{ex.Message}");
+                }
+            }
+		}
+        /*
+		public struct RGMRAANItem
+		{
+            public int faceCount;
+            public byte frameCount;
+            public byte unknown0;
+            public string modelFile;
+
+			public RGMRAANItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    faceCount = memoryReader.ReadInt32();
+                    frameCount = memoryReader.ReadByte();
+                    unknown0 = memoryReader.ReadByte();
+                    modelFile = new string("");
+                    byte curc = 0x00;
+                    do
+                    {
+                        curc = memoryReader.ReadByte();
+                        modelFile += (char)curc;
+                    }
+                    while(curc != 0x00);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAAN item with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMRAANSection
+		{
+
+            public uint num_items;
+			public List<RGMRAANItem> items;
+			public RGMRAANSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    num_items = size/12;
+                    items = new List<RGMRAANItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMRAANItem(memoryReader));
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAAN section with error:\n{ex.Message}");
+                }
+            }
+		}
+        */
+		public struct RGMRAVCItem
+		{
+            public byte offsetX;
+            public byte offsetY;
+            public byte offsetZ;
+            public short vertex;
+            public int radius;
+
+			public RGMRAVCItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    offsetX = memoryReader.ReadByte();
+                    offsetY = memoryReader.ReadByte();
+                    offsetZ = memoryReader.ReadByte();
+                    vertex = memoryReader.ReadInt16();
+                    radius = memoryReader.ReadInt32();
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAVC item with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMRAVCSection
+		{
+
+            public uint num_items;
+			public List<RGMRAVCItem> items;
+			public RGMRAVCSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    num_items = size/9;
+                    items = new List<RGMRAVCItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMRAVCItem(memoryReader));
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAVC section with error:\n{ex.Message}");
+                }
+            }
+		}
+
 
 
 
@@ -479,9 +1016,22 @@ size: {dataLength:X}
         public RGMRASBSection RASB;
         public RGMRAVASection RAVA;
         public RGMRASCSection RASC;
+        //public RGMRAHKSection RAHK;
+        public RGMRALCSection RALC;
+        public RGMRAEXSection RAEX;
         public RGMRAATSection RAAT;
-        public RGMMPSOSection MPSO;
+        //public RGMRAANSection RAAN;
+        //public RGMRAGRSection RAGR;
+        //public RGMRANMSection RANM;
+        public RGMRAVCSection RAVC;
         public RGMMPOBSection MPOB;
+        public RGMMPRPSection MPRP;
+        public RGMMPSOSection MPSO;
+        public RGMMPSLSection MPSL;
+        public RGMMPSFSection MPSF;
+        public RGMMPMKSection MPMK;
+        public RGMMPSZSection MPSZ;
+        //public RGWDNMCSection WDNM;
         public long fileSize;
 
 		public void LoadFile(string filename)
@@ -518,7 +1068,9 @@ size: {dataLength:X}
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RAHD")
                     {
+                        Console.WriteLine($"AT: {memoryReader.Position:X}");
                         RAHD = new RGMRAHDSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                        Console.WriteLine($"END: {memoryReader.Position:X}");
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RAST")
                     {
@@ -548,6 +1100,45 @@ size: {dataLength:X}
                     {
                         MPSO = new RGMMPSOSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
+                    else if(Sections[Sections.Count-1].sectionName == "MPSZ")
+                    {
+                        MPSZ = new RGMMPSZSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "MPMK")
+                    {
+                        MPMK = new RGMMPMKSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "MPSF")
+                    {
+                        MPSF = new RGMMPSFSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "MPSL")
+                    {
+                        MPSL = new RGMMPSLSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "MPRP")
+                    {
+                        MPRP = new RGMMPRPSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "RALC")
+                    {
+                        RALC = new RGMRALCSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "RAEX")
+                    {
+                        RAEX = new RGMRAEXSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+                    /*
+                    else if(Sections[Sections.Count-1].sectionName == "RAAN")
+                    {
+                        RAAN = new RGMRAANSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+                    */
+                    else if(Sections[Sections.Count-1].sectionName == "RAVC")
+                    {
+                        RAVC = new RGMRAVCSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+ 
                     else
                     {
                         memoryReader.Seek(Sections[Sections.Count-1].dataLength, (uint)memoryReader.Position);

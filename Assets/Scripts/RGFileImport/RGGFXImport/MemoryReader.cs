@@ -35,6 +35,23 @@ namespace RGFileImport
             Position+=4;
             return o;
         }
+        public int ReadInt24()
+        {
+            
+            if(Position+3 > Length)
+                throw new Exception($"MemoryReader: read address 0x{Position:X} + {4} is greater than buffer length 0x{Length:X}");
+
+            List<byte> b = new List<byte>();
+            b.Add((byte)0x00);
+            for(int i=0;i<3;i++)
+            {
+                b.Add((byte)buffer[Position]);
+                Position+=1;
+            }
+            int o = BitConverter.ToInt32(b.ToArray(), 0);
+            return o;
+        }
+
         public byte ReadByte()
         {
             if(Position+1 > Length)

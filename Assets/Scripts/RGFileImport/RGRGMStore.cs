@@ -61,7 +61,7 @@ public static class RGRGMStore
         List<RGRGMData> data_out = new List<RGRGMData>();
         for(int i=0;i<filergm.MPOB.items.Count;i++)
         {
-            if(filergm.MPOB.items[i].hasmodel == 1)
+            if(filergm.MPOB.items[i].isStatic == 1)
             {
                 try{
                     float posx =  ((float)filergm.MPOB.items[i].posx)*RGM_MPOB_SCALE;

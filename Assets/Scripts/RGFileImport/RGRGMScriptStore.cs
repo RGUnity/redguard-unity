@@ -40,17 +40,17 @@ public bool TST_IFFLIP = false;
         {
             byte[] tmp_arr;
             scriptIndex = script_i;
-            scriptName = RAHD.name;
+            scriptName = RAHD.scriptName;
             scriptStrings = new List<string>();
             scriptVariables = new List<int>();
             scriptAttributes = new List<byte>();
 
-            scriptBytes = new byte[RAHD.scriptLength];
-            Array.Copy(RASC.scripts, RAHD.scriptDataOffset, scriptBytes, 0, RAHD.scriptLength);
+            scriptBytes = new byte[RAHD.RASCLength];
+            Array.Copy(RASC.scripts, RAHD.RASCOffset, scriptBytes, 0, RAHD.RASCLength);
 
-            for(int i=0;i<RAHD.stringCount;i++)
+            for(int i=0;i<RAHD.RASBCount;i++)
             {
-                int ofs = RASB.offsets[(RAHD.stringOffsetIndex/4)+i];
+                int ofs = RASB.offsets[(RAHD.RASBOffset/4)+i];
                 int end = Array.IndexOf(RAST.text, '\0', ofs);
                 char[] tmp_char_arr = new char[end-ofs];
 
@@ -58,12 +58,12 @@ public bool TST_IFFLIP = false;
                 scriptStrings.Add(new string(tmp_char_arr));
             }
 
-            for(int i=0;i<RAHD.variableCount;i++)
+            for(int i=0;i<RAHD.RAVACount;i++)
             {
-                if(RAHD.variableCount > 0)
+                if(RAHD.RAVACount> 0)
                 {
-                    int[] tmp_int_arr = new int[RAHD.variableCount];
-                    Array.Copy(RAVA.data, RAHD.variableOffset/4, tmp_int_arr, 0, RAHD.variableCount);
+                    int[] tmp_int_arr = new int[RAHD.RAVACount];
+                    Array.Copy(RAVA.data, RAHD.RAVAOffset/4, tmp_int_arr, 0, RAHD.RAVACount);
                     scriptVariables = new List<int>(tmp_int_arr);
                 }
             }
@@ -74,7 +74,7 @@ public bool TST_IFFLIP = false;
 
             memoryReader = new MemoryReader(scriptBytes);
 
-            scriptPC = RAHD.scriptPC;
+            scriptPC = RAHD.RASCStartAt;
             callstack = new Stack<int>();
         }
 // START DEBUG FUNCS
