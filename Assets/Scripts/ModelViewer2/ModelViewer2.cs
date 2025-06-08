@@ -13,11 +13,13 @@ public class ModelViewer2 : MonoBehaviour
     [SerializeField] private GameObject objectRoot;
     [SerializeField] private GameObject cameraRoot;
     [SerializeField] private float scrollSpeed = 5;
+    [SerializeField] private Shader shader;
 
     private GameObject objectRootGenerated;
 
     void Start()
     {
+        RGTexStore.shader = shader;
         ViewerMode_Levels();
     }
 
