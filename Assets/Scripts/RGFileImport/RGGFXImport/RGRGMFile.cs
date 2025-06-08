@@ -10,7 +10,7 @@ namespace RGFileImport
 		public struct RGMSectionHeader
 		{
 			public string sectionName;
-            public uint SectionSize;
+            public uint dataLength;
 
 			public RGMSectionHeader(MemoryReader memoryReader)
             {
@@ -23,11 +23,11 @@ namespace RGFileImport
 
                     if(sectionName == "END ") // yeah theres a space there
                     {
-                        SectionSize = 0;
+                        dataLength = 0;
                     }
                     else
                     {
-                        SectionSize = MemoryReader.ReverseBytes(memoryReader.ReadUInt32());
+                        dataLength = MemoryReader.ReverseBytes(memoryReader.ReadUInt32());
                     }
                 }
                 catch(Exception ex)
@@ -41,7 +41,7 @@ namespace RGFileImport
 RGMHeader
 ###################################
 name: {sectionName}
-size: {SectionSize:X}
+size: {dataLength:X}
 ###################################";
 			}
 		}
@@ -518,39 +518,39 @@ size: {SectionSize:X}
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RAHD")
                     {
-                        RAHD = new RGMRAHDSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                        RAHD = new RGMRAHDSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RAST")
                     {
-                        RAST = new RGMRASTSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                        RAST = new RGMRASTSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RASB")
                     {
-                        RASB = new RGMRASBSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                        RASB = new RGMRASBSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RAVA")
                     {
-                        RAVA = new RGMRAVASection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                        RAVA = new RGMRAVASection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RASC")
                     {
-                        RASC = new RGMRASCSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                        RASC = new RGMRASCSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RAAT")
                     {
-                        RAAT = new RGMRAATSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                        RAAT = new RGMRAATSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
                     else if(Sections[Sections.Count-1].sectionName == "MPOB")
                     {
-                        MPOB = new RGMMPOBSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                        MPOB = new RGMMPOBSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
                     else if(Sections[Sections.Count-1].sectionName == "MPSO")
                     {
-                        MPSO = new RGMMPSOSection(memoryReader, Sections[Sections.Count-1].SectionSize);
+                        MPSO = new RGMMPSOSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
                     else
                     {
-                        memoryReader.Seek(Sections[Sections.Count-1].SectionSize, (uint)memoryReader.Position);
+                        memoryReader.Seek(Sections[Sections.Count-1].dataLength, (uint)memoryReader.Position);
                     }
                 }
             }

@@ -6,7 +6,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
 {
     public class GraphicsConverter
     {
-        public static Texture2D RGPaletteColorToTexture2D(RGPaletteFile palette, int colorid)
+        public static Texture2D RGPaletteColorToTexture2D(RGCOLFile palette, int colorid)
         {
             int width = 8;
             int height = 8;
@@ -26,7 +26,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
             texture.Apply();
             return texture;
         }
-        public static List<List<Texture2D>> RGTEXBSIToTexture2D(RGTEXBSIFile texbsi, RGPaletteFile palette)
+        public static List<List<Texture2D>> RGTEXBSIToTexture2D(RGTEXBSIFile texbsi, RGCOLFile palette)
         {
             List<List<Texture2D>> textures = new List<List<Texture2D>>();
             for (int i=0; i<texbsi.images.Count;i++)
@@ -36,7 +36,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
 
             return textures;
         }
-        public static List<Texture2D> RGBSIToTexture2D(RGBSIFile bsi, RGPaletteFile palette)
+        public static List<Texture2D> RGBSIToTexture2D(RGBSIFile bsi, RGCOLFile palette)
         {
             int width = (int)bsi.BHDR.width;
             int height = (int)bsi.BHDR.height;

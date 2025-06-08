@@ -11,17 +11,17 @@ public static class RGTexStore
     // PAL/TEXBSI#/IMG#
     // PAL/-1/COL#
     static Dictionary<string, Material> MaterialDict;
-    static Dictionary<string, RGPaletteFile> PaletteDict;
+    static Dictionary<string, RGCOLFile> PaletteDict;
     static Dictionary<string, RGTEXBSIFile> BSIFDict;
 
-    public static string path_to_game;
+    public static string path_to_game = "./game_3dfx";
     static string fxart_path;
 
 
     static RGTexStore()
     {
         MaterialDict = new Dictionary<string, Material>();
-        PaletteDict = new Dictionary<string, RGPaletteFile>();
+        PaletteDict = new Dictionary<string, RGCOLFile>();
         BSIFDict = new Dictionary<string, RGTEXBSIFile>();
     }
 
@@ -40,7 +40,7 @@ public static class RGTexStore
             if(texbsi >= 0)
             {
                 RGTEXBSIFile bsif = LoadTEXBSI(texbsi);
-                RGPaletteFile palette = LoadPalette(palname);
+                RGCOLFile palette = LoadPalette(palname);
 
                 List<Texture2D>[] tex_lst_sorted = new List<Texture2D>[bsif.images.Count];
                 for(int i =0;i<bsif.images.Count;i++)
@@ -63,7 +63,7 @@ public static class RGTexStore
             else
             {
                 // make 8x8 material from palette color
-                RGPaletteFile palette = LoadPalette(palname);
+                RGCOLFile palette = LoadPalette(palname);
                 Texture2D cur_tex = GraphicsConverter.RGPaletteColorToTexture2D(palette, img);
                 MaterialDict.Add(mat_key, new Material(Shader.Find("Legacy Shaders/Diffuse Fast")));
                 MaterialDict[mat_key].mainTexture = cur_tex;
@@ -85,7 +85,7 @@ public static class RGTexStore
         else
         {
             RGBSIFile bsif = LoadBSI(bsi);
-            RGPaletteFile palette = LoadPalette(palname);
+            RGCOLFile palette = LoadPalette(palname);
 
             string new_mat_key = $"{palname}/{bsi}/{000}";
             List<Texture2D> cur_tex = GraphicsConverter.RGBSIToTexture2D(bsif, palette);
@@ -123,7 +123,7 @@ public static class RGTexStore
         string path = new string(fxart_path + bsiname + ".BSI");
         RGFileImport.RGBSIFile bsi = new RGFileImport.RGBSIFile();
         bsi.LoadFile(path);
-        RGPaletteFile pal = LoadPalette("SKY");
+        RGCOLFile pal = LoadPalette("SKY");
         List<Texture2D> cur_tex = GraphicsConverter.RGBSIToTexture2D(bsi, pal);
 
         Material mat = new Material(Shader.Find("Legacy Shaders/Diffuse Fast"));
@@ -153,18 +153,18 @@ public static class RGTexStore
             return BSIFDict[texname];
         }
     }
-    private static RGPaletteFile LoadPalette(string palname)
+    private static RGCOLFile LoadPalette(string palname)
     {
         fxart_path = path_to_game + "/fxart/";
         
-        RGPaletteFile o;
+        RGCOLFile o;
         if(PaletteDict.TryGetValue(palname, out o))
         {
             return o;
         }
         else
         {
-            PaletteDict.Add(palname, new RGPaletteFile());
+            PaletteDict.Add(palname, new RGCOLFile());
             PaletteDict[palname].LoadFile(fxart_path + palname + ".COL");
             return PaletteDict[palname];
         }

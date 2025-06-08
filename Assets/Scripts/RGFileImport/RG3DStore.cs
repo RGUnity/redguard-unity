@@ -26,8 +26,8 @@ public static class RG3DStore
 
     static Dictionary<string, Mesh3D_intermediate> MeshIntermediateDict; // key: meshname
 
-    //public static string path_to_game = "./game_3dfx";
-    public static string path_to_game;
+    public static string path_to_game = "./game_3dfx";
+//    public static string path_to_game;
     static string fxart_path = path_to_game + "/fxart/";
 
 
