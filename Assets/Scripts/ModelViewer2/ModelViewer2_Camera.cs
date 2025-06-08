@@ -10,21 +10,18 @@ public class ModelViewer2_Camera : MonoBehaviour
     [SerializeField] private Transform cameraRootZ;
     [SerializeField] private float rotationSpeed = 2;
     [SerializeField] private float zoomSpeed = 5;
-    [SerializeField] public bool useFlyMode = false;
+    [SerializeField] public bool useFlyMode;
     
-    private bool dragStartedInViewport = false;
+    private bool dragStartedInViewport;
     private float currentRotX = 160;
     private float currentRotY = 15;
 
     // Fly Camera settings
-    private float sensitivity = 1;
+    private float sensitivity = 8;
     private float speed_slow = 25;
     private float speed_reg = 50;
     private float speed_fast = 100;
     private float speed_cur;
-    //private Vector3 lastPosition;
-    //private Quaternion lastRotation;
-    
     
     // Did you know? Update is called once per frame!
     private void Update()
@@ -113,20 +110,6 @@ public class ModelViewer2_Camera : MonoBehaviour
             }
         }
     }
-
-    // public void StartFlyMode()
-    // {
-    //     lastPosition = _camera.localPosition;
-    //     lastRotation = _camera.localRotation;
-    //     useFlyMode = true;
-    // }
-    //
-    // public void StopFlyMode()
-    // {
-    //     _camera.localPosition = lastPosition;
-    //     _camera.localRotation = lastRotation;
-    //     useFlyMode = false;
-    // }
     
     public void FrameObject(GameObject target)
     {

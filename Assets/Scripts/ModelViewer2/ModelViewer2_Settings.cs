@@ -1,25 +1,31 @@
+using System;
+using TMPro;
 using UnityEngine;
 
 public class ModelViewer2_Settings : MonoBehaviour
 {
     [SerializeField] private ModelViewer2 mv2;
-    [SerializeField] private ModelViewer2_GUI mv2_gui;
+    [SerializeField] private ModelViewer2_GUI gui;
     [SerializeField] private ModelViewer2_Camera mv2_camera;
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public string redguardPath;
+
+    private void Awake()
     {
+        redguardPath = gui.pathInput.text;
         
+        // here is a good place to overwrite the path if you have to
+        //redguardPath = "c:/coolfolder";
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    
     public void ToggleFlyMode(bool toggle)
     {
         mv2_camera.useFlyMode = toggle;
+    }
+
+    public void ReloadFiles()
+    {
+        redguardPath = gui.pathInput.text;
+        mv2.ViewerMode_Levels();
     }
 }

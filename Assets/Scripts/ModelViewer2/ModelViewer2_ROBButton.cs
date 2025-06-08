@@ -10,18 +10,7 @@ public class ModelViewer2_ROBButton : MonoBehaviour
     public ModelViewer2_GUI mv2_GUI;
     public string filename;
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    
     public void OnClick()
     {
         mv2_GUI.RequestROBFile(filename);
