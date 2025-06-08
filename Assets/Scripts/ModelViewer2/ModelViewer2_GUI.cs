@@ -14,25 +14,12 @@ public class ModelViewer2_GUI : MonoBehaviour
     [SerializeField] private RectTransform root_ButtonList;
     [SerializeField] private GameObject button3DC_Prefab;
     [SerializeField] private GameObject buttonROB_Prefab;
-    
-    void Start()
+    [SerializeField] private GameObject errorPopup_Path;
+    [SerializeField] public TMP_InputField pathInput;
+
+
+    public void ClearButtonList()
     {
-        
-    }
-    
-    void Update()
-    {
-        
-    }
-    
-    // Build the UI
-    public void UpdateUI_Models(FileInfo[]  fileList)
-    {
-        // Update Button appearance
-        button_ModeLevel.GetComponent<Image>().color = Color.gray;
-        button_ModeObjects.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
-        button_ModeTexture.GetComponent<Image>().color = Color.gray;
-        
         // Clear all buttons
         if (root_ButtonList.transform.childCount > 0)
         {
@@ -42,6 +29,17 @@ public class ModelViewer2_GUI : MonoBehaviour
                 Destroy(childTransform.gameObject);
             }
         }
+    }
+    
+    // Build the UI
+    public void UpdateUI_Models(FileInfo[]  fileList)
+    {
+        // Update Button appearance
+        button_ModeLevel.GetComponent<Image>().color = Color.gray;
+        button_ModeObjects.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
+        button_ModeTexture.GetComponent<Image>().color = Color.gray;
+
+        ClearButtonList();
         
         foreach (var file in fileList)
         {
@@ -74,16 +72,8 @@ public class ModelViewer2_GUI : MonoBehaviour
         button_ModeLevel.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
         button_ModeObjects.GetComponent<Image>().color = Color.gray;
         button_ModeTexture.GetComponent<Image>().color = Color.gray;
-        
-        // Clear all buttons
-        if (root_ButtonList.transform.childCount > 0)
-        {
-            for (int i = 0; i < root_ButtonList.transform.childCount; i++)
-            {
-                Transform childTransform = root_ButtonList.transform.GetChild(i);
-                Destroy(childTransform.gameObject);
-            }
-        }
+
+        ClearButtonList();
         
         // ROBs without RGM currently dont work:
         // INVENTRY
@@ -145,17 +135,9 @@ public class ModelViewer2_GUI : MonoBehaviour
         button_ModeLevel.GetComponent<Image>().color = Color.gray;
         button_ModeObjects.GetComponent<Image>().color = Color.gray;
         button_ModeTexture.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
-        
-        // Clear all buttons
-        if (root_ButtonList.transform.childCount > 0)
-        {
-            for (int i = 0; i < root_ButtonList.transform.childCount; i++)
-            {
-                Transform childTransform = root_ButtonList.transform.GetChild(i);
-                Destroy(childTransform.gameObject);
-            }
-        }
-        
+
+        ClearButtonList();
+
         // todo: Show Textures
     }
     
@@ -193,5 +175,18 @@ public class ModelViewer2_GUI : MonoBehaviour
     {
         print("Requesting ROB file: " + filename);
         modelViewer2.LoadROB(filename);
+    }
+
+    public void PathErrorMode(bool toggle)
+    {
+        errorPopup_Path.SetActive(toggle);
+        if (toggle)
+        {
+            pathInput.GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            pathInput.GetComponent<Image>().color = Color.white;
+        }
     }
 }
