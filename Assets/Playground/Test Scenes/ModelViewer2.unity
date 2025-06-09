@@ -232,7 +232,7 @@ GameObject:
   m_Component:
   - component: {fileID: 86303903}
   m_Layer: 0
-  m_Name: 3D Viewer
+  m_Name: 3D Objects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -250,8 +250,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2049337811}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &94432497
@@ -515,7 +514,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: C:\Program Files (x86)\GOG Galaxy\Games\Redguard\Redguard
+  m_Text: 
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -2734,7 +2733,6 @@ MonoBehaviour:
   mv2: {fileID: 1065159419}
   gui: {fileID: 189839338}
   mv2_camera: {fileID: 1516451609}
-  redguardPath: 
 --- !u!4 &847651789
 Transform:
   m_ObjectHideFlags: 0
@@ -3270,10 +3268,11 @@ MonoBehaviour:
   settings: {fileID: 847651788}
   gui: {fileID: 189839338}
   mv2Cam: {fileID: 1516451609}
-  objectRoot: {fileID: 2049337810}
+  objectRoot: {fileID: 86303902}
   cameraRoot: {fileID: 1516451608}
   scrollSpeed: 5
   shader: {fileID: 1, guid: 0000000000000000f000000000000000, type: 0}
+  pathOverride: E:\Games\Redguard\Redguardll
 --- !u!1 &1096314941
 GameObject:
   m_ObjectHideFlags: 0
@@ -5298,7 +5297,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "C:\\Program Files (x86)\\GOG Galaxy\\Games\\Redguard\\Redguard\u200B"
+  m_text: "\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6094,37 +6093,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5327565236157980118, guid: 052fcb6b449e8af42a158667b4921833, type: 3}
   m_PrefabInstance: {fileID: 2006989295}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2049337810
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2049337811}
-  m_Layer: 0
-  m_Name: 3D Object Root
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2049337811
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2049337810}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 86303903}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2050248995
 GameObject:
   m_ObjectHideFlags: 0
@@ -6288,7 +6256,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2085317768}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
