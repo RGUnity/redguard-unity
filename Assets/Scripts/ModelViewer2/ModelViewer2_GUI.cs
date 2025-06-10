@@ -162,19 +162,17 @@ public class ModelViewer2_GUI : MonoBehaviour
         button_ModeTexture.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
     }
     
-
-    
     // Redirected Button Signals
     public void Request3DCFile(string filename)
     {
         print("Requesting 3DC file: " + filename);
-        modelViewer2.Load3DC(filename);
+        modelViewer2.Spawn3DC(filename);
     }
     
     public void RequestROBFile(string filename)
     {
         print("Requesting ROB file: " + filename);
-        modelViewer2.LoadROB(filename);
+        modelViewer2.SpawnArea(filename);
     }
 
     public void PathErrorMode(bool toggle)

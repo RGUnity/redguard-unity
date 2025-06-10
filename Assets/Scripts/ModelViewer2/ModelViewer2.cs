@@ -14,12 +14,24 @@ public class ModelViewer2 : MonoBehaviour
     [SerializeField] private GameObject cameraRoot;
     [SerializeField] private float scrollSpeed = 5;
     [SerializeField] private Shader shader;
+    [SerializeField] private string pathOverride;
 
-    private GameObject objectRootGenerated;
+    private GameObject _objectRootGenerated;
 
     void Start()
     {
         RGTexStore.shader = shader;
+
+        // if a path override is set, use that
+        if (pathOverride.Length > 0)
+        {
+            ModelLoader.RedguardPath = pathOverride;
+        }
+
+        // Show the default path
+        gui.pathInput.text = ModelLoader.RedguardPath;
+        
+        // Start in Viewer Mode
         ViewerMode_Levels();
     }
 
@@ -27,13 +39,13 @@ public class ModelViewer2 : MonoBehaviour
     {
         try
         {
-            var dirInfo = new DirectoryInfo(settings.redguardPath);
+            var dirInfo = new DirectoryInfo(ModelLoader.RedguardPath);
 
             if (dirInfo.Exists)
             {
-                print("Using Folder " + settings.redguardPath);
-                RG3DStore.path_to_game = settings.redguardPath;
-                RGTexStore.path_to_game = settings.redguardPath;
+                print("Using Folder " + ModelLoader.RedguardPath);
+                RG3DStore.path_to_game = ModelLoader.RedguardPath;
+                RGTexStore.path_to_game = ModelLoader.RedguardPath;
 
                 // Switch the GUI to level mode
                 gui.PathErrorMode(false);
@@ -42,10 +54,9 @@ public class ModelViewer2 : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Folder does not exist: " + settings.redguardPath);
+                Debug.LogWarning("Folder does not exist: " + ModelLoader.RedguardPath);
                 gui.ClearButtonList();
                 gui.PathErrorMode(true);
-                
             }
         }
         catch (Exception e)
@@ -54,7 +65,6 @@ public class ModelViewer2 : MonoBehaviour
             gui.PathErrorMode(true);
             throw;
         }
-
         return false;
     }
     
@@ -73,7 +83,7 @@ public class ModelViewer2 : MonoBehaviour
     {
         if (IsPathValid())
         {
-            DirectoryInfo dirInfo = new DirectoryInfo(settings.redguardPath + "/fxart");
+            DirectoryInfo dirInfo = new DirectoryInfo(ModelLoader.RedguardPath + "/fxart");
         
             // Switch the GUI to model mode
             gui.UpdateUI_Models(dirInfo.GetFiles("*.3DC"));
@@ -89,257 +99,38 @@ public class ModelViewer2 : MonoBehaviour
             gui.UpdateUI_Textures();
         }
     }
-    
-    // Spawns the terrain
-    public void SetModel_wld(string name_wld, string texbsi, string name_col)
+
+    public void Spawn3DC(string filename)
     {
-        // Load the WLD data
-        string filename_wld = new string(settings.redguardPath + $"/maps/{name_wld}.WLD");
-        RG2Mesh.UnityData_WLD data_WLD = RG2Mesh.WLD2Mesh(filename_wld, name_col);
+        // objectRootGenerated is simply a new GameObject that makes deleting objects easier
+        Destroy(_objectRootGenerated);
+        _objectRootGenerated = new GameObject();
+        _objectRootGenerated.transform.SetParent(objectRoot.transform);
+        _objectRootGenerated.name = filename + "_" + _objectRootGenerated.GetInstanceID();
         
-        // Build the GameObject
-        GameObject obj_wld = new GameObject();
-        obj_wld.name = "Terrain";
-        obj_wld.transform.SetParent(objectRootGenerated.transform);
-        
-        obj_wld.AddComponent<MeshFilter>().mesh = data_WLD.mesh;
-        obj_wld.AddComponent<MeshRenderer>().SetMaterials(data_WLD.materials);
-    }
-    
-    // Spawns 3D or ROB objects
-    public void add3DToScene(string prefix, string name_3d, string name_pal,Vector3 position, Vector3 eulers)
-    {
-        RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(name_3d, name_pal);
+        // Create the object and parent it under the root
+        GameObject obj = ModelLoader.Load3DC(filename);
+        obj.transform.SetParent(_objectRootGenerated.transform);
 
-        GameObject spawned = new GameObject($"{prefix}_{name_3d}");
-        
-        objectRootGenerated.transform.SetParent(objectRoot.transform);
-        objectRootGenerated.name = "Root_Generated_" + name_3d;
-        spawned.transform.SetParent(objectRootGenerated.transform);
-        
-        MeshRenderer meshRenderer = spawned.AddComponent<MeshRenderer>();
-        MeshFilter meshFilter = spawned.AddComponent<MeshFilter>();
-
-        meshFilter.mesh = data_3D.mesh;
-        meshRenderer.SetMaterials(data_3D.materials);
-
-        spawned.transform.position = position;
-        spawned.transform.Rotate(eulers);
- 
-    }
-    void LoadRGM(string filename, string name_col)
-    {
-        List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(filename);
-        List<RGRGMStore.RGRGMData> RGM_MPOBs = RGRGMStore.LoadMPOB(filename);
-        for(int i=0;i<RGM_MPOBs.Count;i++)
-        {
-            try
-            {
-                add3DToScene($"B{i:D3}", RGM_MPOBs[i].name2, name_col, RGM_MPOBs[i].position, RGM_MPOBs[i].rotation);
-            }
-            catch(Exception ex)
-            {
-                Debug.LogWarning($"ERR: B{i:D3}: {ex.Message}");
-            }
-        }
-        for(int i=0;i<RGM_MPSOs.Count;i++)
-        {
-            add3DToScene($"S{i:D3}", RGM_MPSOs[i].name, name_col, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
-        }
-    }
-
-    public void Load3DC(string filename)
-    {
-        Destroy(objectRootGenerated);
-        
-        objectRootGenerated = new GameObject();
-        
-        RG3DStore.LoadMeshIntermediate3DC(filename);
-        add3DToScene(filename +"_", filename, "OBSERVAT", Vector3.zero, Vector3.zero);
-
-        mv2Cam.FrameObject(objectRootGenerated);
+        mv2Cam.FrameObject(_objectRootGenerated);
     }
     
     // Stupid Hardcoded ROB Loading functions
-    public void LoadROB(string filename)
+    public void SpawnArea(string filename)
     {
-        // Destroy last objects
-        Destroy(objectRootGenerated);
-        
-        objectRootGenerated = new GameObject();
-        
-        // ROBs without RGM currently dont work:
-        // INVENTRY
-        // MENU
-        // PALATEST
-        // TEMPTEST
-        
-        switch (filename)
+        // objectRootGenerated is simply a new GameObject that makes deleting objects easier
+        Destroy(_objectRootGenerated);
+        _objectRootGenerated = new GameObject();
+        _objectRootGenerated.transform.SetParent(objectRoot.transform);
+        _objectRootGenerated.name = filename + "_" + _objectRootGenerated.GetInstanceID();
+
+        // Create all objects of that area and parent them under the root
+        List<GameObject> areaObjects = ModelLoader.LoadArea(filename);
+        foreach (var obj in areaObjects)
         {
-            default:
-                break;
-
-            case "BELLTOWR":
-                RG3DStore.LoadMeshIntermediatesROB("BELLTOWR");
-                LoadRGM(settings.redguardPath + "/maps/BELLTOWR.RGM", "ISLAND");
-                break;
-
-            case "BRENNANS":
-                RG3DStore.LoadMeshIntermediatesROB("BRENNANS");
-                LoadRGM(settings.redguardPath + "/maps/BRENNANS.RGM", "ISLAND");
-                break;
-
-            case "CARTOGR":
-                RG3DStore.LoadMeshIntermediatesROB("CARTOGR");
-                LoadRGM(settings.redguardPath + "/maps/CARTOGR.RGM", "ISLAND");
-                break;
-
-            case "CATACOMB":
-                RG3DStore.LoadMeshIntermediatesROB("CATACOMB");
-                LoadRGM(settings.redguardPath + "/maps/CATACOMB.RGM", "ISLAND");
-                break;
-
-            case "CAVERNS":
-                RG3DStore.LoadMeshIntermediatesROB("CAVERNS");
-                LoadRGM(settings.redguardPath + "/maps/CAVERNS.RGM", "ISLAND");
-                break;
-
-            case "DRINT":
-                RG3DStore.LoadMeshIntermediatesROB("DRINT");
-                LoadRGM(settings.redguardPath + "/maps/DRINT.RGM", "ISLAND");
-                break;
-
-            case "EXTPALAC":
-                RG3DStore.LoadMeshIntermediatesROB("EXTPALAC");
-                SetModel_wld("ISLAND", "302", "ISLAND");
-                LoadRGM(settings.redguardPath + "/maps/EXTPALAC.RGM", "ISLAND");
-                break;
-
-            case "GERRICKS":
-                RG3DStore.LoadMeshIntermediatesROB("GERRICKS");
-                LoadRGM(settings.redguardPath + "/maps/GERRICKS.RGM", "ISLAND");
-                break;
-
-            case "HARBOTWR":
-                RG3DStore.LoadMeshIntermediatesROB("HARBTOWR");
-                LoadRGM(settings.redguardPath + "/maps/HARBTOWR.RGM", "ISLAND");
-                break;
-
-            case "HIDEINT":
-                RG3DStore.LoadMeshIntermediatesROB("HIDEINT");
-                SetModel_wld("HIDEOUT", "302", "HIDEOUT");
-                LoadRGM(settings.redguardPath + "/maps/HIDEINT.RGM", "HIDEOUT");
-                break;
-
-            case "HIDEOUT":
-                RG3DStore.LoadMeshIntermediatesROB("HIDEOUT");
-                SetModel_wld("HIDEOUT", "302", "HIDEOUT");
-                LoadRGM(settings.redguardPath + "/maps/HIDEOUT.RGM", "HIDEOUT");
-                break;
-
-            case "INVENTRY":
-                // RG3DStore.LoadMeshIntermediatesROB("INVENTRY");
-                // LoadRGM(settings.redguardPath + "/maps/INVENTRY.RGM", "ISLAND");
-                break;
-
-            case "ISLAND":
-                RG3DStore.LoadMeshIntermediatesROB("ISLAND");
-                SetModel_wld("ISLAND", "302", "ISLAND");
-                LoadRGM(settings.redguardPath + "/maps/ISLAND.RGM", "ISLAND");
-                break;
-
-            case "JAILINT":
-                RG3DStore.LoadMeshIntermediatesROB("JAILINT");
-                LoadRGM(settings.redguardPath + "/maps/JAILINT.RGM", "ISLAND");
-                break;
-
-            case "JFFERS":
-                RG3DStore.LoadMeshIntermediatesROB("JFFERS");
-                LoadRGM(settings.redguardPath + "/maps/JFFERS.RGM", "ISLAND");
-                break;
-
-            case "MENU":
-                // RG3DStore.LoadMeshIntermediatesROB("MENU");
-                // LoadRGM(settings.redguardPath + "/maps/MENU.RGM", "ISLAND");
-                break;
-
-            case "MGUILD":
-                RG3DStore.LoadMeshIntermediatesROB("MGUILD");
-                LoadRGM(settings.redguardPath + "/maps/MGUILD.RGM", "ISLAND");
-                break;
-
-            case "NECRISLE":
-                RG3DStore.LoadMeshIntermediatesROB("NECRISLE");
-                SetModel_wld("NECRISLE", "302", "NECRO");
-                LoadRGM(settings.redguardPath + "/maps/NECRISLE.RGM", "NECRO");
-                break;
-
-            case "NECRTOWR":
-                RG3DStore.LoadMeshIntermediatesROB("NECRTOWR");
-                LoadRGM(settings.redguardPath + "/maps/NECRTOWR.RGM", "NECRO");
-                break;
-
-            case "OBSERVE":
-                RG3DStore.LoadMeshIntermediatesROB("OBSERVE");
-                LoadRGM(settings.redguardPath + "/maps/OBSERVE.RGM", "ISLAND");
-                break;
-
-            case "PALACE":
-                RG3DStore.LoadMeshIntermediatesROB("PALACE");
-                LoadRGM(settings.redguardPath + "/maps/PALACE.RGM", "ISLAND");
-                break;
-
-            case "PALATEST":
-                // RG3DStore.LoadMeshIntermediatesROB("PALATEST");
-                // LoadRGM(settings.redguardPath + "/maps/PALATEST.RGM", "ISLAND");
-                break;
-
-            case "ROLLOS":
-                RG3DStore.LoadMeshIntermediatesROB("ROLLOS");
-                LoadRGM(settings.redguardPath + "/maps/ROLLOS.RGM", "ISLAND");
-                break;
-
-            case "SILVER1":
-                RG3DStore.LoadMeshIntermediatesROB("SILVER1");
-                LoadRGM(settings.redguardPath + "/maps/SILVER1.RGM", "ISLAND");
-                break;
-
-            case "SILVER2":
-                RG3DStore.LoadMeshIntermediatesROB("SILVER2");
-                LoadRGM(settings.redguardPath + "/maps/SILVER2.RGM", "ISLAND");
-                break;
-
-            case "SMDEN":
-                RG3DStore.LoadMeshIntermediatesROB("SMDEN");
-                LoadRGM(settings.redguardPath + "/maps/SMDEN.RGM", "ISLAND");
-                break;
-
-            case "START":
-                RG3DStore.LoadMeshIntermediatesROB("START");
-                LoadRGM(settings.redguardPath + "/maps/START.RGM", "ISLAND");
-                break;
-
-            case "TAVERN":
-                RG3DStore.LoadMeshIntermediatesROB("TAVERN");
-                LoadRGM(settings.redguardPath + "/maps/TAVERN.RGM", "ISLAND");
-                break;
-
-            case "TEMPLE":
-                RG3DStore.LoadMeshIntermediatesROB("TEMPLE");
-                LoadRGM(settings.redguardPath + "/maps/TEMPLE.RGM", "ISLAND");
-                break;
-
-            case "TEMPTEST":
-                // RG3DStore.LoadMeshIntermediatesROB("TEMPTEST");
-                // LoadRGM(settings.redguardPath + "/maps/TEMPTEST.RGM", "ISLAND");
-                break;
-
-            case "VILE":
-                RG3DStore.LoadMeshIntermediatesROB("VILE");
-                LoadRGM(settings.redguardPath + "/maps/VILE.RGM", "ISLAND");
-                break;
+            obj.transform.SetParent(_objectRootGenerated.transform);
         }
         
-        mv2Cam.FrameObject(objectRootGenerated);
+        mv2Cam.FrameObject(_objectRootGenerated);
     }
 }
