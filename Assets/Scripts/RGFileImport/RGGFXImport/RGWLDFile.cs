@@ -10,7 +10,7 @@ namespace RGFileImport
 	{
         // map scale; needs a look in-game to see what fits
         const float WLD_SIZE_SCALE = 13.0f;
-        const float WLD_SIZE_SCALE_HEIGHT = 0.5f*1.6f;
+        const float WLD_SIZE_SCALE_HEIGHT = 0.8f;
 
 		public struct WLDHeader
 		{

@@ -6,12 +6,36 @@ using Assets.Scripts.RGFileImport.RGGFXImport;
 
 public static class RGRGMStore
 {
-    const float RGM_MPSO_SCALE = 0.05f; // about 1/20
     const float RGM_MPOB_SCALE = 0.000195f;
-    const float RGM_Z_OFS = -3275.0f;
-    const float RGM_X_OFS = 29.8f;
-    const float RGM_Y_OFS = -22.8f;
-    const float RGM_MPOB_Y_OFS = -3275.0f;
+    const float RGM_X_OFS = 0.0f;//29.8f;
+    const float RGM_Y_OFS = 0.0f; //-22.8f;
+    const float RGM_Z_OFS = 0.0f;
+
+    static Dictionary<string, RGFileImport.RGRGMFile> RGMDict;
+
+    public static string path_to_game = "./game_3dfx";
+    static string maps_path = path_to_game + "/maps/";
+
+    static RGRGMStore()
+    {
+        RGMDict = new Dictionary<string, RGFileImport.RGRGMFile>();
+    }
+    public static RGFileImport.RGRGMFile GetRGM(string RGMname)
+    {
+        string rgm_key = $"{RGMname}";
+        RGFileImport.RGRGMFile o;
+        if(RGMDict.TryGetValue(rgm_key, out o))
+        {
+            return o;
+        }
+        else
+        {
+            string path = new string(maps_path + RGMname + ".RGM");
+            RGMDict.Add(rgm_key, new RGFileImport.RGRGMFile());
+            RGMDict[rgm_key].LoadFile(path);
+        }
+        return RGMDict[rgm_key];
+    }
 
     public struct RGRGMData
     {
@@ -27,25 +51,53 @@ public static class RGRGMStore
             rotation = r;
         }
     }
+    public static List<RGRGMData> LoadMPSF(string filename)
+    {
+        RGFileImport.RGRGMFile filergm = GetRGM(filename);
+
+        List<RGRGMData> data_out = new List<RGRGMData>();
+        for(int i=0;i<filergm.MPSF.items.Count;i++)
+        {
+            try{
+                float posx =  (float)(filergm.MPSF.items[i].posX)*RGM_MPOB_SCALE;
+                float posy = -(float)(filergm.MPSF.items[i].posY)*RGM_MPOB_SCALE;
+                float posz = -(float)(0xFFFFFF-filergm.MPSF.items[i].posZ)*RGM_MPOB_SCALE;
+
+                posx += RGM_X_OFS;
+                posy += RGM_Y_OFS;
+                posz += RGM_Z_OFS;
+
+                string name = $"MPSF/{filergm.MPSF.items[i].textureId}/{filergm.MPSF.items[i].imageId}";
+                data_out.Add(new RGRGMData(name, "", new Vector3(posx, posy, posz), new Vector3(0.0f, 0.0f,0.0f)));
+            }
+            catch(Exception ex)
+            {
+                string name = $"F_{i}_MPSF/{filergm.MPSF.items[i].textureId}/{filergm.MPSF.items[i].imageId}";
+                Debug.Log($"Error loading MPSF item from {filename}: {name}: {ex}");
+            }
+        }
+        return data_out;
+    }
 
     public static List<RGRGMData> LoadMPSO(string filename)
     {
-        RGFileImport.RGRGMFile filergm = new RGFileImport.RGRGMFile();
-        filergm.LoadFile(filename);
+        RGFileImport.RGRGMFile filergm = GetRGM(filename);
+
         List<RGRGMData> data_out = new List<RGRGMData>();
         for(int i=0;i<filergm.MPSO.items.Count;i++)
         {
             try{
-                float posx =  (float)(filergm.MPSO.items[i].posx)*RGM_MPSO_SCALE;
-                float posy = -((float)(0xFFFF-filergm.MPSO.items[i].posz))*RGM_MPSO_SCALE;
-                float posz = ((float)(0xFFFF-filergm.MPSO.items[i].posy))*RGM_MPSO_SCALE;
+                float posx =  (float)(filergm.MPSO.items[i].posx)*RGM_MPOB_SCALE;
+                float posy = -(float)(filergm.MPSO.items[i].posy)*RGM_MPOB_SCALE;
+                float posz = -(float)(0xFFFFFF-filergm.MPSO.items[i].posz)*RGM_MPOB_SCALE;
+
                 posx += RGM_X_OFS;
                 posy += RGM_Y_OFS;
                 posz += RGM_Z_OFS;
 
                 Vector3 eulers = eulers_from_MPSO_data(filergm.MPSO.items[i]);
 
-                data_out.Add(new RGRGMData(filergm.MPSO.items[i].name, "", new Vector3(posx, posz, posy), eulers));
+                data_out.Add(new RGRGMData(filergm.MPSO.items[i].name, "", new Vector3(posx, posy, posz), eulers));
             }
             catch(Exception ex)
             {
@@ -56,25 +108,27 @@ public static class RGRGMStore
     }
     public static List<RGRGMData> LoadMPOB(string filename)
     {
-        RGFileImport.RGRGMFile filergm = new RGFileImport.RGRGMFile();
-        filergm.LoadFile(filename);
+        RGFileImport.RGRGMFile filergm = GetRGM(filename);
+
         List<RGRGMData> data_out = new List<RGRGMData>();
         for(int i=0;i<filergm.MPOB.items.Count;i++)
         {
             if(filergm.MPOB.items[i].isStatic == 1)
             {
                 try{
-                    float posx =  ((float)filergm.MPOB.items[i].posx)*RGM_MPOB_SCALE;
-                    float posy = ((float)(filergm.MPOB.items[i].posz-0xFFFFFF))*RGM_MPOB_SCALE;
-                    float posz = -((float)filergm.MPOB.items[i].posy)*RGM_MPOB_SCALE;
+                    float posx =  (float)(filergm.MPOB.items[i].posx)*RGM_MPOB_SCALE;
+                    float posy = -(float)(filergm.MPOB.items[i].posy)*RGM_MPOB_SCALE;
+                    float posz = -(float)(0xFFFFFF-filergm.MPOB.items[i].posz)*RGM_MPOB_SCALE;
+
                     posx += RGM_X_OFS;
                     posy += RGM_Y_OFS;
+                    posz += RGM_Z_OFS;
 
                     Vector3 eulers = eulers_from_MPOB_data(filergm.MPOB.items[i]);
 
                     string modelname = filergm.MPOB.items[i].name2.Split('.')[0];
 
-                    data_out.Add(new RGRGMData(filergm.MPOB.items[i].name, modelname, new Vector3(posx, posz, posy), eulers));
+                    data_out.Add(new RGRGMData(filergm.MPOB.items[i].name, modelname, new Vector3(posx, posy, posz), eulers));
                 }
                 catch(Exception ex)
                 {

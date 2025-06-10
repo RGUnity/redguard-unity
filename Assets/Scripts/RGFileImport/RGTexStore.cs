@@ -16,8 +16,7 @@ public static class RGTexStore
 
     public static string path_to_game = "./game_3dfx";
     public static Shader shader = Shader.Find("Legacy Shaders/Diffuse Fast");
-    static string fxart_path;
-
+    static string fxart_path = path_to_game + "/fxart/";
 
     static RGTexStore()
     {
@@ -28,7 +27,6 @@ public static class RGTexStore
 
     public static Material GetMaterial(string palname, int texbsi, int img)
     {
-        fxart_path = path_to_game + "/fxart/";
         
         string mat_key = $"{palname}/{texbsi:D3}/{img:D3}";
         Material o;
@@ -156,7 +154,6 @@ public static class RGTexStore
     }
     private static RGCOLFile LoadPalette(string palname)
     {
-        fxart_path = path_to_game + "/fxart/";
         
         RGCOLFile o;
         if(PaletteDict.TryGetValue(palname, out o))
