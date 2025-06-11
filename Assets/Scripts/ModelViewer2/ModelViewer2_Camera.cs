@@ -28,11 +28,8 @@ public class ModelViewer2_Camera : MonoBehaviour
     {
         // IsPointerOverGameObject was removed at some point so now i need to find another way...
         // bool mouseIsOverUI = eventSystem.IsPointerOverGameObject(gui.gameObject);
-        
-        // Temporary fix to prevent errors
-        bool mouseIsOverUI = false;
 
-        if (Input.GetMouseButtonDown(0) && !mouseIsOverUI)
+        if (Input.GetMouseButtonDown(0) && !gui.IsMouseOverUI)
         {
             dragStartedInViewport = true;
         }
@@ -99,7 +96,7 @@ public class ModelViewer2_Camera : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, currentRotY, 0);
 
             // Mouse Wheel Zoom
-            if (!mouseIsOverUI)
+            if (!gui.IsMouseOverUI)
             {
                 // Calculate Zoom value
                 Vector3 pos = cameraRootZ.localPosition;
