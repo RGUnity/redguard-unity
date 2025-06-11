@@ -52,6 +52,8 @@ public static class ModelLoader
     private static List<GameObject> LoadRGM(string gamepath, string RGMname, string name_col)
     {
         RGRGMStore.maps_path = gamepath+"/maps/";
+        RG3DStore.fxart_path = gamepath+"/fxart/";
+        RGTexStore.fxart_path = gamepath+"/fxart/";
 
         List<GameObject> areaObjects = new List<GameObject>();
         List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(RGMname);
