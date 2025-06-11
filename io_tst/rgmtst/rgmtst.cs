@@ -6,7 +6,7 @@ namespace xyz
 {
     public class test
 	{
-
+/*
         public static void print_MPSO(RGRGMFile filergm)
         {
             for(int i=0;i<filergm.MPSO.num_items;i++)
@@ -61,11 +61,16 @@ namespace xyz
             }
         }
 
+*/
 		public static void Main(string[] args)
 		{
 			RGRGMFile filergm = new RGRGMFile();
 			filergm.LoadFile("../../game_3dfx/maps/ISLAND.RGM");
-            Console.WriteLine(filergm.RAHD);
+            for(int i=0;i<filergm.MPSF.num_items;i++)
+            {
+                Console.WriteLine($"{filergm.MPSF.items[i].tex:X}");
+            }
+//            Console.WriteLine(filergm.RAHD);
             //filergm.PrintRGM();
 //            print_MPOB(filergm);
 //            print_MPSO(filergm);

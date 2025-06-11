@@ -31,9 +31,8 @@ public static class RG2Mesh
         List<Material> materials = new List<Material>();
         for(int i=0;i<WLD_TEXID_CNT;i++)
         {
-            materials.Add(RGTexStore.GetMaterial(name_col,file_wld.sec[0].texbsi_file,i));
+            materials.Add(RGTexStore.GetMaterial(name_col,file_wld.sec[0].texbsi_file,i,"DEFAULT"));
         }
-//        materials[0] = RGTexStore.LoadMaterialBSI("SKY001");
 
         UnityData_WLD data = new UnityData_WLD();
         data.mesh = mesh_wld;
@@ -41,10 +40,20 @@ public static class RG2Mesh
 
         return data;
     }
+    public static UnityData_3D FLAT2Mesh(string meshname, string palettename)
+    {
+        RG3DStore.Mesh3D_intermediate mesh_i = RG3DStore.LoadMeshIntermediateFlat(meshname);
+        return LoadMesh_3DStore(mesh_i, palettename, "FLATS");
+    }
+
     public static UnityData_3D f3D2Mesh(string meshname, string palettename)
     {
         RG3DStore.Mesh3D_intermediate mesh_i = RG3DStore.LoadMeshIntermediate3DC(meshname);
-        
+        return LoadMesh_3DStore(mesh_i, palettename, "DEFAULT");
+    }
+
+    private static UnityData_3D LoadMesh_3DStore(RG3DStore.Mesh3D_intermediate mesh_i, string palettename, string shadername)
+    {
         List<Material> materials = new List<Material>();
         Mesh mesh_3d = new Mesh();
         mesh_3d.subMeshCount = mesh_i.subMeshCount;
@@ -56,13 +65,11 @@ public static class RG2Mesh
         foreach(var submesh in mesh_i.submeshes)
         {
             string[] keys = submesh.Key.Split("/");
-            materials.Add(RGTexStore.GetMaterial(palettename,Int32.Parse(keys[0]),Int32.Parse(keys[1])));
+            materials.Add(RGTexStore.GetMaterial(palettename,Int32.Parse(keys[0]),Int32.Parse(keys[1]), shadername));
             List<int> tri_lst = submesh.Value;
             mesh_3d.SetTriangles(tri_lst.ToArray(), i);
             i++;
         } 
-
-
 
         UnityData_3D data = new UnityData_3D();
         data.framecount = mesh_i.framecount;
@@ -78,7 +85,6 @@ public static class RG2Mesh
 
         return data;
     }
-
 
     private static Mesh LoadMesh_WLD(RGFileImport.RGWLDFile file_wld)
     {

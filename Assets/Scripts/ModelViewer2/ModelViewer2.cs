@@ -17,9 +17,51 @@ public class ModelViewer2 : MonoBehaviour
 
     private GameObject _objectRootGenerated;
 
+// this should be read in from ini file
+    private Dictionary<string, (string,string)> AreaCOLDictionary;
+
+    void buildAreaCOLDictionary()
+    {
+        // ROBs without RGM currently dont work:
+        // INVENTRY
+        // MENU
+        // PALATEST
+        // TEMPTEST
+
+        AreaCOLDictionary = new Dictionary<string, (string,string)>();
+        //                     area name    COL      WLD (can be empty)
+        AreaCOLDictionary.Add("BELLTOWR", ("ISLAND", ""));
+        AreaCOLDictionary.Add("BRENNANS", ("ISLAND", ""));
+        AreaCOLDictionary.Add("CARTOGR",  ("ISLAND", ""));
+        AreaCOLDictionary.Add("CATACOMB", ("ISLAND", ""));
+        AreaCOLDictionary.Add("CAVERNS",  ("ISLAND", ""));
+        AreaCOLDictionary.Add("DRINT",    ("ISLAND", ""));
+        AreaCOLDictionary.Add("EXTPALAC", ("ISLAND", "ISLAND"));
+        AreaCOLDictionary.Add("GERRICKS", ("ISLAND", ""));
+        AreaCOLDictionary.Add("HARBOTWR", ("ISLAND", ""));
+        AreaCOLDictionary.Add("HIDEINT",  ("HIDEOUT","HIDEOUT"));
+        AreaCOLDictionary.Add("HIDEOUT",  ("HIDEOUT","HIDEOUT"));
+        AreaCOLDictionary.Add("ISLAND",   ("ISLAND", "ISLAND"));
+        AreaCOLDictionary.Add("JAILINT",  ("ISLAND", ""));
+        AreaCOLDictionary.Add("JFFERS",   ("ISLAND", ""));
+        AreaCOLDictionary.Add("MGUILD",   ("ISLAND", ""));
+        AreaCOLDictionary.Add("NECRISLE", ("NECRO",  "NECRISLE"));
+        AreaCOLDictionary.Add("NECRTOWR", ("NECRO",  ""));
+        AreaCOLDictionary.Add("OBSERVE",  ("ISLAND", ""));
+        AreaCOLDictionary.Add("PALACE",   ("ISLAND", ""));
+        AreaCOLDictionary.Add("ROLLOS",   ("ISLAND", ""));
+        AreaCOLDictionary.Add("SILVER1",  ("ISLAND", ""));
+        AreaCOLDictionary.Add("SILVER2",  ("ISLAND", ""));
+        AreaCOLDictionary.Add("SMDEN",    ("ISLAND", ""));
+        AreaCOLDictionary.Add("START",    ("ISLAND", ""));
+        AreaCOLDictionary.Add("TAVERN",   ("ISLAND", ""));
+        AreaCOLDictionary.Add("TEMPLE",   ("ISLAND", ""));
+        AreaCOLDictionary.Add("VILE",     ("ISLAND", ""));
+    }
     void Start()
     {
-        RGTexStore.shader = shader;
+        buildAreaCOLDictionary();
+        //RGTexStore.shader = shader;
 
         // if a path override is set, use that
         if (pathOverride.Length > 0)
@@ -99,32 +141,34 @@ public class ModelViewer2 : MonoBehaviour
         }
     }
 
-    public void Spawn3DC(string filename)
+    public void Spawn3DC(string f3DCname, string colname)
     {
         // objectRootGenerated is simply a new GameObject that makes deleting objects easier
         Destroy(_objectRootGenerated);
         _objectRootGenerated = new GameObject();
         _objectRootGenerated.transform.SetParent(objectRoot.transform);
-        _objectRootGenerated.name = filename + "_" + _objectRootGenerated.GetInstanceID();
+        _objectRootGenerated.name = f3DCname+ "_" + _objectRootGenerated.GetInstanceID();
         
         // Create the object and parent it under the root
-        GameObject obj = ModelLoader.Load3DC(filename);
+        GameObject obj = ModelLoader.Load3DC(f3DCname, colname);
         obj.transform.SetParent(_objectRootGenerated.transform);
 
         mv2Cam.FrameObject(_objectRootGenerated);
     }
-    
+
     // Stupid Hardcoded ROB Loading functions
-    public void SpawnArea(string filename)
+    public void SpawnArea(string areaname)
     {
         // objectRootGenerated is simply a new GameObject that makes deleting objects easier
         Destroy(_objectRootGenerated);
         _objectRootGenerated = new GameObject();
         _objectRootGenerated.transform.SetParent(objectRoot.transform);
-        _objectRootGenerated.name = filename + "_" + _objectRootGenerated.GetInstanceID();
+        _objectRootGenerated.name = areaname + "_" + _objectRootGenerated.GetInstanceID();
 
         // Create all objects of that area and parent them under the root
-        List<GameObject> areaObjects = ModelLoader.LoadArea(filename);
+        string colname = AreaCOLDictionary[areaname].Item1;
+        string wldname = AreaCOLDictionary[areaname].Item2;
+        List<GameObject> areaObjects = ModelLoader.LoadArea(areaname, colname, wldname);
         foreach (var obj in areaObjects)
         {
             obj.transform.SetParent(_objectRootGenerated.transform);

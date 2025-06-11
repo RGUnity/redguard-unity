@@ -7,7 +7,7 @@ using Assets.Scripts.RGFileImport.RGGFXImport;
 
 public static class RG3DStore
 {
-    const float MESH_SCALE_FACTOR = 1/5000.0f;
+    const float MESH_SCALE_FACTOR = 1/5120.0f;
     static public Vector3 MESH_VERT_FLIP = new Vector3(1.0f, -1.0f, 1.0f);
     static public Vector3 MESH_ROT_FLIP = new Vector3(-1.0f, 1.0f, -1.0f);
     public struct Mesh3D_intermediate
@@ -34,6 +34,59 @@ public static class RG3DStore
     static RG3DStore()
     {
         MeshIntermediateDict = new Dictionary<string, Mesh3D_intermediate>();
+    }
+
+
+    public static Mesh3D_intermediate LoadMeshIntermediateFlat(string flatDesc)
+    {
+       Mesh3D_intermediate o;
+        if(MeshIntermediateDict.TryGetValue(flatDesc, out o))
+        {
+            return o;
+        }
+        else
+        {
+            o = new Mesh3D_intermediate();
+            o.subMeshCount = 1;
+            o.framecount = 1;
+            o.vertices = new List<Vector3>[1];
+            o.uv = new List<Vector2>();
+            o.normals = new List<Vector3>[1];
+            o.submeshes = new Dictionary<string, List<int>>();
+
+            o.vertices[0] = new List<Vector3>();
+            o.vertices[0].Add(new Vector3(0.0f,0.0f,0.0f));
+            o.vertices[0].Add(new Vector3(1.0f,0.0f,0.0f));
+            o.vertices[0].Add(new Vector3(1.0f,1.0f,0.0f));
+            o.vertices[0].Add(new Vector3(0.0f,1.0f,0.0f));
+
+            o.uv.Add(new Vector2(1.0f,1.0f));
+            o.uv.Add(new Vector2(0.0f,1.0f));
+            o.uv.Add(new Vector2(0.0f,0.0f));
+            o.uv.Add(new Vector2(1.0f,0.0f));
+            
+            o.normals[0] = new List<Vector3>();
+            o.normals[0].Add(new Vector3(0.0f,0.0f,-1.0f));
+            o.normals[0].Add(new Vector3(0.0f,0.0f,-1.0f));
+            o.normals[0].Add(new Vector3(0.0f,0.0f,-1.0f));
+            o.normals[0].Add(new Vector3(0.0f,0.0f,-1.0f));
+
+            List<int> tris = new List<int>();
+            tris.Add(0);
+            tris.Add(1);
+            tris.Add(2);
+
+            tris.Add(2);
+            tris.Add(3);
+            tris.Add(0);
+
+            o.submeshes.Add(flatDesc, tris);
+
+            MeshIntermediateDict.Add(flatDesc, o);
+            Debug.Log($"FLAT: {flatDesc}");
+            return MeshIntermediateDict[flatDesc];
+        }
+
     }
 
     // for now, assuming we only want to explicitly load 3dc files and that all 3d files are in the ROB files

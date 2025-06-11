@@ -38,10 +38,28 @@ public class ModelViewer_Model : MonoBehaviour
         return spawned;
  
     }
+    public GameObject addFlatToScene(string prefix, string name_flat, string name_pal,Vector3 position, Vector3 eulers)
+    {
+        RG2Mesh.UnityData_3D data_FLAT = RG2Mesh.FLAT2Mesh(name_flat, name_pal);
+
+        GameObject spawned = new GameObject($"{prefix}_{name_flat}");
+        MeshRenderer meshRenderer = spawned.AddComponent<MeshRenderer>();
+        MeshFilter meshFilter = spawned.AddComponent<MeshFilter>();
+
+        meshFilter.mesh = data_FLAT.mesh;
+        meshRenderer.SetMaterials(data_FLAT.materials);
+
+        spawned.transform.position = position;
+        spawned.transform.Rotate(eulers);
+        return spawned;
+ 
+    }
+
     void LoadRGM(string filename, string name_col)
     {
         List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(filename);
         List<RGRGMStore.RGRGMData> RGM_MPOBs = RGRGMStore.LoadMPOB(filename);
+        List<RGRGMStore.RGRGMData> RGM_MPSFs = RGRGMStore.LoadMPSF(filename);
         for(int i=0;i<RGM_MPOBs.Count;i++)
         {
             try
@@ -59,6 +77,11 @@ public class ModelViewer_Model : MonoBehaviour
         {
             add3DToScene($"S{i:D3}", RGM_MPSOs[i].name, name_col, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
         }
+        
+        for(int i=0;i<RGM_MPSFs.Count;i++)
+        {
+            addFlatToScene($"F{i:D3}", RGM_MPSFs[i].name, name_col, RGM_MPSFs[i].position, RGM_MPSFs[i].rotation);
+        }
     }
 
    // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -68,11 +91,11 @@ public class ModelViewer_Model : MonoBehaviour
         CYRSA = add3DToScene("0000_CYR","CYRSA001", "ISLAND", new Vector3(0.0f,0.0f,0.0f), new Vector3(0.0f,0.0f,0.0f));
         
         RG3DStore.LoadMeshIntermediatesROB("TAVERN");
-        LoadRGM("./game_3dfx/maps/TAVERN.RGM", "ISLAND");
+        LoadRGM("TAVERN", "ISLAND");
         
         RG3DStore.LoadMeshIntermediatesROB("ISLAND");
         SetModel_wld("ISLAND", "302", "ISLAND");
-        LoadRGM("./game_3dfx/maps/ISLAND.RGM", "ISLAND");
+        LoadRGM("ISLAND", "ISLAND");
         // hell yeah single-line objects
 //        add3DToScene("PALMTR03", "ISLAND", new Vector3(100,0,0));
 

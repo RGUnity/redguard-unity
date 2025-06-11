@@ -362,14 +362,14 @@ size: {dataLength:X}
 		}
 		public struct RGMMPOBItem
 		{
-			public int id;     // 4 bytes
-			public byte typeId;      // 1 byte
-			public byte isActive;    // 1 byte
-            public string name;      // 9 bytes
-            public string name2;     // 9 bytes
-            public byte isStatic;    // 1 byte
-            public byte unknown1;    // 1 byte
-            public int  posx;        // 4 bytes
+			public int id;           // 4 bytes 0
+			public byte typeId;      // 1 byte  4
+			public byte isActive;    // 1 byte  5
+            public string name;      // 9 bytes 6
+            public string name2;     // 9 bytes 15
+            public byte isStatic;    // 1 byte  24
+            public short unknown1;    // 2 byte 26
+            public int  posx;        // 4 bytes 27
             public int  posy;        // 4 bytes
             public int  posz;        // 4 bytes
             public uint  anglex;     // 4 bytes
@@ -397,10 +397,12 @@ size: {dataLength:X}
                     name2 = name_strs[0];
 
                     isStatic = memoryReader.ReadByte();
-                    unknown1 = memoryReader.ReadByte();
-                    posx = memoryReader.ReadInt32();
-                    posy = memoryReader.ReadInt32();
-                    posz = memoryReader.ReadInt32();
+                    unknown1 = memoryReader.ReadInt16();
+                    posx = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+                    posy = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+                    posz = memoryReader.ReadInt24();
                     anglex = memoryReader.ReadUInt32();
                     angley = memoryReader.ReadUInt32();
                     anglez = memoryReader.ReadUInt32();
@@ -446,9 +448,12 @@ size: {dataLength:X}
                     name_char = memoryReader.ReadChars(12);
                     string[] name_strs = new string(name_char).Split('\0');
                     name = name_strs[0];
-                    posx = memoryReader.ReadInt32();
-                    posy = memoryReader.ReadInt32();
-                    posz = memoryReader.ReadInt32();
+                    posx = memoryReader.ReadInt24();
+                    memoryReader.ReadByte(); // 4 bytes for that s24 above
+                    posy = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+                    posz = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
                     rotation_matrix = new int[9];
                     for(int i=0;i<9;i++)
                     {
@@ -622,8 +627,8 @@ size: {dataLength:X}
             public int posX;
             public int posY;
             public int posZ;
-            public byte textureId;
-            public byte imageId;
+            public short textureId;
+            public short imageId;
             public short unknown1;
 
 			public RGMMPSFItem(MemoryReader memoryReader)
@@ -632,12 +637,17 @@ size: {dataLength:X}
                 {
                     id = memoryReader.ReadInt32();
                     unknown0 = memoryReader.ReadInt32();
-                    posX = memoryReader.ReadInt32();
-                    posY = memoryReader.ReadInt32();
-                    posZ = memoryReader.ReadInt32();
-                    short textureData = memoryReader.ReadInt16();
-                    textureId = (byte)(textureData >> 7);
-                    imageId = (byte)(textureData&127);
+
+                    posX = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+                    posY = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+                    posZ = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+
+                    ushort textureData = memoryReader.ReadUInt16();
+                    textureId = (short)(textureData >> 7);
+                    imageId = (short)(textureData&127);
                     unknown1 = memoryReader.ReadInt16();
                 }
                 catch(Exception ex)
