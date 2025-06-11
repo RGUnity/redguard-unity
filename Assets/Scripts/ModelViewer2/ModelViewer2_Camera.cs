@@ -26,7 +26,11 @@ public class ModelViewer2_Camera : MonoBehaviour
     // Did you know? Update is called once per frame!
     private void Update()
     {
-        bool mouseIsOverUI = eventSystem.IsPointerOverGameObject();
+        // IsPointerOverGameObject was removed at some point so now i need to find another way...
+        // bool mouseIsOverUI = eventSystem.IsPointerOverGameObject(gui.gameObject);
+        
+        // Temporary fix to prevent errors
+        bool mouseIsOverUI = false;
 
         if (Input.GetMouseButtonDown(0) && !mouseIsOverUI)
         {

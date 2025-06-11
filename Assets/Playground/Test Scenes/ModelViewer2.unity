@@ -3272,7 +3272,7 @@ MonoBehaviour:
   cameraRoot: {fileID: 1516451608}
   scrollSpeed: 5
   shader: {fileID: 1, guid: 0000000000000000f000000000000000, type: 0}
-  pathOverride: E:\Games\Redguard\Redguardll
+  pathOverride: 
 --- !u!1 &1096314941
 GameObject:
   m_ObjectHideFlags: 0

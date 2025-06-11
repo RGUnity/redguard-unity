@@ -12,7 +12,6 @@ public class ModelViewer2 : MonoBehaviour
     [SerializeField] private ModelViewer2_Camera mv2Cam;
     [SerializeField] private GameObject objectRoot;
     [SerializeField] private GameObject cameraRoot;
-    [SerializeField] private float scrollSpeed = 5;
     [SerializeField] private Shader shader;
     [SerializeField] private string pathOverride;
 
