@@ -8,14 +8,14 @@ using RGFileImport;
 public static class RGTexStore
 {
     // keys like this:
-    // PAL/TEXBSI#/IMG#
-    // PAL/-1/COL#
+    // PAL/TEXBSI#/IMG#/SHADER
+    // PAL/-1/COL#/SHADER
     static Dictionary<string, Material> MaterialDict;
     static Dictionary<string, RGCOLFile> PaletteDict;
     static Dictionary<string, RGTEXBSIFile> BSIFDict;
+    static Dictionary<string, Shader> ShaderDict;
 
     public static string path_to_game = "./game_3dfx";
-    public static Shader shader = Shader.Find("Legacy Shaders/Diffuse Fast");
     static string fxart_path = path_to_game + "/fxart/";
 
     static RGTexStore()
@@ -23,12 +23,17 @@ public static class RGTexStore
         MaterialDict = new Dictionary<string, Material>();
         PaletteDict = new Dictionary<string, RGCOLFile>();
         BSIFDict = new Dictionary<string, RGTEXBSIFile>();
+        ShaderDict = new Dictionary<string, Shader>();
+
+        ShaderDict.Add("DEFAULT", Shader.Find("Legacy Shaders/Diffuse Fast"));
+        ShaderDict.Add("FLATS", Shader.Find("Legacy Shaders/Diffuse Fast"));
+
     }
 
-    public static Material GetMaterial(string palname, int texbsi, int img)
+    public static Material GetMaterial(string palname, int texbsi, int img, string shadername)
     {
         
-        string mat_key = $"{palname}/{texbsi:D3}/{img:D3}";
+        string mat_key = $"{palname}/{texbsi:D3}/{img:D3}/{shadername}";
         Material o;
         if(MaterialDict.TryGetValue(mat_key, out o))
         {
@@ -44,11 +49,11 @@ public static class RGTexStore
                 List<Texture2D>[] tex_lst_sorted = new List<Texture2D>[bsif.images.Count];
                 for(int i =0;i<bsif.images.Count;i++)
                 {
-                    string new_mat_key = $"{palname}/{texbsi:D3}/{Int32.Parse(bsif.images[i].imageName.Substring(3)):D3}";
+                    string new_mat_key = $"{palname}/{texbsi:D3}/{Int32.Parse(bsif.images[i].imageName.Substring(3)):D3}/{shadername}";
 
                     List<Texture2D> cur_tex = GraphicsConverter.RGBSIToTexture2D(bsif.images[i].imageData, palette);
 
-                    MaterialDict.Add(new_mat_key, new Material(shader));
+                    MaterialDict.Add(new_mat_key, new Material(ShaderDict[shadername]));
                     MaterialDict[new_mat_key].mainTexture = cur_tex[0];
 
                     // note that FRAME_0 does not exist, its called _MainTex or smt
@@ -64,7 +69,7 @@ public static class RGTexStore
                 // make 8x8 material from palette color
                 RGCOLFile palette = LoadPalette(palname);
                 Texture2D cur_tex = GraphicsConverter.RGPaletteColorToTexture2D(palette, img);
-                MaterialDict.Add(mat_key, new Material(shader));
+                MaterialDict.Add(mat_key, new Material(ShaderDict[shadername]));
                 MaterialDict[mat_key].mainTexture = cur_tex;
 
             }

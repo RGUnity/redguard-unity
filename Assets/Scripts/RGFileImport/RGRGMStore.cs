@@ -14,7 +14,7 @@ public static class RGRGMStore
     static Dictionary<string, RGFileImport.RGRGMFile> RGMDict;
 
     public static string path_to_game = "./game_3dfx";
-    static string maps_path = path_to_game + "/maps/";
+    public static string maps_path = path_to_game + "/maps/";
 
     static RGRGMStore()
     {
@@ -67,7 +67,7 @@ public static class RGRGMStore
                 posy += RGM_Y_OFS;
                 posz += RGM_Z_OFS;
 
-                string name = $"MPSF/{filergm.MPSF.items[i].textureId}/{filergm.MPSF.items[i].imageId}";
+                string name = $"{filergm.MPSF.items[i].textureId}/{filergm.MPSF.items[i].imageId}";
                 data_out.Add(new RGRGMData(name, "", new Vector3(posx, posy, posz), new Vector3(0.0f, 0.0f,0.0f)));
             }
             catch(Exception ex)

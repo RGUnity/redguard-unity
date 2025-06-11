@@ -12,170 +12,172 @@ public static class ModelLoader
         // todo: load RedguardPath from config file
     }
     
-    public static GameObject Load3DC(string filename)
+    public static GameObject Load3DC(string f3DCname, string colname)
     {
-        RG3DStore.LoadMeshIntermediate3DC(filename);
-        GameObject obj = Add3DToScene("3DC_", filename, "OBSERVAT", Vector3.zero, Vector3.zero);
+        RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(f3DCname, colname);
+        GameObject obj = Add3DToScene($"3DC_{f3DCname}",  data_3D, Vector3.zero, Vector3.zero);
         return obj;
     }
-    
-    public static List<GameObject> LoadArea(string filename)
+
+
+    public static List<GameObject> LoadArea(string areaname, string palettename, string wldname)
     {
         List<GameObject> areaObjects;
+        RG3DStore.LoadMeshIntermediatesROB(areaname);
+        areaObjects = LoadRGM(RedguardPath, areaname, palettename);
+        if(!String.IsNullOrEmpty(wldname))
+            areaObjects.Add(SetModel_wld(wldname, palettename));
+        return areaObjects;
         
         // ROBs without RGM currently dont work:
         // INVENTRY
         // MENU
         // PALATEST
         // TEMPTEST
-        
+       /* 
         switch (filename)
         {
             case "BELLTOWR":
-                RG3DStore.LoadMeshIntermediatesROB("BELLTOWR");
-                return LoadRGM(RedguardPath + "/maps/BELLTOWR.RGM", "ISLAND");
             
             case "BRENNANS":
                 RG3DStore.LoadMeshIntermediatesROB("BRENNANS");
-                return LoadRGM(RedguardPath + "/maps/BRENNANS.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "BRENNANS", "ISLAND");
             
             case "CARTOGR":
                 RG3DStore.LoadMeshIntermediatesROB("CARTOGR");
-                return LoadRGM(RedguardPath + "/maps/CARTOGR.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "CARTOGR", "ISLAND");
             
             case "CATACOMB":
                 RG3DStore.LoadMeshIntermediatesROB("CATACOMB");
-                return LoadRGM(RedguardPath + "/maps/CATACOMB.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "CATACOMB", "ISLAND");
             
             case "CAVERNS":
                 RG3DStore.LoadMeshIntermediatesROB("CAVERNS");
-                return LoadRGM(RedguardPath + "/maps/CAVERNS.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "CAVERNS", "ISLAND");
             
             case "DRINT":
                 RG3DStore.LoadMeshIntermediatesROB("DRINT");
-                return LoadRGM(RedguardPath + "/maps/DRINT.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "DRINT", "ISLAND");
             
             case "EXTPALAC":
                 RG3DStore.LoadMeshIntermediatesROB("EXTPALAC");
-                areaObjects = LoadRGM(RedguardPath + "/maps/EXTPALAC.RGM", "ISLAND");
+                areaObjects = LoadRGM(RedguardPath, "EXTPALAC", "ISLAND");
                 areaObjects.Add(SetModel_wld("ISLAND", "ISLAND"));
                 return areaObjects;
             
             case "GERRICKS":
                 RG3DStore.LoadMeshIntermediatesROB("GERRICKS");
-                return LoadRGM(RedguardPath + "/maps/GERRICKS.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "GERRICKS", "ISLAND");
             
             case "HARBOTWR":
                 RG3DStore.LoadMeshIntermediatesROB("HARBTOWR");
-                return LoadRGM(RedguardPath + "/maps/HARBTOWR.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "HARBTOWR", "ISLAND");
             
             case "HIDEINT":
                 RG3DStore.LoadMeshIntermediatesROB("HIDEINT");
-                areaObjects = LoadRGM(RedguardPath + "/maps/HIDEINT.RGM", "HIDEOUT");
+                areaObjects = LoadRGM(RedguardPath, "HIDEINT", "HIDEOUT");
                 areaObjects.Add(SetModel_wld("HIDEOUT", "HIDEOUT"));
                 return areaObjects;
             
             case "HIDEOUT":
                 RG3DStore.LoadMeshIntermediatesROB("HIDEOUT");
-                areaObjects = LoadRGM(RedguardPath + "/maps/HIDEOUT.RGM", "HIDEOUT");
+                areaObjects = LoadRGM(RedguardPath, "HIDEOUT", "HIDEOUT");
                 areaObjects.Add(SetModel_wld("HIDEOUT", "HIDEOUT"));
                 return areaObjects;
             
             case "INVENTRY":
                 // RG3DStore.LoadMeshIntermediatesROB("INVENTRY");
-                // LoadRGM(_redguardPath + "/maps/INVENTRY.RGM", "ISLAND");
+                // LoadRGM(_redguardPath + "INVENTRY", "ISLAND");
             
             case "ISLAND":
                 RG3DStore.LoadMeshIntermediatesROB("ISLAND");
-                areaObjects = LoadRGM(RedguardPath + "/maps/ISLAND.RGM", "ISLAND");
+                areaObjects = LoadRGM(RedguardPath, "ISLAND", "ISLAND");
                 areaObjects.Add(SetModel_wld("ISLAND", "ISLAND"));
                 return areaObjects;
             
             case "JAILINT":
                 RG3DStore.LoadMeshIntermediatesROB("JAILINT");
-                return LoadRGM(RedguardPath + "/maps/JAILINT.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "JAILINT", "ISLAND");
             
             case "JFFERS":
                 RG3DStore.LoadMeshIntermediatesROB("JFFERS");
-                return LoadRGM(RedguardPath + "/maps/JFFERS.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "JFFERS", "ISLAND");
 
             case "MENU":
                 // RG3DStore.LoadMeshIntermediatesROB("MENU");
-                // LoadRGM(_redguardPath + "/maps/MENU.RGM", "ISLAND");
+                // LoadRGM(_redguardPath + "MENU", "ISLAND");
 
             case "MGUILD":
                 RG3DStore.LoadMeshIntermediatesROB("MGUILD");
-                return LoadRGM(RedguardPath + "/maps/MGUILD.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "MGUILD", "ISLAND");
             
             case "NECRISLE":
                 RG3DStore.LoadMeshIntermediatesROB("NECRISLE");
-                areaObjects = LoadRGM(RedguardPath + "/maps/NECRISLE.RGM", "NECRO");
+                areaObjects = LoadRGM(RedguardPath, "NECRISLE", "NECRO");
                 areaObjects.Add(SetModel_wld("NECRISLE", "NECRO"));
                 return areaObjects;
 
             case "NECRTOWR":
                 RG3DStore.LoadMeshIntermediatesROB("NECRTOWR");
-                return LoadRGM(RedguardPath + "/maps/NECRTOWR.RGM", "NECRO");
+                return LoadRGM(RedguardPath, "NECRTOWR", "NECRO");
             
             case "OBSERVE":
                 RG3DStore.LoadMeshIntermediatesROB("OBSERVE");
-                return LoadRGM(RedguardPath + "/maps/OBSERVE.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "OBSERVE", "ISLAND");
 
             case "PALACE":
                 RG3DStore.LoadMeshIntermediatesROB("PALACE");
-                return LoadRGM(RedguardPath + "/maps/PALACE.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "PALACE", "ISLAND");
 
             case "PALATEST":
                 // RG3DStore.LoadMeshIntermediatesROB("PALATEST");
-                // LoadRGM(_redguardPath + "/maps/PALATEST.RGM", "ISLAND");
+                // LoadRGM(_redguardPath + "PALATEST", "ISLAND");
             
             case "ROLLOS":
                 RG3DStore.LoadMeshIntermediatesROB("ROLLOS");
-                return LoadRGM(RedguardPath + "/maps/ROLLOS.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "ROLLOS", "ISLAND");
 
             case "SILVER1":
                 RG3DStore.LoadMeshIntermediatesROB("SILVER1");
-                return LoadRGM(RedguardPath + "/maps/SILVER1.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "SILVER1", "ISLAND");
 
             case "SILVER2":
                 RG3DStore.LoadMeshIntermediatesROB("SILVER2");
-                return LoadRGM(RedguardPath + "/maps/SILVER2.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "SILVER2", "ISLAND");
 
             case "SMDEN":
                 RG3DStore.LoadMeshIntermediatesROB("SMDEN");
-                return LoadRGM(RedguardPath + "/maps/SMDEN.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "SMDEN", "ISLAND");
 
             case "START":
                 RG3DStore.LoadMeshIntermediatesROB("START");
-                return LoadRGM(RedguardPath + "/maps/START.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "START", "ISLAND");
 
             case "TAVERN":
                 RG3DStore.LoadMeshIntermediatesROB("TAVERN");
-                return LoadRGM(RedguardPath + "/maps/TAVERN.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "TAVERN", "ISLAND");
 
             case "TEMPLE":
                 RG3DStore.LoadMeshIntermediatesROB("TEMPLE");
-                return LoadRGM(RedguardPath + "/maps/TEMPLE.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "TEMPLE", "ISLAND");
 
             case "TEMPTEST":
                 // RG3DStore.LoadMeshIntermediatesROB("TEMPTEST");
-                // LoadRGM(_redguardPath + "/maps/TEMPTEST.RGM", "ISLAND");
+                // LoadRGM(_redguardPath + "TEMPTEST", "ISLAND");
 
             case "VILE":
                 RG3DStore.LoadMeshIntermediatesROB("VILE");
-                return LoadRGM(RedguardPath + "/maps/VILE.RGM", "ISLAND");
+                return LoadRGM(RedguardPath, "VILE", "ISLAND");
         }
+        */
 
         return null;
     }
 
-    private static GameObject Add3DToScene(string prefix, string name_3d, string name_pal,Vector3 position, Vector3 eulers)
+    private static GameObject Add3DToScene(string name, RG2Mesh.UnityData_3D data_3D, Vector3 position, Vector3 eulers)
     {
-        // Create Unity Mesh Data
-        RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(name_3d, name_pal);
-
         // Create new GameObject
-        GameObject obj = new GameObject($"{prefix}_{name_3d}");
+        GameObject obj = new GameObject(name);
         
         // Add Mesh Components
         MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
@@ -191,18 +193,22 @@ public static class ModelLoader
         return obj;
     }
     
-    private static List<GameObject> LoadRGM(string filename, string name_col)
+    private static List<GameObject> LoadRGM(string gamepath, string RGMname, string name_col)
     {
+        RGRGMStore.maps_path = gamepath+"/maps/";
+
         List<GameObject> areaObjects = new List<GameObject>();
-        List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(filename);
-        List<RGRGMStore.RGRGMData> RGM_MPOBs = RGRGMStore.LoadMPOB(filename);
+        List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(RGMname);
+        List<RGRGMStore.RGRGMData> RGM_MPOBs = RGRGMStore.LoadMPOB(RGMname);
+        List<RGRGMStore.RGRGMData> RGM_MPSFs = RGRGMStore.LoadMPSF(RGMname);
         
         for(int i=0;i<RGM_MPOBs.Count;i++)
         {
             try
             {
                 // Create static objects
-                GameObject obj = Add3DToScene($"B{i:D3}", RGM_MPOBs[i].name2, name_col, RGM_MPOBs[i].position, RGM_MPOBs[i].rotation);
+                RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(RGM_MPOBs[i].name2, name_col);
+                GameObject obj = Add3DToScene($"B{i:D3}_{RGM_MPOBs[i].name2}",  data_3D, RGM_MPOBs[i].position, RGM_MPOBs[i].rotation);
                 areaObjects.Add(obj);
             }
             catch(Exception ex)
@@ -212,10 +218,25 @@ public static class ModelLoader
         }
         for(int i=0;i<RGM_MPSOs.Count;i++)
         {
-            // Create dynamic objects
-           GameObject obj = Add3DToScene($"S{i:D3}", RGM_MPSOs[i].name, name_col, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
+            try
+            {
+                RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(RGM_MPSOs[i].name, name_col);
+                GameObject obj = Add3DToScene($"S{i:D3}_{RGM_MPSOs[i].name}",  data_3D, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
+               areaObjects.Add(obj);
+            }
+            catch(Exception ex)
+            {
+                Debug.LogWarning($"ERR: S{i:D3}: {ex.Message}");
+            }
+        }
+        for(int i=0;i<RGM_MPSFs.Count;i++)
+        {
+            // Create flats
+            RG2Mesh.UnityData_3D data_3D = RG2Mesh.FLAT2Mesh(RGM_MPSFs[i].name, name_col);
+            GameObject obj = Add3DToScene($"F{i:D3}_{RGM_MPSFs[i].name}",  data_3D, RGM_MPSFs[i].position, RGM_MPSFs[i].rotation);
            areaObjects.Add(obj);
         }
+
 
         return areaObjects;
     }

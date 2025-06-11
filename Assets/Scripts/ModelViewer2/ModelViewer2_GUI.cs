@@ -166,7 +166,7 @@ public class ModelViewer2_GUI : MonoBehaviour
     public void Request3DCFile(string filename)
     {
         print("Requesting 3DC file: " + filename);
-        modelViewer2.Spawn3DC(filename);
+        modelViewer2.Spawn3DC(filename, "ISLAND");
     }
     
     public void RequestROBFile(string filename)

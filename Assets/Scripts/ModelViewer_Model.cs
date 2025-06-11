@@ -38,6 +38,23 @@ public class ModelViewer_Model : MonoBehaviour
         return spawned;
  
     }
+    public GameObject addFlatToScene(string prefix, string name_flat, string name_pal,Vector3 position, Vector3 eulers)
+    {
+        RG2Mesh.UnityData_3D data_FLAT = RG2Mesh.FLAT2Mesh(name_flat, name_pal);
+
+        GameObject spawned = new GameObject($"{prefix}_{name_flat}");
+        MeshRenderer meshRenderer = spawned.AddComponent<MeshRenderer>();
+        MeshFilter meshFilter = spawned.AddComponent<MeshFilter>();
+
+        meshFilter.mesh = data_FLAT.mesh;
+        meshRenderer.SetMaterials(data_FLAT.materials);
+
+        spawned.transform.position = position;
+        spawned.transform.Rotate(eulers);
+        return spawned;
+ 
+    }
+
     void LoadRGM(string filename, string name_col)
     {
         List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(filename);
@@ -63,7 +80,7 @@ public class ModelViewer_Model : MonoBehaviour
         
         for(int i=0;i<RGM_MPSFs.Count;i++)
         {
-            add3DToScene($"F{i:D3}", RGM_MPSFs[i].name, name_col, RGM_MPSFs[i].position, RGM_MPSFs[i].rotation);
+            addFlatToScene($"F{i:D3}", RGM_MPSFs[i].name, name_col, RGM_MPSFs[i].position, RGM_MPSFs[i].rotation);
         }
     }
 

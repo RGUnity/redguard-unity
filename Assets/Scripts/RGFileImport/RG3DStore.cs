@@ -80,8 +80,7 @@ public static class RG3DStore
             tris.Add(3);
             tris.Add(0);
 
-            string[] splits = flatDesc.Split('/');
-            o.submeshes.Add($"{splits[1]}/{splits[2]}", tris);
+            o.submeshes.Add(flatDesc, tris);
 
             MeshIntermediateDict.Add(flatDesc, o);
             Debug.Log($"FLAT: {flatDesc}");
@@ -90,15 +89,9 @@ public static class RG3DStore
 
     }
 
-
-
     // for now, assuming we only want to explicitly load 3dc files and that all 3d files are in the ROB files
     public static Mesh3D_intermediate LoadMeshIntermediate3DC(string meshname)
     {
-        // quick hack to get flats working
-        string[] splits = meshname.Split('/');
-        if(splits[0] == "MPSF")
-            return LoadMeshIntermediateFlat(meshname);
         Mesh3D_intermediate o;
         if(MeshIntermediateDict.TryGetValue(meshname, out o))
         {
