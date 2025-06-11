@@ -16,7 +16,7 @@ public static class RGTexStore
     static Dictionary<string, Shader> ShaderDict;
 
     public static string path_to_game = "./game_3dfx";
-    static string fxart_path = path_to_game + "/fxart/";
+    public static string fxart_path = path_to_game + "/fxart/";
 
     static RGTexStore()
     {
