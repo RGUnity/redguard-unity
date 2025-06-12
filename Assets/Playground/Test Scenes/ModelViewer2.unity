@@ -3600,7 +3600,7 @@ GameObject:
   - component: {fileID: 847651789}
   - component: {fileID: 847651788}
   m_Layer: 0
-  m_Name: Settings Manager
+  m_Name: Model Viewer Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4137,7 +4137,7 @@ GameObject:
   - component: {fileID: 1065159418}
   - component: {fileID: 1065159419}
   m_Layer: 0
-  m_Name: Model Loader
+  m_Name: Model VIewer Core
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
