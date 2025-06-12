@@ -83,3 +83,7 @@ Assets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db
 *.7z
 redguard-unity-win64
 redguard-modelviewer-win64
+
+# Game data stored by either game or user; can appear in either root directory (editor use) or in individual build directories
+[Rr][Gg]_[Dd]ata/
+[Rr][Gg][Ff][Xx]_[Dd]ata/
