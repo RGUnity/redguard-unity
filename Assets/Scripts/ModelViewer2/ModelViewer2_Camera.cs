@@ -12,7 +12,8 @@ public class ModelViewer2_Camera : MonoBehaviour
     [SerializeField] private float zoomSpeed = 5;
     [SerializeField] public bool useFlyMode;
     
-    private bool dragStartedInViewport;
+    private bool leftDragStartedInViewport;
+    private bool rightDragStartedInViewport;
     private float currentRotX = 160;
     private float currentRotY = 15;
 
@@ -31,17 +32,27 @@ public class ModelViewer2_Camera : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && !gui.IsMouseOverUI)
         {
-            dragStartedInViewport = true;
+            leftDragStartedInViewport = true;
         }
         
         if (Input.GetMouseButtonUp(0))
         {
-            dragStartedInViewport = false;
+            leftDragStartedInViewport = false;
+        }
+        
+        if (Input.GetMouseButtonDown(1) && !gui.IsMouseOverUI)
+        {
+            rightDragStartedInViewport = true;
+        }
+        
+        if (Input.GetMouseButtonUp(1))
+        {
+            rightDragStartedInViewport = false;
         }
 
-        if (useFlyMode)
+        if (useFlyMode && !gui.IsMouseOverUI)
         {
-            if(Input.GetMouseButton(1))
+            if((Input.GetMouseButton(0) && leftDragStartedInViewport) || (Input.GetMouseButton(1) && rightDragStartedInViewport))
             {
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
@@ -67,7 +78,7 @@ public class ModelViewer2_Camera : MonoBehaviour
                 Cursor.lockState = CursorLockMode.None;
             }
         }
-        else
+        else if (!useFlyMode)
         {
             if (_camera.localPosition != Vector3.zero)
             {
@@ -80,7 +91,7 @@ public class ModelViewer2_Camera : MonoBehaviour
             }
             
             // Mouse Rotation
-            if (Input.GetMouseButton(0) && dragStartedInViewport)
+            if (Input.GetMouseButton(0) && leftDragStartedInViewport)
             {
                 // Calcuclate X axis
                 currentRotX += Input.GetAxis("Mouse Y") * rotationSpeed;
