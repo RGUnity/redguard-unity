@@ -27,9 +27,7 @@ public class ModelViewer2_Camera : MonoBehaviour
     // Did you know? Update is called once per frame!
     private void Update()
     {
-        // IsPointerOverGameObject was removed at some point so now i need to find another way...
-        // bool mouseIsOverUI = eventSystem.IsPointerOverGameObject(gui.gameObject);
-
+        // Booleans to check if the mouse click started on UI. This avoids acciential 3D interaciton.
         if (Input.GetMouseButtonDown(0) && !gui.IsMouseOverUI)
         {
             leftDragStartedInViewport = true;
@@ -52,21 +50,22 @@ public class ModelViewer2_Camera : MonoBehaviour
 
         if (useFlyMode && !gui.IsMouseOverUI)
         {
+            // movement
+            Vector3 input = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Mouse ScrollWheel")*100, Input.GetAxis("Vertical"));
+            if(Input.GetKey(KeyCode.LeftShift))
+                speed_cur = speed_fast;
+            else if(Input.GetKey(KeyCode.LeftControl))
+                speed_cur = speed_slow;
+            else
+                speed_cur = speed_reg;
+            _camera.Translate(input * (speed_cur * Time.deltaTime));
+            
+            // rotation
             if((Input.GetMouseButton(0) && leftDragStartedInViewport) || (Input.GetMouseButton(1) && rightDragStartedInViewport))
             {
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
-                // movement
-                Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-                if(Input.GetKey(KeyCode.LeftShift))
-                    speed_cur = speed_fast;
-                else if(Input.GetKey(KeyCode.LeftControl))
-                    speed_cur = speed_slow;
-                else
-                    speed_cur = speed_reg;
-                _camera.Translate(input * (speed_cur * Time.deltaTime));
 
-                // rotation
                 Vector3 mouseInput = new Vector3(-Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"), 0f);
                 _camera.Rotate(mouseInput * (sensitivity * Time.deltaTime * 50));
                 Vector3 euler = _camera.rotation.eulerAngles;
@@ -80,6 +79,7 @@ public class ModelViewer2_Camera : MonoBehaviour
         }
         else if (!useFlyMode)
         {
+            // When exiting Fly Mode, reset Position & Rotation
             if (_camera.localPosition != Vector3.zero)
             {
                 _camera.localPosition = Vector3.zero;
