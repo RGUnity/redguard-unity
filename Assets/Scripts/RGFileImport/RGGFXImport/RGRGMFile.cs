@@ -76,8 +76,8 @@ size: {dataLength:X}
             public int MPOBCount;
             public int unknown2;
 
-            public int RAMNLength;
-            public int RAMNOffset;
+            public int RANMLength;
+            public int RANMOffset;
 
             public int RAATOffset;
 
@@ -140,8 +140,8 @@ size: {dataLength:X}
                     MPOBCount = memoryReader.ReadInt32();
                     unknown2 = memoryReader.ReadInt32();
 
-                    RAMNLength = memoryReader.ReadInt32();
-                    RAMNOffset = memoryReader.ReadInt32();
+                    RANMLength = memoryReader.ReadInt32();
+                    RANMOffset = memoryReader.ReadInt32();
 
                     RAATOffset = memoryReader.ReadInt32();
 
@@ -916,6 +916,22 @@ size: {dataLength:X}
                 }
             }
 		}
+		public struct RGMRAANSection
+		{
+
+            public byte[] data;     // we read bytes here, then further process it in animationstore
+			public RGMRAANSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    data = memoryReader.ReadBytes((int)size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAAN section with error:\n{ex.Message}");
+                }
+            }
+		}
         /*
 		public struct RGMRAANItem
 		{
@@ -946,29 +962,104 @@ size: {dataLength:X}
                 }
             }
 		}
-		public struct RGMRAANSection
-		{
 
-            public uint num_items;
-			public List<RGMRAANItem> items;
-			public RGMRAANSection(MemoryReader memoryReader, uint size)
+		public struct RGMRAGRAnimFrame
+        {
+            public byte frameType;
+            public short frameValue;
+            public bool timeScale;
+            public byte modifierValue;
+            public RGMRAGRAnimFrame(MemoryReader memoryReader)
             {
                 try
                 {
-                    num_items = size/12;
-                    items = new List<RGMRAANItem>();
-                    for(int i=0;i<(int)num_items;i++)
-                    {
-                        items.Add(new RGMRAANItem(memoryReader));
-                    }
+                    Console.WriteLine($"startf: {memoryReader.Position:X}");
+                    short frameRecord = memoryReader.ReadInt16();
+                    frameType = (byte)(frameRecord & 0x0F);
+                    frameValue = (short)((frameRecord>>4)& 0x07FF);
+                    timeScale = (((frameRecord>>15)&0x01)==0x01)?true:false;
+                    modifierValue = memoryReader.ReadByte();
+                    Console.WriteLine($"endf: {memoryReader.Position:X}");
                 }
                 catch(Exception ex)
                 {
-                    throw new Exception($"Failed to load RGM RAAN section with error:\n{ex.Message}");
+                    throw new Exception($"Failed to load RGM RAGR animFrame with error:\n{ex.Message}");
+                }
+            }
+        }
+		public struct RGMRAGRItem
+		{
+            public short dataLength;
+            public short animGroup;
+            public short frameSpeed;
+            public short animType;
+            public short frameCount;
+            public RGMRAGRAnimFrame[] animFrames;
+
+			public RGMRAGRItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    Console.WriteLine($"starti: {memoryReader.Position:X}");
+                    dataLength = memoryReader.ReadInt16();
+                    Console.WriteLine($"1: {dataLength:X}");
+                    animGroup = memoryReader.ReadInt16();
+                    Console.WriteLine($"2: {animGroup:X}");
+                    frameSpeed = memoryReader.ReadInt16();
+                    Console.WriteLine($"3: {frameSpeed:X}");
+                    animType = memoryReader.ReadInt16();
+                    Console.WriteLine($"4: {animType:X}");
+                    frameCount = memoryReader.ReadInt16();
+                    Console.WriteLine($"5: {frameCount:X}");
+                    animFrames = new RGMRAGRAnimFrame[frameCount];
+                    for(int i=0;i<frameCount;i++)
+                    {
+                    Console.WriteLine($"i: {memoryReader.Position:X}");
+                        animFrames[i] = new RGMRAGRAnimFrame(memoryReader);
+                    }
+                    Console.WriteLine($"endi: {memoryReader.Position:X}");
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAGR item with error:\n{ex.Message}");
                 }
             }
 		}
         */
+		public struct RGMRAGRSection
+		{
+
+            public byte[] data;     // we read bytes here, then further process it in animationstore
+			public RGMRAGRSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    data = memoryReader.ReadBytes((int)size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAGR section with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMRANMSection
+		{
+
+            public byte[] data;     // we read bytes here, then further process it in animationstore
+			public RGMRANMSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    data = memoryReader.ReadBytes((int)size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RANM section with error:\n{ex.Message}");
+                }
+            }
+		}
+
+
 		public struct RGMRAVCItem
 		{
             public byte offsetX;
@@ -1030,9 +1121,9 @@ size: {dataLength:X}
         public RGMRALCSection RALC;
         public RGMRAEXSection RAEX;
         public RGMRAATSection RAAT;
-        //public RGMRAANSection RAAN;
-        //public RGMRAGRSection RAGR;
-        //public RGMRANMSection RANM;
+        public RGMRAANSection RAAN;
+        public RGMRAGRSection RAGR;
+        public RGMRANMSection RANM;
         public RGMRAVCSection RAVC;
         public RGMMPOBSection MPOB;
         public RGMMPRPSection MPRP;
@@ -1138,12 +1229,18 @@ size: {dataLength:X}
                     {
                         RAEX = new RGMRAEXSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
-                    /*
                     else if(Sections[Sections.Count-1].sectionName == "RAAN")
                     {
                         RAAN = new RGMRAANSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
-                    */
+                    else if(Sections[Sections.Count-1].sectionName == "RAGR")
+                    {
+                        RAGR = new RGMRAGRSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "RANM")
+                    {
+                        RANM = new RGMRANMSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
                     else if(Sections[Sections.Count-1].sectionName == "RAVC")
                     {
                         RAVC = new RGMRAVCSection(memoryReader, Sections[Sections.Count-1].dataLength);
