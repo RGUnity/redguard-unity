@@ -83,5 +83,8 @@ Assets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db
 *.7z
 redguard-unity-win64
 redguard-modelviewer-win64
+redguard-viewer-win64
+
+# Unity Editor Dark Mode Plugin
 Assets/Editor/UnityEditorDarkMode
 Assets/Editor/UnityEditorDarkMode.meta
