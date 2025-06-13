@@ -32,6 +32,7 @@ public class ModelViewer2_Settings : MonoBehaviour
     public void ReloadFiles()
     {
         ModelLoader.RedguardPath = gui.pathInput.text;
+        PlayerPrefs.SetString("ViewerRedguardPath", ModelLoader.RedguardPath);
         mv2.ViewerMode_Levels();
     }
 

@@ -68,6 +68,11 @@ public class ModelViewer2 : MonoBehaviour
         {
             ModelLoader.RedguardPath = pathOverride;
         }
+        // If there is no override, look for a path in the PlayerPrefs
+        else if (PlayerPrefs.HasKey("ViewerRedguardPath"))
+        {
+            ModelLoader.RedguardPath = PlayerPrefs.GetString("ViewerRedguardPath");
+        }
 
         // Show the default path
         gui.pathInput.text = ModelLoader.RedguardPath;
