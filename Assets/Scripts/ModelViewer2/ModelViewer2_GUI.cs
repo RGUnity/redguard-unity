@@ -101,7 +101,7 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
         SpawnButton_Level("DRINT");
         SpawnButton_Level("EXTPALAC");
         SpawnButton_Level("GERRICKS");
-        SpawnButton_Level("HARBOTWR");
+        SpawnButton_Level("HARBTOWR");
         SpawnButton_Level("HIDEINT");
         SpawnButton_Level("HIDEOUT");
         SpawnButton_Level("INVENTRY");
