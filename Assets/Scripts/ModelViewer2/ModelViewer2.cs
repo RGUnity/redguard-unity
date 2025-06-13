@@ -30,33 +30,33 @@ public class ModelViewer2 : MonoBehaviour
 
         AreaCOLDictionary = new Dictionary<string, (string,string)>();
         //                     area name    COL      WLD (can be empty)
-        AreaCOLDictionary.Add("BELLTOWR", ("ISLAND", ""));
-        AreaCOLDictionary.Add("BRENNANS", ("ISLAND", ""));
-        AreaCOLDictionary.Add("CARTOGR",  ("ISLAND", ""));
-        AreaCOLDictionary.Add("CATACOMB", ("ISLAND", ""));
-        AreaCOLDictionary.Add("CAVERNS",  ("ISLAND", ""));
-        AreaCOLDictionary.Add("DRINT",    ("ISLAND", ""));
-        AreaCOLDictionary.Add("EXTPALAC", ("ISLAND", "ISLAND"));
-        AreaCOLDictionary.Add("GERRICKS", ("ISLAND", ""));
-        AreaCOLDictionary.Add("HARBOTWR", ("ISLAND", ""));
+        AreaCOLDictionary.Add("BELLTOWR", ("ISLE3DFX", ""));
+        AreaCOLDictionary.Add("BRENNANS", ("ISLE3DFX", ""));
+        AreaCOLDictionary.Add("CARTOGR",  ("ISLE3DFX", ""));
+        AreaCOLDictionary.Add("CATACOMB", ("CATACOMB", ""));
+        AreaCOLDictionary.Add("CAVERNS",  ("CAVETEST", ""));
+        AreaCOLDictionary.Add("DRINT",    ("OBSERVAT", ""));
+        AreaCOLDictionary.Add("EXTPALAC", ("ISLE3DFX", "ISLAND"));
+        AreaCOLDictionary.Add("GERRICKS", ("ISLE3DFX", ""));
+        AreaCOLDictionary.Add("HARBTOWR", ("ISLE3DFX", ""));
         AreaCOLDictionary.Add("HIDEINT",  ("HIDEOUT","HIDEOUT"));
         AreaCOLDictionary.Add("HIDEOUT",  ("HIDEOUT","HIDEOUT"));
-        AreaCOLDictionary.Add("ISLAND",   ("ISLAND", "ISLAND"));
-        AreaCOLDictionary.Add("JAILINT",  ("ISLAND", ""));
-        AreaCOLDictionary.Add("JFFERS",   ("ISLAND", ""));
-        AreaCOLDictionary.Add("MGUILD",   ("ISLAND", ""));
+        AreaCOLDictionary.Add("ISLAND",   ("ISLE3DFX", "ISLAND"));
+        AreaCOLDictionary.Add("JAILINT",  ("REDCAVE", ""));
+        AreaCOLDictionary.Add("JFFERS",   ("ISLE3DFX", ""));
+        AreaCOLDictionary.Add("MGUILD",   ("MGUILD", ""));
         AreaCOLDictionary.Add("NECRISLE", ("NECRO",  "NECRISLE"));
         AreaCOLDictionary.Add("NECRTOWR", ("NECRO",  ""));
-        AreaCOLDictionary.Add("OBSERVE",  ("ISLAND", ""));
-        AreaCOLDictionary.Add("PALACE",   ("ISLAND", ""));
-        AreaCOLDictionary.Add("ROLLOS",   ("ISLAND", ""));
-        AreaCOLDictionary.Add("SILVER1",  ("ISLAND", ""));
-        AreaCOLDictionary.Add("SILVER2",  ("ISLAND", ""));
-        AreaCOLDictionary.Add("SMDEN",    ("ISLAND", ""));
-        AreaCOLDictionary.Add("START",    ("ISLAND", ""));
-        AreaCOLDictionary.Add("TAVERN",   ("ISLAND", ""));
-        AreaCOLDictionary.Add("TEMPLE",   ("ISLAND", ""));
-        AreaCOLDictionary.Add("VILE",     ("ISLAND", ""));
+        AreaCOLDictionary.Add("OBSERVE",  ("OBSERVAT", ""));
+        AreaCOLDictionary.Add("PALACE",   ("PALACE00", ""));
+        AreaCOLDictionary.Add("ROLLOS",   ("ISLE3DFX", ""));
+        AreaCOLDictionary.Add("SILVER1",  ("ISLE3DFX", ""));
+        AreaCOLDictionary.Add("SILVER2",  ("ISLE3DFX", ""));
+        AreaCOLDictionary.Add("SMDEN",    ("ISLE3DFX", ""));
+        AreaCOLDictionary.Add("START",    ("ISLE3DFX", "HIDEOUT"));
+        AreaCOLDictionary.Add("TAVERN",   ("TAVERN", ""));
+        AreaCOLDictionary.Add("TEMPLE",   ("ISLE3DFX", ""));
+        AreaCOLDictionary.Add("VILE",     ("ISLE3DFX", ""));
     }
     void Start()
     {
@@ -67,9 +67,23 @@ public class ModelViewer2 : MonoBehaviour
         if (pathOverride.Length > 0)
         {
             ModelLoader.RedguardPath = pathOverride;
+            print("Redgaurd Path Override found in Scene. Value: " + ModelLoader.RedguardPath);
         }
-
+        // If there is no override, look for a path in the PlayerPrefs
+        else if (PlayerPrefs.HasKey("ViewerRedguardPath"))
+        {
+            ModelLoader.RedguardPath = PlayerPrefs.GetString("ViewerRedguardPath");
+            print("Path found in PlayerPrefs. Value: " + ModelLoader.RedguardPath);
+        }
         // Show the default path
+        else
+        {
+           
+            print("Using Default Path. Value: " + ModelLoader.RedguardPath);
+            
+        }
+        
+        // Update Path displayed in UI
         gui.pathInput.text = ModelLoader.RedguardPath;
         
         // Start in Viewer Mode

@@ -4,8 +4,9 @@ using UnityEngine.UI;
 using Assets.Scripts.RGFileImport;
 using Assets.Scripts.RGFileImport.RGGFXImport;
 using TMPro;
+using UnityEngine.EventSystems;
 
-public class ModelViewer2_GUI : MonoBehaviour
+public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private ModelViewer2 modelViewer2;
     [SerializeField] private RectTransform button_ModeLevel;
@@ -17,7 +18,18 @@ public class ModelViewer2_GUI : MonoBehaviour
     [SerializeField] private GameObject errorPopup_Path;
     [SerializeField] public TMP_InputField pathInput;
 
+    public bool IsMouseOverUI { get; private set; }
+    
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        IsMouseOverUI = true;
+    }
 
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        IsMouseOverUI = false;
+    }
+    
     public void ClearButtonList()
     {
         // Clear all buttons
@@ -89,7 +101,7 @@ public class ModelViewer2_GUI : MonoBehaviour
         SpawnButton_Level("DRINT");
         SpawnButton_Level("EXTPALAC");
         SpawnButton_Level("GERRICKS");
-        SpawnButton_Level("HARBOTWR");
+        SpawnButton_Level("HARBTOWR");
         SpawnButton_Level("HIDEINT");
         SpawnButton_Level("HIDEOUT");
         SpawnButton_Level("INVENTRY");

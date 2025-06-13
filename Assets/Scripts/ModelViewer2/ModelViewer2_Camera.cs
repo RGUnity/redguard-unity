@@ -12,7 +12,8 @@ public class ModelViewer2_Camera : MonoBehaviour
     [SerializeField] private float zoomSpeed = 5;
     [SerializeField] public bool useFlyMode;
     
-    private bool dragStartedInViewport;
+    private bool leftDragStartedInViewport;
+    private bool rightDragStartedInViewport;
     private float currentRotX = 160;
     private float currentRotY = 15;
 
@@ -26,39 +27,45 @@ public class ModelViewer2_Camera : MonoBehaviour
     // Did you know? Update is called once per frame!
     private void Update()
     {
-        // IsPointerOverGameObject was removed at some point so now i need to find another way...
-        // bool mouseIsOverUI = eventSystem.IsPointerOverGameObject(gui.gameObject);
-        
-        // Temporary fix to prevent errors
-        bool mouseIsOverUI = false;
-
-        if (Input.GetMouseButtonDown(0) && !mouseIsOverUI)
+        // Booleans to check if the mouse click started on UI. This avoids acciential 3D interaciton.
+        if (Input.GetMouseButtonDown(0) && !gui.IsMouseOverUI)
         {
-            dragStartedInViewport = true;
+            leftDragStartedInViewport = true;
         }
         
         if (Input.GetMouseButtonUp(0))
         {
-            dragStartedInViewport = false;
+            leftDragStartedInViewport = false;
+        }
+        
+        if (Input.GetMouseButtonDown(1) && !gui.IsMouseOverUI)
+        {
+            rightDragStartedInViewport = true;
+        }
+        
+        if (Input.GetMouseButtonUp(1))
+        {
+            rightDragStartedInViewport = false;
         }
 
-        if (useFlyMode)
+        if (useFlyMode && !gui.IsMouseOverUI)
         {
-            if(Input.GetMouseButton(1))
+            // movement
+            Vector3 input = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Mouse ScrollWheel")*100, Input.GetAxis("Vertical"));
+            if(Input.GetKey(KeyCode.LeftShift))
+                speed_cur = speed_fast;
+            else if(Input.GetKey(KeyCode.LeftControl))
+                speed_cur = speed_slow;
+            else
+                speed_cur = speed_reg;
+            _camera.Translate(input * (speed_cur * Time.deltaTime));
+            
+            // rotation
+            if((Input.GetMouseButton(0) && leftDragStartedInViewport) || (Input.GetMouseButton(1) && rightDragStartedInViewport))
             {
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
-                // movement
-                Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-                if(Input.GetKey(KeyCode.LeftShift))
-                    speed_cur = speed_fast;
-                else if(Input.GetKey(KeyCode.LeftControl))
-                    speed_cur = speed_slow;
-                else
-                    speed_cur = speed_reg;
-                _camera.Translate(input * (speed_cur * Time.deltaTime));
 
-                // rotation
                 Vector3 mouseInput = new Vector3(-Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"), 0f);
                 _camera.Rotate(mouseInput * (sensitivity * Time.deltaTime * 50));
                 Vector3 euler = _camera.rotation.eulerAngles;
@@ -70,8 +77,9 @@ public class ModelViewer2_Camera : MonoBehaviour
                 Cursor.lockState = CursorLockMode.None;
             }
         }
-        else
+        else if (!useFlyMode)
         {
+            // When exiting Fly Mode, reset Position & Rotation
             if (_camera.localPosition != Vector3.zero)
             {
                 _camera.localPosition = Vector3.zero;
@@ -83,7 +91,7 @@ public class ModelViewer2_Camera : MonoBehaviour
             }
             
             // Mouse Rotation
-            if (Input.GetMouseButton(0) && dragStartedInViewport)
+            if (Input.GetMouseButton(0) && leftDragStartedInViewport)
             {
                 // Calcuclate X axis
                 currentRotX += Input.GetAxis("Mouse Y") * rotationSpeed;
@@ -99,7 +107,7 @@ public class ModelViewer2_Camera : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, currentRotY, 0);
 
             // Mouse Wheel Zoom
-            if (!mouseIsOverUI)
+            if (!gui.IsMouseOverUI)
             {
                 // Calculate Zoom value
                 Vector3 pos = cameraRootZ.localPosition;
