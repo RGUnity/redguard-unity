@@ -67,14 +67,23 @@ public class ModelViewer2 : MonoBehaviour
         if (pathOverride.Length > 0)
         {
             ModelLoader.RedguardPath = pathOverride;
+            print("Redgaurd Path Override found in Scene. Value: " + ModelLoader.RedguardPath);
         }
         // If there is no override, look for a path in the PlayerPrefs
         else if (PlayerPrefs.HasKey("ViewerRedguardPath"))
         {
             ModelLoader.RedguardPath = PlayerPrefs.GetString("ViewerRedguardPath");
+            print("Path found in PlayerPrefs. Value: " + ModelLoader.RedguardPath);
         }
-
         // Show the default path
+        else
+        {
+           
+            print("Using Default Path. Value: " + ModelLoader.RedguardPath);
+            
+        }
+        
+        // Update Path displayed in UI
         gui.pathInput.text = ModelLoader.RedguardPath;
         
         // Start in Viewer Mode
