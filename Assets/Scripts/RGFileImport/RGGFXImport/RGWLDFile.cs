@@ -9,8 +9,11 @@ namespace RGFileImport
 	public class RGWLDFile
 	{
         // map scale; needs a look in-game to see what fits
-        const float WLD_SIZE_SCALE = 13.0f;
+        const float WLD_SIZE_SCALE = 12.9f;
         const float WLD_SIZE_SCALE_HEIGHT = 0.8f;
+        const float WLD_OFFSET_X = -14.0f;
+        const float WLD_OFFSET_Y = -2.0f;
+        const float WLD_OFFSET_Z = 11.0f;
 
 		public struct WLDHeader
 		{
@@ -277,19 +280,25 @@ IO_WLD_data_t
 					a1 = new Vector3((float)(x+1)*WLD_SIZE_SCALE,
 							    	 (float)maps_data.heightmap[(x+1)+(y+1)*map_size]*WLD_SIZE_SCALE_HEIGHT,
 							    	 -(float)(y+1)*WLD_SIZE_SCALE);
+					a1 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
 
 					b1 = new Vector3((float)(x+1)*WLD_SIZE_SCALE,
 							    	 (float)maps_data.heightmap[(x+1)+(y+0)*map_size]*WLD_SIZE_SCALE_HEIGHT,
 							    	 -(float)(y+0)*WLD_SIZE_SCALE);
+					b1 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
 
 					c1 = new Vector3((float)(x+0)*WLD_SIZE_SCALE,
 							    	 (float)maps_data.heightmap[(x+0)+(y+0)*map_size]*WLD_SIZE_SCALE_HEIGHT,
 							    	 -(float)(y+0)*WLD_SIZE_SCALE);
+					c1 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
+
 					// tri 2
 					a2 = c1;
 					b2 = new Vector3((float)(x+0)*WLD_SIZE_SCALE,
 							    	 (float)maps_data.heightmap[(x+0)+(y+1)*map_size]*WLD_SIZE_SCALE_HEIGHT,
 							    	 -(float)(y+1)*WLD_SIZE_SCALE);
+					b2 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
+
 					c2 = a1;
 
 				// uvs

@@ -48,16 +48,17 @@ size: {dataLength:X}
 		public struct RGMRAHDSection
         {
             public uint num_items;  // 4 bytes
-			public List<RGMRAHDItem> items;
+			public Dictionary<string, RGMRAHDItem> dict;
 			public RGMRAHDSection(MemoryReader memoryReader, uint size)
             {
                 try
                 {
                     num_items = memoryReader.ReadUInt32();
-                    items = new List<RGMRAHDItem>();
+                    dict = new Dictionary<string, RGMRAHDItem>();
                     for(int i=0;i<(int)num_items;i++)
                     {
-                        items.Add(new RGMRAHDItem(memoryReader));
+						RGMRAHDItem cur = new RGMRAHDItem(memoryReader);
+                        dict.Add(cur.scriptName, cur);
                     }
                     memoryReader.ReadUInt32(); // no idea what this one is?
                 }
@@ -365,13 +366,13 @@ size: {dataLength:X}
 			public int id;           // 4 bytes 0
 			public byte typeId;      // 1 byte  4
 			public byte isActive;    // 1 byte  5
-            public string name;      // 9 bytes 6
-            public string name2;     // 9 bytes 15
+            public string scriptName;      // 9 bytes 6
+            public string modelName;     // 9 bytes 15
             public byte isStatic;    // 1 byte  24
             public short unknown1;    // 2 byte 26
-            public int  posx;        // 4 bytes 27
-            public int  posy;        // 4 bytes
-            public int  posz;        // 4 bytes
+            public int  posX;        // 4 bytes 27
+            public int  posY;        // 4 bytes
+            public int  posZ;        // 4 bytes
             public uint  anglex;     // 4 bytes
             public uint  angley;     // 4 bytes
             public uint  anglez;     // 4 bytes
@@ -391,18 +392,18 @@ size: {dataLength:X}
 
                     char[] name_char = memoryReader.ReadChars(9);
                     string[] name_strs = new string(name_char).Split('\0');
-                    name = name_strs[0];
+                    scriptName = name_strs[0];
                     name_char = memoryReader.ReadChars(9);
                     name_strs = new string(name_char).Split('\0');
-                    name2 = name_strs[0];
+                    modelName = name_strs[0];
 
                     isStatic = memoryReader.ReadByte();
                     unknown1 = memoryReader.ReadInt16();
-                    posx = memoryReader.ReadInt24();
+                    posX = memoryReader.ReadInt24();
                     memoryReader.ReadByte();
-                    posy = memoryReader.ReadInt24();
+                    posY = memoryReader.ReadInt24();
                     memoryReader.ReadByte();
-                    posz = memoryReader.ReadInt24();
+                    posZ = memoryReader.ReadInt24();
                     anglex = memoryReader.ReadUInt32();
                     angley = memoryReader.ReadUInt32();
                     anglez = memoryReader.ReadUInt32();
@@ -421,7 +422,7 @@ size: {dataLength:X}
             }
 			public override string ToString()
 			{
-				return $@"{name},{String.Join(",", unknown2)}";
+				return $@"{scriptName},{String.Join(",", unknown2)}";
 			}
 		}
 
@@ -429,9 +430,9 @@ size: {dataLength:X}
 		{
 			public int id;           //  4 bytes
             public string name;            // 12 bytes
-            public int posx;              //  4 bytes; increasing moves position east
-            public int posy;           //  4 bytes increasing moves position up
-            public int posz;              //  4 bytes increasing moves position north
+            public int posX;              //  4 bytes; increasing moves position east
+            public int posY;           //  4 bytes increasing moves position up
+            public int posZ;              //  4 bytes increasing moves position north
             public int[] rotation_matrix;  // 36 bytes => 3x3 matrix, uses Q4.28 fixed-point
             public byte[] unknown;        //  2 bytes always 0
                                            // for whoevers keeping track: 66 bytes
@@ -448,11 +449,11 @@ size: {dataLength:X}
                     name_char = memoryReader.ReadChars(12);
                     string[] name_strs = new string(name_char).Split('\0');
                     name = name_strs[0];
-                    posx = memoryReader.ReadInt24();
+                    posX = memoryReader.ReadInt24();
                     memoryReader.ReadByte(); // 4 bytes for that s24 above
-                    posy = memoryReader.ReadInt24();
+                    posY = memoryReader.ReadInt24();
                     memoryReader.ReadByte();
-                    posz = memoryReader.ReadInt24();
+                    posZ = memoryReader.ReadInt24();
                     memoryReader.ReadByte();
                     rotation_matrix = new int[9];
                     for(int i=0;i<9;i++)

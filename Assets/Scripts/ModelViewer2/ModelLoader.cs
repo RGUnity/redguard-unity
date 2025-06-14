@@ -62,22 +62,26 @@ public static class ModelLoader
         
         for(int i=0;i<RGM_MPOBs.Count;i++)
         {
+			RGFileImport.RGRGMFile filergm = RGRGMStore.GetRGM(RGMname);
             try
             {
-                // Create static objects
-                RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(RGM_MPOBs[i].name2, name_col);
-                GameObject obj = Add3DToScene($"B{i:D3}_{RGM_MPOBs[i].name2}",  data_3D, RGM_MPOBs[i].position, RGM_MPOBs[i].rotation);
-                areaObjects.Add(obj);
+                // Create scripted objects
+				GameObject spawned = new GameObject($"B_{i:D3}_{filergm.MPOB.items[i].scriptName}");
+				spawned.AddComponent<RGScriptedObject>();
+				spawned.GetComponent<RGScriptedObject>().instanciateRGScriptedObject(filergm.MPOB.items[i], filergm, name_col);
+
+                areaObjects.Add(spawned);
             }
             catch(Exception ex)
             {
-                Debug.LogWarning($"ERR: B{i:D3}: {ex.Message}");
+                Debug.LogWarning($"ERR: B{i:D3}_{filergm.MPOB.items[i].scriptName}: {ex.Message}");
             }
         }
         for(int i=0;i<RGM_MPSOs.Count;i++)
         {
             try
             {
+                // Create static objects
                 RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(RGM_MPSOs[i].name, name_col);
                 GameObject obj = Add3DToScene($"S{i:D3}_{RGM_MPSOs[i].name}",  data_3D, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
                areaObjects.Add(obj);

@@ -6,7 +6,8 @@ using Assets.Scripts.RGFileImport.RGGFXImport;
 
 public static class RGRGMStore
 {
-    const float RGM_MPOB_SCALE = 0.000195f;
+    //const float RGM_MPOB_SCALE = 0.000195f;
+    const float RGM_MPOB_SCALE = 1/5120.0f;
     const float RGM_X_OFS = 0.0f;//29.8f;
     const float RGM_Y_OFS = 0.0f; //-22.8f;
     const float RGM_Z_OFS = 0.0f;
@@ -87,9 +88,9 @@ public static class RGRGMStore
         for(int i=0;i<filergm.MPSO.items.Count;i++)
         {
             try{
-                float posx =  (float)(filergm.MPSO.items[i].posx)*RGM_MPOB_SCALE;
-                float posy = -(float)(filergm.MPSO.items[i].posy)*RGM_MPOB_SCALE;
-                float posz = -(float)(0xFFFFFF-filergm.MPSO.items[i].posz)*RGM_MPOB_SCALE;
+                float posx =  (float)(filergm.MPSO.items[i].posX)*RGM_MPOB_SCALE;
+                float posy = -(float)(filergm.MPSO.items[i].posY)*RGM_MPOB_SCALE;
+                float posz = -(float)(0xFFFFFF-filergm.MPSO.items[i].posZ)*RGM_MPOB_SCALE;
 
                 posx += RGM_X_OFS;
                 posy += RGM_Y_OFS;
@@ -116,9 +117,9 @@ public static class RGRGMStore
             if(filergm.MPOB.items[i].isStatic == 1)
             {
                 try{
-                    float posx =  (float)(filergm.MPOB.items[i].posx)*RGM_MPOB_SCALE;
-                    float posy = -(float)(filergm.MPOB.items[i].posy)*RGM_MPOB_SCALE;
-                    float posz = -(float)(0xFFFFFF-filergm.MPOB.items[i].posz)*RGM_MPOB_SCALE;
+                    float posx =  (float)(filergm.MPOB.items[i].posX)*RGM_MPOB_SCALE;
+                    float posy = -(float)(filergm.MPOB.items[i].posY)*RGM_MPOB_SCALE;
+                    float posz = -(float)(0xFFFFFF-filergm.MPOB.items[i].posZ)*RGM_MPOB_SCALE;
 
                     posx += RGM_X_OFS;
                     posy += RGM_Y_OFS;
@@ -126,13 +127,13 @@ public static class RGRGMStore
 
                     Vector3 eulers = eulers_from_MPOB_data(filergm.MPOB.items[i]);
 
-                    string modelname = filergm.MPOB.items[i].name2.Split('.')[0];
+                    string modelname = filergm.MPOB.items[i].modelName.Split('.')[0];
 
-                    data_out.Add(new RGRGMData(filergm.MPOB.items[i].name, modelname, new Vector3(posx, posy, posz), eulers));
+                    data_out.Add(new RGRGMData(filergm.MPOB.items[i].scriptName, modelname, new Vector3(posx, posy, posz), eulers));
                 }
                 catch(Exception ex)
                 {
-                    Debug.Log($"Error loading MPOB item from {filename}: {filergm.MPOB.items[i].name}: {ex}");
+                    Debug.Log($"Error loading MPOB item from {filename}: {filergm.MPOB.items[i].scriptName}: {ex}");
                 }
             }
         }
@@ -156,7 +157,7 @@ public static class RGRGMStore
         Vector3 eulers = Vector3.Scale(m.rotation.eulerAngles, RG3DStore.MESH_ROT_FLIP);
         return eulers;
     }
-    static Vector3 eulers_from_MPOB_data(RGFileImport.RGRGMFile.RGMMPOBItem i)
+    public static Vector3 eulers_from_MPOB_data(RGFileImport.RGRGMFile.RGMMPOBItem i)
     {
         const float DA2DG = (180.0f/1024.0f);
         Vector3 eulers = new Vector3 (i.anglex%2048, i.angley%2048, i.anglez%2048);

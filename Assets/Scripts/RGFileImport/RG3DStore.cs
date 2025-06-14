@@ -131,7 +131,7 @@ public static class RG3DStore
                     }
                     catch(Exception ex)
                     {
-                        Debug.Log($"prolly file not found?");
+                        Debug.Log($"Failed to load 3DC file from rob with error {ex.Message}");
                     }
                 }
             }

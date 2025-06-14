@@ -293,7 +293,7 @@ public static class RGRGMAnimStore
         public string animationName;
         public List<RGMRAANItem> RAANItems;
         public List<RGMRAGRItem> RAGRItems;
-        public RGMAnim(int anim_i, RGRGMFile.RGMRAHDItem RAHD, RGRGMFile.RGMRAANSection RAAN, RGRGMFile.RGMRAGRSection RAGR)
+        public RGMAnim(RGRGMFile.RGMRAHDItem RAHD, RGRGMFile.RGMRAANSection RAAN, RGRGMFile.RGMRAGRSection RAGR)
         {
             currentAnimationId  = 0;
             currentFrame        = 0;
@@ -440,11 +440,13 @@ public static class RGRGMAnimStore
     static public Dictionary<string, RGMAnim> Anims; // key: RAHD.scriptName
     static public void ReadAnim(RGFileImport.RGRGMFile filergm)
     {
+		/*
         Anims = new Dictionary<string, RGMAnim>();
-        for(int i=0;i<filergm.RAHD.items.Count;i++)
+        for(int i=0;i<filergm.RAHD.dict.Count;i++)
         {
-            RGMAnim Anim = new RGMAnim(i, filergm.RAHD.items[i], filergm.RAAN, filergm.RAGR);
-            Anims.Add(filergm.RAHD.items[i].scriptName, Anim);
+            RGMAnim Anim = new RGMAnim(filergm.RAHD.dict[i], filergm.RAAN, filergm.RAGR);
+            Anims.Add(filergm.RAHD.dict[i].scriptName, Anim);
         }
+		*/
     }
 }
