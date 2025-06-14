@@ -17,6 +17,7 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
     [SerializeField] private GameObject buttonROB_Prefab;
     [SerializeField] private GameObject errorPopup_Path;
     [SerializeField] public TMP_InputField pathInput;
+    [SerializeField] public TMP_InputField eportPathInput;
 
     public bool IsMouseOverUI { get; private set; }
     
@@ -198,5 +199,10 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
         {
             pathInput.GetComponent<Image>().color = Color.white;
         }
+    }
+    
+    public void RequestExportGLTF()
+    {
+        modelViewer2.ExportGLTF();
     }
 }
