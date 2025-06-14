@@ -104,9 +104,7 @@ public class ModelViewer2 : MonoBehaviour
     {
         try
         {
-            var dirInfo = new DirectoryInfo(ModelLoader.RedguardPath);
-
-            if (dirInfo.Exists)
+            if (File.Exists(ModelLoader.RedguardPath + "/REDGUARD.EXE"))
             {
                 print("Using Folder " + ModelLoader.RedguardPath);
                 RG3DStore.path_to_game = ModelLoader.RedguardPath;
