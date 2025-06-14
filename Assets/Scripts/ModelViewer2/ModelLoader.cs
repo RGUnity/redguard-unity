@@ -14,6 +14,10 @@ public static class ModelLoader
     
     public static GameObject Load3DC(string f3DCname, string colname)
     {
+        RGRGMStore.maps_path = RedguardPath +"/maps/";
+        RG3DStore.fxart_path = RedguardPath +"/fxart/";
+        RGTexStore.fxart_path = RedguardPath +"/fxart/";
+        
         RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(f3DCname, colname);
         GameObject obj = Add3DToScene($"3DC_{f3DCname}",  data_3D, Vector3.zero, Vector3.zero);
         return obj;
