@@ -437,14 +437,14 @@ public static class RGRGMAnimStore
             //return frame3DC;
         }
     }
-    static public List<RGMAnim> Anims;
+    static public Dictionary<string, RGMAnim> Anims; // key: RAHD.scriptName
     static public void ReadAnim(RGFileImport.RGRGMFile filergm)
     {
-        Anims = new List<RGMAnim>();
+        Anims = new Dictionary<string, RGMAnim>();
         for(int i=0;i<filergm.RAHD.items.Count;i++)
         {
             RGMAnim Anim = new RGMAnim(i, filergm.RAHD.items[i], filergm.RAAN, filergm.RAGR);
-            Anims.Add(Anim);
+            Anims.Add(filergm.RAHD.items[i].scriptName, Anim);
         }
     }
 }

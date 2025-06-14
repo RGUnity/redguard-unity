@@ -11,7 +11,7 @@ namespace xyz
 			RGRGMFile filergm = new RGRGMFile();
 			filergm.LoadFile("../../game_3dfx/maps/ISLAND.RGM");
             RGRGMAnimStore.ReadAnim(filergm);
-
+/*
             int cnt = RGRGMAnimStore.Anims.Count;
             for(int j=22;j<23;j++)
             {
@@ -19,10 +19,12 @@ namespace xyz
                 Console.WriteLine($"############### {j}::{filergm.RAHD.items[j].scriptName} ###############");
                 Console.WriteLine(RGRGMAnimStore.Anims[j]);
             }
-            RGRGMAnimStore.Anims[22].PushAnimation(RGRGMAnimStore.AnimGroup.anim_run_forward,0);
+*/
+            Console.WriteLine(RGRGMAnimStore.Anims["CYRUS"]);
+            RGRGMAnimStore.Anims["CYRUS"].PushAnimation(RGRGMAnimStore.AnimGroup.anim_run_forward,0);
             for(int i=0;i<50;i++)
             {
-                Console.WriteLine(RGRGMAnimStore.Anims[22].NextFrame());
+                Console.WriteLine(RGRGMAnimStore.Anims["CYRUS"].NextFrame());
             }
 
         }
