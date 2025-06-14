@@ -144,6 +144,14 @@ namespace RGFileImport
             Position+=4;
             return o;
         }
+
+        public short PeekInt16()
+        {
+            short o = ReadInt16();
+            Position-=2;
+            return o;
+        }
+
         public static uint ReverseBytes(uint n)
         {
             var bytes = BitConverter.GetBytes(n);

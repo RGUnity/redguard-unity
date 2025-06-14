@@ -648,11 +648,13 @@ int INF_LOOP_DET = 0;
 
     static public void ReadScript(RGFileImport.RGRGMFile filergm)
     {
+		/*
         scripts = new List<RGMScript>();
-        for(int i=0;i<filergm.RAHD.items.Count;i++)
+        for(int i=0;i<filergm.RAHD.dict.Count;i++)
         {
-            RGMScript script = new RGMScript(i, filergm.RAHD.items[i], filergm.RAST, filergm.RASB, filergm.RAVA, filergm.RASC, filergm.RAAT);
+            RGMScript script = new RGMScript(i, filergm.RAHD.dict[i], filergm.RAST, filergm.RASB, filergm.RAVA, filergm.RASC, filergm.RAAT);
             scripts.Add(script);
         }
+		*/
     }
 }

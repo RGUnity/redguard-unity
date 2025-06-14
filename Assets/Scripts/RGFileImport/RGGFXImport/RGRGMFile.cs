@@ -48,16 +48,17 @@ size: {dataLength:X}
 		public struct RGMRAHDSection
         {
             public uint num_items;  // 4 bytes
-			public List<RGMRAHDItem> items;
+			public Dictionary<string, RGMRAHDItem> dict;
 			public RGMRAHDSection(MemoryReader memoryReader, uint size)
             {
                 try
                 {
                     num_items = memoryReader.ReadUInt32();
-                    items = new List<RGMRAHDItem>();
+                    dict = new Dictionary<string, RGMRAHDItem>();
                     for(int i=0;i<(int)num_items;i++)
                     {
-                        items.Add(new RGMRAHDItem(memoryReader));
+						RGMRAHDItem cur = new RGMRAHDItem(memoryReader);
+                        dict.Add(cur.scriptName, cur);
                     }
                     memoryReader.ReadUInt32(); // no idea what this one is?
                 }
@@ -76,8 +77,8 @@ size: {dataLength:X}
             public int MPOBCount;
             public int unknown2;
 
-            public int RAMNLength;
-            public int RAMNOffset;
+            public int RANMLength;
+            public int RANMOffset;
 
             public int RAATOffset;
 
@@ -140,8 +141,8 @@ size: {dataLength:X}
                     MPOBCount = memoryReader.ReadInt32();
                     unknown2 = memoryReader.ReadInt32();
 
-                    RAMNLength = memoryReader.ReadInt32();
-                    RAMNOffset = memoryReader.ReadInt32();
+                    RANMLength = memoryReader.ReadInt32();
+                    RANMOffset = memoryReader.ReadInt32();
 
                     RAATOffset = memoryReader.ReadInt32();
 
@@ -365,13 +366,13 @@ size: {dataLength:X}
 			public int id;           // 4 bytes 0
 			public byte typeId;      // 1 byte  4
 			public byte isActive;    // 1 byte  5
-            public string name;      // 9 bytes 6
-            public string name2;     // 9 bytes 15
+            public string scriptName;      // 9 bytes 6
+            public string modelName;     // 9 bytes 15
             public byte isStatic;    // 1 byte  24
             public short unknown1;    // 2 byte 26
-            public int  posx;        // 4 bytes 27
-            public int  posy;        // 4 bytes
-            public int  posz;        // 4 bytes
+            public int  posX;        // 4 bytes 27
+            public int  posY;        // 4 bytes
+            public int  posZ;        // 4 bytes
             public uint  anglex;     // 4 bytes
             public uint  angley;     // 4 bytes
             public uint  anglez;     // 4 bytes
@@ -391,18 +392,18 @@ size: {dataLength:X}
 
                     char[] name_char = memoryReader.ReadChars(9);
                     string[] name_strs = new string(name_char).Split('\0');
-                    name = name_strs[0];
+                    scriptName = name_strs[0];
                     name_char = memoryReader.ReadChars(9);
                     name_strs = new string(name_char).Split('\0');
-                    name2 = name_strs[0];
+                    modelName = name_strs[0];
 
                     isStatic = memoryReader.ReadByte();
                     unknown1 = memoryReader.ReadInt16();
-                    posx = memoryReader.ReadInt24();
+                    posX = memoryReader.ReadInt24();
                     memoryReader.ReadByte();
-                    posy = memoryReader.ReadInt24();
+                    posY = memoryReader.ReadInt24();
                     memoryReader.ReadByte();
-                    posz = memoryReader.ReadInt24();
+                    posZ = memoryReader.ReadInt24();
                     anglex = memoryReader.ReadUInt32();
                     angley = memoryReader.ReadUInt32();
                     anglez = memoryReader.ReadUInt32();
@@ -421,7 +422,7 @@ size: {dataLength:X}
             }
 			public override string ToString()
 			{
-				return $@"{name},{String.Join(",", unknown2)}";
+				return $@"{scriptName},{String.Join(",", unknown2)}";
 			}
 		}
 
@@ -429,9 +430,9 @@ size: {dataLength:X}
 		{
 			public int id;           //  4 bytes
             public string name;            // 12 bytes
-            public int posx;              //  4 bytes; increasing moves position east
-            public int posy;           //  4 bytes increasing moves position up
-            public int posz;              //  4 bytes increasing moves position north
+            public int posX;              //  4 bytes; increasing moves position east
+            public int posY;           //  4 bytes increasing moves position up
+            public int posZ;              //  4 bytes increasing moves position north
             public int[] rotation_matrix;  // 36 bytes => 3x3 matrix, uses Q4.28 fixed-point
             public byte[] unknown;        //  2 bytes always 0
                                            // for whoevers keeping track: 66 bytes
@@ -448,11 +449,11 @@ size: {dataLength:X}
                     name_char = memoryReader.ReadChars(12);
                     string[] name_strs = new string(name_char).Split('\0');
                     name = name_strs[0];
-                    posx = memoryReader.ReadInt24();
+                    posX = memoryReader.ReadInt24();
                     memoryReader.ReadByte(); // 4 bytes for that s24 above
-                    posy = memoryReader.ReadInt24();
+                    posY = memoryReader.ReadInt24();
                     memoryReader.ReadByte();
-                    posz = memoryReader.ReadInt24();
+                    posZ = memoryReader.ReadInt24();
                     memoryReader.ReadByte();
                     rotation_matrix = new int[9];
                     for(int i=0;i<9;i++)
@@ -916,6 +917,22 @@ size: {dataLength:X}
                 }
             }
 		}
+		public struct RGMRAANSection
+		{
+
+            public byte[] data;     // we read bytes here, then further process it in animationstore
+			public RGMRAANSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    data = memoryReader.ReadBytes((int)size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAAN section with error:\n{ex.Message}");
+                }
+            }
+		}
         /*
 		public struct RGMRAANItem
 		{
@@ -946,29 +963,104 @@ size: {dataLength:X}
                 }
             }
 		}
-		public struct RGMRAANSection
-		{
 
-            public uint num_items;
-			public List<RGMRAANItem> items;
-			public RGMRAANSection(MemoryReader memoryReader, uint size)
+		public struct RGMRAGRAnimFrame
+        {
+            public byte frameType;
+            public short frameValue;
+            public bool timeScale;
+            public byte modifierValue;
+            public RGMRAGRAnimFrame(MemoryReader memoryReader)
             {
                 try
                 {
-                    num_items = size/12;
-                    items = new List<RGMRAANItem>();
-                    for(int i=0;i<(int)num_items;i++)
-                    {
-                        items.Add(new RGMRAANItem(memoryReader));
-                    }
+                    Console.WriteLine($"startf: {memoryReader.Position:X}");
+                    short frameRecord = memoryReader.ReadInt16();
+                    frameType = (byte)(frameRecord & 0x0F);
+                    frameValue = (short)((frameRecord>>4)& 0x07FF);
+                    timeScale = (((frameRecord>>15)&0x01)==0x01)?true:false;
+                    modifierValue = memoryReader.ReadByte();
+                    Console.WriteLine($"endf: {memoryReader.Position:X}");
                 }
                 catch(Exception ex)
                 {
-                    throw new Exception($"Failed to load RGM RAAN section with error:\n{ex.Message}");
+                    throw new Exception($"Failed to load RGM RAGR animFrame with error:\n{ex.Message}");
+                }
+            }
+        }
+		public struct RGMRAGRItem
+		{
+            public short dataLength;
+            public short animGroup;
+            public short frameSpeed;
+            public short animType;
+            public short frameCount;
+            public RGMRAGRAnimFrame[] animFrames;
+
+			public RGMRAGRItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    Console.WriteLine($"starti: {memoryReader.Position:X}");
+                    dataLength = memoryReader.ReadInt16();
+                    Console.WriteLine($"1: {dataLength:X}");
+                    animGroup = memoryReader.ReadInt16();
+                    Console.WriteLine($"2: {animGroup:X}");
+                    frameSpeed = memoryReader.ReadInt16();
+                    Console.WriteLine($"3: {frameSpeed:X}");
+                    animType = memoryReader.ReadInt16();
+                    Console.WriteLine($"4: {animType:X}");
+                    frameCount = memoryReader.ReadInt16();
+                    Console.WriteLine($"5: {frameCount:X}");
+                    animFrames = new RGMRAGRAnimFrame[frameCount];
+                    for(int i=0;i<frameCount;i++)
+                    {
+                    Console.WriteLine($"i: {memoryReader.Position:X}");
+                        animFrames[i] = new RGMRAGRAnimFrame(memoryReader);
+                    }
+                    Console.WriteLine($"endi: {memoryReader.Position:X}");
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAGR item with error:\n{ex.Message}");
                 }
             }
 		}
         */
+		public struct RGMRAGRSection
+		{
+
+            public byte[] data;     // we read bytes here, then further process it in animationstore
+			public RGMRAGRSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    data = memoryReader.ReadBytes((int)size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAGR section with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMRANMSection
+		{
+
+            public byte[] data;     // we read bytes here, then further process it in animationstore
+			public RGMRANMSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    data = memoryReader.ReadBytes((int)size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RANM section with error:\n{ex.Message}");
+                }
+            }
+		}
+
+
 		public struct RGMRAVCItem
 		{
             public byte offsetX;
@@ -1030,9 +1122,9 @@ size: {dataLength:X}
         public RGMRALCSection RALC;
         public RGMRAEXSection RAEX;
         public RGMRAATSection RAAT;
-        //public RGMRAANSection RAAN;
-        //public RGMRAGRSection RAGR;
-        //public RGMRANMSection RANM;
+        public RGMRAANSection RAAN;
+        public RGMRAGRSection RAGR;
+        public RGMRANMSection RANM;
         public RGMRAVCSection RAVC;
         public RGMMPOBSection MPOB;
         public RGMMPRPSection MPRP;
@@ -1138,12 +1230,18 @@ size: {dataLength:X}
                     {
                         RAEX = new RGMRAEXSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
-                    /*
                     else if(Sections[Sections.Count-1].sectionName == "RAAN")
                     {
                         RAAN = new RGMRAANSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
-                    */
+                    else if(Sections[Sections.Count-1].sectionName == "RAGR")
+                    {
+                        RAGR = new RGMRAGRSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+                    else if(Sections[Sections.Count-1].sectionName == "RANM")
+                    {
+                        RANM = new RGMRANMSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
                     else if(Sections[Sections.Count-1].sectionName == "RAVC")
                     {
                         RAVC = new RGMRAVCSection(memoryReader, Sections[Sections.Count-1].dataLength);

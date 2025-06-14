@@ -103,6 +103,7 @@ public class ModelViewer_Model : MonoBehaviour
     // quick and dirty anims
     static void AnimateGO(GameObject go, float dt)
     {
+    /*
         const float FRAMETIME = 0.2f;
 
         CYRSA_DT -= dt;
@@ -115,6 +116,7 @@ public class ModelViewer_Model : MonoBehaviour
             CYRSA.GetComponent<MeshFilter>().mesh.SetVertices(CYRSA_DAT.framevertices[CYRSA_CURFRAME]);
             CYRSA.GetComponent<MeshFilter>().mesh.SetNormals(CYRSA_DAT.framenormals[CYRSA_CURFRAME]);
         }
+    */
     }
 
     // Update is called once per frame
