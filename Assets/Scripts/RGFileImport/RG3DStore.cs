@@ -82,7 +82,6 @@ public static class RG3DStore
             o.submeshes.Add(flatDesc, tris);
 
             MeshIntermediateDict.Add(flatDesc, o);
-            Debug.Log($"FLAT: {flatDesc}");
             return MeshIntermediateDict[flatDesc];
         }
 
@@ -99,7 +98,6 @@ public static class RG3DStore
         else
         {
             string filename = path_to_game + "/fxart/" + meshname + ".3DC";
-            Debug.Log("Loading 3DC File " + filename);
             
             RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
             file_3d.LoadFile(filename);

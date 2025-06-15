@@ -57,12 +57,11 @@ public static class ModelLoader
 
         List<GameObject> areaObjects = new List<GameObject>();
         List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(RGMname);
-        List<RGRGMStore.RGRGMData> RGM_MPOBs = RGRGMStore.LoadMPOB(RGMname);
         List<RGRGMStore.RGRGMData> RGM_MPSFs = RGRGMStore.LoadMPSF(RGMname);
         
-        for(int i=0;i<RGM_MPOBs.Count;i++)
+        RGFileImport.RGRGMFile filergm = RGRGMStore.GetRGM(RGMname);
+        for(int i=0;i<filergm.MPOB.items.Count;i++)
         {
-			RGFileImport.RGRGMFile filergm = RGRGMStore.GetRGM(RGMname);
             try
             {
                 // Create scripted objects
@@ -70,6 +69,7 @@ public static class ModelLoader
 				spawned.AddComponent<RGScriptedObject>();
 				spawned.GetComponent<RGScriptedObject>().instanciateRGScriptedObject(filergm.MPOB.items[i], filergm, name_col);
 
+                spawned.GetComponent<RGScriptedObject>().SetAnim(20);
                 areaObjects.Add(spawned);
             }
             catch(Exception ex)

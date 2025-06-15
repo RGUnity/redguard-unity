@@ -384,11 +384,9 @@ public static class RGRGMAnimStore
         public int NextFrame()
         {
             currentFrame += direction;
-            if(currentFrame+1 == goalFrame || currentFrame-1 == goalFrame)
-                reachedGoalFrame = true;
 
             int frame3DC = -1;
-            Console.WriteLine($"{RAGRItems[currentAnimationId].animFrames[currentFrame].frameType} : {currentFrame} > {goalFrame} ? {reachedGoalFrame}");
+            Console.WriteLine($"{RAGRItems[currentAnimationId].animFrames[currentFrame].frameType} : {currentFrame} > {direction}");
             switch(RAGRItems[currentAnimationId].animFrames[currentFrame].frameType)
             {
                 case FrameType.frametype_normal:
@@ -397,21 +395,10 @@ public static class RGRGMAnimStore
                 case FrameType.frametype_end:
                     return -1;
                 case FrameType.frametype_goback:
-                    if(reachedGoalFrame)
-                    {
-                        direction = -1;
-                        reachedGoalFrame = false;
-                        goalFrame = (int)RAGRItems[currentAnimationId].animFrames[currentFrame].frameValue;
-                    }
+                    currentFrame = (int)RAGRItems[currentAnimationId].animFrames[currentFrame].frameValue;
                     frame3DC = NextFrame();
                     break;
                 case FrameType.frametype_gofwd:
-                    if(reachedGoalFrame)
-                    {
-                        direction = 1;
-                        reachedGoalFrame = false;
-                        goalFrame = (int)RAGRItems[currentAnimationId].animFrames[currentFrame].frameValue;
-                    }
                     frame3DC = NextFrame();
                     break;
                 case FrameType.frametype_sound:
@@ -433,20 +420,19 @@ public static class RGRGMAnimStore
 
             }
 
-            return currentFrame;;
-            //return frame3DC;
+//            return currentFrame;;
+            return frame3DC;
         }
     }
     static public Dictionary<string, RGMAnim> Anims; // key: RAHD.scriptName
     static public void ReadAnim(RGFileImport.RGRGMFile filergm)
     {
-		/*
         Anims = new Dictionary<string, RGMAnim>();
-        for(int i=0;i<filergm.RAHD.dict.Count;i++)
+        //for(int i=0;i<filergm.RAHD.dict.Count;i++)
+        foreach(KeyValuePair<string,RGRGMFile.RGMRAHDItem> entry in filergm.RAHD.dict)
         {
-            RGMAnim Anim = new RGMAnim(filergm.RAHD.dict[i], filergm.RAAN, filergm.RAGR);
-            Anims.Add(filergm.RAHD.dict[i].scriptName, Anim);
+            RGMAnim Anim = new RGMAnim(entry.Value, filergm.RAAN, filergm.RAGR);
+            Anims.Add(entry.Value.scriptName, Anim);
         }
-		*/
     }
 }
