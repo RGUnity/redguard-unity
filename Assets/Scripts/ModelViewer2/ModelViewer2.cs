@@ -174,7 +174,11 @@ public class ModelViewer2 : MonoBehaviour
         GameObject obj = ModelLoader.Load3DC(f3DCname, colname);
         obj.transform.SetParent(_objectRootGenerated.transform);
 
+        mv2Cam.useFlyMode = false;
+        settings.ToggleFlyMode(false);
         mv2Cam.FrameObject(_objectRootGenerated);
+        
+        print("Loaded object: " + f3DCname);
     }
     
     public void SpawnArea(string areaname)
@@ -193,7 +197,9 @@ public class ModelViewer2 : MonoBehaviour
         {
             obj.transform.SetParent(_objectRootGenerated.transform);
         }
-        
+
+        mv2Cam.useFlyMode = false;
+        settings.ToggleFlyMode(false);
         mv2Cam.FrameObject(_objectRootGenerated);
         
         print("Loaded area: " + areaname);
