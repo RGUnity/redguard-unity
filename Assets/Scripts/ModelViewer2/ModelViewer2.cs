@@ -197,7 +197,7 @@ public class ModelViewer2 : MonoBehaviour
         
         mv2Cam.FrameObject(_objectRootGenerated);
         
-        print(areaname);
+        print("Loaded area: " + areaname);
     }
     
     public async Task ExportGLTF()

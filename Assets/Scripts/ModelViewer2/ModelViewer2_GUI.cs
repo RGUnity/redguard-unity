@@ -137,8 +137,8 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
         if (newButton.TryGetComponent(out ModelViewer2_ROBButton component))
         {
             component.mv2_GUI = this;
-            component.filename = fileName;
-            component.SetButtonText(fileName + ".ROB");
+            component.fileName = fileName;
+            component.SetButtonText(fileName);
         }
     }
     
@@ -176,16 +176,16 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
     }
     
     // Redirected Button Signals
-    public void Request3DCFile(string filename)
+    public void Request3DCFile(string fileName)
     {
-        print("Requesting 3DC file: " + filename);
-        modelViewer2.Spawn3DC(filename, "ISLAND");
+        print("Requesting 3DC file: " + fileName);
+        modelViewer2.Spawn3DC(fileName, "ISLAND");
     }
     
-    public void RequestROBFile(string filename)
+    public void RequestArea(string fileName)
     {
-        print("Requesting ROB file: " + filename);
-        modelViewer2.SpawnArea(filename);
+        print("Requesting area: " + fileName);
+        modelViewer2.SpawnArea(fileName);
     }
 
     public void PathErrorMode(bool toggle)
