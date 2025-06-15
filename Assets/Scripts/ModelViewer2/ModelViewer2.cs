@@ -2,8 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
-
+using UnityEngine;
+using GLTFast;
+using GLTFast.Export;
 
 public class ModelViewer2 : MonoBehaviour
 {
@@ -16,10 +20,47 @@ public class ModelViewer2 : MonoBehaviour
     [SerializeField] private string pathOverride;
 
     private GameObject _objectRootGenerated;
+    private string exportDirectory;
 
 // this should be read in from ini file
     private Dictionary<string, (string,string)> AreaCOLDictionary;
 
+
+    void Start()
+    {
+        buildAreaCOLDictionary();
+        //RGTexStore.shader = shader;
+
+        // if a path override is set, use that
+        if (pathOverride.Length > 0)
+        {
+            ModelLoader.RedguardPath = pathOverride;
+            print("Redgaurd Path Override found in Scene. Value: " + ModelLoader.RedguardPath);
+        }
+        // If there is no override, look for a path in the PlayerPrefs
+        else if (PlayerPrefs.HasKey("ViewerRedguardPath"))
+        {
+            ModelLoader.RedguardPath = PlayerPrefs.GetString("ViewerRedguardPath");
+            print("Path found in PlayerPrefs. Value: " + ModelLoader.RedguardPath);
+        }
+        // Show the default path
+        else
+        {
+            print("Using Default Path. Value: " + ModelLoader.RedguardPath);
+        }
+        
+        // Update Path displayed in UI
+        gui.pathInput.text = ModelLoader.RedguardPath;
+        
+        // Start in Viewer Mode
+        ViewerMode_Levels();
+        
+        // Set default Export path
+        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        exportDirectory = desktopPath + "/Redguard_Exports/";
+        gui.eportPathInput.text = exportDirectory;
+    }
+    
     void buildAreaCOLDictionary()
     {
         // ROBs without RGM currently dont work:
@@ -58,45 +99,12 @@ public class ModelViewer2 : MonoBehaviour
         AreaCOLDictionary.Add("TEMPLE",   ("ISLE3DFX", ""));
         AreaCOLDictionary.Add("VILE",     ("ISLE3DFX", ""));
     }
-    void Start()
-    {
-        buildAreaCOLDictionary();
-        //RGTexStore.shader = shader;
-
-        // if a path override is set, use that
-        if (pathOverride.Length > 0)
-        {
-            ModelLoader.RedguardPath = pathOverride;
-            print("Redgaurd Path Override found in Scene. Value: " + ModelLoader.RedguardPath);
-        }
-        // If there is no override, look for a path in the PlayerPrefs
-        else if (PlayerPrefs.HasKey("ViewerRedguardPath"))
-        {
-            ModelLoader.RedguardPath = PlayerPrefs.GetString("ViewerRedguardPath");
-            print("Path found in PlayerPrefs. Value: " + ModelLoader.RedguardPath);
-        }
-        // Show the default path
-        else
-        {
-           
-            print("Using Default Path. Value: " + ModelLoader.RedguardPath);
-            
-        }
-        
-        // Update Path displayed in UI
-        gui.pathInput.text = ModelLoader.RedguardPath;
-        
-        // Start in Viewer Mode
-        ViewerMode_Levels();
-    }
-
+    
     private bool IsPathValid()
     {
         try
         {
-            var dirInfo = new DirectoryInfo(ModelLoader.RedguardPath);
-
-            if (dirInfo.Exists)
+            if (File.Exists(ModelLoader.RedguardPath + "/REDGUARD.EXE"))
             {
                 print("Using Folder " + ModelLoader.RedguardPath);
                 RG3DStore.path_to_game = ModelLoader.RedguardPath;
@@ -161,7 +169,7 @@ public class ModelViewer2 : MonoBehaviour
         Destroy(_objectRootGenerated);
         _objectRootGenerated = new GameObject();
         _objectRootGenerated.transform.SetParent(objectRoot.transform);
-        _objectRootGenerated.name = f3DCname+ "_" + _objectRootGenerated.GetInstanceID();
+        _objectRootGenerated.name = f3DCname;
         
         // Create the object and parent it under the root
         GameObject obj = ModelLoader.Load3DC(f3DCname, colname);
@@ -169,15 +177,14 @@ public class ModelViewer2 : MonoBehaviour
 
         mv2Cam.FrameObject(_objectRootGenerated);
     }
-
-    // Stupid Hardcoded ROB Loading functions
+    
     public void SpawnArea(string areaname)
     {
         // objectRootGenerated is simply a new GameObject that makes deleting objects easier
         Destroy(_objectRootGenerated);
         _objectRootGenerated = new GameObject();
         _objectRootGenerated.transform.SetParent(objectRoot.transform);
-        _objectRootGenerated.name = areaname + "_" + _objectRootGenerated.GetInstanceID();
+        _objectRootGenerated.name = areaname;
 
         // Create all objects of that area and parent them under the root
         string colname = AreaCOLDictionary[areaname].Item1;
@@ -189,5 +196,38 @@ public class ModelViewer2 : MonoBehaviour
         }
         
         mv2Cam.FrameObject(_objectRootGenerated);
+        
+        print(areaname);
+    }
+    
+    public async Task ExportGLTF()
+    {
+        // Create Subfolder for Object
+        var exportDirWithSubfolder = exportDirectory + _objectRootGenerated.name;
+        var fullGLTFPath = exportDirWithSubfolder + "/" + _objectRootGenerated.name + ".gltf";
+
+        // If missing, create the target folder
+        if (!Directory.Exists(exportDirWithSubfolder))
+        {
+            Directory.CreateDirectory(exportDirWithSubfolder);
+        }
+        
+        // Define objects to export
+        var objectsToExport = new GameObject[] {_objectRootGenerated};
+        
+        var export = new GameObjectExport();
+        export.AddScene(objectsToExport);
+        
+        // Async glTF export
+        var success = await export.SaveToFileAndDispose(fullGLTFPath);
+
+        if (success)
+        {
+            print("Exported " + fullGLTFPath);
+        }
+        else
+        {
+            Debug.LogError("Something went wrong trying to export the model." + fullGLTFPath);
+        }
     }
 }
