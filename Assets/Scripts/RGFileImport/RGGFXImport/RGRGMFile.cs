@@ -7,6 +7,15 @@ namespace RGFileImport
 {
 	public class RGRGMFile
 	{
+        public enum ObjectType
+        {
+            object_unknown      = 0,
+            object_3d           = 1,
+            object_audio        = 2,
+            object_flat         = 3,
+            object_lightobject  = 4,
+            object_light        = 6,
+        }
 		public struct RGMSectionHeader
 		{
 			public string sectionName;
@@ -364,7 +373,7 @@ size: {dataLength:X}
 		public struct RGMMPOBItem
 		{
 			public int id;           // 4 bytes 0
-			public byte typeId;      // 1 byte  4
+            public ObjectType type;
 			public byte isActive;    // 1 byte  5
             public string scriptName;      // 9 bytes 6
             public string modelName;     // 9 bytes 15
@@ -381,13 +390,16 @@ size: {dataLength:X}
             public short intensity;
             public short radius;
             public short modelId;
-            public byte[] unknown2;  // 8 bytes
+            public short worldId;
+            public short red;
+            public short green;
+            public short blue;
 			public RGMMPOBItem(MemoryReader memoryReader)
             {
                 try
                 {
                     id = memoryReader.ReadInt32();
-                    typeId =  memoryReader.ReadByte();
+                    type =  (ObjectType)memoryReader.ReadByte();
                     isActive =  memoryReader.ReadByte();
 
                     char[] name_char = memoryReader.ReadChars(9);
@@ -413,7 +425,10 @@ size: {dataLength:X}
                     intensity = memoryReader.ReadInt16();
                     radius = memoryReader.ReadInt16();
                     modelId = memoryReader.ReadInt16();
-                    unknown2 = memoryReader.ReadBytes(8);
+                    worldId = memoryReader.ReadInt16();
+                    red = memoryReader.ReadInt16();
+                    green = memoryReader.ReadInt16();
+                    blue = memoryReader.ReadInt16();
                 }
                 catch(Exception ex)
                 {
@@ -422,7 +437,7 @@ size: {dataLength:X}
             }
 			public override string ToString()
 			{
-				return $@"{scriptName},{String.Join(",", unknown2)}";
+				return $@"{scriptName}";
 			}
 		}
 

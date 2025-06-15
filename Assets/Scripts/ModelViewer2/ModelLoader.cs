@@ -71,14 +71,14 @@ public static class ModelLoader
                 // Create scripted objects
 				GameObject spawned = new GameObject($"B_{i:D3}_{filergm.MPOB.items[i].scriptName}");
 				spawned.AddComponent<RGScriptedObject>();
-				spawned.GetComponent<RGScriptedObject>().instanciateRGScriptedObject(filergm.MPOB.items[i], filergm, name_col);
+				spawned.GetComponent<RGScriptedObject>().Instanciate(filergm.MPOB.items[i], filergm, name_col);
 
                 spawned.GetComponent<RGScriptedObject>().SetAnim(20);
                 areaObjects.Add(spawned);
             }
             catch(Exception ex)
             {
-                Debug.LogWarning($"ERR: B{i:D3}_{filergm.MPOB.items[i].scriptName}: {ex.Message}");
+                Debug.LogWarning($"ERR: B{i:D3}_{filergm.MPOB.items[i].scriptName}: {ex.Message} : {ex.StackTrace}");
             }
         }
         for(int i=0;i<RGM_MPSOs.Count;i++)
