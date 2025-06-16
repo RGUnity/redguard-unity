@@ -1396,7 +1396,7 @@ MonoBehaviour:
   buttonROB_Prefab: {fileID: 2613659532384351701, guid: 9bd740a6c40dcc448b7635dda9f81fe2, type: 3}
   errorPopup_Path: {fileID: 134954733}
   pathInput: {fileID: 100275895}
-  eportPathInput: {fileID: 238569075}
+  exportPathInput: {fileID: 238569075}
 --- !u!1 &204121030
 GameObject:
   m_ObjectHideFlags: 0

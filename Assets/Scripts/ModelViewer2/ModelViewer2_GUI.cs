@@ -17,7 +17,7 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
     [SerializeField] private GameObject buttonROB_Prefab;
     [SerializeField] private GameObject errorPopup_Path;
     [SerializeField] public TMP_InputField pathInput;
-    [SerializeField] public TMP_InputField eportPathInput;
+    [SerializeField] public TMP_InputField exportPathInput;
 
     public bool IsMouseOverUI { get; private set; }
     

@@ -57,7 +57,7 @@ public class ModelViewer2 : MonoBehaviour
         // Set default Export path
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         exportDirectory = desktopPath + "/Redguard_Exports/";
-        gui.eportPathInput.text = exportDirectory;
+        gui.exportPathInput.text = exportDirectory;
     }
     
     void buildAreaCOLDictionary()
