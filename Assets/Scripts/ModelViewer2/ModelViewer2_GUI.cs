@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +19,8 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
     [SerializeField] private GameObject errorPopup_Path;
     [SerializeField] public TMP_InputField pathInput;
     [SerializeField] public TMP_InputField exportPathInput;
+    [SerializeField] public TMP_Dropdown objectDropDown;
+    [SerializeField] public GameObject overlays_AreaMode;
 
     public bool IsMouseOverUI { get; private set; }
     
@@ -157,7 +160,7 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
     // Button Signals
     public void ModeButton_Levels()
     {
-        modelViewer2.ViewerMode_Levels();
+        modelViewer2.ViewerMode_Areas();
     }
     
     public void ModeButton_Objects()
@@ -173,6 +176,31 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
         button_ModeLevel.GetComponent<Image>().color = Color.gray;
         button_ModeObjects.GetComponent<Image>().color = Color.gray;
         button_ModeTexture.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
+    }
+
+    // Fill the Isolation Dropdown with all objects that are currently loaded
+    public void PopulateIsolationDropdown(List<GameObject> objects)
+    {
+        List<TMP_Dropdown.OptionData>  options = new List<TMP_Dropdown.OptionData>();
+        options.Add(new TMP_Dropdown.OptionData("None"));
+        
+        foreach (var obj in objects)
+        {
+            options.Add(new TMP_Dropdown.OptionData(obj.name));
+        }
+        
+        objectDropDown.ClearOptions();
+        objectDropDown.AddOptions(options);
+    }
+
+    // Clear the dropdown and display an idle text
+    public void ClearIsolationDropdown()
+    {
+        List<TMP_Dropdown.OptionData>  options = new List<TMP_Dropdown.OptionData>();
+        options.Add(new TMP_Dropdown.OptionData("None"));
+        
+        objectDropDown.ClearOptions();
+        objectDropDown.AddOptions(options);
     }
     
     // Redirected Button Signals
@@ -204,5 +232,10 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public void RequestExportGLTF()
     {
         modelViewer2.ExportGLTF();
+    }
+
+    public void RequestObjectIsolation()
+    {
+        modelViewer2.IsolateObject(objectDropDown.options[objectDropDown.value].text);
     }
 }

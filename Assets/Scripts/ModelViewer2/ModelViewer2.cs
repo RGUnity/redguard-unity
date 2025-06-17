@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using GLTFast;
 using GLTFast.Export;
+using TMPro;
 
 public class ModelViewer2 : MonoBehaviour
 {
@@ -20,8 +21,9 @@ public class ModelViewer2 : MonoBehaviour
 
     private GameObject _objectRootGenerated;
     private string exportDirectory;
+    private List<GameObject> loadedObjects;
 
-// this should be read in from ini file
+    // this should be read in from ini file
     private Dictionary<string, (string,string)> AreaCOLDictionary;
 
 
@@ -52,7 +54,7 @@ public class ModelViewer2 : MonoBehaviour
         gui.pathInput.text = ModelLoader.RedguardPath;
         
         // Start in Viewer Mode
-        ViewerMode_Levels();
+        ViewerMode_Areas();
         
         // Set default Export path
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -131,34 +133,54 @@ public class ModelViewer2 : MonoBehaviour
     }
     
     // Mode to for viewing full levels
-    public void ViewerMode_Levels()
+    public void ViewerMode_Areas()
     {
+        if (_objectRootGenerated)
+        {
+            Destroy(_objectRootGenerated);
+        }
+        
         if (IsPathValid())
         {
             // Switch the GUI to level mode
             gui.UpdateUI_Levels();
+            gui.objectDropDown.interactable = false;
+            gui.overlays_AreaMode.SetActive(true);
+            gui.ClearIsolationDropdown();
         }
     }
     
     // Mode to viewing individual Models
     public void ViewerMode_Models()
     {
+        if (_objectRootGenerated)
+        {
+            Destroy(_objectRootGenerated);
+        }
+        
         if (IsPathValid())
         {
             DirectoryInfo dirInfo = new DirectoryInfo(ModelLoader.RedguardPath + "/fxart");
         
             // Switch the GUI to model mode
             gui.UpdateUI_Models(dirInfo.GetFiles("*.3DC"));
+            gui.overlays_AreaMode.SetActive(false);
         }
     }
     
     // Mode to viewing textures
     public void ViewerMode_Textures()
     {
+        if (_objectRootGenerated)
+        {
+            Destroy(_objectRootGenerated);
+        }
+        
         if (IsPathValid())
         {
             // Switch the GUI to texture mode
             gui.UpdateUI_Textures();
+            gui.overlays_AreaMode.SetActive(false);
         }
     }
 
@@ -192,8 +214,10 @@ public class ModelViewer2 : MonoBehaviour
         // Create all objects of that area and parent them under the root
         string colname = AreaCOLDictionary[areaname].Item1;
         string wldname = AreaCOLDictionary[areaname].Item2;
-        List<GameObject> areaObjects = ModelLoader.LoadArea(areaname, colname, wldname);
-        foreach (var obj in areaObjects)
+        
+        loadedObjects = ModelLoader.LoadArea(areaname, colname, wldname);
+        
+        foreach (var obj in loadedObjects)
         {
             obj.transform.SetParent(_objectRootGenerated.transform);
         }
@@ -201,6 +225,8 @@ public class ModelViewer2 : MonoBehaviour
         mv2Cam.useFlyMode = false;
         settings.ToggleFlyMode(false);
         mv2Cam.FrameObject(_objectRootGenerated);
+        gui.objectDropDown.interactable = true;
+        gui.PopulateIsolationDropdown(loadedObjects);
         
         print("Loaded area: " + areaname);
     }
@@ -234,5 +260,34 @@ public class ModelViewer2 : MonoBehaviour
         {
             Debug.LogError("Something went wrong trying to export the model." + fullGLTFPath);
         }
+    }
+
+    public void IsolateObject(string selection)
+    {
+        if (selection == "None")
+        {
+            // Show all objects
+            foreach (var obj in loadedObjects)
+            {
+                obj.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            // show the selected object
+            foreach (var obj in loadedObjects)
+            {
+                if (obj.name == selection)
+                {
+                    obj.gameObject.SetActive(true);
+                }
+                else
+                {
+                    obj.gameObject.SetActive(false);
+                }
+            }
+        }
+        
+        mv2Cam.FrameObject(objectRoot);
     }
 }
