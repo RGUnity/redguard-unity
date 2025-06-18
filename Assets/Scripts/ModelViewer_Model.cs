@@ -67,7 +67,6 @@ public class ModelViewer_Model : MonoBehaviour
         wld.LoadFile($"./game_3dfx/maps/ISLAND.WLD");
         List<RGRGMStore.RGRGMData> RGM_WDNMs = RGRGMStore.LoadWDNM(filename);
         Dictionary<int, List<int>> zdict = new Dictionary<int, List<int>> ();
-        int tot = 0;
         for(int i=0;i<RGM_WDNMs.Count;i++)
         {
             Vector3 pos = RGM_WDNMs[i].position;
@@ -81,7 +80,6 @@ public class ModelViewer_Model : MonoBehaviour
                     Vector3 p1 = pos;
                     p1.y -= 200.0f;
                     Vector3 p2 = hit.point;
-                           tot++;
                     Debug.Log($"POINT,({p2.y},{p1.y})");
                 }
             }
