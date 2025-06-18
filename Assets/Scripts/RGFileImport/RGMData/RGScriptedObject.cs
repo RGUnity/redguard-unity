@@ -21,24 +21,25 @@ public class RGScriptedObject : MonoBehaviour
 
 	RG2Mesh.UnityData_3D data_3D;
 	bool animationRunning;
+    int curframe;
+    int nextframe;
 
     ScriptedObjectType type;
 
-	MeshRenderer meshRenderer;
-	MeshFilter meshFilter;
+	SkinnedMeshRenderer skinnedMeshRenderer;
     Light light;
 	
 	public RGRGMAnimStore.RGMAnim animationData;
 
     public void Instanciate3DObject(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
     {
-		meshRenderer = gameObject.AddComponent<MeshRenderer>();
-		meshFilter = gameObject.AddComponent<MeshFilter>();
+		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
 			
 		animationData = new RGRGMAnimStore.RGMAnim(filergm.RAHD.dict[MPOB.scriptName], filergm.RAAN, filergm.RAGR);
 
 		if(animationData.RAANItems.Count > 0)
 		{
+            curframe = 0;
             type = ScriptedObjectType.scriptedobject_animated;
 			string modelname_frame = animationData.RAANItems[0].modelFile;
 			Debug.Log($"ANIMATED {scriptName}: \"{modelname_frame}\"");
@@ -48,8 +49,8 @@ public class RGScriptedObject : MonoBehaviour
             List<Vector3[]> framenormals = new List<Vector3[]>();
             for(int i=0;i<data_3D.framecount;i++)
             {
-                framevertices.Add(data_3D.framevertices[i]);
-                framenormals.Add(data_3D.framenormals[i]);
+                framevertices.Add(data_3D.vertices);
+                framenormals.Add(data_3D.normals);
             }
 
 
@@ -59,17 +60,15 @@ public class RGScriptedObject : MonoBehaviour
                 RG2Mesh.UnityData_3D data_frame = RG2Mesh.f3D2Mesh(modelname_frame, name_col);
                 for(int i=0;i<data_frame.framecount;i++)
                 {
-                    framevertices.Add(data_frame.framevertices[i]);
-                    framenormals.Add(data_frame.framenormals[i]);
+                    framevertices.Add(data_frame.vertices);
+                    framenormals.Add(data_frame.normals);
                 }
             }
-            data_3D.framevertices = framevertices.ToArray();
-            data_3D.framenormals = framenormals.ToArray();
-            data_3D.mesh.vertices = data_3D.framevertices[0];
-            data_3D.mesh.normals = data_3D.framenormals[0];
+            data_3D.mesh.vertices = data_3D.vertices;
+            data_3D.mesh.normals = data_3D.normals;
 		
-			meshFilter.mesh = data_3D.mesh;
-			meshRenderer.SetMaterials(data_3D.materials);
+			skinnedMeshRenderer.sharedMesh = data_3D.mesh;
+			skinnedMeshRenderer.SetMaterials(data_3D.materials);
 
 		}
 		else
@@ -78,8 +77,8 @@ public class RGScriptedObject : MonoBehaviour
             string modelname = MPOB.modelName.Split('.')[0];
 			data_3D = RG2Mesh.f3D2Mesh(modelname, name_col);
 		
-			meshFilter.mesh = data_3D.mesh;
-			meshRenderer.SetMaterials(data_3D.materials);
+			skinnedMeshRenderer.sharedMesh = data_3D.mesh;
+			skinnedMeshRenderer.SetMaterials(data_3D.materials);
 		}
 
     }
@@ -87,14 +86,13 @@ public class RGScriptedObject : MonoBehaviour
     public void InstanciateLightObject(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
     {
         type = ScriptedObjectType.scriptedobject_static;
-		meshRenderer = gameObject.AddComponent<MeshRenderer>();
-		meshFilter = gameObject.AddComponent<MeshFilter>();
+		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
 			
         string modelname = MPOB.scriptName;;
         data_3D = RG2Mesh.f3D2Mesh(modelname, name_col);
     
-        meshFilter.mesh = data_3D.mesh;
-        meshRenderer.SetMaterials(data_3D.materials);
+        skinnedMeshRenderer.sharedMesh = data_3D.mesh;
+        skinnedMeshRenderer.SetMaterials(data_3D.materials);
 
 		light = gameObject.AddComponent<Light>();
         light.type = LightType.Point;
@@ -143,9 +141,12 @@ public class RGScriptedObject : MonoBehaviour
     public void SetAnim(int i)
     {
         if(type == ScriptedObjectType.scriptedobject_animated)
+        {
             if(animationData.PushAnimation((RGRGMAnimStore.AnimGroup)i,0) == 0)
                 animationRunning = true;
+        }
     }
+
 	float FRAMETIME_VAL = 0.2f;
 	float FRAMETIME = 0.2f;
 	void Update()
@@ -155,14 +156,34 @@ public class RGScriptedObject : MonoBehaviour
             FRAMETIME-= Time.deltaTime;
             if(FRAMETIME<0.0f)
             {
-                int nextframe = animationData.NextFrame();
-                if(nextframe >= 0)
+                int anim_nextframe = animationData.NextFrame();
+                if(anim_nextframe >= data_3D.framecount)
                 {
-                    meshFilter.mesh.SetVertices(data_3D.framevertices[nextframe]);
-                    meshFilter.mesh.SetNormals(data_3D.framenormals[nextframe]);
+                    Debug.Log($"{scriptName}: Frame {anim_nextframe} requested, but 3DC only has {data_3D.framecount} frames.");
+                    animationRunning = false;
+                    return;
+                }
+                if(anim_nextframe >= 0)
+                {
+
+                    skinnedMeshRenderer.SetBlendShapeWeight(curframe, 0.0f);
+                    skinnedMeshRenderer.SetBlendShapeWeight(nextframe, 0.0f);
+                    curframe = nextframe;
+                    nextframe = anim_nextframe;
+
+                    /*
+                    skinnedMeshRenderer.SetBlendShapeWeight(curframe, 0.0f);
+                    curframe = anim_nextframe;
+                    skinnedMeshRenderer.SetBlendShapeWeight(curframe, 100.0f);
+                    */
                 }
                 FRAMETIME = FRAMETIME_VAL;
             }
+            // for animation blending, we need to track current and next frame
+            float blend1 = (FRAMETIME/FRAMETIME_VAL)*100.0f;
+            float blend2 = 100.0f-blend1;
+            skinnedMeshRenderer.SetBlendShapeWeight(curframe, blend1);
+            skinnedMeshRenderer.SetBlendShapeWeight(nextframe, blend2);
         }
 	}
 }

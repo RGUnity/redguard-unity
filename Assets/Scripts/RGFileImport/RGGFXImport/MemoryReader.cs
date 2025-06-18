@@ -42,10 +42,7 @@ namespace RGFileImport
                 throw new Exception($"MemoryReader: read address 0x{Position:X} + {4} is greater than buffer length 0x{Length:X}");
 
             List<byte> b = new List<byte>();
-            if((buffer[Position] & 0x80) == 0x80) // negative bit set
-                b.Add((byte)0xFF);
-            else
-                b.Add((byte)0x00);
+            b.Add((byte)0x00);
             for(int i=0;i<3;i++)
             {
                 b.Add((byte)buffer[Position]);
