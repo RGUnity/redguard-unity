@@ -8,12 +8,12 @@ public class ModelViewer2_ROBButton : MonoBehaviour
     [SerializeField] private TMP_Text buttonText;
 
     public ModelViewer2_GUI mv2_GUI;
-    public string filename;
+    public string fileName;
     
     
     public void OnClick()
     {
-        mv2_GUI.RequestROBFile(filename);
+        mv2_GUI.RequestArea(fileName);
     }
 
     public void SetButtonText(string text)

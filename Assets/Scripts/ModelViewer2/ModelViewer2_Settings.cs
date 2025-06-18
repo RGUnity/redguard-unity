@@ -33,7 +33,7 @@ public class ModelViewer2_Settings : MonoBehaviour
     {
         ModelLoader.RedguardPath = gui.pathInput.text;
         PlayerPrefs.SetString("ViewerRedguardPath", ModelLoader.RedguardPath);
-        mv2.ViewerMode_Levels();
+        mv2.ViewerMode_Areas();
     }
 
     private void ToggleUI()
