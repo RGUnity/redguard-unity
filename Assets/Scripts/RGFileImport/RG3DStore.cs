@@ -14,9 +14,11 @@ public static class RG3DStore
     {
         public int subMeshCount;
         public int framecount;
-        public List<Vector3>[] vertices;
+        public List<Vector3> vertices;
         public List<Vector2> uv;
-        public List<Vector3>[] normals;
+        public List<Vector3> normals;
+        public List<Vector3>[] frameDeltaVertices;
+        public List<Vector3>[] frameDeltaNormals;
 
         public Dictionary<string, List<int>> submeshes; // dict key is:
                                                         // texture/imageid
@@ -47,28 +49,27 @@ public static class RG3DStore
         {
             o = new Mesh3D_intermediate();
             o.subMeshCount = 1;
-            o.framecount = 1;
-            o.vertices = new List<Vector3>[1];
+            o.framecount = 0;
+            o.vertices = new List<Vector3>();
             o.uv = new List<Vector2>();
-            o.normals = new List<Vector3>[1];
+            o.normals = new List<Vector3>();
             o.submeshes = new Dictionary<string, List<int>>();
 
-            o.vertices[0] = new List<Vector3>();
-            o.vertices[0].Add(new Vector3(0.0f,0.0f,0.0f));
-            o.vertices[0].Add(new Vector3(1.0f,0.0f,0.0f));
-            o.vertices[0].Add(new Vector3(1.0f,1.0f,0.0f));
-            o.vertices[0].Add(new Vector3(0.0f,1.0f,0.0f));
+            o.vertices.Add(new Vector3(0.0f,0.0f,0.0f));
+            o.vertices.Add(new Vector3(1.0f,0.0f,0.0f));
+            o.vertices.Add(new Vector3(1.0f,1.0f,0.0f));
+            o.vertices.Add(new Vector3(0.0f,1.0f,0.0f));
 
             o.uv.Add(new Vector2(1.0f,1.0f));
             o.uv.Add(new Vector2(0.0f,1.0f));
             o.uv.Add(new Vector2(0.0f,0.0f));
             o.uv.Add(new Vector2(1.0f,0.0f));
             
-            o.normals[0] = new List<Vector3>();
-            o.normals[0].Add(new Vector3(0.0f,0.0f,-1.0f));
-            o.normals[0].Add(new Vector3(0.0f,0.0f,-1.0f));
-            o.normals[0].Add(new Vector3(0.0f,0.0f,-1.0f));
-            o.normals[0].Add(new Vector3(0.0f,0.0f,-1.0f));
+            o.normals = new List<Vector3>();
+            o.normals.Add(new Vector3(0.0f,0.0f,-1.0f));
+            o.normals.Add(new Vector3(0.0f,0.0f,-1.0f));
+            o.normals.Add(new Vector3(0.0f,0.0f,-1.0f));
+            o.normals.Add(new Vector3(0.0f,0.0f,-1.0f));
 
             List<int> tris = new List<int>();
             tris.Add(0);
@@ -142,9 +143,11 @@ public static class RG3DStore
     public struct Face_3DC
     {
         public int vert_cnt;
-        public List<Vector3>[] verts;
+        public List<Vector3> verts;
         public List<Vector2> uvs;
         public Vector3 norm;
+        public List<Vector3>[] frameverts;
+        public List<Vector3>[] framenorms;
         public string texid; // key for intermediate mesh submesh dict
     }
 
@@ -160,6 +163,7 @@ public static class RG3DStore
 
         mesh.framecount = (int)file_3d.header.NumFrames;
         List<Vector3>[] frame_vec_tmp_lst = new List<Vector3>[mesh.framecount];
+        List<Vector3>[] frame_norm_tmp_lst = new List<Vector3>[mesh.framecount];
 
         for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
         {
@@ -173,17 +177,19 @@ public static class RG3DStore
         for(int f=0;f<mesh.framecount;f++)
         {
             frame_vec_tmp_lst[f] = new List<Vector3>();
+            frame_norm_tmp_lst[f] = new List<Vector3>();
             for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
             {
                 // big scale down so it fits
-                Vector3 vec = new Vector3(file_3d.VertexFrameDeltas[f][i].x*MESH_SCALE_FACTOR,
-                                          file_3d.VertexFrameDeltas[f][i].y*MESH_SCALE_FACTOR,
-                                          file_3d.VertexFrameDeltas[f][i].z*MESH_SCALE_FACTOR);
-                vec.x -= vec_tmp_lst[i].x;
-                vec.y -= vec_tmp_lst[i].y;
-                vec.z -= vec_tmp_lst[i].z;
-
+                Vector3 vec = new Vector3(-file_3d.VertexFrameDeltas[f][i].x*MESH_SCALE_FACTOR,
+                                          -file_3d.VertexFrameDeltas[f][i].y*MESH_SCALE_FACTOR,
+                                          -file_3d.VertexFrameDeltas[f][i].z*MESH_SCALE_FACTOR);
                 frame_vec_tmp_lst[f].Add(vec);
+                Vector3 norm = new Vector3(0.0f,
+                                           0.0f,
+                                           0.0f);
+                frame_norm_tmp_lst[f].Add(norm);
+
             }
         }
 
@@ -200,9 +206,11 @@ public static class RG3DStore
         {
             Face_3DC cur_face = new Face_3DC();
             cur_face.vert_cnt = file_3d.FaceDataCollection[i].VertexData.Count;
-            cur_face.verts = new List<Vector3>[mesh.framecount];
+            cur_face.verts = new List<Vector3>();
             cur_face.uvs = new List<Vector2>();
             cur_face.norm = Vector3.Scale(norm_tmp_lst[i], MESH_VERT_FLIP);
+            cur_face.frameverts = new List<Vector3>[mesh.framecount];
+            cur_face.framenorms = new List<Vector3>[mesh.framecount];
 
             if(file_3d.FaceDataCollection[i].solid_color)
             {
@@ -212,20 +220,26 @@ public static class RG3DStore
             {
                 cur_face.texid = $"{file_3d.FaceDataCollection[i].TextureId}/{file_3d.FaceDataCollection[i].ImageId}";
             }
-            // 0th frame = regular verts
-            cur_face.verts[0] = new List<Vector3>();
+            // regular verts
             for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count;j++)
             {
                 Vector3 vec = vec_tmp_lst[(int)file_3d.FaceDataCollection[i].VertexData[j].VertexIndex];
                 vec = Vector3.Scale(vec, MESH_VERT_FLIP);
-                cur_face.verts[0].Add(vec);
+                cur_face.verts.Add(vec);
             }
-            for(int f=1;f<mesh.framecount;f++)
+            // frame verts (offsets)
+            for(int f=0;f<mesh.framecount;f++)
             {
-                cur_face.verts[f] = new List<Vector3>();
+                cur_face.frameverts[f] = new List<Vector3>();
+                cur_face.framenorms[f] = new List<Vector3>();
                 for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count;j++)
                 {
-                    cur_face.verts[f].Add(frame_vec_tmp_lst[f][(int)file_3d.FaceDataCollection[i].VertexData[j].VertexIndex]);
+                    Vector3 vec = frame_vec_tmp_lst[f][(int)file_3d.FaceDataCollection[i].VertexData[j].VertexIndex];
+                    vec = Vector3.Scale(vec, MESH_VERT_FLIP);
+                    cur_face.frameverts[f].Add(vec);
+                    Vector3 norm = frame_norm_tmp_lst[f][(int)file_3d.FaceDataCollection[i].VertexData[j].VertexIndex];
+                    norm = Vector3.Scale(vec, MESH_VERT_FLIP);
+                    cur_face.framenorms[f].Add(norm);
                 }
             }
 
@@ -239,16 +253,18 @@ public static class RG3DStore
             face_lst.Add(cur_face);
         }
 // 2nd pass: sort faces by texture id and split verts/norms/uvs
-        List<Vector3>[] vec_lst = new List<Vector3>[mesh.framecount];
-        List<Vector3>[] norm_lst = new List<Vector3>[mesh.framecount];
+        List<Vector3> vec_lst = new List<Vector3>();
+        List<Vector3> norm_lst = new List<Vector3>();
+        List<Vector3>[] framevec_lst = new List<Vector3>[mesh.framecount];
+        List<Vector3>[] framenorm_lst = new List<Vector3>[mesh.framecount];
         List<Vector2> uv_lst = new List<Vector2>();
         Dictionary<string, List<int>> tri_lst = new Dictionary<string, List<int>>();
         Dictionary<string, Vector2> uv_scale_lst = new Dictionary<string, Vector2>();
 
         for(int f=0;f<mesh.framecount;f++)
         {
-            vec_lst[f] = new List<Vector3>();
-            norm_lst[f] = new List<Vector3>();
+            framevec_lst[f] = new List<Vector3>();
+            framenorm_lst[f] = new List<Vector3>();
         }
         for(int i=0;i<face_lst.Count;i++)
         {
@@ -274,29 +290,23 @@ public static class RG3DStore
             {
 
                 int vert_ofs = 1;
+                vec_lst.Add(face_lst[i].verts[0]);
+                vec_lst.Add(face_lst[i].verts[vert_ofs+j]);
+                vec_lst.Add(face_lst[i].verts[vert_ofs+j+1]);
+
+                norm_lst.Add(face_lst[i].norm);
+                norm_lst.Add(face_lst[i].norm);
+                norm_lst.Add(face_lst[i].norm);
+
                 for(int f=0;f<mesh.framecount;f++)
                 {
-                    vec_lst[f].Add(face_lst[i].verts[f][0]);
-                    vec_lst[f].Add(face_lst[i].verts[f][vert_ofs+j]);
-                    vec_lst[f].Add(face_lst[i].verts[f][vert_ofs+j+1]);
+                    framevec_lst[f].Add(face_lst[i].frameverts[f][0]);
+                    framevec_lst[f].Add(face_lst[i].frameverts[f][vert_ofs+j]);
+                    framevec_lst[f].Add(face_lst[i].frameverts[f][vert_ofs+j+1]);
 
-                    if(f == 0)
-                    {
-                        norm_lst[f].Add(face_lst[i].norm);
-                        norm_lst[f].Add(face_lst[i].norm);
-                        norm_lst[f].Add(face_lst[i].norm);
-                    }
-                    else
-                    {
-                        // regenerate normals
-                        Vector3 p1 = vec_lst[f][vec_lst[f].Count-3];
-                        Vector3 p2 = vec_lst[f][vec_lst[f].Count-2];
-                        Vector3 p3 = vec_lst[f][vec_lst[f].Count-1];
-                        Vector3 norm =  calculateTriNormal(p1, p2, p3);
-                        norm_lst[f].Add(face_lst[i].norm);
-                        norm_lst[f].Add(face_lst[i].norm);
-                        norm_lst[f].Add(face_lst[i].norm);
-                    }
+                    framenorm_lst[f].Add(face_lst[i].framenorms[f][0]);
+                    framenorm_lst[f].Add(face_lst[i].framenorms[f][vert_ofs+j]);
+                    framenorm_lst[f].Add(face_lst[i].framenorms[f][vert_ofs+j+1]);
                 }
 
                 float UV_TRANSFORM_FACTOR_X = uv_scale_lst[face_lst[i].texid].x;
@@ -334,6 +344,8 @@ public static class RG3DStore
         mesh.uv = uv_lst;
         mesh.normals = norm_lst;
         mesh.submeshes = tri_lst;
+        mesh.frameDeltaVertices = framevec_lst;
+        mesh.frameDeltaNormals = framenorm_lst;
 
         return mesh;
     }

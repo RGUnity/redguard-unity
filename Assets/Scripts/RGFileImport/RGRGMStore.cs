@@ -139,6 +139,46 @@ public static class RGRGMStore
         }
         return data_out;
     }
+    public static List<RGRGMData> LoadWDNM(string filename)
+    {
+        RGFileImport.RGRGMFile filergm = GetRGM(filename);
+
+        List<RGRGMData> data_out = new List<RGRGMData>();
+        for(int i=0;i<filergm.WDNM.items.Count;i++)
+        {
+            int base_posx = filergm.WDNM.items[i].posX;
+            int base_posy = filergm.WDNM.items[i].posY;
+            int base_posz = filergm.WDNM.items[i].posZ;
+            float fposx =  (float)((uint)base_posx%(uint)0x9FD800)*RGM_MPOB_SCALE;
+            float fposy = -(float)(base_posy)*RGM_MPOB_SCALE;
+            float fposz = -(float)((uint)(0xFFFFFF-base_posz)%(uint)0xFFDC00)*RGM_MPOB_SCALE;
+            data_out.Add(new RGRGMData("LANTERN1", $"ITEM {i}", new Vector3(fposx, fposy, fposz), new Vector3(0.0f, 0.0f, 0.0f)));
+            for(int j=0;j<filergm.WDNM.items[i].walkNodes.Length;j++)
+            {
+                try{
+                    int sub_posx = filergm.WDNM.items[i].walkNodes[j].posX*256;
+                    int sub_posy = filergm.WDNM.items[i].walkNodes[j].posY*256;
+                    int sub_posz = filergm.WDNM.items[i].walkNodes[j].posZ*256;
+
+                    float posx =  (float)((uint)sub_posx%(uint)0x10000A0)*RGM_MPOB_SCALE;
+                    float posy = -(float)(sub_posy)*RGM_MPOB_SCALE;
+                    float posz = -(float)((uint)(0xFFFFFF-sub_posz)%(uint)0xFFDC00)*RGM_MPOB_SCALE;
+
+                    posx += RGM_X_OFS;
+                    posy += RGM_Y_OFS;
+                    posz += RGM_Z_OFS;
+
+                    data_out.Add(new RGRGMData("LANTERN1", $"{i}_{j}", new Vector3(posx, posy, posz), new Vector3(0.0f, 0.0f, 0.0f)));
+
+                }
+                catch(Exception ex)
+                {
+                    Debug.Log($"Error loading WDNM item from {filename}: {i}: {ex}");
+                }
+            }
+        }
+        return data_out;
+    }
 
 
     static Vector3 eulers_from_MPSO_data(RGFileImport.RGRGMFile.RGMMPSOItem i)

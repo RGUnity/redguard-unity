@@ -10,10 +10,16 @@ namespace RGFileImport
 	{
         // map scale; needs a look in-game to see what fits
         const float WLD_SIZE_SCALE = 12.9f;
-        const float WLD_SIZE_SCALE_HEIGHT = 0.8f;
-        const float WLD_OFFSET_X = -14.0f;
-        const float WLD_OFFSET_Y = -2.0f;
+        const float WLD_SIZE_SCALE_HEIGHT = 1.0f;
+        const float WLD_OFFSET_X = -12.0f;
+        const float WLD_OFFSET_Y = 0.0f;
         const float WLD_OFFSET_Z = 11.0f;
+        private float WLD_HEIGHT_FUN(int y)
+        {
+            float fy= (float)y;
+            return 0.00000138917f*(fy*fy*fy*fy)-0.000185238f*(fy*fy*fy)+0.0122758f*(fy*fy)+0.450595f*fy+1.92776f;
+
+        }
 
 		public struct WLDHeader
 		{
@@ -278,24 +284,24 @@ IO_WLD_data_t
 				// vertices
 					// tri 1;
 					a1 = new Vector3((float)(x+1)*WLD_SIZE_SCALE,
-							    	 (float)maps_data.heightmap[(x+1)+(y+1)*map_size]*WLD_SIZE_SCALE_HEIGHT,
+                                     WLD_HEIGHT_FUN(maps_data.heightmap[(x+1)+(y+1)*map_size]),
 							    	 -(float)(y+1)*WLD_SIZE_SCALE);
 					a1 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
 
 					b1 = new Vector3((float)(x+1)*WLD_SIZE_SCALE,
-							    	 (float)maps_data.heightmap[(x+1)+(y+0)*map_size]*WLD_SIZE_SCALE_HEIGHT,
+                                     WLD_HEIGHT_FUN(maps_data.heightmap[(x+1)+(y+0)*map_size]),
 							    	 -(float)(y+0)*WLD_SIZE_SCALE);
 					b1 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
 
 					c1 = new Vector3((float)(x+0)*WLD_SIZE_SCALE,
-							    	 (float)maps_data.heightmap[(x+0)+(y+0)*map_size]*WLD_SIZE_SCALE_HEIGHT,
+                                     WLD_HEIGHT_FUN(maps_data.heightmap[(x+0)+(y+0)*map_size]),
 							    	 -(float)(y+0)*WLD_SIZE_SCALE);
 					c1 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
 
 					// tri 2
 					a2 = c1;
 					b2 = new Vector3((float)(x+0)*WLD_SIZE_SCALE,
-							    	 (float)maps_data.heightmap[(x+0)+(y+1)*map_size]*WLD_SIZE_SCALE_HEIGHT,
+                                     WLD_HEIGHT_FUN(maps_data.heightmap[(x+0)+(y+1)*map_size]),
 							    	 -(float)(y+1)*WLD_SIZE_SCALE);
 					b2 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
 

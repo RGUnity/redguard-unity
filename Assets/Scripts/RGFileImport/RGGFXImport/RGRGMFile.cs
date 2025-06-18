@@ -948,100 +948,6 @@ size: {dataLength:X}
                 }
             }
 		}
-        /*
-		public struct RGMRAANItem
-		{
-            public int faceCount;
-            public byte frameCount;
-            public byte unknown0;
-            public string modelFile;
-
-			public RGMRAANItem(MemoryReader memoryReader)
-            {
-                try
-                {
-                    faceCount = memoryReader.ReadInt32();
-                    frameCount = memoryReader.ReadByte();
-                    unknown0 = memoryReader.ReadByte();
-                    modelFile = new string("");
-                    byte curc = 0x00;
-                    do
-                    {
-                        curc = memoryReader.ReadByte();
-                        modelFile += (char)curc;
-                    }
-                    while(curc != 0x00);
-                }
-                catch(Exception ex)
-                {
-                    throw new Exception($"Failed to load RGM RAAN item with error:\n{ex.Message}");
-                }
-            }
-		}
-
-		public struct RGMRAGRAnimFrame
-        {
-            public byte frameType;
-            public short frameValue;
-            public bool timeScale;
-            public byte modifierValue;
-            public RGMRAGRAnimFrame(MemoryReader memoryReader)
-            {
-                try
-                {
-                    Console.WriteLine($"startf: {memoryReader.Position:X}");
-                    short frameRecord = memoryReader.ReadInt16();
-                    frameType = (byte)(frameRecord & 0x0F);
-                    frameValue = (short)((frameRecord>>4)& 0x07FF);
-                    timeScale = (((frameRecord>>15)&0x01)==0x01)?true:false;
-                    modifierValue = memoryReader.ReadByte();
-                    Console.WriteLine($"endf: {memoryReader.Position:X}");
-                }
-                catch(Exception ex)
-                {
-                    throw new Exception($"Failed to load RGM RAGR animFrame with error:\n{ex.Message}");
-                }
-            }
-        }
-		public struct RGMRAGRItem
-		{
-            public short dataLength;
-            public short animGroup;
-            public short frameSpeed;
-            public short animType;
-            public short frameCount;
-            public RGMRAGRAnimFrame[] animFrames;
-
-			public RGMRAGRItem(MemoryReader memoryReader)
-            {
-                try
-                {
-                    Console.WriteLine($"starti: {memoryReader.Position:X}");
-                    dataLength = memoryReader.ReadInt16();
-                    Console.WriteLine($"1: {dataLength:X}");
-                    animGroup = memoryReader.ReadInt16();
-                    Console.WriteLine($"2: {animGroup:X}");
-                    frameSpeed = memoryReader.ReadInt16();
-                    Console.WriteLine($"3: {frameSpeed:X}");
-                    animType = memoryReader.ReadInt16();
-                    Console.WriteLine($"4: {animType:X}");
-                    frameCount = memoryReader.ReadInt16();
-                    Console.WriteLine($"5: {frameCount:X}");
-                    animFrames = new RGMRAGRAnimFrame[frameCount];
-                    for(int i=0;i<frameCount;i++)
-                    {
-                    Console.WriteLine($"i: {memoryReader.Position:X}");
-                        animFrames[i] = new RGMRAGRAnimFrame(memoryReader);
-                    }
-                    Console.WriteLine($"endi: {memoryReader.Position:X}");
-                }
-                catch(Exception ex)
-                {
-                    throw new Exception($"Failed to load RGM RAGR item with error:\n{ex.Message}");
-                }
-            }
-		}
-        */
 		public struct RGMRAGRSection
 		{
 
@@ -1074,8 +980,6 @@ size: {dataLength:X}
                 }
             }
 		}
-
-
 		public struct RGMRAVCItem
 		{
             public byte offsetX;
@@ -1124,6 +1028,117 @@ size: {dataLength:X}
 		}
 
 
+		public struct RGMWDNMNodeRoute
+        {
+            public short targetNodeId;
+            public short cost;
+            public RGMWDNMNodeRoute(MemoryReader memoryReader)
+            {
+                try
+                {
+                    targetNodeId = memoryReader.ReadInt16();
+                    cost = memoryReader.ReadInt16();
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM WDNM noderoute with error:\n{ex.Message}");
+                }
+            }
+		}
+
+		public struct RGMWDNMWalkNode
+        {
+            public uint nodeLength;
+            public short posX;
+            public short posY;
+            public short posZ;
+            public byte unknown1;
+            public byte routeCount;
+            public RGMWDNMNodeRoute[] nodeRoutes;
+            public RGMWDNMWalkNode(MemoryReader memoryReader)
+            {
+                try
+                {
+                    nodeLength = memoryReader.ReadUInt32();
+                    posX = memoryReader.ReadInt16();
+                    posY = memoryReader.ReadInt16();
+                    posZ = memoryReader.ReadInt16();
+                    unknown1 = memoryReader.ReadByte();
+                    routeCount = memoryReader.ReadByte();
+                    nodeRoutes = new RGMWDNMNodeRoute[routeCount];
+                    for(int i=0;i<routeCount;i++)
+                    {
+                        nodeRoutes[i] = new RGMWDNMNodeRoute(memoryReader);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM WDNM walknode with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMWDNMItem
+		{
+            public int mapLength;
+            public int nodeCount1;
+            public int nodeCount2;
+            public int posX;
+            public int posY;
+            public int posZ;
+            public int radius;
+            public RGMWDNMWalkNode[] walkNodes;
+
+			public RGMWDNMItem(MemoryReader memoryReader)
+            {
+                try
+                {
+                    mapLength = memoryReader.ReadInt32();
+                    nodeCount1 = memoryReader.ReadInt32();
+                    nodeCount2 = memoryReader.ReadInt32();
+                    posX = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+                    posY = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+                    posZ = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+                    radius = memoryReader.ReadInt32();
+                    walkNodes = new RGMWDNMWalkNode[nodeCount1];
+                    for(int i=0;i<nodeCount1;i++)
+                    {
+                        walkNodes[i] = new RGMWDNMWalkNode(memoryReader);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM WDNM item with error:\n{ex.Message}");
+                }
+            }
+		}
+		public struct RGMWDNMSection
+		{
+
+            public uint num_items;
+			public List<RGMWDNMItem> items;
+			public RGMWDNMSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    num_items = memoryReader.ReadUInt32();
+                    items = new List<RGMWDNMItem>();
+                    for(int i=0;i<(int)num_items;i++)
+                    {
+                        items.Add(new RGMWDNMItem(memoryReader));
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM WDNM section with error:\n{ex.Message}");
+                }
+            }
+		}
+
+
+
 
 
 	// data
@@ -1148,7 +1163,7 @@ size: {dataLength:X}
         public RGMMPSFSection MPSF;
         public RGMMPMKSection MPMK;
         public RGMMPSZSection MPSZ;
-        //public RGWDNMCSection WDNM;
+        public RGMWDNMSection WDNM;
         public long fileSize;
 
 		public void LoadFile(string filename)
@@ -1261,7 +1276,10 @@ size: {dataLength:X}
                     {
                         RAVC = new RGMRAVCSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
- 
+                    else if(Sections[Sections.Count-1].sectionName == "WDNM")
+                    {
+                        WDNM = new RGMWDNMSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
                     else
                     {
                         memoryReader.Seek(Sections[Sections.Count-1].dataLength, (uint)memoryReader.Position);
