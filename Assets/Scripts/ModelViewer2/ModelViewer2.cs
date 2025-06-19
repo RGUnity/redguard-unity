@@ -195,12 +195,17 @@ public class ModelViewer2 : MonoBehaviour
         // Create the object and parent it under the root
         GameObject obj = ModelLoader.Load3DC(f3DCname, colname);
         obj.transform.SetParent(_objectRootGenerated.transform);
+        
+        loadedObjects = new List<GameObject>();
+        loadedObjects.Add(obj);
 
         mv2Cam.useFlyMode = false;
         settings.ToggleFlyMode(false);
         mv2Cam.FrameObject(_objectRootGenerated);
         
         print("Loaded object: " + f3DCname);
+
+        //SwitchTextureFilterMode(FilterMode.Point);
     }
     
     public void SpawnArea(string areaname)
@@ -229,6 +234,22 @@ public class ModelViewer2 : MonoBehaviour
         gui.PopulateIsolationDropdown(loadedObjects);
         
         print("Loaded area: " + areaname);
+    }
+
+    public void SwitchTextureFilterMode(FilterMode mode)
+    {
+        foreach (var loadedObj in loadedObjects)
+        {
+            if (loadedObj.TryGetComponent(out MeshRenderer mrs))
+            {
+                var objectMaterials = mrs.materials;
+                
+                foreach (var mat in objectMaterials)
+                {
+                    mat.mainTexture.filterMode = mode;
+                }
+            }
+        }
     }
     
     public async Task ExportGLTF()

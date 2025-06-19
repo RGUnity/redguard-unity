@@ -147,8 +147,8 @@ public class RGScriptedObject : MonoBehaviour
         }
     }
 
-	float FRAMETIME_VAL = 0.2f;
-	float FRAMETIME = 0.2f;
+	float FRAMETIME_VAL = 0.1f;
+	float FRAMETIME = 0.1f;
 	void Update()
 	{
         if(animationRunning)
