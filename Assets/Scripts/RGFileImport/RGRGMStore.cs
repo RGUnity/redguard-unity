@@ -52,6 +52,21 @@ public static class RGRGMStore
             rotation = r;
         }
     }
+    public struct RGRGMRopeData
+    {
+        public string ropeModel;
+        public string staticModel;
+        public Vector3 position;
+        public int count;
+        public RGRGMRopeData(string n, string n2, Vector3 p, int c)
+        {
+            ropeModel = n;
+            staticModel = n2;
+            position = p;
+            count = c;
+        }
+    }
+
     public static List<RGRGMData> LoadMPSF(string filename)
     {
         RGFileImport.RGRGMFile filergm = GetRGM(filename);
@@ -107,6 +122,35 @@ public static class RGRGMStore
         }
         return data_out;
     }
+    public static List<RGRGMRopeData> LoadMPRP(string filename)
+    {
+        RGFileImport.RGRGMFile filergm = GetRGM(filename);
+
+        List<RGRGMRopeData> data_out = new List<RGRGMRopeData>();
+        for(int i=0;i<filergm.MPRP.items.Count;i++)
+        {
+            try{
+                float posx =  (float)(filergm.MPRP.items[i].posX)*RGM_MPOB_SCALE;
+                float posy = -(float)(filergm.MPRP.items[i].posY)*RGM_MPOB_SCALE;
+                float posz = -(float)(0xFFFFFF-filergm.MPRP.items[i].posZ)*RGM_MPOB_SCALE;
+
+                posx += RGM_X_OFS;
+                posy += RGM_Y_OFS;
+                posz += RGM_Z_OFS;
+
+                Vector3 eulers = new Vector3(0.0f,0.0f,0.0f);
+
+                string staticModel = filergm.MPRP.items[i].staticModel.Length>0?filergm.MPRP.items[i].staticModel:null;
+                data_out.Add(new RGRGMRopeData(filergm.MPRP.items[i].ropeModel,staticModel, new Vector3(posx, posy, posz), filergm.MPRP.items[i].length));
+            }
+            catch(Exception ex)
+            {
+                Debug.Log($"Error loading MPRP item from {filename}: {filergm.MPRP.items[i].ropeModel}: {ex}");
+            }
+        }
+        return data_out;
+    }
+
     public static List<RGRGMData> LoadMPOB(string filename)
     {
         RGFileImport.RGRGMFile filergm = GetRGM(filename);

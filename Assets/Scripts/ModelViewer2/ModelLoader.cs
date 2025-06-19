@@ -62,6 +62,7 @@ public static class ModelLoader
         List<GameObject> areaObjects = new List<GameObject>();
         List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(RGMname);
         List<RGRGMStore.RGRGMData> RGM_MPSFs = RGRGMStore.LoadMPSF(RGMname);
+        List<RGRGMStore.RGRGMRopeData> RGM_MPRPs = RGRGMStore.LoadMPRP(RGMname);
         
         RGFileImport.RGRGMFile filergm = RGRGMStore.GetRGM(RGMname);
         for(int i=0;i<filergm.MPOB.items.Count;i++)
@@ -102,6 +103,33 @@ public static class ModelLoader
             GameObject obj = Add3DToScene($"F{i:D3}_{RGM_MPSFs[i].name}",  data_3D, RGM_MPSFs[i].position, RGM_MPSFs[i].rotation);
            areaObjects.Add(obj);
         }
+        for(int i=0;i<RGM_MPRPs.Count;i++)
+        {
+            try
+            {
+                // Create static objects
+                RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(RGM_MPRPs[i].ropeModel, name_col);
+                Vector3 pos = RGM_MPRPs[i].position; 
+                int j = 0;
+                for(j=0;j<RGM_MPRPs[i].count;j++)
+                {
+                    pos.y -= 0.8f; // TODO: is this always correct?
+                    GameObject obj = Add3DToScene($"R{i:D3}_{j:D3}_{RGM_MPRPs[i].ropeModel}",  data_3D, pos, new Vector3(0.0f,0.0f,0.0f));
+                   areaObjects.Add(obj);
+                }
+                if(RGM_MPRPs[i].staticModel != null)
+                {
+                    pos.y -= 0.8f; // TODO: is this always correct?
+                    GameObject obj = Add3DToScene($"R{i:D3}_{j:D3}_{RGM_MPRPs[i].staticModel}",  data_3D, pos, new Vector3(0.0f,0.0f,0.0f));
+                   areaObjects.Add(obj);
+                }
+            }
+            catch(Exception ex)
+            {
+                Debug.LogWarning($"ERR: R{i:D3}: {ex.Message}");
+            }
+        }
+
         return areaObjects;
     }
     
