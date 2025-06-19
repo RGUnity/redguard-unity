@@ -23,6 +23,8 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
             }
 
             texture.SetPixelData(pixels,0,0);
+            // Disable pixel interpolation
+            //texture.filterMode = FilterMode.Point;
             texture.Apply();
             return texture;
         }
@@ -65,6 +67,8 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
                     }
                 }
                 texture.SetPixelData(pixels,0,0);
+                // Disable pixel interpolation
+                //texture.filterMode = FilterMode.Point;
                 texture.Apply();
                 textures.Add(texture);
             }
