@@ -10,7 +10,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
         {
             int width = 8;
             int height = 8;
-            Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, true);
+            Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
             byte[] pixels = new byte[width*height*4];
 
             for (int i=0; i<width*height;i++)
@@ -25,6 +25,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
             texture.SetPixelData(pixels,0,0);
             // Disable pixel interpolation
             //texture.filterMode = FilterMode.Point;
+            //texture.wrapMode = TextureWrapMode.Clamp;
             texture.Apply();
             return texture;
         }
@@ -47,7 +48,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
 
             for (int f=0; f<bsi.BHDR.frameCount;f++)
             {
-                Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, true);
+                Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
                 for (int i=0; i<width*height;i++)
                 {
                     if(bsi.DATA.data[f][i] == 0) // assuming 0 is transparent
@@ -69,6 +70,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
                 texture.SetPixelData(pixels,0,0);
                 // Disable pixel interpolation
                 //texture.filterMode = FilterMode.Point;
+                //texture.wrapMode = TextureWrapMode.Clamp;
                 texture.Apply();
                 textures.Add(texture);
             }
