@@ -238,17 +238,9 @@ public class ModelViewer2 : MonoBehaviour
 
     public void SwitchTextureFilterMode(FilterMode mode)
     {
-        foreach (var loadedObj in loadedObjects)
+        foreach (var mat in RGTexStore.MaterialDict)
         {
-            if (loadedObj.TryGetComponent(out MeshRenderer mrs))
-            {
-                var objectMaterials = mrs.materials;
-                
-                foreach (var mat in objectMaterials)
-                {
-                    mat.mainTexture.filterMode = mode;
-                }
-            }
+            mat.Value.mainTexture.filterMode = mode;
         }
     }
     
