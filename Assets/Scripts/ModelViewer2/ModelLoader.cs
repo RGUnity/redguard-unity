@@ -88,6 +88,7 @@ public static class ModelLoader
                 // Create static objects
                 RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(RGM_MPSOs[i].name, name_col);
                 GameObject obj = Add3DToScene($"S{i:D3}_{RGM_MPSOs[i].name}",  data_3D, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
+                obj.isStatic = true;
                areaObjects.Add(obj);
             }
             catch(Exception ex)
@@ -114,6 +115,7 @@ public static class ModelLoader
         
         // Build the GameObject
         GameObject obj_wld = new GameObject();
+        obj_wld.isStatic = true;
         obj_wld.name = "Terrain";
         
         obj_wld.AddComponent<MeshFilter>().mesh = data_WLD.mesh;
