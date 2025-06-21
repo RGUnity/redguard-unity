@@ -201,6 +201,8 @@ public class ModelViewer2 : MonoBehaviour
 
         mv2Cam.useFlyMode = false;
         settings.ToggleFlyMode(false);
+        settings.RequestEnableTextureFiltering(true);
+        settings.RequestEnableAnimations(true);
         mv2Cam.FrameObject(_objectRootGenerated);
         
         print("Loaded object: " + f3DCname);
@@ -229,6 +231,8 @@ public class ModelViewer2 : MonoBehaviour
 
         mv2Cam.useFlyMode = false;
         settings.ToggleFlyMode(false);
+        settings.RequestEnableTextureFiltering(true);
+        settings.RequestEnableAnimations(true);
         mv2Cam.FrameObject(_objectRootGenerated);
         gui.objectDropDown.interactable = true;
         gui.PopulateIsolationDropdown(loadedObjects);
