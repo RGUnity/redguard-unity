@@ -20,11 +20,11 @@ public class RGScriptedObject : MonoBehaviour
 	Vector3 rotation;
 
 	RG2Mesh.UnityData_3D data_3D;
-	bool animationRunning;
+	public bool animationRunning;
     int curframe;
     int nextframe;
 
-    ScriptedObjectType type;
+    public ScriptedObjectType type;
 
 	SkinnedMeshRenderer skinnedMeshRenderer;
     Light light;
@@ -184,6 +184,15 @@ public class RGScriptedObject : MonoBehaviour
             float blend2 = 100.0f-blend1;
             skinnedMeshRenderer.SetBlendShapeWeight(curframe, blend1);
             skinnedMeshRenderer.SetBlendShapeWeight(nextframe, blend2);
+        }
+        else if (type == ScriptedObjectType.scriptedobject_animated)
+        {
+	        int blendShapeCount = skinnedMeshRenderer.sharedMesh.blendShapeCount;
+	        for (int i = 0; i < blendShapeCount; i++)
+	        {
+		        skinnedMeshRenderer.SetBlendShapeWeight(i, 0f);
+	        }
+	        skinnedMeshRenderer.SetBlendShapeWeight(0, 1);
         }
 	}
 }

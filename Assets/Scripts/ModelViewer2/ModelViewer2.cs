@@ -235,14 +235,6 @@ public class ModelViewer2 : MonoBehaviour
         
         print("Loaded area: " + areaname);
     }
-
-    public void SwitchTextureFilterMode(FilterMode mode)
-    {
-        foreach (var mat in RGTexStore.MaterialDict)
-        {
-            mat.Value.mainTexture.filterMode = mode;
-        }
-    }
     
     public async Task ExportGLTF()
     {
@@ -300,7 +292,28 @@ public class ModelViewer2 : MonoBehaviour
                 }
             }
         }
-        
         mv2Cam.FrameObject(objectRoot);
+    }
+    
+    public void SwitchTextureFilterMode(FilterMode mode)
+    {
+        foreach (var mat in RGTexStore.MaterialDict)
+        {
+            mat.Value.mainTexture.filterMode = mode;
+        }
+    }
+
+    public void EnableAnimations(bool enableAnimations)
+    {
+        foreach (var obj in loadedObjects)
+        {
+            if (obj.TryGetComponent(out RGScriptedObject rgso))
+            {
+                if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
+                {
+                    rgso.animationRunning = enableAnimations;
+                }
+            }
+        }
     }
 }
