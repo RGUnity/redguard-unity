@@ -1,11 +1,7 @@
 using UnityEngine;
 using System.IO;
-using System.Linq;
 using System;
-using System.ComponentModel.Composition;
-using System.Net.NetworkInformation;
 using System.Collections;
-using UnityEngine.UIElements;
 namespace RGU.Kitbash.Gerrick
 {
     public enum TrackList
@@ -17,13 +13,21 @@ namespace RGU.Kitbash.Gerrick
         Track05 = 5,
         Track06 = 6
     }
+    [RequireComponent(typeof(AudioSource))]
     public class CDAudioUnityReader : MonoBehaviour
     {
+        [Tooltip("This should be a string address to a valid BIN file (GOG: game.gog, Steam: REDGUARD.bin). \nMake sure to only use single slashes and respect case sensitivity.")]
+        public string RGBinPath = @"E:\Games\Redguard\Redguard\REDGUARD.bin"; //This should be set to your Redguard directory and point to either game.gog or REDGUARD.bin.
+        
+        [Tooltip("This should be a string address to a valid CUE file (GOG: game.ins, Steam: REDGUARD.ins). \nMake sure to only use single slashes and respect case sensitivity.")]
+        public string RGCuePath = @"E:\Games\Redguard\Redguard\REDGUARD.ins"; //This should point to the cue file instead-- game.ins or REDGUARD.ins.
         public CDAudio.CDAudioTableOfContents TOC;
+        AudioSource asour;
         void Awake()
         {
-            TOC = CDAudio.ReadDiscTOC();
-            
+            TOC = CDAudio.ReadDiscTOC(RGCuePath);
+            asour = GetComponent<AudioSource>();
+
         }
         public void SelectDiscTrackAndPlay(int desiredTrack)
         {
@@ -32,11 +36,10 @@ namespace RGU.Kitbash.Gerrick
             {
                 ioViolationRisk = true;
                 selectedTrack = (TrackList)desiredTrack;
-                AudioSource asour = GetComponent<AudioSource>();
                 asour.Stop();
                 asour.clip = null;
                 songtest = null;
-                StartCoroutine(ReadPartialDiscData());
+                StartCoroutine(ReadPartialDiscData(RGBinPath));
             }
         }
         ///This class must use the CD Audio class to read music into AudioClips. Hardcoding allowed.
@@ -49,7 +52,8 @@ namespace RGU.Kitbash.Gerrick
         //[SerializeField] System.Int16[] samples;
         //[SerializeField] float[] samplefloats;
         [SerializeField] TrackList selectedTrack;
-        bool enableDebug = true;
+        [Tooltip("This bool enables extra debug logs as well as some safer behaviours. It is no longer necessary to keep this enabled as the default behavior is stable, but enable for extra progress meters. This will increase load times by a few seconds.")]
+        [SerializeField] bool enableDebug = true; // Enables some extra logging and safer behaviors; no longer needed as 
         bool ioViolationRisk = false; // a safety check that stops REDGUARD.bin from being accessed when already being streamed
         public void PlayDisc()
         {
@@ -59,11 +63,11 @@ namespace RGU.Kitbash.Gerrick
             asour.Play();
 
         }
-        public IEnumerator ReadPartialDiscData()
+        public IEnumerator ReadPartialDiscData(string rgbinlocation)
         {
-            string rgbin = @"E:\Games\Redguard\Redguard\REDGUARD.bin";
+            string rgbin = @rgbinlocation;
             AudioClip test;
-            FileStream fs = File.Open(rgbin, FileMode.Open,FileAccess.Read);
+            FileStream fs = File.Open(rgbin, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(fs);
             ulong trackbytestart = TOC.trackContents[(int)selectedTrack].byteAddress;
             //if the last track is selected, the final length cannot be trusted. Just go to end of file.
@@ -84,11 +88,11 @@ namespace RGU.Kitbash.Gerrick
                 if (enableDebug)
                 {
                     if (fs.Position == fs.Length)
-                        {
+                    {
 
-                            Debug.LogError($"At {i} the file stream ended. (track length was {trackbytelength}) Ending audioclip here!");
-                            break;
-                        }
+                        Debug.LogError($"At {i} the file stream ended. (track length was {trackbytelength}) Ending audioclip here!");
+                        break;
+                    }
                 }
                 //fs.Seek((long)trackbytestart + (long)i * 2, SeekOrigin.Begin);
                 short sample = br.ReadInt16();
@@ -103,23 +107,23 @@ namespace RGU.Kitbash.Gerrick
                         Debug.Log($"Reading data - {2 * (float)i * 100 / (float)trackbytelength}%");
                     yield return null;
                 }
-            /*
-            for (int i = 0; i < tracksamplelength; i++)
-            {
-                samplefloats[i] = (samples[i] > 0) switch
+                /* Originally the remapping phase was its own loop; leaving for now in case it's needed
+                for (int i = 0; i < tracksamplelength; i++)
                 {
-                    true => (float)(samples[i] * 0.00003051850947599719f), // for dividing by 32767.0f;
-                    false => (float)(samples[i] * 0.000030517578125f)//for dividing by -32768.0f;
-                };
-                if (i % 60000 == 0)
-                {
-                    //Debug.Log(i);
-                    if (enableDebug)
-                        Debug.Log($"Remapping audio - {(float)i / (float)samples.Length * 100}%");
-                    yield return null;
+                    samplefloats[i] = (samples[i] > 0) switch
+                    {
+                        true => (float)(samples[i] * 0.00003051850947599719f), // for dividing by 32767.0f;
+                        false => (float)(samples[i] * 0.000030517578125f)//for dividing by -32768.0f;
+                    };
+                    if (i % 60000 == 0)
+                    {
+                        //Debug.Log(i);
+                        if (enableDebug)
+                            Debug.Log($"Remapping audio - {(float)i / (float)samples.Length * 100}%");
+                        yield return null;
 
-                }
-            */
+                    }
+                */
                 //samplefloats[i] = remap(samples[i], Int16.MinValue, Int16.MaxValue, -1.0f, 1.0f);
             }
             test = AudioClip.Create($"Song {(int)selectedTrack}", (int)tracksamplelength, 2, 44100, false/*true,OnRedguardMusicPlay,OnRGMusicSetPosition*/);
@@ -129,7 +133,7 @@ namespace RGU.Kitbash.Gerrick
             fs.Close();
             PlayDisc();
 
-            
+
         }
         void OnRedguardMusicPlay(float[] data)
         {
@@ -143,123 +147,5 @@ namespace RGU.Kitbash.Gerrick
         {
             return out1 + (val - in1) * (out2 - out1) / (in2 - in1);
         }
-        public IEnumerator ReadDiscData()
-        {
-            const int bytesPerFrame = 24;
-            const int sectorLength = 2352; //Some sources saying cdroms are 2048
-            string rgbin = @"E:\Games\Redguard\Redguard\REDGUARD.bin";
-            AudioClip test;
-            //ulong trackaddress = TOC.trackContents[(int)selectedTrack].frameAddress;
-            //ulong tracklength = TOC.trackContents[(int)selectedTrack].frameLength;
-
-            byte[] data = File.ReadAllBytes(rgbin);
-
-            ulong trackbytestart = TOC.trackContents[(int)selectedTrack].byteAddress;
-            //if the last track is selected, the final length cannot be trusted. Just go to end of file.
-            ulong trackbytelength = ((int)selectedTrack == TOC.lastTrack) switch
-            {
-                false => TOC.trackContents[(int)selectedTrack].byteLength,
-                true => (ulong)data.Length - TOC.trackContents[(int)selectedTrack].byteAddress
-            };
-            //int trackbytestart = (int)trackaddress * bytesPerFrame;
-            //int trackbytelength = (int)tracklength * bytesPerFrame;
-            Debug.Log($"This is the num you want: {data.Length / 24}");
-            byte[] datacrop = new byte[trackbytelength];
-            Int16[] samples = new short[trackbytelength / 2];
-            Array.Copy(data, (int)trackbytestart, datacrop, 0, (long)trackbytelength);
-            //Buffer.BlockCopy(data, (int)trackbytestart, samples, 0, (int)trackbytelength);
-            //Debug.Log($"Buffer random sample: {datacrop[400000]}");
-            Debug.Log(data.Length);
-            data = new byte[0];
-            //for (int s = 0; s < (int)trackbytelength; s++)
-            //{
-            for (long i = 0; i < (long)trackbytelength; i++)
-            {
-                ulong databytemarker = (ulong)/*s * sectorLength*/ +(ulong)i * 2;//+ trackbytestart;
-                ulong sampleMarker = (ulong)/*s * sectorLength*/ +(ulong)i;
-                if ((int)sampleMarker >= samples.Length) break;
-                //Debug.Log(i + s * 2048);
-                samples[sampleMarker] = BitConverter.ToInt16(datacrop, (int)databytemarker);
-                //samples[sampleMarker] = (short)((datacrop[(int)databytemarker] << 8) | datacrop[(int)databytemarker + 1]);
-                //if needed, make a two byte index first
-                //samples[i] = BitConverter.ToInt16(nextint);
-                if (i % 125000 == 0) yield return null;
-            }
-            //  if (s % 2500 == 0)
-            //{
-            //yield return null;
-            //  Debug.Log($"Sector {s}");
-            //}
-            //}
-
-            test = AudioClip.Create($"Song {(int)selectedTrack}", samples.Length/* (int)TOC.trackContents[(int)selectedTrack].length*/, 2, 44100, false);
-            float[] samplefloats = new float[samples.Length];
-            for (int f = 0; f < samplefloats.Length; f++)
-            {
-                //samplefloats[f]
-                samplefloats[f] = (samples[f] > 0) switch
-                {
-                    true => (float)((double)samples[f] * 0.00003051850947599719), // for dividing by 32767.0f;
-                    false => (float)((double)samples[f] * 0.000030517578125)//for dividing by -32768.0f;
-                                                                            //samplefloats[i] = samplefloats[i] / /*32768.0f*/ sizeof(Int16);
-                };
-            }
-            test.SetData(samplefloats, 0);
-            songtest = test;
-            PlayDisc();
-        }
-            //using (FileStream str = File.OpenRead(rgbin))
-
-
-
-            /*
-            FileStream fs = File.Open(rgbin,FileMode.Open);
-            BinaryReader br = new BinaryReader(fs);
-            Int16[] samples = new Int16[tracklength * 1024]; 
-            for (int i = 0; i < (int)tracklength*1024; i++)
-            {
-                int b = 0;
-                br.BaseStream.Position = i*2+b;
-                Int16 nb = br.ReadInt16();
-                samples[i] = nb;
-            }
-            */
-
-            //Debug.Log($"{trackaddress} {tracklength} {tracklength/4}");
-            /*
-                {
-                    //byte[] str = File.ReadAllBytes(rgbin);
-
-                    //str.Position = (long)trackaddress;
-                    //System.IO.BinaryReader br = new BinaryReader(str);
-                    //Should pull assuming 2048bytes per sector in a CDROM.
-                    //Calc start and end sectors count, and multiply read of bytes by 2048
-                    //data = br.ReadBytes((int)TOC.trackContents[(int)selectedTrack].length); // grab the specific byte range of the song
-                    byte[] data = new byte[tracklength];
-                    Array.Copy(str, (int)trackaddress, data,0,(int)tracklength);
-                    //samples = new System.Int16[data.Length / 2];
-                    //Buffer.BlockCopy(data, 0, samples, 0, data.Length);
-                    samples = new System.Int16[(int)tracklength];
-                    Debug.Log(samples.Length);
-                    int b = 0;
-                    for (int i = 0; i < samples.Length; i++)
-                    {
-
-                        samples[i] = BitConverter.ToInt16(data,b);
-                        b += 2;
-                    }
-                    // AudioClip.PCMReaderCallback pcm = new AudioClip.PCMReaderCallback()
-                    */
-                //samplefloats = Array.ConvertAll<System.Int16, float>(samplefloats),Convert.;
-
-                //br.Close();
-                //fs.Close();
-            //}
-            //    song1test.SetData(br.ReadBytes(3), 0);
-        //}
-        //public void OnAudioFilterRead(float[] data, int channels)
-        //{
-         //   float[] audioData;
-        //}
     }
 }

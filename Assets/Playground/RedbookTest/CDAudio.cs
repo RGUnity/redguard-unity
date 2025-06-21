@@ -1,9 +1,6 @@
 using System;
-using System.Configuration;
 using System.IO;
 using System.Text.RegularExpressions;
-using Microsoft.Win32;
-using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
 
 namespace RGU.Kitbash.Gerrick
@@ -18,10 +15,6 @@ namespace RGU.Kitbash.Gerrick
         /// 44100 samples per second per channel, 8810 bits per second
         /// Each sample is a signed 16 bit integer
 
-        [SerializeField] public CDAudioTableOfContents TOC;
-        //public CDAudioTrack[] Tracks; //included in TOC
-
-        CDAudioTrackData[] TrackData;
         #region Calc utils
         /// <summary>
         /// Converts a timestamp (in byte-array format) to the sector address on disc.
@@ -40,7 +33,6 @@ namespace RGU.Kitbash.Gerrick
         */
         /// <summary>
         /// The codeproject sample wants to do this with byte arrays. This will instead use the formatting from the cue sheet.
-        /// Converts frames to sectors... allegedly.
         /// </summary>
         /// <param name="sec"></param>
         /// <param name="min"></param>
@@ -77,23 +69,12 @@ namespace RGU.Kitbash.Gerrick
 
         }
         //todo: TrackData and Track can probably be one struct in future optimization
-        public struct CDAudioTrackData
-        {
-            //Should contain the data of a single track; index can be stored here, but we will use the array itself as the index
-            public byte reserved;
-            public byte control;
-            public byte adr;
-            public byte trackNumber;
-            public byte reserved1;
-            public byte[] Address; //4 bytes
-        }
+
         [System.Serializable]
         public struct CDAudioTrack
         {
             public ulong frameAddress;
             public ulong frameLength;
-            public ulong sectorAddress => frameAddress / 98; // this adds up to 2352, so be careful
-            public ulong sectorLength => frameLength / 98; // this adds up to 2352, so be careful
             public ulong byteAddress => frameAddress * 2352;
             public ulong byteLength => frameLength * 2352;
             /*
@@ -110,12 +91,19 @@ Second = 176,400 bytes*/
             }
         }
         #endregion
-        public static CDAudioTableOfContents ReadDiscTOC()
+        /// <summary>
+        /// Call to read a Table of Contents from a cue sheet and store it into memory. Interprets the frame data to sectors for each track.
+        /// This is not meant to be a flexible CD reader, but rather specifically set up for ease of use within the Redguard project. 
+        /// For other projects, just make another system and make it better.
+        /// </summary>
+        /// <param name="filepath">A string pointing to the location of a CUE sheet (game.ins, REDGUARD.ins).</param>
+        /// <returns>Returns a CDTOC object.</returns>
+        public static CDAudioTableOfContents ReadDiscTOC(string filepath /*Temporary, will use abstracted filepath system later*/)
         {
             CDAudioTableOfContents cdtoc = new CDAudioTableOfContents();
-            Debug.Assert(File.Exists(@"E:\Games\Redguard\Redguard\REDGUARD.ins"));
+            Debug.Assert(File.Exists(@filepath));
             //byte[] rgcue = System.IO.File.ReadAllBytes(@"E:\Games\Redguard\Redguard\REDGUARD.ins");
-            string[] rgtextlines = System.IO.File.ReadAllLines(@"E:\Games\Redguard\Redguard\REDGUARD.ins");
+            string[] rgtextlines = System.IO.File.ReadAllLines(@filepath);
             //string rgtextcue = System.Convert.ToBase64String(rgcue);
             //split by 0d 0a
             char[] carriagereturn = { (char)0x0d, (char)0x0a };
@@ -156,40 +144,19 @@ Second = 176,400 bytes*/
             {
                 Debug.Log($"{i} {cdtoc.lastTrack} {cdtoc.trackContents.Length}");
 
-                
-                ulong len = (i >= cdtoc.lastTrack-cdtoc.firstTrack) switch
+
+                ulong len = (i >= cdtoc.lastTrack - cdtoc.firstTrack) switch
                 {
                     true => /*return end of sectors with magic 70min marker*//*30264764*/ 4180,
-                    false => /*standard logic*/ cdtoc.trackContents[i+1].frameAddress-cdtoc.trackContents[i].frameAddress,
+                    false => /*standard logic*/ cdtoc.trackContents[i + 1].frameAddress - cdtoc.trackContents[i].frameAddress,
                 };
                 cdtoc.trackContents[i].frameLength = len;
             }
-            
+
 
             return cdtoc;
         }
-        public byte[] waveHeader
-        {
-            get {
-                byte[] data = new byte[44];
-                data[0] = (byte)'R';
-                data[1] = (byte)'I';
-                data[2] = (byte)'F';
-                data[3] = (byte)'F';
-                data[8] = (byte)'W';
-                data[9] = (byte)'A';
-                data[10] = (byte)'V';
-                data[11] = (byte)'E';
-                data[12] = (byte)'f';
-                data[13] = (byte)'m';
-                data[14] = (byte)'t';
-                
-                data[16] = (byte)1;
-                data[17] = (byte)6;
-
-                return data;
-            }
-        }
+        
         
     }
 }
