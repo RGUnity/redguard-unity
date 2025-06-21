@@ -315,7 +315,7 @@ public class ModelViewer2 : MonoBehaviour
             {
                 if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
                 {
-                    rgso.animationRunning = enableAnimations;
+                    rgso.allowAnimation = enableAnimations;
                 }
             }
         }
