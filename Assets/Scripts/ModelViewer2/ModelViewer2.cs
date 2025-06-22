@@ -200,10 +200,12 @@ public class ModelViewer2 : MonoBehaviour
         loadedObjects.Add(obj);
 
         mv2Cam.useFlyMode = false;
+        mv2Cam.FrameObject(_objectRootGenerated);
+        
         settings.ToggleFlyMode(false);
         settings.RequestEnableTextureFiltering(true);
         settings.RequestEnableAnimations(true);
-        mv2Cam.FrameObject(_objectRootGenerated);
+
         
         print("Loaded object: " + f3DCname);
 
@@ -228,12 +230,14 @@ public class ModelViewer2 : MonoBehaviour
         {
             obj.transform.SetParent(_objectRootGenerated.transform);
         }
-
-        mv2Cam.useFlyMode = false;
+        
         settings.ToggleFlyMode(false);
         settings.RequestEnableTextureFiltering(true);
         settings.RequestEnableAnimations(true);
+        
+        mv2Cam.useFlyMode = false;
         mv2Cam.FrameObject(_objectRootGenerated);
+        
         gui.objectDropDown.interactable = true;
         gui.PopulateIsolationDropdown(loadedObjects);
         
@@ -296,6 +300,8 @@ public class ModelViewer2 : MonoBehaviour
                 }
             }
         }
+
+        mv2Cam.useFlyMode = false;
         mv2Cam.FrameObject(objectRoot);
     }
     
