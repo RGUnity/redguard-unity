@@ -1626,7 +1626,7 @@ MonoBehaviour:
     trackContents: []
   songtest: {fileID: 0}
   selectedTrack: 3
-  enableDebug: 1
+  enableDebug: 0
 --- !u!82 &1485978676
 AudioSource:
   m_ObjectHideFlags: 0

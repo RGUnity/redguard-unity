@@ -2,6 +2,7 @@ using UnityEngine;
 using System.IO;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 namespace RGU.Kitbash.Gerrick
 {
     public enum TrackList
@@ -63,6 +64,7 @@ namespace RGU.Kitbash.Gerrick
             asour.Play();
 
         }
+        //Todo: Improve performance on public async IAsyncEnumerator<AudioClip>
         public IEnumerator ReadPartialDiscData(string rgbinlocation)
         {
             string rgbin = @rgbinlocation;
@@ -72,7 +74,7 @@ namespace RGU.Kitbash.Gerrick
             ulong trackbytestart = TOC.trackContents[(int)selectedTrack].byteAddress;
             //if the last track is selected, the final length cannot be trusted. Just go to end of file.
             //Debug.Assert(fs.Length != 0);
-            ulong trackbytelength = ((int)selectedTrack == TOC.lastTrack) switch
+            ulong trackbytelength = ((int)selectedTrack + 1 == TOC.lastTrack) switch
             {
                 false => TOC.trackContents[(int)selectedTrack].byteLength,
                 true => (ulong)fs.Length - TOC.trackContents[(int)selectedTrack].byteAddress
@@ -101,7 +103,7 @@ namespace RGU.Kitbash.Gerrick
                     true => (float)(sample * 0.00003051850947599719f), // for dividing by 32767.0f;
                     false => (float)(sample * 0.000030517578125f)//for dividing by -32768.0f;
                 };
-                if (i % 60000 == 0)
+                if (i == (int)tracksamplelength * .25f || i == (int)tracksamplelength * .50f || i == (int)tracksamplelength * .25f || i == (int)tracksamplelength * .75f)
                 {
                     if (enableDebug)
                         Debug.Log($"Reading data - {2 * (float)i * 100 / (float)trackbytelength}%");
