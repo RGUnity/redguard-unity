@@ -20,11 +20,12 @@ public class RGScriptedObject : MonoBehaviour
 	Vector3 rotation;
 
 	RG2Mesh.UnityData_3D data_3D;
+	public bool allowAnimation;
 	bool animationRunning;
     int curframe;
     int nextframe;
 
-    ScriptedObjectType type;
+    public ScriptedObjectType type;
 
 	SkinnedMeshRenderer skinnedMeshRenderer;
     Light light;
@@ -147,43 +148,56 @@ public class RGScriptedObject : MonoBehaviour
         }
     }
 
-	float FRAMETIME_VAL = 0.2f;
-	float FRAMETIME = 0.2f;
+	float FRAMETIME_VAL = 0.1f;
+	float FRAMETIME = 0.1f;
 	void Update()
 	{
-        if(animationRunning)
+		if (allowAnimation)
+		{
+			if(animationRunning)
+			{
+				FRAMETIME-= Time.deltaTime;
+				if(FRAMETIME<0.0f)
+				{
+					int anim_nextframe = animationData.NextFrame();
+					if(anim_nextframe >= data_3D.framecount)
+					{
+						Debug.Log($"{scriptName}: Frame {anim_nextframe} requested, but 3DC only has {data_3D.framecount} frames.");
+						animationRunning = false;
+						return;
+					}
+					if(anim_nextframe >= 0)
+					{
+
+						skinnedMeshRenderer.SetBlendShapeWeight(curframe, 0.0f);
+						skinnedMeshRenderer.SetBlendShapeWeight(nextframe, 0.0f);
+						curframe = nextframe;
+						nextframe = anim_nextframe;
+
+						/*
+						skinnedMeshRenderer.SetBlendShapeWeight(curframe, 0.0f);
+						curframe = anim_nextframe;
+						skinnedMeshRenderer.SetBlendShapeWeight(curframe, 100.0f);
+						*/
+					}
+					FRAMETIME = FRAMETIME_VAL;
+				}
+				// for animation blending, we need to track current and next frame
+				float blend1 = (FRAMETIME/FRAMETIME_VAL)*100.0f;
+				float blend2 = 100.0f-blend1;
+				skinnedMeshRenderer.SetBlendShapeWeight(curframe, blend1);
+				skinnedMeshRenderer.SetBlendShapeWeight(nextframe, blend2);
+			}
+		}
+        
+        else if (type == ScriptedObjectType.scriptedobject_animated)
         {
-            FRAMETIME-= Time.deltaTime;
-            if(FRAMETIME<0.0f)
-            {
-                int anim_nextframe = animationData.NextFrame();
-                if(anim_nextframe >= data_3D.framecount)
-                {
-                    Debug.Log($"{scriptName}: Frame {anim_nextframe} requested, but 3DC only has {data_3D.framecount} frames.");
-                    animationRunning = false;
-                    return;
-                }
-                if(anim_nextframe >= 0)
-                {
-
-                    skinnedMeshRenderer.SetBlendShapeWeight(curframe, 0.0f);
-                    skinnedMeshRenderer.SetBlendShapeWeight(nextframe, 0.0f);
-                    curframe = nextframe;
-                    nextframe = anim_nextframe;
-
-                    /*
-                    skinnedMeshRenderer.SetBlendShapeWeight(curframe, 0.0f);
-                    curframe = anim_nextframe;
-                    skinnedMeshRenderer.SetBlendShapeWeight(curframe, 100.0f);
-                    */
-                }
-                FRAMETIME = FRAMETIME_VAL;
-            }
-            // for animation blending, we need to track current and next frame
-            float blend1 = (FRAMETIME/FRAMETIME_VAL)*100.0f;
-            float blend2 = 100.0f-blend1;
-            skinnedMeshRenderer.SetBlendShapeWeight(curframe, blend1);
-            skinnedMeshRenderer.SetBlendShapeWeight(nextframe, blend2);
+	        int blendShapeCount = skinnedMeshRenderer.sharedMesh.blendShapeCount;
+	        for (int i = 0; i < blendShapeCount; i++)
+	        {
+		        skinnedMeshRenderer.SetBlendShapeWeight(i, 0f);
+	        }
+	        skinnedMeshRenderer.SetBlendShapeWeight(0, 1);
         }
 	}
 }

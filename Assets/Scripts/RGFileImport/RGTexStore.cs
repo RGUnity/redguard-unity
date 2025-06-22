@@ -10,7 +10,7 @@ public static class RGTexStore
     // keys like this:
     // PAL/TEXBSI#/IMG#/SHADER
     // PAL/-1/COL#/SHADER
-    static Dictionary<string, Material> MaterialDict;
+    public static Dictionary<string, Material> MaterialDict;
     static Dictionary<string, RGCOLFile> PaletteDict;
     static Dictionary<string, RGTEXBSIFile> BSIFDict;
     static Dictionary<string, Shader> ShaderDict;

@@ -67,7 +67,7 @@ public class ModelViewer2_Camera : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Locked;
 
                 Vector3 mouseInput = new Vector3(-Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"), 0f);
-                _camera.Rotate(mouseInput * (sensitivity * Time.deltaTime * 50));
+                _camera.Rotate(mouseInput * (sensitivity * 0.2f));
                 Vector3 euler = _camera.rotation.eulerAngles;
                 _camera.rotation = Quaternion.Euler(euler.x, euler.y, 0);
             }

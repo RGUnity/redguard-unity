@@ -195,12 +195,21 @@ public class ModelViewer2 : MonoBehaviour
         // Create the object and parent it under the root
         GameObject obj = ModelLoader.Load3DC(f3DCname, colname);
         obj.transform.SetParent(_objectRootGenerated.transform);
+        
+        loadedObjects = new List<GameObject>();
+        loadedObjects.Add(obj);
 
         mv2Cam.useFlyMode = false;
-        settings.ToggleFlyMode(false);
         mv2Cam.FrameObject(_objectRootGenerated);
         
+        settings.ToggleFlyMode(false);
+        settings.RequestEnableTextureFiltering(true);
+        settings.RequestEnableAnimations(true);
+
+        
         print("Loaded object: " + f3DCname);
+
+        //SwitchTextureFilterMode(FilterMode.Point);
     }
     
     public void SpawnArea(string areaname)
@@ -221,10 +230,14 @@ public class ModelViewer2 : MonoBehaviour
         {
             obj.transform.SetParent(_objectRootGenerated.transform);
         }
-
-        mv2Cam.useFlyMode = false;
+        
         settings.ToggleFlyMode(false);
+        settings.RequestEnableTextureFiltering(true);
+        settings.RequestEnableAnimations(true);
+        
+        mv2Cam.useFlyMode = false;
         mv2Cam.FrameObject(_objectRootGenerated);
+        
         gui.objectDropDown.interactable = true;
         gui.PopulateIsolationDropdown(loadedObjects);
         
@@ -287,7 +300,30 @@ public class ModelViewer2 : MonoBehaviour
                 }
             }
         }
-        
+
+        mv2Cam.useFlyMode = false;
         mv2Cam.FrameObject(objectRoot);
+    }
+    
+    public void SwitchTextureFilterMode(FilterMode mode)
+    {
+        foreach (var mat in RGTexStore.MaterialDict)
+        {
+            mat.Value.mainTexture.filterMode = mode;
+        }
+    }
+
+    public void EnableAnimations(bool enableAnimations)
+    {
+        foreach (var obj in loadedObjects)
+        {
+            if (obj.TryGetComponent(out RGScriptedObject rgso))
+            {
+                if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
+                {
+                    rgso.allowAnimation = enableAnimations;
+                }
+            }
+        }
     }
 }

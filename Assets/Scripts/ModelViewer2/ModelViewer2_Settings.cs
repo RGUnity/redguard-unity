@@ -41,4 +41,14 @@ public class ModelViewer2_Settings : MonoBehaviour
         showUI = !showUI;
         gui.gameObject.SetActive(showUI);
     }
+    
+    public void RequestEnableTextureFiltering(bool  enableFiltering)
+    {
+        mv2.SwitchTextureFilterMode(enableFiltering ? FilterMode.Bilinear : FilterMode.Point);
+    }
+
+    public void RequestEnableAnimations(bool enableAnimations)
+    {
+        mv2.EnableAnimations(enableAnimations);
+    }
 }
