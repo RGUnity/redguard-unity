@@ -395,7 +395,7 @@ MonoBehaviour:
     - line: '|     m_Automatic: 1'
     - line: '|   - m_BuildTarget: WindowsStandaloneSupport'
     - line: '|     m_APIs: 02000000'
-    - line: '|     m_Automatic: 1'
+    - line: '|     m_Automatic: 0'
     - line: '|   m_BuildTargetVRSettings:'
     - line: '|   - m_BuildTarget: Standalone'
     - line: '|     m_Enabled: 0'
