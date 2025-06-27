@@ -30,6 +30,25 @@ public static class RGTexStore
 
     }
 
+    public static void DumpDict()
+    {
+        Debug.Log($"MATS:");
+        List<string> keys = new List<string>(MaterialDict.Keys);
+        for(int i=0;i<keys.Count;i++)
+            Debug.Log($"{i:D3}: {keys[i]}");
+        Debug.Log($"COLS:");
+        keys = new List<string>(PaletteDict.Keys);
+        for(int i=0;i<keys.Count;i++)
+            Debug.Log($"{i:D3}: {keys[i]}");
+        Debug.Log($"TEXBSIS:");
+        keys = new List<string>(BSIFDict.Keys);
+        for(int i=0;i<keys.Count;i++)
+            Debug.Log($"{i:D3}: {keys[i]}");
+        Debug.Log($"SHADERS:");
+        keys = new List<string>(ShaderDict.Keys);
+        for(int i=0;i<keys.Count;i++)
+            Debug.Log($"{i:D3}: {keys[i]}");
+    }
     public static Material GetMaterial(string palname, int texbsi, int img, string shadername)
     {
         

@@ -18,7 +18,7 @@ public static class ModelLoader
         RG3DStore.fxart_path = RedguardPath +"/fxart/";
         RGTexStore.fxart_path = RedguardPath +"/fxart/";
         
-        RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(f3DCname, colname);
+        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, f3DCname, colname);
         GameObject obj = Add3DToScene($"3DC_{f3DCname}",  data_3D, Vector3.zero, Vector3.zero);
         return obj;
     }
@@ -34,7 +34,7 @@ public static class ModelLoader
         return areaObjects;
    }
 
-    private static GameObject Add3DToScene(string name, RG2Mesh.UnityData_3D data_3D, Vector3 position, Vector3 eulers)
+    private static GameObject Add3DToScene(string name, RGMeshStore.UnityData_3D data_3D, Vector3 position, Vector3 eulers)
     {
         // Create new GameObject
         GameObject obj = new GameObject(name);
@@ -87,7 +87,7 @@ public static class ModelLoader
             try
             {
                 // Create static objects
-                RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(RGM_MPSOs[i].name, name_col);
+                RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, RGM_MPSOs[i].name, name_col);
                 GameObject obj = Add3DToScene($"S{i:D3}_{RGM_MPSOs[i].name}",  data_3D, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
                 obj.isStatic = true;
                areaObjects.Add(obj);
@@ -100,7 +100,7 @@ public static class ModelLoader
         for(int i=0;i<RGM_MPSFs.Count;i++)
         {
             // Create flats
-            RG2Mesh.UnityData_3D data_3D = RG2Mesh.FLAT2Mesh(RGM_MPSFs[i].name, name_col);
+            RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_flat, RGM_MPSFs[i].name, name_col);
             GameObject obj = Add3DToScene($"F{i:D3}_{RGM_MPSFs[i].name}",  data_3D, RGM_MPSFs[i].position, RGM_MPSFs[i].rotation);
            areaObjects.Add(obj);
         }
@@ -109,7 +109,7 @@ public static class ModelLoader
             try
             {
                 // Create static objects
-                RG2Mesh.UnityData_3D data_3D = RG2Mesh.f3D2Mesh(RGM_MPRPs[i].ropeModel, name_col);
+                RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, RGM_MPRPs[i].ropeModel, name_col);
                 Vector3 pos = RGM_MPRPs[i].position; 
                 int j = 0;
                 for(j=0;j<RGM_MPRPs[i].count;j++)
@@ -139,7 +139,7 @@ public static class ModelLoader
     {
         // Load the WLD data
         string filename_wld = new string(RedguardPath + $"/maps/{name_wld}.WLD");
-        RG2Mesh.UnityData_WLD data_WLD = RG2Mesh.WLD2Mesh(filename_wld, name_col);
+        RGMeshStore.UnityData_WLD data_WLD = RGMeshStore.WLD2Mesh(filename_wld, name_col);
         
         // Build the GameObject
         GameObject obj_wld = new GameObject();

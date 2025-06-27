@@ -36,6 +36,13 @@ public static class RG3DStore
     {
         MeshIntermediateDict = new Dictionary<string, Mesh3D_intermediate>();
     }
+    public static void DumpDict()
+    {
+        Debug.Log($"INTERS:");
+        List<string> keys = new List<string>(MeshIntermediateDict.Keys);
+        for(int i=0;i<keys.Count;i++)
+            Debug.Log($"{i:D3}: {keys[i]}");
+    }
 
 
     public static Mesh3D_intermediate LoadMeshIntermediateFlat(string flatDesc)

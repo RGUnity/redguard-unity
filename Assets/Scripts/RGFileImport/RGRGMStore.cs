@@ -21,6 +21,15 @@ public static class RGRGMStore
     {
         RGMDict = new Dictionary<string, RGFileImport.RGRGMFile>();
     }
+    public static void DumpDict()
+    {
+        Debug.Log($"RGMS:");
+        List<string> keys = new List<string>(RGMDict.Keys);
+        for(int i=0;i<keys.Count;i++)
+            Debug.Log($"{i:D3}: {keys[i]}");
+    }
+
+
     public static RGFileImport.RGRGMFile GetRGM(string RGMname)
     {
         string rgm_key = $"{RGMname}";
