@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Orange
+  m_Name: Stone_Orange
   m_Shader: {fileID: 4800000, guid: 4592d1c117c2df04984330406400e9ce, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
