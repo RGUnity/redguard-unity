@@ -25,8 +25,8 @@ public static class RGTexStore
         BSIFDict = new Dictionary<string, RGTEXBSIFile>();
         ShaderDict = new Dictionary<string, Shader>();
 
-        ShaderDict.Add("DEFAULT", Shader.Find("Legacy Shaders/Diffuse Fast"));
-        ShaderDict.Add("FLATS", Shader.Find("Legacy Shaders/Diffuse Fast"));
+        ShaderDict.Add("DEFAULT", Shader.Find("Universal Render Pipeline/Simple Lit"));
+        ShaderDict.Add("FLATS", Shader.Find("Universal Render Pipeline/Unlit"));
 
     }
 

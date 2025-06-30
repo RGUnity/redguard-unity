@@ -16,7 +16,6 @@ public class ModelViewer2 : MonoBehaviour
     [SerializeField] private ModelViewer2_Camera mv2Cam;
     [SerializeField] private GameObject objectRoot;
     [SerializeField] private GameObject cameraRoot;
-    [SerializeField] private Shader shader;
     [SerializeField] private string pathOverride;
 
     private GameObject _objectRootGenerated;
@@ -30,7 +29,6 @@ public class ModelViewer2 : MonoBehaviour
     void Start()
     {
         buildAreaCOLDictionary();
-        //RGTexStore.shader = shader;
 
         // if a path override is set, use that
         if (pathOverride.Length > 0)
