@@ -9,13 +9,13 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: a1a1cb70c43e4c94786e2c80a0abcc37
   - enabled: 0
-    path: Assets/Playground/Test Scenes/Interaction Tests.unity
+    path: Assets/Playground/Interaction/Interaction Tests.unity
     guid: d07486b0e41965f44ba37441ca346086
   - enabled: 0
-    path: Assets/Playground/Test Scenes/ExampleScene01.unity
+    path: Assets/Playground/Interaction/ExampleScene01.unity
     guid: dc2754f5a6030834ca1fd0ab04a24672
-  - enabled: 0
-    path: Assets/Playground/Test Scenes/Movement Tests.unity
+  - enabled: 1
+    path: Assets/Playground/Player Movement/Movement Tests.unity
     guid: b257eee69f3340a4daa9b6be36399dcf
   - enabled: 1
     path: Assets/Playground/Test Scenes/ModelViewer2.unity
