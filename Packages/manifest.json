@@ -10,6 +10,7 @@
     "com.unity.inputsystem": "1.14.0",
     "com.unity.memoryprofiler": "1.1.6",
     "com.unity.postprocessing": "3.4.0",
+    "com.unity.render-pipelines.universal": "17.1.0",
     "com.unity.toolchain.linux-x86_64": "2.0.10",
     "com.unity.ugui": "2.0.0",
     "com.unity.modules.accessibility": "1.0.0",

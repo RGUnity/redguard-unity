@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ModelViewer2_Camera : MonoBehaviour
+public class ModelViewer_Camera : MonoBehaviour
 {
-    [SerializeField] private ModelViewer2_GUI gui;
+    [SerializeField] private ModelViewer_GUI gui;
     [SerializeField] private EventSystem eventSystem;
     [SerializeField] private Transform _camera;
     [SerializeField] private Transform rotationRootX;

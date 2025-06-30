@@ -8,15 +8,15 @@ using UnityEngine;
 using GLTFast;
 using GLTFast.Export;
 using TMPro;
+using UnityEngine.Serialization;
 
-public class ModelViewer2 : MonoBehaviour
+public class ModelViewer : MonoBehaviour
 {
-    [SerializeField] public ModelViewer2_Settings settings;
-    [SerializeField] private ModelViewer2_GUI gui;
-    [SerializeField] private ModelViewer2_Camera mv2Cam;
+    [SerializeField] public ModelViewer_Settings settings;
+    [SerializeField] private ModelViewer_GUI gui;
+    [SerializeField] private ModelViewer_Camera mvCam;
     [SerializeField] private GameObject objectRoot;
     [SerializeField] private GameObject cameraRoot;
-    [SerializeField] private Shader shader;
     [SerializeField] private string pathOverride;
 
     private GameObject _objectRootGenerated;
@@ -30,7 +30,6 @@ public class ModelViewer2 : MonoBehaviour
     void Start()
     {
         buildAreaCOLDictionary();
-        //RGTexStore.shader = shader;
 
         // if a path override is set, use that
         if (pathOverride.Length > 0)
@@ -199,8 +198,8 @@ public class ModelViewer2 : MonoBehaviour
         loadedObjects = new List<GameObject>();
         loadedObjects.Add(obj);
 
-        mv2Cam.useFlyMode = false;
-        mv2Cam.FrameObject(_objectRootGenerated);
+        mvCam.useFlyMode = false;
+        mvCam.FrameObject(_objectRootGenerated);
         
         settings.ToggleFlyMode(false);
         settings.RequestEnableTextureFiltering(true);
@@ -235,8 +234,8 @@ public class ModelViewer2 : MonoBehaviour
         settings.RequestEnableTextureFiltering(true);
         settings.RequestEnableAnimations(true);
         
-        mv2Cam.useFlyMode = false;
-        mv2Cam.FrameObject(_objectRootGenerated);
+        mvCam.useFlyMode = false;
+        mvCam.FrameObject(_objectRootGenerated);
         
         gui.objectDropDown.interactable = true;
         gui.PopulateIsolationDropdown(loadedObjects);
@@ -306,8 +305,8 @@ public class ModelViewer2 : MonoBehaviour
             }
         }
 
-        mv2Cam.useFlyMode = false;
-        mv2Cam.FrameObject(objectRoot);
+        mvCam.useFlyMode = false;
+        mvCam.FrameObject(objectRoot);
     }
     
     public void SwitchTextureFilterMode(FilterMode mode)

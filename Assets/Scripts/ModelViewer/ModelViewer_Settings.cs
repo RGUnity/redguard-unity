@@ -1,12 +1,13 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class ModelViewer2_Settings : MonoBehaviour
+public class ModelViewer_Settings : MonoBehaviour
 {
-    [SerializeField] private ModelViewer2 mv2;
-    [SerializeField] private ModelViewer2_GUI gui;
-    [SerializeField] private ModelViewer2_Camera mv2_camera;
+    [SerializeField] private ModelViewer mv;
+    [SerializeField] private ModelViewer_GUI gui;
+    [SerializeField] private ModelViewer_Camera mv_camera;
     public bool showUI;
 
     private void Start()
@@ -26,14 +27,14 @@ public class ModelViewer2_Settings : MonoBehaviour
 
     public void ToggleFlyMode(bool toggle)
     {
-        mv2_camera.useFlyMode = toggle;
+        mv_camera.useFlyMode = toggle;
     }
 
     public void ReloadFiles()
     {
         ModelLoader.RedguardPath = gui.pathInput.text;
         PlayerPrefs.SetString("ViewerRedguardPath", ModelLoader.RedguardPath);
-        mv2.ViewerMode_Areas();
+        mv.ViewerMode_Areas();
     }
 
     private void ToggleUI()
@@ -44,11 +45,11 @@ public class ModelViewer2_Settings : MonoBehaviour
     
     public void RequestEnableTextureFiltering(bool  enableFiltering)
     {
-        mv2.SwitchTextureFilterMode(enableFiltering ? FilterMode.Bilinear : FilterMode.Point);
+        mv.SwitchTextureFilterMode(enableFiltering ? FilterMode.Bilinear : FilterMode.Point);
     }
 
     public void RequestEnableAnimations(bool enableAnimations)
     {
-        mv2.EnableAnimations(enableAnimations);
+        mv.EnableAnimations(enableAnimations);
     }
 }

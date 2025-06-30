@@ -7,9 +7,9 @@ using Assets.Scripts.RGFileImport.RGGFXImport;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] private ModelViewer2 modelViewer2;
+    [SerializeField] private ModelViewer modelViewer;
     [SerializeField] private RectTransform button_ModeLevel;
     [SerializeField] private RectTransform button_ModeObjects;
     [SerializeField] private RectTransform button_ModeTexture;
@@ -73,9 +73,9 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
         var newButton = Instantiate(button3DC_Prefab, root_ButtonList);
         newButton.name = "Button_" + prettyFileName;
         
-        if (newButton.TryGetComponent(out ModelViewer2_3DCButton component))
+        if (newButton.TryGetComponent(out ModelViewer_3DCButton component))
         {
-            component.mv2_GUI = this;
+            component.mv_GUI = this;
             component.filename = prettyFileName;
             component.SetButtonText(fileName);
         }
@@ -137,9 +137,9 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
         var newButton = Instantiate(buttonROB_Prefab, root_ButtonList);
         newButton.name = "Button_" + fileName;
         
-        if (newButton.TryGetComponent(out ModelViewer2_ROBButton component))
+        if (newButton.TryGetComponent(out ModelViewer_ROBButton component))
         {
-            component.mv2_GUI = this;
+            component.mv_GUI = this;
             component.fileName = fileName;
             component.SetButtonText(fileName);
         }
@@ -160,17 +160,17 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
     // Button Signals
     public void ModeButton_Levels()
     {
-        modelViewer2.ViewerMode_Areas();
+        modelViewer.ViewerMode_Areas();
     }
     
     public void ModeButton_Objects()
     {
-        modelViewer2.ViewerMode_Models();
+        modelViewer.ViewerMode_Models();
     }
     
     public void ModeButton_Textures()
     {
-        modelViewer2.ViewerMode_Textures();
+        modelViewer.ViewerMode_Textures();
         
         // Update Button appearance
         button_ModeLevel.GetComponent<Image>().color = Color.gray;
@@ -207,13 +207,13 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public void Request3DCFile(string fileName)
     {
         print("Requesting 3DC file: " + fileName);
-        modelViewer2.Spawn3DC(fileName, "ISLAND");
+        modelViewer.Spawn3DC(fileName, "ISLAND");
     }
     
     public void RequestArea(string fileName)
     {
         print("Requesting area: " + fileName);
-        modelViewer2.SpawnArea(fileName);
+        modelViewer.SpawnArea(fileName);
     }
 
     public void PathErrorMode(bool toggle)
@@ -231,11 +231,11 @@ public class ModelViewer2_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
     
     public void RequestExportGLTF()
     {
-        modelViewer2.ExportGLTF();
+        modelViewer.ExportGLTF();
     }
 
     public void RequestObjectIsolation()
     {
-        modelViewer2.IsolateObject(objectDropDown.options[objectDropDown.value].text);
+        modelViewer.IsolateObject(objectDropDown.options[objectDropDown.value].text);
     }
 }
