@@ -253,6 +253,46 @@ IO_WLD_data_t
 		{
 			// assuming always 64 textures; safe bet?
 			const int texid_cnt = 64;
+
+            // hardcoded to avoid rounding errors in UVs
+            Vector2[,] uv_rotations = 
+            {	
+                { // 00
+                new Vector2(1.0f, 1.0f),
+				new Vector2(1.0f, 0.0f),
+				new Vector2(0.0f, 0.0f),
+				new Vector2(0.0f, 0.0f),
+				new Vector2(0.0f, 1.0f),
+				new Vector2(1.0f, 1.0f)
+                },
+                { // 01
+                new Vector2(0.0f, 1.0f),
+				new Vector2(1.0f, 1.0f),
+				new Vector2(1.0f, 0.0f),
+				new Vector2(1.0f, 0.0f),
+				new Vector2(0.0f, 0.0f),
+				new Vector2(0.0f, 1.0f)
+                },
+                { // 10
+                new Vector2(0.0f, 0.0f),
+				new Vector2(0.0f, 1.0f),
+				new Vector2(1.0f, 1.0f),
+				new Vector2(1.0f, 1.0f),
+				new Vector2(1.0f, 0.0f),
+				new Vector2(0.0f, 0.0f)
+                },
+                { // 11
+                new Vector2(1.0f, 0.0f),
+				new Vector2(0.0f, 0.0f),
+				new Vector2(0.0f, 1.0f),
+				new Vector2(0.0f, 1.0f),
+				new Vector2(1.0f, 1.0f),
+				new Vector2(1.0f, 0.0f)
+                },
+
+
+            };
+
 			int map_size =  maps_data.map_size;
 
 			meshes = new WLDMesh[texid_cnt];
@@ -278,7 +318,7 @@ IO_WLD_data_t
 					Vector2 uvb2;
 					Vector2 uvc2;
 					int tex_id;
-					float tex_rot;
+					int tex_rot;
 					Vector2 uv_tmp;
 
 				// vertices
@@ -308,42 +348,17 @@ IO_WLD_data_t
 					c2 = a1;
 
 				// uvs
+					tex_rot = maps_data.texturemap_flag[x+y*map_size];
+
 					// tri 1;
-					uva1 = new Vector2(1.0f, 1.0f);
-					uvb1 = new Vector2(1.0f, 0.0f);
-					uvc1 = new Vector2(0.0f, 0.0f);
+					uva1 = uv_rotations[tex_rot,0];
+					uvb1 = uv_rotations[tex_rot,1];
+					uvc1 = uv_rotations[tex_rot,2];
 
 					// tri 2;
-					uva2 = new Vector2(0.0f, 0.0f);
-					uvb2 = new Vector2(0.0f, 1.0f);
-					uvc2 = new Vector2(1.0f, 1.0f);
-
-					// rotate them here so no fancy shaders needed
-					tex_rot = (float)maps_data.texturemap_flag[x+y*map_size]*(Mathf.PI/2);
-
-					uv_tmp = uva1;
-					uva1.x = uv_tmp.x*Mathf.Cos(tex_rot)-uv_tmp.y*Mathf.Sin(tex_rot);
-					uva1.y = uv_tmp.x*Mathf.Sin(tex_rot)+uv_tmp.y*Mathf.Cos(tex_rot);
-
-					uv_tmp = uvb1;
-					uvb1.x = uv_tmp.x*Mathf.Cos(tex_rot)-uv_tmp.y*Mathf.Sin(tex_rot);
-					uvb1.y = uv_tmp.x*Mathf.Sin(tex_rot)+uv_tmp.y*Mathf.Cos(tex_rot);
-
-					uv_tmp = uvc1;
-					uvc1.x = uv_tmp.x*Mathf.Cos(tex_rot)-uv_tmp.y*Mathf.Sin(tex_rot);
-					uvc1.y = uv_tmp.x*Mathf.Sin(tex_rot)+uv_tmp.y*Mathf.Cos(tex_rot);
-
-					uv_tmp = uva2;
-					uva2.x = uv_tmp.x*Mathf.Cos(tex_rot)-uv_tmp.y*Mathf.Sin(tex_rot);
-					uva2.y = uv_tmp.x*Mathf.Sin(tex_rot)+uv_tmp.y*Mathf.Cos(tex_rot);
-					uv_tmp = uvb2;
-					uvb2.x = uv_tmp.x*Mathf.Cos(tex_rot)-uv_tmp.y*Mathf.Sin(tex_rot);
-					uvb2.y = uv_tmp.x*Mathf.Sin(tex_rot)+uv_tmp.y*Mathf.Cos(tex_rot);
-
-					uv_tmp = uvc2;
-					uvc2.x = uv_tmp.x*Mathf.Cos(tex_rot)-uv_tmp.y*Mathf.Sin(tex_rot);
-					uvc2.y = uv_tmp.x*Mathf.Sin(tex_rot)+uv_tmp.y*Mathf.Cos(tex_rot);
-
+					uva2 = uv_rotations[tex_rot,3];
+					uvb2 = uv_rotations[tex_rot,4];
+					uvc2 = uv_rotations[tex_rot,5];
 
 					tex_id = (int)maps_data.texturemap[x+y*map_size];
 					meshes[tex_id].AppendTri(c1, b1, a1, uvc1, uvb1, uva1);
