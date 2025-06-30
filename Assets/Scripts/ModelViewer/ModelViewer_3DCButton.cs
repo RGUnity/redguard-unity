@@ -1,13 +1,14 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class ModelViewer2_3DCButton : MonoBehaviour
+public class ModelViewer_3DCButton : MonoBehaviour
 {
     [SerializeField] Button button3DC;
     [SerializeField] private TMP_Text buttonText;
 
-    public ModelViewer2_GUI mv2_GUI;
+    public ModelViewer_GUI mv_GUI;
     public string filename;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -24,7 +25,7 @@ public class ModelViewer2_3DCButton : MonoBehaviour
 
     public void OnClick()
     {
-        mv2_GUI.Request3DCFile(filename);
+        mv_GUI.Request3DCFile(filename);
     }
 
     public void SetButtonText(string text)

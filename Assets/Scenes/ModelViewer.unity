@@ -1967,7 +1967,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c63dfae66dba66e4fb8031fe8eeaeb5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelViewer2: {fileID: 1065159419}
+  modelViewer: {fileID: 1065159419}
   button_ModeLevel: {fileID: 481778563}
   button_ModeObjects: {fileID: 1929159475}
   button_ModeTexture: {fileID: 1312979233}
@@ -5926,9 +5926,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b971439cf0031c41a757c94a5b8f314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mv2: {fileID: 1065159419}
+  mv: {fileID: 1065159419}
   gui: {fileID: 189839338}
-  mv2_camera: {fileID: 1516451609}
+  mv_camera: {fileID: 1516451609}
   showUI: 0
 --- !u!4 &847651789
 Transform:
@@ -6686,7 +6686,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings: {fileID: 847651788}
   gui: {fileID: 189839338}
-  mv2Cam: {fileID: 1516451609}
+  mvCam: {fileID: 1516451609}
   objectRoot: {fileID: 86303902}
   cameraRoot: {fileID: 1516451608}
   pathOverride: 
