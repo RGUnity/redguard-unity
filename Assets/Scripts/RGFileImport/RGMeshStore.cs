@@ -119,7 +119,6 @@ public static class RGMeshStore
         Mesh mesh_3d = new Mesh();
         mesh_3d.subMeshCount = mesh_i.subMeshCount;
         mesh_3d.vertices = mesh_i.vertices.ToArray();
-        mesh_3d.uv = mesh_i.uv.ToArray();
         mesh_3d.normals = mesh_i.normals.ToArray();
 
         for(int j=0;j<mesh_i.framecount;j++)
@@ -127,15 +126,33 @@ public static class RGMeshStore
             mesh_3d.AddBlendShapeFrame($"FRAME_{j}", 100.0f, mesh_i.frameDeltaVertices[j].ToArray(), mesh_i.frameDeltaNormals[j].ToArray(), null);
         }
 
+        List<Vector2> nuvs = new List<Vector2>(mesh_i.uv);
         int i = 0;
         foreach(var submesh in mesh_i.submeshes)
         {
             string[] keys = submesh.Key.Split("/");
-            materials.Add(RGTexStore.GetMaterial(palettename,Int32.Parse(keys[0]),Int32.Parse(keys[1]), shadername));
+            Material mat = RGTexStore.GetMaterial(palettename,Int32.Parse(keys[0]),Int32.Parse(keys[1]), shadername);
+            materials.Add(mat);
+
+            float aspect = (float)mat.mainTexture.height/(float)mat.mainTexture.width;
+            float h = (float)mat.mainTexture.height;
+            float w = (float)mat.mainTexture.width;
+
             List<int> tri_lst = submesh.Value;
+            for(int j=0;j<tri_lst.Count;j++)
+            {
+                float uv_x = nuvs[tri_lst[j]].x/16.0f;
+                float uv_y = nuvs[tri_lst[j]].y/16.0f;
+
+                nuvs[tri_lst[j]] = new Vector2(uv_x/w, uv_y/h);
+
+                Debug.Log($"UV: {tri_lst[j]} : {j}\nOld: {uv_x}/{uv_y}\nNew: {nuvs[tri_lst[j]].x}/{nuvs[tri_lst[j]].y}\n");
+ 
+             }
             mesh_3d.SetTriangles(tri_lst.ToArray(), i);
             i++;
         }
+        mesh_3d.uv = nuvs.ToArray();
 
         UnityData_3D data = new UnityData_3D();
         data.framecount = mesh_i.framecount;

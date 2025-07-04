@@ -331,7 +331,7 @@ namespace xyz
 			RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
 			RGFileImport.RGROBFile file_rob = new RGFileImport.RGROBFile();
 			Mesh3D_intermediate  imm;
-            file_rob.LoadFile("/home/culacant/.wine/drive_c/Redguard/Redguard/fxart/GERRICKS.ROB");
+            file_rob.LoadFile("../../game_3dfx/fxart/GERRICKS.ROB");
 			for(int i=0;i<file_rob.hdr.NumSegments;i++)
 			{
 				if(file_rob.segments[i].Size > 0)
@@ -343,7 +343,7 @@ namespace xyz
 				}
 			}
 
-            file_3d.LoadFile("/home/culacant/.wine/drive_c/Redguard/Redguard/fxart/CYRSA001.3DC");
+            file_3d.LoadFile("../../game_3dfx/fxart/CYRSA001.3DC");
             imm = LoadMesh_3D_intermediate(file_3d);
 			print_obj(imm, "test");
 		}

@@ -266,30 +266,12 @@ public static class RG3DStore
         List<Vector3>[] framenorm_lst = new List<Vector3>[mesh.framecount];
         List<Vector2> uv_lst = new List<Vector2>();
         Dictionary<string, List<int>> tri_lst = new Dictionary<string, List<int>>();
-        Dictionary<string, Vector2> uv_scale_lst = new Dictionary<string, Vector2>();
 
         for(int f=0;f<mesh.framecount;f++)
         {
             framevec_lst[f] = new List<Vector3>();
             framenorm_lst[f] = new List<Vector3>();
         }
-        for(int i=0;i<face_lst.Count;i++)
-        {
-            Vector2 v;
-            if(!uv_scale_lst.TryGetValue(face_lst[i].texid, out v))
-            {
-                uv_scale_lst.Add(face_lst[i].texid, new Vector2(0.0f, 0.0f));
-            }
-
-			for(int j=0;j<face_lst[i].uvs.Count;j++)
-			{
-                if(uv_scale_lst[face_lst[i].texid].y < face_lst[i].uvs[j].y)
-					uv_scale_lst[face_lst[i].texid] = new Vector2(uv_scale_lst[face_lst[i].texid].x, face_lst[i].uvs[j].y);
-                if(uv_scale_lst[face_lst[i].texid].x < face_lst[i].uvs[j].x)
-					uv_scale_lst[face_lst[i].texid] = new Vector2(face_lst[i].uvs[j].x, uv_scale_lst[face_lst[i].texid].y);
-			}
-		}
-
         int tri_cnt = 0;
         for(int i=0;i<face_lst.Count;i++)
         {
@@ -316,20 +298,17 @@ public static class RG3DStore
                     framenorm_lst[f].Add(face_lst[i].framenorms[f][vert_ofs+j+1]);
                 }
 
-                float UV_TRANSFORM_FACTOR_X = uv_scale_lst[face_lst[i].texid].x;
-                float UV_TRANSFORM_FACTOR_Y = uv_scale_lst[face_lst[i].texid].y;
-
                 uv_lst.Add(new Vector2(
-                                ((face_lst[i].uvs[0].x)/(UV_TRANSFORM_FACTOR_X)),
-                                -((UV_TRANSFORM_FACTOR_Y)-face_lst[i].uvs[0].y)/(UV_TRANSFORM_FACTOR_Y)
+                                face_lst[i].uvs[0].x,
+                                face_lst[i].uvs[0].y
 								));
                 uv_lst.Add(new Vector2(
-                                ((face_lst[i].uvs[vert_ofs+j].x)/(UV_TRANSFORM_FACTOR_X)),
-                                -((UV_TRANSFORM_FACTOR_Y)-face_lst[i].uvs[vert_ofs+j].y)/(UV_TRANSFORM_FACTOR_Y)
+                                face_lst[i].uvs[vert_ofs+j].x,
+                                face_lst[i].uvs[vert_ofs+j].y
 								));
                 uv_lst.Add(new Vector2(
-                                ((face_lst[i].uvs[vert_ofs+j+1].x)/(UV_TRANSFORM_FACTOR_X)),
-                                -((UV_TRANSFORM_FACTOR_Y)-face_lst[i].uvs[vert_ofs+j+1].y)/(UV_TRANSFORM_FACTOR_Y)
+                                face_lst[i].uvs[vert_ofs+j+1].x,
+                                face_lst[i].uvs[vert_ofs+j+1].y
 								));
 
 
