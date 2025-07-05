@@ -5,8 +5,30 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Assets.Scripts.RGFileImport.RGGFXImport;
 
+using Unity.Profiling;
 public static class RG3DStore
 {
+
+static readonly ProfilerMarker s_load_iFLAT = new ProfilerMarker("LoadMeshIntermediateFlat");
+static readonly ProfilerMarker s_load_i3DC = new ProfilerMarker("LoadMeshIntermediate3DC");
+static readonly ProfilerMarker s_load_iROB = new ProfilerMarker("LoadMeshIntermediateROB");
+static readonly ProfilerMarker s_calc_3d = new ProfilerMarker("LoadMesh_3D_intermediate");
+
+static readonly ProfilerMarker pm_pass_1 = new ProfilerMarker("pm_pass_1");
+static readonly ProfilerMarker pm_pass_1_face = new ProfilerMarker("pm_pass_1_face");
+static readonly ProfilerMarker pm_pass_1_face_frame = new ProfilerMarker("pm_pass_1_face_frame");
+static readonly ProfilerMarker pm_pass_1_face_frame_vert = new ProfilerMarker("pm_pass_1_face_frame_vert");
+static readonly ProfilerMarker pm_pass_1_face_vert = new ProfilerMarker("pm_pass_1_face_vert");
+static readonly ProfilerMarker pm_pass_1_frames = new ProfilerMarker("pm_pass_1_frames");
+static readonly ProfilerMarker pm_pass_1_frames_vert = new ProfilerMarker("pm_pass_1_frames_vert");
+static readonly ProfilerMarker pm_pass_1_norms = new ProfilerMarker("pm_pass_1_norms");
+static readonly ProfilerMarker pm_pass_1_verts = new ProfilerMarker("pm_pass_1_verts");
+static readonly ProfilerMarker pm_pass_2 = new ProfilerMarker("pm_pass_2");
+static readonly ProfilerMarker pm_pass_2_face = new ProfilerMarker("pm_pass_2_face");
+static readonly ProfilerMarker pm_pass_2_face_vert = new ProfilerMarker("pm_pass_2_face_vert");
+static readonly ProfilerMarker pm_pass_2_face_vert_frame = new ProfilerMarker("pm_pass_2_face_vert_frame");
+
+
     const float MESH_SCALE_FACTOR = 1/5120.0f;
     static public Vector3 MESH_VERT_FLIP = new Vector3(1.0f, -1.0f, 1.0f);
     static public Vector3 MESH_ROT_FLIP = new Vector3(-1.0f, 1.0f, -1.0f);
@@ -47,6 +69,7 @@ public static class RG3DStore
 
     public static Mesh3D_intermediate LoadMeshIntermediateFlat(string flatDesc)
     {
+using (s_load_iFLAT.Auto()){
        Mesh3D_intermediate o;
         if(MeshIntermediateDict.TryGetValue(flatDesc, out o))
         {
@@ -92,12 +115,13 @@ public static class RG3DStore
             MeshIntermediateDict.Add(flatDesc, o);
             return MeshIntermediateDict[flatDesc];
         }
-
+}
     }
 
     // for now, assuming we only want to explicitly load 3dc files and that all 3d files are in the ROB files
     public static Mesh3D_intermediate LoadMeshIntermediate3DC(string meshname)
     {
+using (s_load_i3DC.Auto()){
         Mesh3D_intermediate o;
         if(MeshIntermediateDict.TryGetValue(meshname, out o))
         {
@@ -113,9 +137,11 @@ public static class RG3DStore
             MeshIntermediateDict.Add(meshname, LoadMesh_3D_intermediate(file_3d));
             return MeshIntermediateDict[meshname];
         }
+}
     }
     public static void LoadMeshIntermediatesROB(string ROBname)
     {
+using (s_load_iROB.Auto()){
         string filename = path_to_game + "/fxart/" + ROBname+ ".ROB";
         RGFileImport.RGROBFile file_rob = new RGFileImport.RGROBFile();
         file_rob.LoadFile(filename);
@@ -142,7 +168,7 @@ public static class RG3DStore
                 }
             }
         }
-
+}
     }
 
 
@@ -160,9 +186,10 @@ public static class RG3DStore
 
     private static Mesh3D_intermediate LoadMesh_3D_intermediate(RGFileImport.RG3DFile file_3d)
     {
+using (s_calc_3d.Auto()){
         Mesh3D_intermediate mesh = new Mesh3D_intermediate();
-
 // 1st pass: load verts/normals/faces
+pm_pass_1.Begin();
         List<Vector3> vec_tmp_lst = new List<Vector3>();
         List<int> tri_tmp_lst = new List<int>();
         List<Vector3> norm_tmp_lst = new List<Vector3>();
@@ -172,6 +199,7 @@ public static class RG3DStore
         List<Vector3>[] frame_vec_tmp_lst = new List<Vector3>[mesh.framecount];
         List<Vector3>[] frame_norm_tmp_lst = new List<Vector3>[mesh.framecount];
 
+pm_pass_1_verts.Begin();
         for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
         {
             // big scale down so it fits
@@ -180,11 +208,14 @@ public static class RG3DStore
                                       file_3d.VertexCoordinates[i].z*MESH_SCALE_FACTOR);
             vec_tmp_lst.Add(vec);
         }
+pm_pass_1_verts.End();
 
+pm_pass_1_frames.Begin();
         for(int f=0;f<mesh.framecount;f++)
         {
             frame_vec_tmp_lst[f] = new List<Vector3>();
             frame_norm_tmp_lst[f] = new List<Vector3>();
+pm_pass_1_frames_vert.Begin();
             for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
             {
                 // big scale down so it fits
@@ -198,8 +229,11 @@ public static class RG3DStore
                 frame_norm_tmp_lst[f].Add(norm);
 
             }
+pm_pass_1_frames_vert.End();
         }
+pm_pass_1_frames.End();
 
+pm_pass_1_norms.Begin();
         for(int i=0;i<file_3d.FaceNormals.Count;i++)
         {
             Vector3 normal = new Vector3( file_3d.FaceNormals[i].x,
@@ -208,6 +242,8 @@ public static class RG3DStore
             normal.Normalize();
             norm_tmp_lst.Add(normal);
         }
+pm_pass_1_norms.End();
+pm_pass_1_face.Begin();
         List<Face_3DC> face_lst = new List<Face_3DC>();
         for(int i=0;i<file_3d.FaceDataCollection.Count;i++)
         {
@@ -227,6 +263,7 @@ public static class RG3DStore
             {
                 cur_face.texid = $"{file_3d.FaceDataCollection[i].TextureId}/{file_3d.FaceDataCollection[i].ImageId}";
             }
+pm_pass_1_face_vert.Begin();
             // regular verts
             for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count;j++)
             {
@@ -234,11 +271,14 @@ public static class RG3DStore
                 vec = Vector3.Scale(vec, MESH_VERT_FLIP);
                 cur_face.verts.Add(vec);
             }
+pm_pass_1_face_vert.End();
             // frame verts (offsets)
+pm_pass_1_face_frame.Begin();
             for(int f=0;f<mesh.framecount;f++)
             {
                 cur_face.frameverts[f] = new List<Vector3>();
                 cur_face.framenorms[f] = new List<Vector3>();
+pm_pass_1_face_frame_vert.Begin();
                 for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count;j++)
                 {
                     Vector3 vec = frame_vec_tmp_lst[f][(int)file_3d.FaceDataCollection[i].VertexData[j].VertexIndex];
@@ -248,8 +288,11 @@ public static class RG3DStore
                     norm = Vector3.Scale(vec, MESH_VERT_FLIP);
                     cur_face.framenorms[f].Add(norm);
                 }
+pm_pass_1_face_frame_vert.End();
             }
+pm_pass_1_face_frame.End();
 
+pm_pass_1_face_vert.Begin();
             for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count;j++)
             {
                 cur_face.uvs.Add(new Vector2(
@@ -257,8 +300,13 @@ public static class RG3DStore
                                 file_3d.FaceDataCollection[i].VertexData[j].V
 								));
             }
+pm_pass_1_face_vert.End();
             face_lst.Add(cur_face);
         }
+pm_pass_1_face.End();
+pm_pass_1.End();
+
+pm_pass_2.Begin();
 // 2nd pass: sort faces by texture id and split verts/norms/uvs
         List<Vector3> vec_lst = new List<Vector3>();
         List<Vector3> norm_lst = new List<Vector3>();
@@ -272,9 +320,11 @@ public static class RG3DStore
             framevec_lst[f] = new List<Vector3>();
             framenorm_lst[f] = new List<Vector3>();
         }
+pm_pass_2_face.Begin();
         int tri_cnt = 0;
         for(int i=0;i<face_lst.Count;i++)
         {
+pm_pass_2_face_vert.Begin();
             for(int j=0;j<=face_lst[i].vert_cnt-3;j++)
             {
 
@@ -287,6 +337,7 @@ public static class RG3DStore
                 norm_lst.Add(face_lst[i].norm);
                 norm_lst.Add(face_lst[i].norm);
 
+pm_pass_2_face_vert_frame.Begin();
                 for(int f=0;f<mesh.framecount;f++)
                 {
                     framevec_lst[f].Add(face_lst[i].frameverts[f][0]);
@@ -297,6 +348,7 @@ public static class RG3DStore
                     framenorm_lst[f].Add(face_lst[i].framenorms[f][vert_ofs+j]);
                     framenorm_lst[f].Add(face_lst[i].framenorms[f][vert_ofs+j+1]);
                 }
+pm_pass_2_face_vert_frame.End();
 
                 uv_lst.Add(new Vector2(
                                 face_lst[i].uvs[0].x,
@@ -323,7 +375,10 @@ public static class RG3DStore
                 tri_lst[face_lst[i].texid].Add(tri_cnt*3+0);
                 tri_cnt++;
             }
+pm_pass_2_face_vert.End();
         }
+pm_pass_2_face.End();
+pm_pass_2.End();
 
         mesh.subMeshCount = tri_lst.Count;
         mesh.vertices = vec_lst;
@@ -334,6 +389,7 @@ public static class RG3DStore
         mesh.frameDeltaNormals = framenorm_lst;
 
         return mesh;
+}
     }
     static Vector3 calculateTriNormal(Vector3 p1, Vector3 p2, Vector3 p3)
     {

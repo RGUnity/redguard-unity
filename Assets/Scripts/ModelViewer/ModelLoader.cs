@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Profiling;
 
 public static class ModelLoader
 {
@@ -53,6 +54,12 @@ public static class ModelLoader
         return obj;
     }
     
+    static readonly ProfilerMarker s_load_RGM = new ProfilerMarker("LoadRGM");
+    static readonly ProfilerMarker s_load_MPOB = new ProfilerMarker("LoadMPOB");
+    static readonly ProfilerMarker s_load_MPSO = new ProfilerMarker("LoadMPSO");
+    static readonly ProfilerMarker s_load_MPSF = new ProfilerMarker("LoadMPSF");
+    static readonly ProfilerMarker s_load_MPRP = new ProfilerMarker("LoadMPRP");
+
     private static List<GameObject> LoadRGM(string gamepath, string RGMname, string name_col)
     {
         RGRGMStore.maps_path = gamepath+"/maps/";
@@ -64,7 +71,11 @@ public static class ModelLoader
         List<RGRGMStore.RGRGMData> RGM_MPSFs = RGRGMStore.LoadMPSF(RGMname);
         List<RGRGMStore.RGRGMRopeData> RGM_MPRPs = RGRGMStore.LoadMPRP(RGMname);
         
+        s_load_RGM.Begin();
         RGFileImport.RGRGMFile filergm = RGRGMStore.GetRGM(RGMname);
+        s_load_RGM.End();
+
+        s_load_MPOB.Begin();
         for(int i=0;i<filergm.MPOB.items.Count;i++)
         {
             try
@@ -82,6 +93,8 @@ public static class ModelLoader
                 Debug.LogWarning($"ERR: B{i:D3}_{filergm.MPOB.items[i].scriptName}: {ex.Message} : {ex.StackTrace}");
             }
         }
+        s_load_MPOB.End();
+        s_load_MPSO.Begin();
         for(int i=0;i<RGM_MPSOs.Count;i++)
         {
             try
@@ -97,6 +110,8 @@ public static class ModelLoader
                 Debug.LogWarning($"ERR: S{i:D3}: {ex.Message}");
             }
         }
+        s_load_MPSO.End();
+        s_load_MPSF.Begin();
         for(int i=0;i<RGM_MPSFs.Count;i++)
         {
             // Create flats
@@ -104,6 +119,8 @@ public static class ModelLoader
             GameObject obj = Add3DToScene($"F{i:D3}_{RGM_MPSFs[i].name}",  data_3D, RGM_MPSFs[i].position, RGM_MPSFs[i].rotation);
            areaObjects.Add(obj);
         }
+        s_load_MPSF.End();
+        s_load_MPRP.Begin();
         for(int i=0;i<RGM_MPRPs.Count;i++)
         {
             try
@@ -130,6 +147,7 @@ public static class ModelLoader
                 Debug.LogWarning($"ERR: R{i:D3}: {ex.Message}");
             }
         }
+        s_load_MPRP.End();
 
         return areaObjects;
     }

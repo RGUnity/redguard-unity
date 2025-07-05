@@ -3,9 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Assets.Scripts.RGFileImport.RGGFXImport;
+using Unity.Profiling;
 
 public static class RGRGMStore
 {
+
+static readonly ProfilerMarker s_load_RGM = new ProfilerMarker("GetRGM");
+static readonly ProfilerMarker s_load_MPSF = new ProfilerMarker("LoadMPSF");
+static readonly ProfilerMarker s_load_MPSO = new ProfilerMarker("LoadMPSO");
+static readonly ProfilerMarker s_load_MPRP = new ProfilerMarker("LoadMPRP");
+static readonly ProfilerMarker s_load_MPOB = new ProfilerMarker("LoadMPOB");
+static readonly ProfilerMarker s_load_WDNM = new ProfilerMarker("LoadWDNM");
+
+
+
     //const float RGM_MPOB_SCALE = 0.000195f;
     const float RGM_MPOB_SCALE = 1/5120.0f;
     const float RGM_X_OFS = 0.0f;//29.8f;
@@ -32,6 +43,7 @@ public static class RGRGMStore
 
     public static RGFileImport.RGRGMFile GetRGM(string RGMname)
     {
+using(s_load_RGM.Auto()){
         string rgm_key = $"{RGMname}";
         RGFileImport.RGRGMFile o;
         if(RGMDict.TryGetValue(rgm_key, out o))
@@ -45,6 +57,7 @@ public static class RGRGMStore
             RGMDict[rgm_key].LoadFile(path);
         }
         return RGMDict[rgm_key];
+}
     }
 
     public struct RGRGMData
@@ -78,6 +91,7 @@ public static class RGRGMStore
 
     public static List<RGRGMData> LoadMPSF(string filename)
     {
+using(s_load_MPSF.Auto()){
         RGFileImport.RGRGMFile filergm = GetRGM(filename);
 
         List<RGRGMData> data_out = new List<RGRGMData>();
@@ -102,10 +116,12 @@ public static class RGRGMStore
             }
         }
         return data_out;
+}
     }
 
     public static List<RGRGMData> LoadMPSO(string filename)
     {
+using(s_load_MPSO.Auto()){
         RGFileImport.RGRGMFile filergm = GetRGM(filename);
 
         List<RGRGMData> data_out = new List<RGRGMData>();
@@ -130,9 +146,11 @@ public static class RGRGMStore
             }
         }
         return data_out;
+}
     }
     public static List<RGRGMRopeData> LoadMPRP(string filename)
     {
+using(s_load_MPRP.Auto()){
         RGFileImport.RGRGMFile filergm = GetRGM(filename);
 
         List<RGRGMRopeData> data_out = new List<RGRGMRopeData>();
@@ -158,10 +176,12 @@ public static class RGRGMStore
             }
         }
         return data_out;
+}
     }
 
     public static List<RGRGMData> LoadMPOB(string filename)
     {
+using(s_load_MPOB.Auto()){
         RGFileImport.RGRGMFile filergm = GetRGM(filename);
 
         List<RGRGMData> data_out = new List<RGRGMData>();
@@ -191,9 +211,11 @@ public static class RGRGMStore
             }
         }
         return data_out;
+}
     }
     public static List<RGRGMData> LoadWDNM(string filename)
     {
+using(s_load_WDNM.Auto()){
         RGFileImport.RGRGMFile filergm = GetRGM(filename);
 
         List<RGRGMData> data_out = new List<RGRGMData>();
@@ -231,6 +253,7 @@ public static class RGRGMStore
             }
         }
         return data_out;
+}
     }
 
 
