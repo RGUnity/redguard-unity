@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Playground/Player Movement/Movement Tests.unity
     guid: b257eee69f3340a4daa9b6be36399dcf
+  - enabled: 1
+    path: Assets/Playground/Test Scenes/ModelViewer2.unity
+    guid: 5c8d3e592fbefb443a0c90ec2502231f
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: bd0848f799389174f8bdde9aaa8d52a9, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 25862ee00d93fa046872b07706edbb66, type: 3}

@@ -774,8 +774,10 @@ size: {dataLength:X}
                 {
                     id = memoryReader.ReadInt32();
                     unknown0 = memoryReader.ReadByte();
-                    posX = memoryReader.ReadInt32();
-                    posY = memoryReader.ReadInt32();
+                    posX = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+                    posY = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
                     posZ = memoryReader.ReadInt24();
                     angleY = memoryReader.ReadInt32();
                     type = memoryReader.ReadInt32();

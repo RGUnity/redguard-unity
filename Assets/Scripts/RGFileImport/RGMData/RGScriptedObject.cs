@@ -19,7 +19,7 @@ public class RGScriptedObject : MonoBehaviour
 	Vector3 position;
 	Vector3 rotation;
 
-	RG2Mesh.UnityData_3D data_3D;
+	RGMeshStore.UnityData_3D data_3D;
 	public bool allowAnimation;
 	bool animationRunning;
     int curframe;
@@ -44,7 +44,7 @@ public class RGScriptedObject : MonoBehaviour
             type = ScriptedObjectType.scriptedobject_animated;
 			string modelname_frame = animationData.RAANItems[0].modelFile;
 			Debug.Log($"ANIMATED {scriptName}: \"{modelname_frame}\"");
-			data_3D = RG2Mesh.f3D2Mesh(modelname_frame, name_col);
+			data_3D = RGMeshStore.f3D2Mesh(modelname_frame, name_col);
 
             List<Vector3[]> framevertices = new List<Vector3[]>();
             List<Vector3[]> framenormals = new List<Vector3[]>();
@@ -58,7 +58,7 @@ public class RGScriptedObject : MonoBehaviour
             for(int j=1;j<animationData.RAANItems.Count;j++)
             {
                 modelname_frame = animationData.RAANItems[j].modelFile;
-                RG2Mesh.UnityData_3D data_frame = RG2Mesh.f3D2Mesh(modelname_frame, name_col);
+                RGMeshStore.UnityData_3D data_frame = RGMeshStore.f3D2Mesh(modelname_frame, name_col);
                 for(int i=0;i<data_frame.framecount;i++)
                 {
                     framevertices.Add(data_frame.vertices);
@@ -76,7 +76,7 @@ public class RGScriptedObject : MonoBehaviour
 		{
             type = ScriptedObjectType.scriptedobject_static;
             string modelname = MPOB.modelName.Split('.')[0];
-			data_3D = RG2Mesh.f3D2Mesh(modelname, name_col);
+			data_3D = RGMeshStore.f3D2Mesh(modelname, name_col);
 		
 			skinnedMeshRenderer.sharedMesh = data_3D.mesh;
 			skinnedMeshRenderer.SetMaterials(data_3D.materials);
@@ -90,7 +90,7 @@ public class RGScriptedObject : MonoBehaviour
 		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
 			
         string modelname = MPOB.scriptName;;
-        data_3D = RG2Mesh.f3D2Mesh(modelname, name_col);
+        data_3D = RGMeshStore.f3D2Mesh(modelname, name_col);
     
         skinnedMeshRenderer.sharedMesh = data_3D.mesh;
         skinnedMeshRenderer.SetMaterials(data_3D.materials);

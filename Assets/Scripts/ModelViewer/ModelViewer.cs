@@ -241,6 +241,11 @@ public class ModelViewer : MonoBehaviour
         gui.PopulateIsolationDropdown(loadedObjects);
         
         print("Loaded area: " + areaname);
+        RGMeshStore.DumpDict();
+        RG3DStore.DumpDict();
+        RGRGMStore.DumpDict();
+        RGTexStore.DumpDict();
+
     }
     
     public async Task ExportGLTF()
