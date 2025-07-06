@@ -130,7 +130,6 @@ GameObject:
   - component: {fileID: 6396170}
   - component: {fileID: 6396169}
   - component: {fileID: 6396168}
-  - component: {fileID: 6396172}
   - component: {fileID: 6396173}
   m_Layer: 0
   m_Name: Main Camera
@@ -213,20 +212,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 12.005, y: 0, z: 0}
---- !u!114 &6396172
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6396167}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d0424ff4a93a9848ab36bb0d2140777, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pixelScale: 1
-  bilinearFilterEnabled: 0
 --- !u!114 &6396173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2890,7 +2875,7 @@ PrefabInstance:
     - target: {fileID: 5291513871929724575, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: pixelateEffect
       value: 
-      objectReference: {fileID: 6396172}
+      objectReference: {fileID: 0}
     - target: {fileID: 5291513871929724575, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: localPostProcessLayer
       value: 

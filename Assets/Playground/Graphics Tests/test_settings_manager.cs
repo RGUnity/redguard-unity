@@ -15,7 +15,6 @@ public class test_settings_manager : MonoBehaviour
     public Canvas thisCanvas;
     public Dropdown resolutionDropdown;
     public Dropdown fullscreenDropdown;
-    public PixelateEffect pixelateEffect;
     public UniversalAdditionalCameraData cameraData;
 
     Resolution[] resolutions;
@@ -123,7 +122,16 @@ public class test_settings_manager : MonoBehaviour
     //This Toggles Bilinear Filtering for the Rendertexture
     public void ToggleBilinearFiltering(bool overrideBF)
     {
-        pixelateEffect.bilinearFilterEnabled = overrideBF;
+        var urp = (UniversalRenderPipelineAsset)GraphicsSettings.currentRenderPipeline;
+        if (overrideBF)
+        {
+            urp.upscalingFilter = UpscalingFilterSelection.Linear;
+        }
+        else
+        {
+            urp.upscalingFilter = UpscalingFilterSelection.Point;
+        }
+        
     }
 
     //This toggles Shadows
