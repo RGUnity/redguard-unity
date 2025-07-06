@@ -2667,6 +2667,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5291513871233651996, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_Name
+      value: Resolution Scale
+      objectReference: {fileID: 0}
     - target: {fileID: 5291513871233651997, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2714,6 +2718,14 @@ PrefabInstance:
     - target: {fileID: 5291513871294829340, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291513871386025934, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_Text
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291513871599488383, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_Text
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 5291513871654214704, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2742,6 +2754,14 @@ PrefabInstance:
     - target: {fileID: 5291513871654214704, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291513871654214705, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291513871654214705, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetRenderScale
       objectReference: {fileID: 0}
     - target: {fileID: 5291513871758598039, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2923,6 +2943,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5291513872403144660, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291513872403144660, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetRenderScale
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291513872403144660, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291513872403144660, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_FloatArgument
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5291513872403144663, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2946,6 +2982,18 @@ PrefabInstance:
     - target: {fileID: 5291513872403144663, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291513872517389028, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291513872517389028, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetRenderScale
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291513872517389028, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_FloatArgument
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 5291513872517389031, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2974,6 +3022,10 @@ PrefabInstance:
     - target: {fileID: 5291513872517389031, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291513872855957976, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
+      propertyPath: m_Text
+      value: 'Resolution Scale:'
       objectReference: {fileID: 0}
     - target: {fileID: 5291513872855957979, guid: c8c69b2045f81f54185d9aed92243950, type: 3}
       propertyPath: m_AnchorMax.y

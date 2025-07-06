@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using ShadowQuality = UnityEngine.ShadowQuality;
@@ -100,18 +101,10 @@ public class test_settings_manager : MonoBehaviour
     }
 
     //Function to change pixel size with UI buttons
-    public void SetPixelScale(int overridePixelScale)
+    public void SetRenderScale(float newRenderScale)
     {
-        if (pixelateEffect != null)
-        {
-            pixelateEffect.pixelScale = overridePixelScale;
-            print("Set pixelScale to " + overridePixelScale);
-        }
-        else
-        {
-            Debug.LogWarning("No Pixelate script linked. Please go to the test_settings_manager and fix that");
-        }
-
+        var urp = (UniversalRenderPipelineAsset)GraphicsSettings.currentRenderPipeline;
+        urp.renderScale = newRenderScale;
     }
 
     //This Toggles AntiAliasing
