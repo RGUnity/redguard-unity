@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
+using ShadowQuality = UnityEngine.ShadowQuality;
 
 
 // You can toggle the visibility with F1
@@ -13,8 +14,8 @@ public class test_settings_manager : MonoBehaviour
     public Canvas thisCanvas;
     public Dropdown resolutionDropdown;
     public Dropdown fullscreenDropdown;
-    public PostProcessLayer localPostProcessLayer;
     public PixelateEffect pixelateEffect;
+    public UniversalAdditionalCameraData cameraData;
 
     Resolution[] resolutions;
 
@@ -116,20 +117,13 @@ public class test_settings_manager : MonoBehaviour
     //This Toggles AntiAliasing
     public void ToggleAA(bool antiAliasingEnabled)
     {
-        if (localPostProcessLayer != null)
+        if (antiAliasingEnabled)
         {
-            if (antiAliasingEnabled)
-            {
-                localPostProcessLayer.antialiasingMode = PostProcessLayer.Antialiasing.SubpixelMorphologicalAntialiasing;
-            }
-            if (!antiAliasingEnabled)
-            {
-                localPostProcessLayer.antialiasingMode = PostProcessLayer.Antialiasing.None;
-            }
+            cameraData.antialiasing = AntialiasingMode.FastApproximateAntialiasing;
         }
         else
         {
-            Debug.LogWarning("No Post Processing Volume linked. Please go to the test_settings_manager and fix that");
+            cameraData.antialiasing = AntialiasingMode.None;
         }
     }
 
