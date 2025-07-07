@@ -203,7 +203,7 @@ public class ModelViewer : MonoBehaviour
         
         settings.ToggleFlyMode(false);
         settings.RequestEnableTextureFiltering(true);
-        settings.RequestEnableAnimations(true);
+        settings.RequestEnableAnimations(false);
 
         
         print("Loaded object: " + f3DCname);

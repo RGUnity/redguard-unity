@@ -2,6 +2,127 @@ using System;
 using System.Collections.Generic;
 using RGFileImport;
 
+
+public class AnimData
+{
+    public static float FRAMETIME_VAL = 0.1f;
+
+    public bool running;
+    public int currentKeyFrame;
+    public int nextKeyFrame;
+    int currentAnimFrame;
+    public float frameTime;
+    public RGRGMAnimStore.RGMAnim animationData;
+    Stack<RGRGMAnimStore.AnimGroup> animationStack;
+    public List<RGRGMAnimStore.AnimGroup> validAnims;
+    public AnimData(string scriptname)
+    {
+        running = false;
+        currentKeyFrame = 0;
+        nextKeyFrame = 0;
+        currentAnimFrame = 0;
+        frameTime = FRAMETIME_VAL;
+        animationData = RGRGMAnimStore.getAnim(scriptname);
+        animationStack = new Stack<RGRGMAnimStore.AnimGroup>();
+        animationStack.Push(RGRGMAnimStore.AnimGroup.anim_panic);
+        validAnims = getValidAnimations();
+
+    }
+    public List<RGRGMAnimStore.AnimGroup> getValidAnimations()
+    {
+        List<RGRGMAnimStore.AnimGroup> o = new List<RGRGMAnimStore.AnimGroup>();
+        for(int i=0;i<animationData.RAGRItems.Count;i++)
+        {
+            o.Add(animationData.RAGRItems[i].animGroup);
+        }
+
+        return o;
+    }
+
+    // SOUPDEF:
+    // public int PushAnimation(int obj, int animationid, int firstframe)
+    // returns 1 on failure, 0 on success
+    public int PushAnimation(RGRGMAnimStore.AnimGroup animId, int firstframe = 0)
+    {
+        int anim_i = -1;
+        List<RGRGMAnimStore.AnimGroup> va = validAnims;
+        for(int i=0;i<va.Count;i++)
+        {
+            if(va[i] == animId)
+            {
+                anim_i = i;
+                break;
+            }
+        }
+
+        if(anim_i == -1)
+            return 1;
+
+        running = true;
+        animationStack.Push((RGRGMAnimStore.AnimGroup)anim_i);
+        currentKeyFrame = firstframe;
+        return 0;
+    }
+    public void runAnimation(float deltatime)
+    {
+        if(!running)
+            return;
+        else
+        {
+            if(animationStack.Count == 1)
+                return;
+
+            frameTime -= deltatime;
+            if(frameTime <= 0.0f)
+            {
+                currentKeyFrame = nextKeyFrame;
+                nextKeyFrame = NextFrame();
+                frameTime = FRAMETIME_VAL;
+            }
+        }
+    }
+
+    public int NextFrame()
+    {
+        currentAnimFrame++;
+        int frame3DC = -1;
+        
+        switch(animationData.RAGRItems[(int)animationStack.Peek()].animFrames[currentAnimFrame].frameType)
+        {
+            case RGRGMAnimStore.FrameType.frametype_normal:
+                frame3DC = (int)animationData.RAGRItems[(int)animationStack.Peek()].animFrames[currentAnimFrame].frameValue;
+                break;
+            case RGRGMAnimStore.FrameType.frametype_end:
+                animationStack.Pop();
+                return -1;
+            case RGRGMAnimStore.FrameType.frametype_goback:
+                currentAnimFrame = (int)animationData.RAGRItems[(int)animationStack.Peek()].animFrames[currentAnimFrame].frameValue;
+                frame3DC = NextFrame();
+                break;
+            case RGRGMAnimStore.FrameType.frametype_gofwd:
+                frame3DC = NextFrame();
+                break;
+            case RGRGMAnimStore.FrameType.frametype_sound:
+                // play sound: RAGRItems[currentAnimationId].frameValue;
+                frame3DC = NextFrame();
+                break;
+            case RGRGMAnimStore.FrameType.frametype_break:
+                // can break out here
+                frame3DC = NextFrame();
+                break;
+            case RGRGMAnimStore.FrameType.frametype_rumble:
+                // ???
+                frame3DC = NextFrame();
+                break;
+            case RGRGMAnimStore.FrameType.frametype_unknown:
+                // ???
+                frame3DC = NextFrame();
+                break;
+
+        }
+        return frame3DC;
+    }
+}
 public static class RGRGMAnimStore
 {
     public enum AnimGroup
@@ -283,24 +404,12 @@ public static class RGRGMAnimStore
             }
 		}
 
-        // controls the animations
-        public int currentAnimationId;
-        public int currentFrame;
-        public int goalFrame;
-        public bool reachedGoalFrame;
-        public int direction;
-
         public string animationName;
         public List<RGMRAANItem> RAANItems;
         public List<RGMRAGRItem> RAGRItems;
+
         public RGMAnim(RGRGMFile.RGMRAHDItem RAHD, RGRGMFile.RGMRAANSection RAAN, RGRGMFile.RGMRAGRSection RAGR)
         {
-            currentAnimationId  = 0;
-            currentFrame        = 0;
-            goalFrame           = 0;
-            reachedGoalFrame    = false;
-            direction           = 1;
-
             MemoryReader memoryReader;
 
             memoryReader = new MemoryReader(RAAN.data);
@@ -354,85 +463,19 @@ public static class RGRGMAnimStore
  
             return o;
         }
-
-        // SOUPDEF:
-        // public int PushAnimation(int obj, int animationid, int firstframe)
-        // returns 1 on failure, 0 on success
-        public int PushAnimation(AnimGroup animId, int firstframe = 0)
-        {
-            int anim_i = -1;
-            for(int i=0;i<RAGRItems.Count;i++)
-            {
-                if(RAGRItems[i].animGroup == animId)
-                {
-                    anim_i = i;
-                    break;
-                }
-            }
-
-            if(anim_i == -1)
-                return 1;
-
-            currentAnimationId = anim_i;
-            currentFrame = firstframe;
-            goalFrame = firstframe;
-            reachedGoalFrame = true;
-            direction = 1;
-            return 0;
-        }
-        // returns -1 on end, 3DC frame# otherwise
-        public int NextFrame()
-        {
-            currentFrame += direction;
-
-            int frame3DC = -1;
-            Console.WriteLine($"{RAGRItems[currentAnimationId].animFrames[currentFrame].frameType} : {currentFrame} > {direction}");
-            switch(RAGRItems[currentAnimationId].animFrames[currentFrame].frameType)
-            {
-                case FrameType.frametype_normal:
-                    frame3DC = (int)RAGRItems[currentAnimationId].animFrames[currentFrame].frameValue;
-                    break;
-                case FrameType.frametype_end:
-                    return -1;
-                case FrameType.frametype_goback:
-                    currentFrame = (int)RAGRItems[currentAnimationId].animFrames[currentFrame].frameValue;
-                    frame3DC = NextFrame();
-                    break;
-                case FrameType.frametype_gofwd:
-                    frame3DC = NextFrame();
-                    break;
-                case FrameType.frametype_sound:
-                    // play sound: RAGRItems[currentAnimationId].frameValue;
-                    frame3DC = NextFrame();
-                    break;
-                case FrameType.frametype_break:
-                    // can break out here
-                    frame3DC = NextFrame();
-                    break;
-                case FrameType.frametype_rumble:
-                    // ???
-                    frame3DC = NextFrame();
-                    break;
-                case FrameType.frametype_unknown:
-                    // ???
-                    frame3DC = NextFrame();
-                    break;
-
-            }
-
-//            return currentFrame;;
-            return frame3DC;
-        }
     }
     static public Dictionary<string, RGMAnim> Anims; // key: RAHD.scriptName
     static public void ReadAnim(RGFileImport.RGRGMFile filergm)
     {
         Anims = new Dictionary<string, RGMAnim>();
-        //for(int i=0;i<filergm.RAHD.dict.Count;i++)
         foreach(KeyValuePair<string,RGRGMFile.RGMRAHDItem> entry in filergm.RAHD.dict)
         {
             RGMAnim Anim = new RGMAnim(entry.Value, filergm.RAAN, filergm.RAGR);
             Anims.Add(entry.Value.scriptName, Anim);
         }
+    }
+    static public RGMAnim getAnim(string scriptname)
+    {
+        return Anims[scriptname];
     }
 }

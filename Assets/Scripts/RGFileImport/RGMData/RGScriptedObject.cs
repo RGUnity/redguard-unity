@@ -21,28 +21,24 @@ public class RGScriptedObject : MonoBehaviour
 
 	RGMeshStore.UnityData_3D data_3D;
 	public bool allowAnimation;
-	bool animationRunning;
-    int curframe;
-    int nextframe;
 
     public ScriptedObjectType type;
 
 	SkinnedMeshRenderer skinnedMeshRenderer;
     Light light;
 	
-	public RGRGMAnimStore.RGMAnim animationData;
+    public AnimData animations;
 
     public void Instanciate3DObject(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
     {
 		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
 			
-		animationData = new RGRGMAnimStore.RGMAnim(filergm.RAHD.dict[MPOB.scriptName], filergm.RAAN, filergm.RAGR);
+		animations = new AnimData(MPOB.scriptName);
 
-		if(animationData.RAANItems.Count > 0)
+		if(animations.animationData.RAANItems.Count > 0)
 		{
-            curframe = 0;
             type = ScriptedObjectType.scriptedobject_animated;
-			string modelname_frame = animationData.RAANItems[0].modelFile;
+			string modelname_frame = animations.animationData.RAANItems[0].modelFile;
 			Debug.Log($"ANIMATED {scriptName}: \"{modelname_frame}\"");
 			data_3D = RGMeshStore.f3D2Mesh(modelname_frame, name_col);
 
@@ -55,9 +51,9 @@ public class RGScriptedObject : MonoBehaviour
             }
 
 
-            for(int j=1;j<animationData.RAANItems.Count;j++)
+            for(int j=1;j<animations.animationData.RAANItems.Count;j++)
             {
-                modelname_frame = animationData.RAANItems[j].modelFile;
+                modelname_frame = animations.animationData.RAANItems[j].modelFile;
                 RGMeshStore.UnityData_3D data_frame = RGMeshStore.f3D2Mesh(modelname_frame, name_col);
                 for(int i=0;i<data_frame.framecount;i++)
                 {
@@ -70,6 +66,10 @@ public class RGScriptedObject : MonoBehaviour
 		
 			skinnedMeshRenderer.sharedMesh = data_3D.mesh;
 			skinnedMeshRenderer.SetMaterials(data_3D.materials);
+/*
+            for(int i=0;i<animations.validAnims.Count;i++)
+                Debug.Log($"ANIMS: {i}:{animations.validAnims[i]}");
+*/
 
 		}
 		else
@@ -111,7 +111,6 @@ public class RGScriptedObject : MonoBehaviour
 
 	public void Instanciate(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
 	{
-		animationRunning = false;
         scriptName = MPOB.scriptName;
 
 		position.x = (float)(MPOB.posX)*RGM_MPOB_SCALE;
@@ -143,61 +142,38 @@ public class RGScriptedObject : MonoBehaviour
     {
         if(type == ScriptedObjectType.scriptedobject_animated)
         {
-            if(animationData.PushAnimation((RGRGMAnimStore.AnimGroup)i,0) == 0)
-                animationRunning = true;
+            if(animations.PushAnimation((RGRGMAnimStore.AnimGroup)i,0) != 0)
+                Debug.Log($"{scriptName}: animation {(RGRGMAnimStore.AnimGroup)i} requested but doesnt exist");
         }
     }
 
-	float FRAMETIME_VAL = 0.1f;
-	float FRAMETIME = 0.1f;
 	void Update()
 	{
 		if (allowAnimation)
 		{
-			if(animationRunning)
-			{
-				FRAMETIME-= Time.deltaTime;
-				if(FRAMETIME<0.0f)
-				{
-					int anim_nextframe = animationData.NextFrame();
-					if(anim_nextframe >= data_3D.framecount)
-					{
-						Debug.Log($"{scriptName}: Frame {anim_nextframe} requested, but 3DC only has {data_3D.framecount} frames.");
-						animationRunning = false;
-						return;
-					}
-					if(anim_nextframe >= 0)
-					{
+            skinnedMeshRenderer.SetBlendShapeWeight(animations.currentKeyFrame, 0.0f);
+            skinnedMeshRenderer.SetBlendShapeWeight(animations.nextKeyFrame, 0.0f);
+            animations.runAnimation(Time.deltaTime);
 
-						skinnedMeshRenderer.SetBlendShapeWeight(curframe, 0.0f);
-						skinnedMeshRenderer.SetBlendShapeWeight(nextframe, 0.0f);
-						curframe = nextframe;
-						nextframe = anim_nextframe;
+            if(animations.nextKeyFrame >= data_3D.framecount)
+            {
+                Debug.Log($"{scriptName}: Frame {animations.nextKeyFrame} requested, but 3DC only has {data_3D.framecount} frames.");
+                return;
+            }
+            else if(animations.nextKeyFrame >= 0)
+            {
 
-						/*
-						skinnedMeshRenderer.SetBlendShapeWeight(curframe, 0.0f);
-						curframe = anim_nextframe;
-						skinnedMeshRenderer.SetBlendShapeWeight(curframe, 100.0f);
-						*/
-					}
-					FRAMETIME = FRAMETIME_VAL;
-				}
-				// for animation blending, we need to track current and next frame
-				float blend1 = (FRAMETIME/FRAMETIME_VAL)*100.0f;
-				float blend2 = 100.0f-blend1;
-				skinnedMeshRenderer.SetBlendShapeWeight(curframe, blend1);
-				skinnedMeshRenderer.SetBlendShapeWeight(nextframe, blend2);
-			}
+                /*
+                skinnedMeshRenderer.SetBlendShapeWeight(animations.currentKeyFrame, 0.0f);
+                skinnedMeshRenderer.SetBlendShapeWeight(animations.nextKeyFrame, 100.0f);
+                */
+
+                // for animation blending, we need to track current and next frame
+                float blend1 = (animations.frameTime/AnimData.FRAMETIME_VAL)*100.0f;
+                float blend2 = 100.0f-blend1;
+                skinnedMeshRenderer.SetBlendShapeWeight(animations.currentKeyFrame, blend1);
+                skinnedMeshRenderer.SetBlendShapeWeight(animations.nextKeyFrame, blend2);
+            }
 		}
-        
-        else if (type == ScriptedObjectType.scriptedobject_animated)
-        {
-	        int blendShapeCount = skinnedMeshRenderer.sharedMesh.blendShapeCount;
-	        for (int i = 0; i < blendShapeCount; i++)
-	        {
-		        skinnedMeshRenderer.SetBlendShapeWeight(i, 0f);
-	        }
-	        skinnedMeshRenderer.SetBlendShapeWeight(0, 1);
-        }
 	}
 }

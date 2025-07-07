@@ -74,6 +74,7 @@ public static class ModelLoader
         s_load_RGM.Begin();
         RGFileImport.RGRGMFile filergm = RGRGMStore.GetRGM(RGMname);
         s_load_RGM.End();
+        RGRGMAnimStore.ReadAnim(filergm);
 
         s_load_MPOB.Begin();
         for(int i=0;i<filergm.MPOB.items.Count;i++)
