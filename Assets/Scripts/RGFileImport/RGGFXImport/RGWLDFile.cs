@@ -319,7 +319,6 @@ IO_WLD_data_t
 					Vector2 uvc2;
 					int tex_id;
 					int tex_rot;
-					Vector2 uv_tmp;
 
 				// vertices
 					// tri 1;
