@@ -140,7 +140,11 @@ public class ModelViewer_Camera : MonoBehaviour
         if (renderers.Length == 0) return new Bounds(g.transform.position, Vector3.zero);
         var b = renderers[0].bounds;
         foreach (Renderer r in renderers) {
-            b.Encapsulate(r.bounds);
+            // Ignore objects at the scene origin
+            if (r.transform.position != Vector3.zero)
+            {
+                b.Encapsulate(r.bounds);
+            }
         }
         return b;
     }
