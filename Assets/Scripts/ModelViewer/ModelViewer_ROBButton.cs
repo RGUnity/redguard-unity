@@ -9,12 +9,14 @@ public class ModelViewer_ROBButton : MonoBehaviour
     [SerializeField] private TMP_Text buttonText;
 
     public ModelViewer_GUI mv_GUI;
-    public string fileName;
+    public string RGM;
+    public string WLD;
+    public string COL;
     
     
     public void OnClick()
     {
-        mv_GUI.RequestArea(fileName);
+        mv_GUI.RequestArea(RGM, WLD,COL);
     }
 
     public void SetButtonText(string text)
