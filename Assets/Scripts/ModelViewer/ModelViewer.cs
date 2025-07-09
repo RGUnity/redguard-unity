@@ -23,14 +23,8 @@ public class ModelViewer : MonoBehaviour
     private string exportDirectory;
     private List<GameObject> loadedObjects;
 
-    // this should be read in from ini file
-    private Dictionary<string, (string,string)> AreaCOLDictionary;
-
-
     void Start()
     {
-        buildAreaCOLDictionary();
-
         // if a path override is set, use that
         if (pathOverride.Length > 0)
         {
@@ -59,45 +53,6 @@ public class ModelViewer : MonoBehaviour
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         exportDirectory = desktopPath + "/Redguard_Exports/";
         gui.exportPathInput.text = exportDirectory;
-    }
-    
-    void buildAreaCOLDictionary()
-    {
-        // ROBs without RGM currently dont work:
-        // INVENTRY
-        // MENU
-        // PALATEST
-        // TEMPTEST
-
-        AreaCOLDictionary = new Dictionary<string, (string,string)>();
-        //                     area name    COL      WLD (can be empty)
-        AreaCOLDictionary.Add("BELLTOWR", ("ISLE3DFX", ""));
-        AreaCOLDictionary.Add("BRENNANS", ("ISLE3DFX", ""));
-        AreaCOLDictionary.Add("CARTOGR",  ("ISLE3DFX", ""));
-        AreaCOLDictionary.Add("CATACOMB", ("CATACOMB", ""));
-        AreaCOLDictionary.Add("CAVERNS",  ("CAVETEST", ""));
-        AreaCOLDictionary.Add("DRINT",    ("OBSERVAT", ""));
-        AreaCOLDictionary.Add("EXTPALAC", ("ISLE3DFX", "ISLAND"));
-        AreaCOLDictionary.Add("GERRICKS", ("ISLE3DFX", ""));
-        AreaCOLDictionary.Add("HARBTOWR", ("ISLE3DFX", ""));
-        AreaCOLDictionary.Add("HIDEINT",  ("HIDEOUT","HIDEOUT"));
-        AreaCOLDictionary.Add("HIDEOUT",  ("HIDEOUT","HIDEOUT"));
-        AreaCOLDictionary.Add("ISLAND",   ("ISLE3DFX", "ISLAND"));
-        AreaCOLDictionary.Add("JAILINT",  ("REDCAVE", ""));
-        AreaCOLDictionary.Add("JFFERS",   ("ISLE3DFX", ""));
-        AreaCOLDictionary.Add("MGUILD",   ("MGUILD", ""));
-        AreaCOLDictionary.Add("NECRISLE", ("NECRO",  "NECRISLE"));
-        AreaCOLDictionary.Add("NECRTOWR", ("NECRO",  ""));
-        AreaCOLDictionary.Add("OBSERVE",  ("OBSERVAT", ""));
-        AreaCOLDictionary.Add("PALACE",   ("PALACE00", ""));
-        AreaCOLDictionary.Add("ROLLOS",   ("ISLE3DFX", ""));
-        AreaCOLDictionary.Add("SILVER1",  ("ISLE3DFX", ""));
-        AreaCOLDictionary.Add("SILVER2",  ("ISLE3DFX", ""));
-        AreaCOLDictionary.Add("SMDEN",    ("ISLE3DFX", ""));
-        AreaCOLDictionary.Add("START",    ("ISLE3DFX", "HIDEOUT"));
-        AreaCOLDictionary.Add("TAVERN",   ("TAVERN", ""));
-        AreaCOLDictionary.Add("TEMPLE",   ("ISLE3DFX", ""));
-        AreaCOLDictionary.Add("VILE",     ("ISLE3DFX", ""));
     }
     
     private bool IsPathValid()
@@ -211,19 +166,16 @@ public class ModelViewer : MonoBehaviour
         //SwitchTextureFilterMode(FilterMode.Point);
     }
     
-    public void SpawnArea(string areaname)
+    public void SpawnArea(string RGM, string WLD, string COL)
     {
         // objectRootGenerated is simply a new GameObject that makes deleting objects easier
         Destroy(_objectRootGenerated);
         _objectRootGenerated = new GameObject();
         _objectRootGenerated.transform.SetParent(objectRoot.transform);
-        _objectRootGenerated.name = areaname;
+        _objectRootGenerated.name = RGM;
 
         // Create all objects of that area and parent them under the root
-        string colname = AreaCOLDictionary[areaname].Item1;
-        string wldname = AreaCOLDictionary[areaname].Item2;
-        
-        loadedObjects = ModelLoader.LoadArea(areaname, colname, wldname);
+        loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
         
         foreach (var obj in loadedObjects)
         {
@@ -240,7 +192,7 @@ public class ModelViewer : MonoBehaviour
         gui.objectDropDown.interactable = true;
         gui.PopulateIsolationDropdown(loadedObjects);
         
-        print("Loaded area: " + areaname);
+        print("Loaded area: " + RGM);
         RGMeshStore.DumpDict();
         RG3DStore.DumpDict();
         RGRGMStore.DumpDict();

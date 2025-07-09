@@ -210,7 +210,12 @@ using(s_load_pal.Auto()){
         else
         {
             PaletteDict.Add(palname, new RGCOLFile());
-            PaletteDict[palname].LoadFile(fxart_path + palname + ".COL");
+            string palpath = fxart_path + palname + ".COL";
+            // sunset is the only palette in lowercase, thanks todd
+            if(palname == "SUNSET")
+                palpath = fxart_path + "sunset.col";
+
+            PaletteDict[palname].LoadFile(palpath);
             return PaletteDict[palname];
         }
 }

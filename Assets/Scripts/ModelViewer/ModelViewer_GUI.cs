@@ -96,52 +96,24 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         // MENU
         // PALATEST
         // TEMPTEST
-        
-        SpawnButton_Level("BELLTOWR");
-        SpawnButton_Level("BRENNANS");
-        SpawnButton_Level("CARTOGR");
-        SpawnButton_Level("CATACOMB");
-        SpawnButton_Level("CAVERNS");
-        SpawnButton_Level("DRINT");
-        SpawnButton_Level("EXTPALAC");
-        SpawnButton_Level("GERRICKS");
-        SpawnButton_Level("HARBTOWR");
-        SpawnButton_Level("HIDEINT");
-        SpawnButton_Level("HIDEOUT");
-        SpawnButton_Level("INVENTRY");
-        SpawnButton_Level("ISLAND");
-        SpawnButton_Level("JAILINT");
-        SpawnButton_Level("JFFERS");
-        SpawnButton_Level("MENU");
-        SpawnButton_Level("MGUILD");
-        SpawnButton_Level("NECRISLE");
-        SpawnButton_Level("NECRTOWR");
-        SpawnButton_Level("OBSERVE");
-        SpawnButton_Level("PALACE");
-        SpawnButton_Level("PALATEST");
-        SpawnButton_Level("ROLLOS");
-        SpawnButton_Level("SILVER1");
-        SpawnButton_Level("SILVER2");
-        SpawnButton_Level("SMDEN");
-        SpawnButton_Level("START");
-        SpawnButton_Level("TAVERN");
-        SpawnButton_Level("TEMPLE");
-        SpawnButton_Level("TEMPTEST");
-        SpawnButton_Level("VILE");
-
+        List<RGINIStore.worldData> worldList = RGINIStore.GetWorldList();
+        for(int i=0;i<worldList.Count;i++)
+            SpawnButton_Level(worldList[i].RGM,worldList[i].WLD, worldList[i].COL);
     }
     
-    public void SpawnButton_Level(string fileName)
+    public void SpawnButton_Level(string RGM, string WLD, string COL)
     {
         
         var newButton = Instantiate(buttonROB_Prefab, root_ButtonList);
-        newButton.name = "Button_" + fileName;
+        newButton.name = "Button_" + RGM;
         
         if (newButton.TryGetComponent(out ModelViewer_ROBButton component))
         {
             component.mv_GUI = this;
-            component.fileName = fileName;
-            component.SetButtonText(fileName);
+            component.RGM = RGM;
+            component.WLD = WLD;
+            component.COL = COL;
+            component.SetButtonText(RGM);
         }
     }
     
@@ -210,10 +182,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         modelViewer.Spawn3DC(fileName, "ISLAND");
     }
     
-    public void RequestArea(string fileName)
+    public void RequestArea(string RGM, string WLD, string COL)
     {
-        print("Requesting area: " + fileName);
-        modelViewer.SpawnArea(fileName);
+        print("Requesting area: " + RGM);
+        modelViewer.SpawnArea(RGM, WLD, COL);
     }
 
     public void PathErrorMode(bool toggle)
