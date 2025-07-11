@@ -138,12 +138,12 @@ public class RGScriptedObject : MonoBehaviour
 		gameObject.transform.position = position;
 		gameObject.transform.Rotate(rotation);
 	}
-    public void SetAnim(int i)
+    public void SetAnim(int animId, int firstFrame)
     {
         if(type == ScriptedObjectType.scriptedobject_animated)
         {
-            if(animations.PushAnimation((RGRGMAnimStore.AnimGroup)i,0) != 0)
-                Debug.Log($"{scriptName}: animation {(RGRGMAnimStore.AnimGroup)i} requested but doesnt exist");
+            if(animations.PushAnimation((RGRGMAnimStore.AnimGroup)animId,firstFrame) != 0)
+                Debug.Log($"{scriptName}: animation {(RGRGMAnimStore.AnimGroup)animId} requested but doesnt exist");
         }
     }
 

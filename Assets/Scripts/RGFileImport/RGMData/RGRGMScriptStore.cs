@@ -2,81 +2,47 @@ using System;
 using System.Collections.Generic;
 using RGFileImport;
 
-public static class RGRGMScriptStore
+public class ScriptData
 {
-    static public List<RGMScript> scripts;
-    public class RGMScript
+    string scriptName;
+    int[] vars;
+    // attributes never used?
+    byte[] attributes;
+    int scriptPC;
+    Stack<int> callstack;
+    MemoryReader memoryReader;
+    Func<int[], int>[] taskPointers;
+
+
+    public RGRGMScriptStore.RGMScript scriptData;
+    public ScriptData(string scriptname, Func<int[], int>[] taskPtrs)
     {
-        enum readerState
-        {
-            main,
-            LHS,
-            RHS,
-            param,
-            reference,
-            formula
-        }
-        enum objectLoc
-        {
-            general,
-            str
-        }
+        scriptName = scriptname;
+        scriptData = RGRGMScriptStore.getScript(scriptname);
+        vars = scriptData.scriptVariables.ToArray();
+        attributes = scriptData.scriptAttributes.ToArray();
 
-        MemoryReader memoryReader;
-public bool TST_IFRET = false;
-public bool TST_IFFLIP = false;
-        public int scriptIndex;
-        public string scriptName;
-        public byte[] scriptBytes;
-        public List<string> scriptStrings;
-        public List<int> scriptVariables;
-        public List<byte> scriptAttributes;
+        scriptPC = scriptData.scriptPC;
+        callstack = new Stack<int>();
+        memoryReader = new MemoryReader(scriptData.scriptBytes);
 
-        // need entry point and callstack
-        public int scriptPC;
-        public Stack<int> callstack;
+        taskPointers = taskPtrs;
+    }
+    enum readerState
+    {
+        main,
+        LHS,
+        RHS,
+        param,
+        reference,
+        formula
+    }
+    enum objectLoc
+    {
+        general,
+        str
+    }
 
-        public RGMScript(int script_i, RGRGMFile.RGMRAHDItem RAHD, RGRGMFile.RGMRASTSection RAST, RGRGMFile.RGMRASBSection RASB, RGRGMFile.RGMRAVASection RAVA, RGRGMFile.RGMRASCSection RASC, RGRGMFile.RGMRAATSection RAAT)
-        {
-            byte[] tmp_arr;
-            scriptIndex = script_i;
-            scriptName = RAHD.scriptName;
-            scriptStrings = new List<string>();
-            scriptVariables = new List<int>();
-            scriptAttributes = new List<byte>();
-
-            scriptBytes = new byte[RAHD.RASCLength];
-            Array.Copy(RASC.scripts, RAHD.RASCOffset, scriptBytes, 0, RAHD.RASCLength);
-
-            for(int i=0;i<RAHD.RASBCount;i++)
-            {
-                int ofs = RASB.offsets[(RAHD.RASBOffset/4)+i];
-                int end = Array.IndexOf(RAST.text, '\0', ofs);
-                char[] tmp_char_arr = new char[end-ofs];
-
-                Array.Copy(RAST.text, ofs, tmp_char_arr, 0, end-ofs);
-                scriptStrings.Add(new string(tmp_char_arr));
-            }
-
-            for(int i=0;i<RAHD.RAVACount;i++)
-            {
-                if(RAHD.RAVACount> 0)
-                {
-                    int[] tmp_int_arr = new int[RAHD.RAVACount];
-                    Array.Copy(RAVA.data, RAHD.RAVAOffset/4, tmp_int_arr, 0, RAHD.RAVACount);
-                    scriptVariables = new List<int>(tmp_int_arr);
-                }
-            }
-
-            tmp_arr = new byte[256];
-            Array.Copy(RAAT.attributes, script_i*256, tmp_arr, 0, 256);
-            scriptAttributes = new List<byte>(tmp_arr);
-
-            memoryReader = new MemoryReader(scriptBytes);
-
-            scriptPC = RAHD.RASCStartAt;
-            callstack = new Stack<int>();
-        }
 // START DEBUG FUNCS
 string DBG_op_2_str(byte op)
 {
@@ -179,6 +145,27 @@ void logDBG(string i)
 }
 // END DEBUG FUNCS
 // START DO* FUNCS
+        bool doCmp(int lhs, int rhs, byte cmp)
+        {
+            switch(cmp)
+            {
+                case 0:
+                    return lhs == rhs;
+                    break;
+                case 1:
+                    return lhs != rhs;
+                case 2:
+                    return lhs < rhs;
+                case 3:
+                    return lhs > rhs;
+                case 4:
+                    return lhs <= rhs;
+                case 5:
+                    return lhs >= rhs;
+                default:
+                    return false;
+            }
+        }
         int doFormula(List<int> vals, List<byte> ops)
         {
             int o = vals[0];
@@ -229,17 +216,7 @@ void logDBG(string i)
         }
         int doTask(int obj, ushort task_id, int[] parameters)
         {
-            string o = new string($"0x{memoryReader.Position:X4}: ");
-            o+= obj>=0?$"OBJ_{obj}.":"";
-            o+= $"TASK_{task_id}(";
-            for(int i=0;i<parameters.Length;i++)
-            {
-                o+= $"{parameters[i]}";
-                o += (i==parameters.Length-1)?"":", ";
-            }
-            o += ")";
-            Console.WriteLine(o);
-            return 0xBEEF;
+            return taskPointers[task_id](parameters);
         }
         int doFlagAssign(ushort flag_id, List<int> vals, List<byte> ops)
         {
@@ -249,7 +226,14 @@ void logDBG(string i)
                 o+= $"{vals[i]} {DBG_op_2_str(ops[i])}";
             }
             Console.WriteLine(o);
-            return 0xBEEF;
+            RGRGMScriptStore.flags[flag_id] = doFormula(vals, ops);
+            return RGRGMScriptStore.flags[flag_id];
+        }
+        int doGetFlag(ushort flag_id)
+        {
+            string o = new string($"0x{memoryReader.Position:X4}: FLAG_GET_{flag_id}({RGRGMScriptStore.flags[flag_id]})");
+            Console.WriteLine(o);
+            return RGRGMScriptStore.flags[flag_id];
         }
         int doVarAssign(ushort var_id, List<int> vals, List<byte> ops)
         {
@@ -259,20 +243,21 @@ void logDBG(string i)
                 o+= $"{vals[i]} {DBG_op_2_str(ops[i])}";
             }
             Console.WriteLine(o);
-            scriptVariables[var_id] = doFormula(vals, ops);
-            return scriptVariables[var_id];
+            vars[var_id] = doFormula(vals, ops);
+            return vars[var_id];
         }
         int doGetVar(ushort var_id)
         {
-            string o = new string($"0x{memoryReader.Position:X4}: VAR_GET_{var_id}({scriptVariables[var_id]})");
+            string o = new string($"0x{memoryReader.Position:X4}: VAR_GET_{var_id}({vars[var_id]})");
             Console.WriteLine(o);
-            return scriptVariables[var_id];
+            return vars[var_id];
         }
 
         int doEnd(int IP)
         {
             string o = new string($"0x{memoryReader.Position:X4}: END: {IP:X4}");
             Console.WriteLine(o);
+            scriptPC = IP;;
             return 0xDEAD;
         }
         int doGoto(int IP)
@@ -281,24 +266,24 @@ void logDBG(string i)
             Console.WriteLine(o);
             return IP;
         }
-
         bool doIf(List<int> LHS, List<int> RHS, List<byte> cmp, List<byte> con)
         {
-            bool ret = TST_IFRET;
+            bool ret = false;
             string o = new string($"0x{memoryReader.Position:X4}: IF(");
             for(int i=0;i<con.Count;i++)
             {
                 o+= $"{LHS[i]} {DBG_cmp_2_str(cmp[i])} {RHS[i]} {DBG_con_2_str(con[i])}";
+                // TODO: cons
+                ret = doCmp(LHS[i], RHS[i], cmp[i]);
             }
             o += $" == {ret}";
             Console.WriteLine(o);
 
-            if(TST_IFFLIP)
-                TST_IFRET = !TST_IFRET;
             return ret;
         }
         int doGetObject(byte ofs, objectLoc loc)
         {
+            // TODO: do :)
             string o = new string($"0x{memoryReader.Position:X4}: OBJ_");
             switch(loc)
             {
@@ -314,6 +299,7 @@ void logDBG(string i)
         }
         int doSetObjectReference(int obj, int reference, List<int> vals, List<byte> ops)
         {
+            // TODO: do :)
             string o = new string($"0x{memoryReader.Position:X4}: OBJ_{obj}.REF_{reference} =");
             for(int i=0;i<ops.Count;i++)
             {
@@ -324,6 +310,7 @@ void logDBG(string i)
         }
         int doGetObjectReference(int obj, int reference)
         {
+            // TODO: do :)
             string o = new string($"0x{memoryReader.Position:X4}: OBJ_{obj}.GETREF_{reference}");
             Console.WriteLine(o);
             return reference;
@@ -370,7 +357,7 @@ void logDBG(string i)
                 default:
                     throw new Exception($"NIMPL: {state}");
             }
-            return flag_id;
+            return doGetFlag(flag_id);
         }
         int readVar(readerState state)
         {
@@ -583,17 +570,17 @@ void logDBG(string i)
 // END READ* FUNCS
         public void runScript()
         {
-            string o = new string($"{scriptName} ({scriptIndex}):\n");
+            string o = new string($"{scriptName} ():\n");
             o+=$"       ";
             for(int i=0;i<16;i++)
             {
                 o+=$"{i:X2} ";
             }
-            for(int i=0;i<scriptBytes.Length;i++)
+            for(int i=0;i<scriptData.scriptBytes.Length;i++)
             {
                 if(i%16==0)
                     o+= $"\n0x{i:X4}:";
-                o+=$"{scriptBytes[i]:X2},";
+                o+=$"{scriptData.scriptBytes[i]:X2},";
             }
             Console.WriteLine(o);
 
@@ -612,6 +599,64 @@ int INF_LOOP_DET = 0;
             }
         }
 
+
+
+}
+
+public static class RGRGMScriptStore
+{
+    public class RGMScript
+    {
+        public int scriptIndex;
+        public string scriptName;
+        public byte[] scriptBytes;
+        public List<string> scriptStrings;
+        public List<int> scriptVariables;
+        public List<byte> scriptAttributes;
+
+        // need entry point and callstack
+        public int scriptPC;
+        public Stack<int> callstack;
+
+        public RGMScript(int script_i, RGRGMFile.RGMRAHDItem RAHD, RGRGMFile.RGMRASTSection RAST, RGRGMFile.RGMRASBSection RASB, RGRGMFile.RGMRAVASection RAVA, RGRGMFile.RGMRASCSection RASC, RGRGMFile.RGMRAATSection RAAT)
+        {
+            byte[] tmp_arr;
+            scriptIndex = script_i;
+            scriptName = RAHD.scriptName;
+            scriptStrings = new List<string>();
+            scriptVariables = new List<int>();
+            scriptAttributes = new List<byte>();
+
+            scriptBytes = new byte[RAHD.RASCLength];
+            Array.Copy(RASC.scripts, RAHD.RASCOffset, scriptBytes, 0, RAHD.RASCLength);
+
+            for(int i=0;i<RAHD.RASBCount;i++)
+            {
+                int ofs = RASB.offsets[(RAHD.RASBOffset/4)+i];
+                int end = Array.IndexOf(RAST.text, '\0', ofs);
+                char[] tmp_char_arr = new char[end-ofs];
+
+                Array.Copy(RAST.text, ofs, tmp_char_arr, 0, end-ofs);
+                scriptStrings.Add(new string(tmp_char_arr));
+            }
+
+            for(int i=0;i<RAHD.RAVACount;i++)
+            {
+                if(RAHD.RAVACount> 0)
+                {
+                    int[] tmp_int_arr = new int[RAHD.RAVACount];
+                    Array.Copy(RAVA.data, RAHD.RAVAOffset/4, tmp_int_arr, 0, RAHD.RAVACount);
+                    scriptVariables = new List<int>(tmp_int_arr);
+                }
+            }
+
+            tmp_arr = new byte[256];
+            Array.Copy(RAAT.attributes, script_i*256, tmp_arr, 0, 256);
+            scriptAttributes = new List<byte>(tmp_arr);
+
+            scriptPC = RAHD.RASCStartAt;
+            callstack = new Stack<int>();
+        }
         public override string ToString()
         {
             string o = new string($"SCR:{scriptName}:");
@@ -646,15 +691,23 @@ int INF_LOOP_DET = 0;
         }
     }
 
+    static public Dictionary<string, RGMScript> Scripts; //key: RAHD.scriptName
+    static public int[] flags;
     static public void ReadScript(RGFileImport.RGRGMFile filergm)
     {
-		/*
-        scripts = new List<RGMScript>();
-        for(int i=0;i<filergm.RAHD.dict.Count;i++)
+        flags = new int[500];
+        flags[129] = 1;
+        Scripts = new Dictionary<string, RGMScript>();
+        int i=0;
+        foreach(KeyValuePair<string,RGRGMFile.RGMRAHDItem> entry in filergm.RAHD.dict)
         {
-            RGMScript script = new RGMScript(i, filergm.RAHD.dict[i], filergm.RAST, filergm.RASB, filergm.RAVA, filergm.RASC, filergm.RAAT);
-            scripts.Add(script);
+            RGMScript script = new RGMScript(i, entry.Value, filergm.RAST, filergm.RASB, filergm.RAVA, filergm.RASC, filergm.RAAT);
+            Scripts.Add(entry.Value.scriptName, script);
+            i++;
         }
-		*/
+    }
+    static public RGMScript getScript(string scriptname)
+    {
+        return Scripts[scriptname];
     }
 }

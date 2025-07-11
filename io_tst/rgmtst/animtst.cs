@@ -22,12 +22,14 @@ namespace xyz
                 Console.WriteLine(RGRGMAnimStore.Anims[j]);
             }
 */
-            Console.WriteLine(RGRGMAnimStore.Anims["GUARD01"]);
-            RGRGMAnimStore.Anims["GUARD01"].PushAnimation(RGRGMAnimStore.AnimGroup.anim_walk_forward,0);
+            Console.WriteLine(RGRGMAnimStore.Anims["FLAG"]);
+            /*
+            RGRGMAnimStore.Anims["FLAG"].PushAnimation(RGRGMAnimStore.AnimGroup.anim_walk_forward,0);
             for(int i=0;i<50;i++)
             {
                 Console.WriteLine(RGRGMAnimStore.Anims["GUARD01"].NextFrame());
             }
+            */
 
         }
 	}

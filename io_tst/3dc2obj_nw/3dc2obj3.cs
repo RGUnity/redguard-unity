@@ -154,10 +154,11 @@ namespace xyz
                 Vector3 basev = new Vector3(file_3d.VertexCoordinates[i].x,
                                             file_3d.VertexCoordinates[i].y,
                                             file_3d.VertexCoordinates[i].z);
-                // big scale down so it fits
+                 // big scale down so it fits
                 vec_tmp_lst.Add(new Vector3((basev.x-file_3d.VertexFrameDeltas[frame][i].x)/5000.0f,
                                         (basev.y-file_3d.VertexFrameDeltas[frame][i].y)/5000.0f,
                                         (basev.z-file_3d.VertexFrameDeltas[frame][i].z)/5000.0f));
+
             }
             for(int i=0;i<file_3d.FaceNormals.Count;i++)
             {
@@ -350,6 +351,7 @@ namespace xyz
 
 		public static void Main(string[] args)
 		{
+            /*
             List<string> mesh_names = new List<string>();
             for(int i=0;i<24;i++)
                 mesh_names.Add(new string($"CYRSA{i:d3}"));
@@ -368,6 +370,19 @@ namespace xyz
                     Console.WriteLine($"AT_{i:d2}:{j:d3}");
                 }
             }
+            */
+           RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
+            file_3d.LoadFile($"../../game_3dfx/fxart/FLAGA01.3DC");
+            print_stuff(file_3d );
+            //print_verts(file_3d);
+            //for(int j=0;j<4;j++)
+            for(int j=0;j<file_3d.header.NumFrames;j++)
+            {
+                Mesh_data md =  LoadMesh_3D(file_3d, "FLAGA01",j);
+                print_obj(md, j);
+                Console.WriteLine($"AT_:{j:d3}");
+            }
+
 		}
 	}
 }
