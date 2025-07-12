@@ -151,7 +151,6 @@ void logDBG(string i)
             {
                 case 0:
                     return lhs == rhs;
-                    break;
                 case 1:
                     return lhs != rhs;
                 case 2:
@@ -214,8 +213,9 @@ void logDBG(string i)
             }
             return o;
         }
-        int doTask(int obj, ushort task_id, int[] parameters)
+        int doTask(string obj, ushort task_id, int[] parameters)
         {
+            Console.Write($"OBJ: {obj}:");
             return taskPointers[task_id](parameters);
         }
         int doFlagAssign(ushort flag_id, List<int> vals, List<byte> ops)
@@ -281,23 +281,36 @@ void logDBG(string i)
 
             return ret;
         }
-        int doGetObject(byte ofs, objectLoc loc)
+        string doGetObject(byte ofs, objectLoc loc)
         {
             // TODO: do :)
-            string o = new string($"0x{memoryReader.Position:X4}: OBJ_");
+			string obj = new string("");
             switch(loc)
             {
                 case objectLoc.general:
-                    o += $"GEN_{ofs:X4}";
+					switch(ofs)
+					{
+						case 0:
+							obj = "ME";
+							break;
+						case 1:
+							obj = "PLAYER";
+							break;
+						case 2:
+							obj = "CAMERA";
+							break;
+						default:
+							obj = "UNKNOWN";
+							break;
+					}
                     break;
                 case objectLoc.str:
-                    o += $"STR_{ofs:X4}";
+					obj = scriptData.scriptStrings[ofs];
                     break;
             }
-            Console.WriteLine(o);
-            return ofs;
+            return obj;
         }
-        int doSetObjectReference(int obj, int reference, List<int> vals, List<byte> ops)
+        int doSetObjectReference(string obj, int reference, List<int> vals, List<byte> ops)
         {
             // TODO: do :)
             string o = new string($"0x{memoryReader.Position:X4}: OBJ_{obj}.REF_{reference} =");
@@ -308,7 +321,7 @@ void logDBG(string i)
             Console.WriteLine(o);
             return 0xBEEF;
         }
-        int doGetObjectReference(int obj, int reference)
+        int doGetObjectReference(string obj, int reference)
         {
             // TODO: do :)
             string o = new string($"0x{memoryReader.Position:X4}: OBJ_{obj}.GETREF_{reference}");
@@ -318,7 +331,7 @@ void logDBG(string i)
 
 // END DO* FUNCS
 // START READ* FUNCS
-        int readTask(int obj)
+        int readTask(string obj)
         {
             ushort task_id = memoryReader.ReadUInt16();
             byte param_cnt = memoryReader.ReadByte();
@@ -423,10 +436,10 @@ void logDBG(string i)
             else
                 return jmp;
         }
-        int readObject()
+        string readObject()
         {
             byte val = memoryReader.ReadByte();
-            int obj = -1;
+            string obj = "";
             switch(val)
             {
                 case 0x00:
@@ -445,7 +458,7 @@ void logDBG(string i)
         }
         int readObjectTask(readerState state)
         {
-            int obj = readObject();
+            string obj = readObject();
             if(state != readerState.main)
             {
                 return readTask(obj);
@@ -466,7 +479,7 @@ void logDBG(string i)
         }
         int readObjectRef(readerState state)
         {
-            int obj = readObject();
+            string obj = readObject();
             int reference = memoryReader.ReadUInt16()&0xFF;
             List<int> vals = new List<int>();
             List<byte> ops = new List<byte>();
@@ -531,7 +544,7 @@ void logDBG(string i)
                 case 0x00: // task
                 case 0x01: // multitask (?)
                 case 0x02: // function
-                    return readTask(-1);
+                    return readTask("this"); // TODO: object name
                 case 0x03:
                     memoryReader.Position = readIf();
                     return 0xBEEF;

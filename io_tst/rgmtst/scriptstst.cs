@@ -40,7 +40,7 @@ namespace xyz
 
 
             
-            ScriptData sd = new ScriptData("IHEALTH", soupdeffcn);
+            ScriptData sd = new ScriptData("ITEMLIST", soupdeffcn);
             int runs      = 1;
             for(int i=0;i<runs;i++)
                 sd.runScript();
