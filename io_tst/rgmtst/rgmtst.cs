@@ -66,9 +66,9 @@ namespace xyz
 		{
 			RGRGMFile filergm = new RGRGMFile();
 			filergm.LoadFile("../../game_3dfx/maps/ISLAND.RGM");
-            for(int i=0;i<filergm.MPSF.num_items;i++)
+            foreach(var entry in filergm.RAHD.dict)
             {
-                Console.WriteLine($"{filergm.MPSF.items[i].tex:X}");
+                Console.WriteLine($"{entry.Value.scriptName}: {entry.Value.textureId}");
             }
 //            Console.WriteLine(filergm.RAHD);
             //filergm.PrintRGM();

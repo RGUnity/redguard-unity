@@ -28,6 +28,7 @@ public class RGScriptedObject : MonoBehaviour
     Light light;
 	
     public AnimData animations;
+    public RGFileImport.RGRGMFile.RGMRAHDItem RAHDData;
 
     public void Instanciate3DObject(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
     {
@@ -40,7 +41,7 @@ public class RGScriptedObject : MonoBehaviour
             type = ScriptedObjectType.scriptedobject_animated;
 			string modelname_frame = animations.animationData.RAANItems[0].modelFile;
 			Debug.Log($"ANIMATED {scriptName}: \"{modelname_frame}\"");
-			data_3D = RGMeshStore.f3D2Mesh(modelname_frame, name_col);
+			data_3D = RGMeshStore.f3D2Mesh(modelname_frame, name_col, RAHDData.textureId);
 
             List<Vector3[]> framevertices = new List<Vector3[]>();
             List<Vector3[]> framenormals = new List<Vector3[]>();
@@ -54,7 +55,7 @@ public class RGScriptedObject : MonoBehaviour
             for(int j=1;j<animations.animationData.RAANItems.Count;j++)
             {
                 modelname_frame = animations.animationData.RAANItems[j].modelFile;
-                RGMeshStore.UnityData_3D data_frame = RGMeshStore.f3D2Mesh(modelname_frame, name_col);
+                RGMeshStore.UnityData_3D data_frame = RGMeshStore.f3D2Mesh(modelname_frame, name_col, RAHDData.textureId);
                 for(int i=0;i<data_frame.framecount;i++)
                 {
                     framevertices.Add(data_frame.vertices);
@@ -66,17 +67,12 @@ public class RGScriptedObject : MonoBehaviour
 		
 			skinnedMeshRenderer.sharedMesh = data_3D.mesh;
 			skinnedMeshRenderer.SetMaterials(data_3D.materials);
-/*
-            for(int i=0;i<animations.validAnims.Count;i++)
-                Debug.Log($"ANIMS: {i}:{animations.validAnims[i]}");
-*/
-
 		}
 		else
 		{
             type = ScriptedObjectType.scriptedobject_static;
             string modelname = MPOB.modelName.Split('.')[0];
-			data_3D = RGMeshStore.f3D2Mesh(modelname, name_col);
+			data_3D = RGMeshStore.f3D2Mesh(modelname, name_col, RAHDData.textureId);
 		
 			skinnedMeshRenderer.sharedMesh = data_3D.mesh;
 			skinnedMeshRenderer.SetMaterials(data_3D.materials);
@@ -90,7 +86,7 @@ public class RGScriptedObject : MonoBehaviour
 		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
 			
         string modelname = MPOB.scriptName;;
-        data_3D = RGMeshStore.f3D2Mesh(modelname, name_col);
+        data_3D = RGMeshStore.f3D2Mesh(modelname, name_col, RAHDData.textureId);
     
         skinnedMeshRenderer.sharedMesh = data_3D.mesh;
         skinnedMeshRenderer.SetMaterials(data_3D.materials);
@@ -112,11 +108,13 @@ public class RGScriptedObject : MonoBehaviour
 	public void Instanciate(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
 	{
         scriptName = MPOB.scriptName;
+        RAHDData = filergm.RAHD.dict[scriptName];
 
 		position.x = (float)(MPOB.posX)*RGM_MPOB_SCALE;
 		position.y = -(float)(MPOB.posY)*RGM_MPOB_SCALE;
 		position.z = -(float)(0xFFFFFF-MPOB.posZ)*RGM_MPOB_SCALE;
 		rotation = RGRGMStore.eulers_from_MPOB_data(MPOB);
+        allowAnimation = false;
 
         switch(MPOB.type)
         {

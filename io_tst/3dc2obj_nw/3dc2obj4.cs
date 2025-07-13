@@ -345,7 +345,7 @@ namespace xyz
 			}
                     */
 
-            file_3d.LoadFile("../../game_3dfx/fxart/FLAGA01.3DC");
+            file_3d.LoadFile("../../game_3dfx/fxart/WOMEA001.3DC");
             imm = LoadMesh_3D_intermediate(file_3d);
 			print_obj(imm, "test");
 		}

@@ -123,16 +123,15 @@ using(s_get_mat_bsi.Auto()){
             RGBSIFile bsif = LoadBSI(bsi);
             RGCOLFile palette = LoadPalette(palname);
 
-            string new_mat_key = $"{palname}/{bsi}/{000}";
             List<Texture2D> cur_tex = GraphicsConverter.RGBSIToTexture2D(bsif, palette);
 
-            MaterialDict.Add(new_mat_key, new Material(Shader.Find("Legacy Shaders/Diffuse Fast")));
-            MaterialDict[new_mat_key].mainTexture = cur_tex[0];
+            MaterialDict.Add(mat_key, new Material(Shader.Find("Legacy Shaders/Diffuse Fast")));
+            MaterialDict[mat_key].mainTexture = cur_tex[0];
 
             // note that FRAME_0 does not exist, its called _MainTex or smt
             for(int j=0;j<cur_tex.Count;j++)
             {
-                MaterialDict[new_mat_key].SetTexture($"FRAME_{j}", cur_tex[j]);
+                MaterialDict[mat_key].SetTexture($"FRAME_{j}", cur_tex[j]);
             }
         }
 
