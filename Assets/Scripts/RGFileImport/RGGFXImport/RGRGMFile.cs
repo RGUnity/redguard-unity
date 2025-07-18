@@ -372,7 +372,7 @@ size: {dataLength:X}
 		}
 		public struct RGMMPOBItem
 		{
-			public int id;           // 4 bytes 0
+			public uint id;           // 4 bytes 0
             public ObjectType type;
 			public byte isActive;    // 1 byte  5
             public string scriptName;      // 9 bytes 6
@@ -398,7 +398,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    id = memoryReader.ReadInt32();
+                    id = memoryReader.ReadUInt32();
                     type =  (ObjectType)memoryReader.ReadByte();
                     isActive =  memoryReader.ReadByte();
 
@@ -443,7 +443,7 @@ size: {dataLength:X}
 
 		public struct RGMMPSOItem
 		{
-			public int id;           //  4 bytes
+			public uint id;           //  4 bytes
             public string name;            // 12 bytes
             public int posX;              //  4 bytes; increasing moves position east
             public int posY;           //  4 bytes increasing moves position up
@@ -459,7 +459,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    id = memoryReader.ReadInt32();
+                    id = memoryReader.ReadUInt32();
                     char[] name_char;
                     name_char = memoryReader.ReadChars(12);
                     string[] name_strs = new string(name_char).Split('\0');
@@ -638,7 +638,7 @@ size: {dataLength:X}
 		}
 		public struct RGMMPSFItem
 		{
-            public int id;
+            public uint id;
             public int unknown0;
             public int posX;
             public int posY;
@@ -651,7 +651,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    id = memoryReader.ReadInt32();
+                    id = memoryReader.ReadUInt32();
                     unknown0 = memoryReader.ReadInt32();
 
                     posX = memoryReader.ReadInt24();
@@ -696,7 +696,7 @@ size: {dataLength:X}
 		}
 		public struct RGMMPSLItem
 		{
-            public int id;
+            public uint id;
             public int worldId;
             public int posX;
             public int posY;
@@ -712,7 +712,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    id = memoryReader.ReadInt32();
+                    id = memoryReader.ReadUInt32();
                     worldId = memoryReader.ReadInt32();
                     posX = memoryReader.ReadInt32();
                     posY = memoryReader.ReadInt32();
@@ -754,7 +754,7 @@ size: {dataLength:X}
 		}
 		public struct RGMMPRPItem
 		{
-            public int id;
+            public uint id;
             public byte unknown0;
             public int posX;
             public int posY;
@@ -772,7 +772,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    id = memoryReader.ReadInt32();
+                    id = memoryReader.ReadUInt32();
                     unknown0 = memoryReader.ReadByte();
                     posX = memoryReader.ReadInt24();
                     memoryReader.ReadByte();

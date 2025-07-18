@@ -62,12 +62,14 @@ using(s_load_RGM.Auto()){
 
     public struct RGRGMData
     {
+        public uint id;
         public string name;
         public string name2;
         public Vector3 position;
         public Vector3 rotation;
-        public RGRGMData(string n, string n2, Vector3 p, Vector3 r)
+        public RGRGMData(uint id, string n, string n2, Vector3 p, Vector3 r)
         {
+            this.id = id;
             name = n;
             name2 = n2;
             position = p;
@@ -76,12 +78,14 @@ using(s_load_RGM.Auto()){
     }
     public struct RGRGMRopeData
     {
+        public uint id;
         public string ropeModel;
         public string staticModel;
         public Vector3 position;
         public int count;
-        public RGRGMRopeData(string n, string n2, Vector3 p, int c)
+        public RGRGMRopeData(uint id, string n, string n2, Vector3 p, int c)
         {
+            this.id = id;
             ropeModel = n;
             staticModel = n2;
             position = p;
@@ -107,7 +111,8 @@ using(s_load_MPSF.Auto()){
                 posz += RGM_Z_OFS;
 
                 string name = $"{filergm.MPSF.items[i].textureId}/{filergm.MPSF.items[i].imageId}";
-                data_out.Add(new RGRGMData(name, "", new Vector3(posx, posy, posz), new Vector3(0.0f, 0.0f,0.0f)));
+                uint id = filergm.MPSF.items[i].id;
+                data_out.Add(new RGRGMData(id, name, "", new Vector3(posx, posy, posz), new Vector3(0.0f, 0.0f,0.0f)));
             }
             catch(Exception ex)
             {
@@ -137,8 +142,9 @@ using(s_load_MPSO.Auto()){
                 posz += RGM_Z_OFS;
 
                 Vector3 eulers = eulers_from_MPSO_data(filergm.MPSO.items[i]);
+                uint id = filergm.MPSO.items[i].id;
 
-                data_out.Add(new RGRGMData(filergm.MPSO.items[i].name, "", new Vector3(posx, posy, posz), eulers));
+                data_out.Add(new RGRGMData(id, filergm.MPSO.items[i].name, "", new Vector3(posx, posy, posz), eulers));
             }
             catch(Exception ex)
             {
@@ -167,8 +173,9 @@ using(s_load_MPRP.Auto()){
 
                 Vector3 eulers = new Vector3(0.0f,0.0f,0.0f);
 
+                uint id = filergm.MPRP.items[i].id;
                 string staticModel = filergm.MPRP.items[i].staticModel.Length>0?filergm.MPRP.items[i].staticModel:null;
-                data_out.Add(new RGRGMRopeData(filergm.MPRP.items[i].ropeModel,staticModel, new Vector3(posx, posy, posz), filergm.MPRP.items[i].length));
+                data_out.Add(new RGRGMRopeData(id, filergm.MPRP.items[i].ropeModel,staticModel, new Vector3(posx, posy, posz), filergm.MPRP.items[i].length));
             }
             catch(Exception ex)
             {
@@ -201,8 +208,9 @@ using(s_load_MPOB.Auto()){
                     Vector3 eulers = eulers_from_MPOB_data(filergm.MPOB.items[i]);
 
                     string modelname = filergm.MPOB.items[i].modelName.Split('.')[0];
+                    uint id = filergm.MPSO.items[i].id;
 
-                    data_out.Add(new RGRGMData(filergm.MPOB.items[i].scriptName, modelname, new Vector3(posx, posy, posz), eulers));
+                    data_out.Add(new RGRGMData(id, filergm.MPOB.items[i].scriptName, modelname, new Vector3(posx, posy, posz), eulers));
                 }
                 catch(Exception ex)
                 {
@@ -219,17 +227,20 @@ using(s_load_WDNM.Auto()){
         RGFileImport.RGRGMFile filergm = GetRGM(filename);
 
         List<RGRGMData> data_out = new List<RGRGMData>();
+        uint ID_GEN = 0xFFFF0000;
         for(int i=0;i<filergm.WDNM.items.Count;i++)
         {
+            ID_GEN++;
             int base_posx = filergm.WDNM.items[i].posX;
             int base_posy = filergm.WDNM.items[i].posY;
             int base_posz = filergm.WDNM.items[i].posZ;
             float fposx =  (float)((uint)base_posx%(uint)0x9FD800)*RGM_MPOB_SCALE;
             float fposy = -(float)(base_posy)*RGM_MPOB_SCALE;
             float fposz = -(float)((uint)(0xFFFFFF-base_posz)%(uint)0xFFDC00)*RGM_MPOB_SCALE;
-            data_out.Add(new RGRGMData("LANTERN1", $"ITEM {i}", new Vector3(fposx, fposy, fposz), new Vector3(0.0f, 0.0f, 0.0f)));
+            data_out.Add(new RGRGMData(ID_GEN,"LANTERN1", $"ITEM {i}", new Vector3(fposx, fposy, fposz), new Vector3(0.0f, 0.0f, 0.0f)));
             for(int j=0;j<filergm.WDNM.items[i].walkNodes.Length;j++)
             {
+                ID_GEN++;
                 try{
                     int sub_posx = filergm.WDNM.items[i].walkNodes[j].posX*256;
                     int sub_posy = filergm.WDNM.items[i].walkNodes[j].posY*256;
@@ -243,7 +254,7 @@ using(s_load_WDNM.Auto()){
                     posy += RGM_Y_OFS;
                     posz += RGM_Z_OFS;
 
-                    data_out.Add(new RGRGMData("LANTERN1", $"{i}_{j}", new Vector3(posx, posy, posz), new Vector3(0.0f, 0.0f, 0.0f)));
+                    data_out.Add(new RGRGMData(ID_GEN,"LANTERN1", $"{i}_{j}", new Vector3(posx, posy, posz), new Vector3(0.0f, 0.0f, 0.0f)));
 
                 }
                 catch(Exception ex)

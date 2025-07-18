@@ -7,15 +7,17 @@ public class ScriptData
     string scriptName;
     int[] vars;
     // attributes never used?
-    byte[] attributes;
+    public byte[] attributes;
     int scriptPC;
     Stack<int> callstack;
     MemoryReader memoryReader;
+
+    uint objectId;
     Func<int[], int>[] taskPointers;
 
 
     public RGRGMScriptStore.RGMScript scriptData;
-    public ScriptData(string scriptname, Func<int[], int>[] taskPtrs)
+    public ScriptData(string scriptname, Func<int[], int>[] taskPtrs, uint meId)
     {
         scriptName = scriptname;
         scriptData = RGRGMScriptStore.getScript(scriptname);
@@ -26,6 +28,7 @@ public class ScriptData
         callstack = new Stack<int>();
         memoryReader = new MemoryReader(scriptData.scriptBytes);
 
+        objectId = meId;
         taskPointers = taskPtrs;
     }
     enum readerState
@@ -36,6 +39,12 @@ public class ScriptData
         param,
         reference,
         formula
+    }
+    enum taskType
+    {
+        task,
+        multitask,
+        function,
     }
     enum objectLoc
     {
@@ -145,475 +154,480 @@ void logDBG(string i)
 }
 // END DEBUG FUNCS
 // START DO* FUNCS
-        bool doCmp(int lhs, int rhs, byte cmp)
+    bool doCmp(int lhs, int rhs, byte cmp)
+    {
+        switch(cmp)
         {
-            switch(cmp)
-            {
-                case 0:
-                    return lhs == rhs;
-                case 1:
-                    return lhs != rhs;
-                case 2:
-                    return lhs < rhs;
-                case 3:
-                    return lhs > rhs;
-                case 4:
-                    return lhs <= rhs;
-                case 5:
-                    return lhs >= rhs;
-                default:
-                    return false;
-            }
+            case 0:
+                return lhs == rhs;
+            case 1:
+                return lhs != rhs;
+            case 2:
+                return lhs < rhs;
+            case 3:
+                return lhs > rhs;
+            case 4:
+                return lhs <= rhs;
+            case 5:
+                return lhs >= rhs;
+            default:
+                return false;
         }
-        int doFormula(List<int> vals, List<byte> ops)
+    }
+    int doFormula(List<int> vals, List<byte> ops)
+    {
+        int o = vals[0];
+        int i = 1;
+        while(ops[i-1] != 0)
         {
-            int o = vals[0];
-            int i = 1;
-            while(ops[i-1] != 0)
+            switch(ops[i-1])
             {
-                switch(ops[i-1])
+                case 1:
+                    o += vals[i];
+                    break;
+                case 2:
+                    o -= vals[i];
+                    break;
+                case 3:
+                    o /= vals[i];
+                    break;
+                case 4:
+                    o *= vals[i];
+                    break;
+                case 5:
+                    o = o<<vals[i];
+                    break;
+                case 6:
+                    o = o>>vals[i];
+                    break;
+                case 7:
+                    o = o&vals[i];
+                    break;
+                case 8:
+                    o = o|vals[i];
+                    break;
+                case 9:
+                    o = o^vals[i];
+                    break;
+                case 10:
+                    o++;
+                    break;
+                case 11:
+                    o--;
+                    break;
+                default:
+                    throw new Exception($"NIMPL: {ops[i-1]}");
+            }
+            i++;
+        }
+        return o;
+    }
+    int doTask(string obj, taskType type, ushort task_id, int[] parameters)
+    {
+        Console.Write($"OBJ: {obj}_{type}_{task_id}:");
+        return taskPointers[task_id](parameters);
+    }
+    int doFlagAssign(ushort flag_id, List<int> vals, List<byte> ops)
+    {
+        string o = new string($"0x{memoryReader.Position:X4}: FLAG_{flag_id} = ");
+        for(int i=0;i<ops.Count;i++)
+        {
+            o+= $"{vals[i]} {DBG_op_2_str(ops[i])}";
+        }
+        Console.WriteLine(o);
+        RGRGMScriptStore.flags[flag_id] = doFormula(vals, ops);
+        return RGRGMScriptStore.flags[flag_id];
+    }
+    int doGetFlag(ushort flag_id)
+    {
+        string o = new string($"0x{memoryReader.Position:X4}: FLAG_GET_{flag_id}({RGRGMScriptStore.flags[flag_id]})");
+        Console.WriteLine(o);
+        return RGRGMScriptStore.flags[flag_id];
+    }
+    int doVarAssign(ushort var_id, List<int> vals, List<byte> ops)
+    {
+        string o = new string($"0x{memoryReader.Position:X4}: VAR_{var_id} = ");
+        for(int i=0;i<ops.Count;i++)
+        {
+            o+= $"{vals[i]} {DBG_op_2_str(ops[i])}";
+        }
+        Console.WriteLine(o);
+        vars[var_id] = doFormula(vals, ops);
+        return vars[var_id];
+    }
+    int doGetVar(ushort var_id)
+    {
+        string o = new string($"0x{memoryReader.Position:X4}: VAR_GET_{var_id}({vars[var_id]})");
+        Console.WriteLine(o);
+        return vars[var_id];
+    }
+
+    int doEnd(int IP)
+    {
+        string o = new string($"0x{memoryReader.Position:X4}: END: {IP:X4}");
+        Console.WriteLine(o);
+        scriptPC = IP;;
+        return 0xDEAD;
+    }
+    int doGoto(int IP)
+    {
+        string o = new string($"0x{memoryReader.Position:X4}: GOTO: {IP:X4}");
+        Console.WriteLine(o);
+        return IP;
+    }
+    bool doIf(List<int> LHS, List<int> RHS, List<byte> cmp, List<byte> con)
+    {
+        bool ret = false;
+        string o = new string($"0x{memoryReader.Position:X4}: IF(");
+        for(int i=0;i<con.Count;i++)
+        {
+            o+= $"{LHS[i]} {DBG_cmp_2_str(cmp[i])} {RHS[i]} {DBG_con_2_str(con[i])}";
+            // TODO: cons
+            ret = doCmp(LHS[i], RHS[i], cmp[i]);
+        }
+        o += $" == {ret}";
+        Console.WriteLine(o);
+
+        return ret;
+    }
+    string doGetObject(byte ofs, objectLoc loc)
+    {
+        // TODO: do :)
+        string obj = new string("");
+        switch(loc)
+        {
+            case objectLoc.general:
+                switch(ofs)
                 {
+                    case 0:
+                        obj = "ME";
+                        break;
                     case 1:
-                        o += vals[i];
+                        obj = "PLAYER";
                         break;
                     case 2:
-                        o -= vals[i];
-                        break;
-                    case 3:
-                        o /= vals[i];
-                        break;
-                    case 4:
-                        o *= vals[i];
-                        break;
-                    case 5:
-                        o = o<<vals[i];
-                        break;
-                    case 6:
-                        o = o>>vals[i];
-                        break;
-                    case 7:
-                        o = o&vals[i];
-                        break;
-                    case 8:
-                        o = o|vals[i];
-                        break;
-                    case 9:
-                        o = o^vals[i];
-                        break;
-                    case 10:
-                        o++;
-                        break;
-                    case 11:
-                        o--;
+                        obj = "CAMERA";
                         break;
                     default:
-                        throw new Exception($"NIMPL: {ops[i-1]}");
+                        obj = "UNKNOWN";
+                        break;
                 }
-                i++;
-            }
-            return o;
+                break;
+            case objectLoc.str:
+                obj = scriptData.scriptStrings[ofs];
+                break;
         }
-        int doTask(string obj, ushort task_id, int[] parameters)
+        return obj;
+    }
+    int doSetObjectReference(string obj, int reference, List<int> vals, List<byte> ops)
+    {
+        // TODO: do :)
+        string o = new string($"0x{memoryReader.Position:X4}: OBJ_{obj}.REF_{reference} =");
+        for(int i=0;i<ops.Count;i++)
         {
-            Console.Write($"OBJ: {obj}:");
-            return taskPointers[task_id](parameters);
+            o+= $"{vals[i]} {DBG_op_2_str(ops[i])}";
         }
-        int doFlagAssign(ushort flag_id, List<int> vals, List<byte> ops)
-        {
-            string o = new string($"0x{memoryReader.Position:X4}: FLAG_{flag_id} = ");
-            for(int i=0;i<ops.Count;i++)
-            {
-                o+= $"{vals[i]} {DBG_op_2_str(ops[i])}";
-            }
-            Console.WriteLine(o);
-            RGRGMScriptStore.flags[flag_id] = doFormula(vals, ops);
-            return RGRGMScriptStore.flags[flag_id];
-        }
-        int doGetFlag(ushort flag_id)
-        {
-            string o = new string($"0x{memoryReader.Position:X4}: FLAG_GET_{flag_id}({RGRGMScriptStore.flags[flag_id]})");
-            Console.WriteLine(o);
-            return RGRGMScriptStore.flags[flag_id];
-        }
-        int doVarAssign(ushort var_id, List<int> vals, List<byte> ops)
-        {
-            string o = new string($"0x{memoryReader.Position:X4}: VAR_{var_id} = ");
-            for(int i=0;i<ops.Count;i++)
-            {
-                o+= $"{vals[i]} {DBG_op_2_str(ops[i])}";
-            }
-            Console.WriteLine(o);
-            vars[var_id] = doFormula(vals, ops);
-            return vars[var_id];
-        }
-        int doGetVar(ushort var_id)
-        {
-            string o = new string($"0x{memoryReader.Position:X4}: VAR_GET_{var_id}({vars[var_id]})");
-            Console.WriteLine(o);
-            return vars[var_id];
-        }
-
-        int doEnd(int IP)
-        {
-            string o = new string($"0x{memoryReader.Position:X4}: END: {IP:X4}");
-            Console.WriteLine(o);
-            scriptPC = IP;;
-            return 0xDEAD;
-        }
-        int doGoto(int IP)
-        {
-            string o = new string($"0x{memoryReader.Position:X4}: GOTO: {IP:X4}");
-            Console.WriteLine(o);
-            return IP;
-        }
-        bool doIf(List<int> LHS, List<int> RHS, List<byte> cmp, List<byte> con)
-        {
-            bool ret = false;
-            string o = new string($"0x{memoryReader.Position:X4}: IF(");
-            for(int i=0;i<con.Count;i++)
-            {
-                o+= $"{LHS[i]} {DBG_cmp_2_str(cmp[i])} {RHS[i]} {DBG_con_2_str(con[i])}";
-                // TODO: cons
-                ret = doCmp(LHS[i], RHS[i], cmp[i]);
-            }
-            o += $" == {ret}";
-            Console.WriteLine(o);
-
-            return ret;
-        }
-        string doGetObject(byte ofs, objectLoc loc)
-        {
-            // TODO: do :)
-			string obj = new string("");
-            switch(loc)
-            {
-                case objectLoc.general:
-					switch(ofs)
-					{
-						case 0:
-							obj = "ME";
-							break;
-						case 1:
-							obj = "PLAYER";
-							break;
-						case 2:
-							obj = "CAMERA";
-							break;
-						default:
-							obj = "UNKNOWN";
-							break;
-					}
-                    break;
-                case objectLoc.str:
-					obj = scriptData.scriptStrings[ofs];
-                    break;
-            }
-            return obj;
-        }
-        int doSetObjectReference(string obj, int reference, List<int> vals, List<byte> ops)
-        {
-            // TODO: do :)
-            string o = new string($"0x{memoryReader.Position:X4}: OBJ_{obj}.REF_{reference} =");
-            for(int i=0;i<ops.Count;i++)
-            {
-                o+= $"{vals[i]} {DBG_op_2_str(ops[i])}";
-            }
-            Console.WriteLine(o);
-            return 0xBEEF;
-        }
-        int doGetObjectReference(string obj, int reference)
-        {
-            // TODO: do :)
-            string o = new string($"0x{memoryReader.Position:X4}: OBJ_{obj}.GETREF_{reference}");
-            Console.WriteLine(o);
-            return reference;
-        }
+        Console.WriteLine(o);
+        return 0xBEEF;
+    }
+    int doGetObjectReference(string obj, int reference)
+    {
+        // TODO: do :)
+        string o = new string($"0x{memoryReader.Position:X4}: OBJ_{obj}.GETREF_{reference}");
+        Console.WriteLine(o);
+        return reference;
+    }
 
 // END DO* FUNCS
 // START READ* FUNCS
-        int readTask(string obj)
+    int readTask(string obj, taskType type)
+    {
+        ushort task_id = memoryReader.ReadUInt16();
+        byte param_cnt = memoryReader.ReadByte();
+        int[] parameters = new int[param_cnt];
+        for(int i=0;i<param_cnt;i++)
         {
-            ushort task_id = memoryReader.ReadUInt16();
-            byte param_cnt = memoryReader.ReadByte();
-            int[] parameters = new int[param_cnt];
-            for(int i=0;i<param_cnt;i++)
-            {
-                parameters[i] = readInstruction(readerState.param);
-            }
-            return doTask(obj, task_id, parameters);
+            parameters[i] = readInstruction(readerState.param);
         }
-        int readFlag(readerState state)
+        return doTask(obj, type, task_id, parameters);
+    }
+    int readFlag(readerState state)
+    {
+        ushort flag_id = memoryReader.ReadUInt16();
+        List<int> vals = new List<int>();
+        List<byte> ops = new List<byte>();
+        switch(state)
         {
-            ushort flag_id = memoryReader.ReadUInt16();
-            List<int> vals = new List<int>();
-            List<byte> ops = new List<byte>();
-            switch(state)
-            {
-                case readerState.main:
-                    byte op = 0;
-                    do
-                    {
-                        vals.Add(readInstruction(readerState.formula));
-                        op = memoryReader.ReadByte();
-                        ops.Add(op);
-                    } while(op>0 && op <10);
-                    return doFlagAssign(flag_id, vals, ops);
-                case readerState.LHS:
-                case readerState.RHS:
-                    memoryReader.ReadByte(); // TODO: does this operator do anything?
-                    break;
-                case readerState.param:
-                    memoryReader.ReadUInt16();
-                    break;
-                case readerState.formula:
-                    break;
-                default:
-                    throw new Exception($"NIMPL: {state}");
-            }
-            return doGetFlag(flag_id);
+            case readerState.main:
+                byte op = 0;
+                do
+                {
+                    vals.Add(readInstruction(readerState.formula));
+                    op = memoryReader.ReadByte();
+                    ops.Add(op);
+                } while(op>0 && op <10);
+                return doFlagAssign(flag_id, vals, ops);
+            case readerState.LHS:
+            case readerState.RHS:
+                memoryReader.ReadByte(); // TODO: does this operator do anything?
+                break;
+            case readerState.param:
+                memoryReader.ReadUInt16();
+                break;
+            case readerState.formula:
+                break;
+            default:
+                throw new Exception($"NIMPL: {state}");
         }
-        int readVar(readerState state)
+        return doGetFlag(flag_id);
+    }
+    int readVar(readerState state)
+    {
+        byte var_id = memoryReader.ReadByte();
+        List<int> vals = new List<int>();
+        List<byte> ops = new List<byte>();
+        switch(state)
         {
-            byte var_id = memoryReader.ReadByte();
-            List<int> vals = new List<int>();
-            List<byte> ops = new List<byte>();
-            switch(state)
-            {
-                case readerState.main:
-                    byte op = 0;
-                    do
-                    {
-                        vals.Add(readInstruction(readerState.formula));
-                        op = memoryReader.ReadByte();
-                        ops.Add(op);
-                    } while(op>0 && op <10);
-                    return doVarAssign(var_id, vals, ops);
-                case readerState.LHS:
-                case readerState.RHS:
-                    memoryReader.ReadByte(); // TODO: does this operator do anything?
-                    break;
-                case readerState.param:
-                    memoryReader.ReadBytes(3);
-                    break;
-                case readerState.formula:
-                    break;
-                default:
-                    throw new Exception($"NIMPL: {state}");
-            }
-            return doGetVar(var_id);
+            case readerState.main:
+                byte op = 0;
+                do
+                {
+                    vals.Add(readInstruction(readerState.formula));
+                    op = memoryReader.ReadByte();
+                    ops.Add(op);
+                } while(op>0 && op <10);
+                return doVarAssign(var_id, vals, ops);
+            case readerState.LHS:
+            case readerState.RHS:
+                memoryReader.ReadByte(); // TODO: does this operator do anything?
+                break;
+            case readerState.param:
+                memoryReader.ReadBytes(3);
+                break;
+            case readerState.formula:
+                break;
+            default:
+                throw new Exception($"NIMPL: {state}");
         }
-        int readEnd()
+        return doGetVar(var_id);
+    }
+    int readEnd()
+    {
+        memoryReader.Position = memoryReader.ReadInt32();
+        return doEnd(memoryReader.Position);
+    }
+    int readGoto()
+    {
+        memoryReader.Position = memoryReader.ReadInt32();
+        return doGoto(memoryReader.Position);
+    }
+    int readImm()
+    {
+        int imm = memoryReader.ReadInt32();
+        return imm;
+    }
+    int readIf()
+    {
+        List<int> LHS = new List<int>();
+        List<int> RHS = new List<int>();
+        List<byte> cmp = new List<byte>();
+        List<byte> con = new List<byte>();
+        do
         {
-            memoryReader.Position = memoryReader.ReadInt32();
-            return doEnd(memoryReader.Position);
+            LHS.Add(readInstruction(readerState.LHS));
+            cmp.Add(memoryReader.ReadByte());
+            RHS.Add(readInstruction(readerState.RHS));
+            con.Add(memoryReader.ReadByte());
+        } while(con[con.Count-1] != 0x00);
+        int jmp = memoryReader.ReadInt32();
+        if(doIf(LHS, RHS, cmp, con))
+            return memoryReader.Position;
+        else
+            return jmp;
+    }
+    string readObject()
+    {
+        byte val = memoryReader.ReadByte();
+        string obj = "";
+        switch(val)
+        {
+            case 0x00:
+            case 0x01:
+            case 0x02:
+                obj = doGetObject(val, objectLoc.general);
+                memoryReader.ReadByte();
+                break;
+            case 0x04:
+                obj = doGetObject(memoryReader.ReadByte(), objectLoc.str);
+                break;
+            default:
+                throw new Exception($"NIMPL: 0x{val:X2}");
         }
-        int readGoto()
+        return obj;
+    }
+    int readObjectTask(readerState state)
+    {
+        string obj = readObject();
+        if(state != readerState.main)
         {
-            memoryReader.Position = memoryReader.ReadInt32();
-            return doGoto(memoryReader.Position);
+            return readTask(obj, taskType.function);
         }
-        int readImm()
+        else
         {
-            int imm = memoryReader.ReadInt32();
-            return imm;
-        }
-        int readIf()
-        {
-            List<int> LHS = new List<int>();
-            List<int> RHS = new List<int>();
-            List<byte> cmp = new List<byte>();
-            List<byte> con = new List<byte>();
-            do
-            {
-                LHS.Add(readInstruction(readerState.LHS));
-                cmp.Add(memoryReader.ReadByte());
-                RHS.Add(readInstruction(readerState.RHS));
-                con.Add(memoryReader.ReadByte());
-            } while(con[con.Count-1] != 0x00);
-            int jmp = memoryReader.ReadInt32();
-            if(doIf(LHS, RHS, cmp, con))
-                return memoryReader.Position;
-            else
-                return jmp;
-        }
-        string readObject()
-        {
-            byte val = memoryReader.ReadByte();
-            string obj = "";
-            switch(val)
+            byte nxt = memoryReader.ReadByte();
+            switch(nxt)
             {
                 case 0x00:
+                    return readTask(obj, taskType.task);
                 case 0x01:
+                    return readTask(obj, taskType.multitask);
                 case 0x02:
-                    obj = doGetObject(val, objectLoc.general);
-                    memoryReader.ReadByte();
-                    break;
-                case 0x04:
-                    obj = doGetObject(memoryReader.ReadByte(), objectLoc.str);
-                    break;
+                    return readTask(obj, taskType.function);
                 default:
-                    throw new Exception($"NIMPL: 0x{val:X2}");
+                    throw new Exception($"NIMPL: 0x{nxt:X2}");
             }
-            return obj;
         }
-        int readObjectTask(readerState state)
+    }
+    int readObjectRef(readerState state)
+    {
+        string obj = readObject();
+        int reference = memoryReader.ReadUInt16()&0xFF;
+        List<int> vals = new List<int>();
+        List<byte> ops = new List<byte>();
+        switch(state)
         {
-            string obj = readObject();
-            if(state != readerState.main)
-            {
-                return readTask(obj);
-            }
-            else
-            {
-                byte nxt = memoryReader.ReadByte();
-                switch(nxt)
+            case readerState.main:
+                byte op = 0;
+                do
                 {
-                    case 0x00:
-                    case 0x01:
-                    case 0x02:
-                        return readTask(obj);
-                    default:
-                        throw new Exception($"NIMPL: 0x{nxt:X2}");
-                }
-            }
+                    vals.Add(readInstruction(readerState.formula));
+                    op = memoryReader.ReadByte();
+                    ops.Add(op);
+                } while(op>0 && op <10);
+                return doSetObjectReference(obj, reference, vals, ops);
+            case readerState.LHS:
+                op = memoryReader.ReadByte(); // TODO: operator
+                return doGetObjectReference(obj, reference);
+            default:
+                return doGetObjectReference(obj, reference);
         }
-        int readObjectRef(readerState state)
-        {
-            string obj = readObject();
-            int reference = memoryReader.ReadUInt16()&0xFF;
-            List<int> vals = new List<int>();
-            List<byte> ops = new List<byte>();
-            switch(state)
-            {
-                case readerState.main:
-                    byte op = 0;
-                    do
-                    {
-                        vals.Add(readInstruction(readerState.formula));
-                        op = memoryReader.ReadByte();
-                        ops.Add(op);
-                    } while(op>0 && op <10);
-                    return doSetObjectReference(obj, reference, vals, ops);
-                case readerState.LHS:
-                    op = memoryReader.ReadByte(); // TODO: operator
-                    return doGetObjectReference(obj, reference);
-                default:
-                    return doGetObjectReference(obj, reference);
-            }
-        }
-        int readString()
-        {
-            int str = memoryReader.ReadInt32();
-            return str;
-        }
-        int readReturn()
-        {
-            memoryReader.Position = callstack.Pop();
-            return 0;
-        }
-        int readEndint()
-        {
-            logDBG($"ENDINT"); // TODO: figure out what this does
-            return 0;
-        }
-        int readGoSub()
-        {
-            int adr = memoryReader.ReadInt32();
-            callstack.Push(memoryReader.Position);
-            memoryReader.Position = adr;
-            return 0;
-        }
+    }
+    int readString()
+    {
+        int str = memoryReader.ReadInt32();
+        return str;
+    }
+    int readReturn()
+    {
+        memoryReader.Position = callstack.Pop();
+        return 0;
+    }
+    int readEndint()
+    {
+        logDBG($"ENDINT"); // TODO: figure out what this does
+        return 0;
+    }
+    int readGoSub()
+    {
+        int adr = memoryReader.ReadInt32();
+        callstack.Push(memoryReader.Position);
+        memoryReader.Position = adr;
+        return 0;
+    }
 
-        int readTaskPause()
+    int readTaskPause()
+    {
+        int taskval = memoryReader.ReadInt32();
+        logDBG($"TASKPAUSE: {taskval}"); // TODO: do the pause somehow; also whats the taskval?
+        return 0;
+    }
+    int readScriptRV()
+    {
+        byte retval = memoryReader.ReadByte();
+        logDBG($"SCRIPTRV: {retval}"); // TODO: where does the return val come from?
+        return 0;
+    }
+    int readInstruction(readerState state)
+    {
+        byte instruction = memoryReader.ReadByte();
+        switch(instruction)
         {
-            int taskval = memoryReader.ReadInt32();
-            logDBG($"TASKPAUSE: {taskval}"); // TODO: do the pause somehow; also whats the taskval?
-            return 0;
+            case 0x00: // task
+                return readTask("this", taskType.task); // TODO: object name
+            case 0x01: // multitask (?)
+                return readTask("this", taskType.multitask); // TODO: object name
+            case 0x02: // function
+                return readTask("this", taskType.function); // TODO: object name
+            case 0x03:
+                memoryReader.Position = readIf();
+                return 0xBEEF;
+            case 0x04:
+                return readGoto();
+            case 0x05:
+                return readEnd();
+            case 0x06:
+                return readFlag(state);
+            case 0x07:
+            case 0x16:
+                return readImm();
+            case 0x0A:
+                return readVar(state);
+            case 0x11:
+                return readGoSub();
+            case 0x12:
+                return readReturn();
+            case 0x13:
+                return readEndint();
+            case 0x14:
+                return readObjectRef(state);
+            case 0x15:
+                return readString();
+            case 0x19:
+            case 0x1A:
+                return readObjectTask(state);
+            case 0x1B:
+                return readTaskPause();
+            case 0x1E:
+                return readScriptRV();
+            default:
+                throw new Exception($"NIMPL: {instruction}");
         }
-        int readScriptRV()
-        {
-            byte retval = memoryReader.ReadByte();
-            logDBG($"SCRIPTRV: {retval}"); // TODO: where does the return val come from?
-            return 0;
-        }
-        int readInstruction(readerState state)
-        {
-            byte instruction = memoryReader.ReadByte();
-            switch(instruction)
-            {
-                case 0x00: // task
-                case 0x01: // multitask (?)
-                case 0x02: // function
-                    return readTask("this"); // TODO: object name
-                case 0x03:
-                    memoryReader.Position = readIf();
-                    return 0xBEEF;
-                case 0x04:
-                    return readGoto();
-                case 0x05:
-                    return readEnd();
-                case 0x06:
-                    return readFlag(state);
-                case 0x07:
-                case 0x16:
-                    return readImm();
-                case 0x0A:
-                    return readVar(state);
-                case 0x11:
-                    return readGoSub();
-                case 0x12:
-                    return readReturn();
-                case 0x13:
-                    return readEndint();
-                case 0x14:
-                    return readObjectRef(state);
-                case 0x15:
-                    return readString();
-                case 0x19:
-                case 0x1A:
-                    return readObjectTask(state);
-                case 0x1B:
-                    return readTaskPause();
-                case 0x1E:
-                    return readScriptRV();
-                default:
-                    throw new Exception($"NIMPL: {instruction}");
-            }
-        }
+    }
 // END READ* FUNCS
-        public void runScript()
+    public void runScript()
+    {
+        string o = new string($"{scriptName} ():\n");
+        o+=$"       ";
+        for(int i=0;i<16;i++)
         {
-            string o = new string($"{scriptName} ():\n");
-            o+=$"       ";
-            for(int i=0;i<16;i++)
-            {
-                o+=$"{i:X2} ";
-            }
-            for(int i=0;i<scriptData.scriptBytes.Length;i++)
-            {
-                if(i%16==0)
-                    o+= $"\n0x{i:X4}:";
-                o+=$"{scriptData.scriptBytes[i]:X2},";
-            }
-            Console.WriteLine(o);
-
-            memoryReader.Position = scriptPC;
-            bool end = false;
-int INF_LOOP_DET = 0;
-            while(!end)
-            {
-                if(readInstruction(readerState.main) == 0xDEAD)
-                    end = true;
-                 if(INF_LOOP_DET++ > 1024)
-                 {
-                     logDBG("INF LOOP; BAILING");
-                     end = true;
-                 }
-            }
+            o+=$"{i:X2} ";
         }
+        for(int i=0;i<scriptData.scriptBytes.Length;i++)
+        {
+            if(i%16==0)
+                o+= $"\n0x{i:X4}:";
+            o+=$"{scriptData.scriptBytes[i]:X2},";
+        }
+        Console.WriteLine(o);
 
-
-
+        memoryReader.Position = scriptPC;
+        bool end = false;
+int INF_LOOP_DET = 0;
+        while(!end)
+        {
+            if(readInstruction(readerState.main) == 0xDEAD)
+                end = true;
+             if(INF_LOOP_DET++ > 1024)
+             {
+                 logDBG("INF LOOP; BAILING");
+                 end = true;
+             }
+        }
+    }
+    public void tickScript()
+    {
+        readInstruction(readerState.main);
+    }
 }
 
 public static class RGRGMScriptStore
@@ -622,6 +636,7 @@ public static class RGRGMScriptStore
     {
         public int scriptIndex;
         public string scriptName;
+        public string objectName;
         public byte[] scriptBytes;
         public List<string> scriptStrings;
         public List<int> scriptVariables;
@@ -631,8 +646,14 @@ public static class RGRGMScriptStore
         public int scriptPC;
         public Stack<int> callstack;
 
-        public RGMScript(int script_i, RGRGMFile.RGMRAHDItem RAHD, RGRGMFile.RGMRASTSection RAST, RGRGMFile.RGMRASBSection RASB, RGRGMFile.RGMRAVASection RAVA, RGRGMFile.RGMRASCSection RASC, RGRGMFile.RGMRAATSection RAAT)
+        public RGMScript(int script_i, RGRGMFile.RGMRAHDItem RAHD, RGRGMFile.RGMRASTSection RAST, RGRGMFile.RGMRASBSection RASB, RGRGMFile.RGMRAVASection RAVA, RGRGMFile.RGMRASCSection RASC, RGRGMFile.RGMRAATSection RAAT, RGRGMFile.RGMRANMSection RANM)
         {
+
+            char[] tmp_char_arr2 = new char[RAHD.RANMLength];
+
+            Array.Copy(RANM.data, RAHD.RANMOffset, tmp_char_arr2, 0, RAHD.RANMLength);
+            objectName = new string(tmp_char_arr2);
+
             byte[] tmp_arr;
             scriptIndex = script_i;
             scriptName = RAHD.scriptName;
@@ -714,7 +735,7 @@ public static class RGRGMScriptStore
         int i=0;
         foreach(KeyValuePair<string,RGRGMFile.RGMRAHDItem> entry in filergm.RAHD.dict)
         {
-            RGMScript script = new RGMScript(i, entry.Value, filergm.RAST, filergm.RASB, filergm.RAVA, filergm.RASC, filergm.RAAT);
+            RGMScript script = new RGMScript(i, entry.Value, filergm.RAST, filergm.RASB, filergm.RAVA, filergm.RASC, filergm.RAAT, filergm.RANM);
             Scripts.Add(entry.Value.scriptName, script);
             i++;
         }

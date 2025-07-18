@@ -65,11 +65,26 @@ namespace xyz
 		public static void Main(string[] args)
 		{
 			RGRGMFile filergm = new RGRGMFile();
-			filergm.LoadFile("../../game_3dfx/maps/ISLAND.RGM");
+			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
+            for(int i=0;i<filergm.MPOB.num_items;i++)
+            {
+                RGRGMFile.RGMMPOBItem it = filergm.MPOB.items[i];
+                Console.WriteLine($"{it.scriptName}: {it.id:X}");
+ 
+            }
+            /*
+            MemoryReader memoryReader = new MemoryReader(filergm.RAAN.data);
             foreach(var entry in filergm.RAHD.dict)
             {
-                Console.WriteLine($"{entry.Value.scriptName}: {entry.Value.textureId}");
+                Console.WriteLine($"{entry.Value.scriptName}:");
+                memoryReader.Seek((uint)entry.Value.RAANOffset, 0);
+
+                char[] curc = memoryReader.ReadChars(entry.Value.RAANLength);
+                string modelname = new string(curc);
+
+                Console.WriteLine($"NAM: {modelname}");
             }
+            */
 //            Console.WriteLine(filergm.RAHD);
             //filergm.PrintRGM();
 //            print_MPOB(filergm);

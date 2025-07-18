@@ -351,16 +351,17 @@ namespace xyz
 
 		public static void Main(string[] args)
 		{
-            /*
             List<string> mesh_names = new List<string>();
             for(int i=0;i<24;i++)
                 mesh_names.Add(new string($"CYRSA{i:d3}"));
-
+            int totframes = 0;
             for(int i=1;i<24;i++)
             {
                 RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
                 file_3d.LoadFile($"../../game_3dfx/fxart/{mesh_names[i]}.3DC");
-                print_stuff(file_3d );
+                Console.WriteLine($"{mesh_names[i]}:{file_3d.header.NumVertices}");
+                totframes += (int)file_3d.header.NumFrames;
+                //print_stuff(file_3d );
                 //print_verts(file_3d);
                 //for(int j=0;j<4;j++)
                 for(int j=0;j<file_3d.header.NumFrames;j++)
@@ -370,7 +371,8 @@ namespace xyz
                     Console.WriteLine($"AT_{i:d2}:{j:d3}");
                 }
             }
-            */
+            Console.WriteLine($"totframes: {totframes}");
+            /*
            RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
             file_3d.LoadFile($"../../game_3dfx/fxart/FLAGA01.3DC");
             print_stuff(file_3d );
@@ -382,6 +384,7 @@ namespace xyz
                 print_obj(md, j);
                 Console.WriteLine($"AT_:{j:d3}");
             }
+            */
 
 		}
 	}

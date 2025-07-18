@@ -325,6 +325,9 @@ namespace TST
 		/*task*/
 		public int RotateByAxis(int[] i /*3*/)	
 		{
+			// i[0]: axis (0/1/2)
+			// i[1]: amount
+			// i[3]: time to complete
 			Log("RotateByAxis");
 			return 0;
 		}
@@ -388,6 +391,9 @@ namespace TST
 		/*task*/
 		public int MoveByAxis(int[] i /*3*/)	
 		{
+			// i[0]: axis (0/1/2)
+			// i[1]: amount
+			// i[3]: time to complete
 			Log("MoveByAxis");
 			return 0;
 		}
@@ -437,6 +443,7 @@ namespace TST
 		/*task*/
 		public int Wait(int[] i /*1*/)	
 		{
+			// i[0]: time to wait
 			Log("Wait");
 			return 0;
 		}

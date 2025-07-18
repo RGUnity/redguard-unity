@@ -1,4 +1,5 @@
-mcs -debug rgmtst.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RGRGMFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs
+#mcs -debug rgmtst.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RGRGMFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs
 #mcs -unsafe -debug matrices.cs
 mcs -debug scriptstst.cs ../../Assets/Scripts/RGFileImport/RGMData/RGRGMScriptStore.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RGRGMFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs 
 #mcs -debug animtst.cs ../../Assets/Scripts/RGFileImport/RGMData/RGRGMAnimStore.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RGRGMFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs 
+#mcs -debug meshestst.cs
