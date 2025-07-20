@@ -58,32 +58,44 @@ public class LoadWorld : MonoBehaviour
     {
         if(Input.GetKeyDown("space"))
         {
+            // OB_ENG11 = master
+            // OB_ENG13 = slaved
+            /*
             ModelLoader.scriptedObjects[0x82BE25A8].allowScripting = true;
+            // OB_ENG04 + OB_ENG04
+            ModelLoader.scriptedObjects[0x82BE3D60].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE42F8].allowScripting = true;
+            // OB_ENGA + OB_ENGC
+            ModelLoader.scriptedObjects[0x82BDFE40].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BDCC28].allowScripting = true;
+            */
+            // OB_ORY01-17
+            ModelLoader.scriptedObjects[0x82BDF628].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BDF860].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BDFA78].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE0080].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE02B8].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE04D8].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE0740].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE08A0].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE0BF0].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE1D10].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE2148].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE2F40].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE3178].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE33B8].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE35F8].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE3830].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE3B28].allowScripting = true;
+            /*
+            // duplicates
+            // 14: big blue
+            ModelLoader.scriptedObjects[0x82BE0740].allowScripting = true;
+            // 15: small blue
+            ModelLoader.scriptedObjects[0x82BE04D8].allowScripting = true;
+            // 17: inside big red
+            ModelLoader.scriptedObjects[0x82BE02B8].allowScripting = true;
+            */
         }
-        else if(Input.GetKeyDown("w"))
-        {
-            int[] parameters = new int[5];
-            parameters[0] = 0;
-            parameters[1] = -196608;
-            parameters[2] = 40;
-            ModelLoader.scriptedObjects[0x82BE25A8].MoveByAxis(parameters);
-        }
-        else if(Input.GetKeyDown("a"))
-        {
-            int[] parameters = new int[5];
-            parameters[0] = 0;
-            parameters[1] = 393216;
-            parameters[2] = 72;
-            ModelLoader.scriptedObjects[0x82BE25A8].MoveByAxis(parameters);
-        }
-        else if(Input.GetKeyDown("d"))
-        {
-            int[] parameters = new int[5];
-            parameters[0] = 0;
-            parameters[1] = -393216;
-            parameters[2] = 72;
-            ModelLoader.scriptedObjects[0x82BE25A8].MoveByAxis(parameters);
-        }
-        
     }
 }

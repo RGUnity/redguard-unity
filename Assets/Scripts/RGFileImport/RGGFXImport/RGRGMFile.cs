@@ -66,7 +66,7 @@ size: {dataLength:X}
                     dict = new Dictionary<string, RGMRAHDItem>();
                     for(int i=0;i<(int)num_items;i++)
                     {
-						RGMRAHDItem cur = new RGMRAHDItem(memoryReader);
+						RGMRAHDItem cur = new RGMRAHDItem(i, memoryReader);
                         dict.Add(cur.scriptName, cur);
                     }
                     memoryReader.ReadUInt32(); // no idea what this one is?
@@ -79,7 +79,7 @@ size: {dataLength:X}
 		}
 		public struct RGMRAHDItem
 		{
-
+            public int index; // not in the file; we need this for attributes
             public int unknown0;
             public int unknown1;
             public string scriptName;
@@ -137,8 +137,9 @@ size: {dataLength:X}
             public short textureId;
             public int RAVCOffset;
 
-			public RGMRAHDItem(MemoryReader memoryReader)
+			public RGMRAHDItem(int i, MemoryReader memoryReader)
             {
+                index = i;
                 try
                 {
                     unknown0 = memoryReader.ReadInt32();

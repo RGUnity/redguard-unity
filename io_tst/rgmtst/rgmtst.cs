@@ -69,7 +69,7 @@ namespace xyz
             for(int i=0;i<filergm.MPOB.num_items;i++)
             {
                 RGRGMFile.RGMMPOBItem it = filergm.MPOB.items[i];
-                Console.WriteLine($"{it.scriptName}: {it.id:X}");
+                Console.WriteLine($"{it.scriptName} ModelLoader.scriptedObjects[0x{it.id:X}].allowScripting = true;");
  
             }
             /*
