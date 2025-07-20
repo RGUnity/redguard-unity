@@ -24,7 +24,6 @@ namespace xyz
                 Console.WriteLine(o);
             }
             return;
-*/
             Func<int[], int>[] funcs = SetupFuncs();
 
 			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
@@ -45,6 +44,13 @@ namespace xyz
                 Console.Write($"{i}:");
                 sd.tickScript();
             }
+*/
+            Func<bool, int[], int>[] funcs = SetupFuncs();
+			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
+            RGRGMScriptStore.ReadScript(filergm);
+            
+            ScriptData sd = new ScriptData("OB_CON07", funcs,0);
+            sd.runScript();
 
 /*
             Console.WriteLine($"{filergm.RAHD.dict.Count}");
@@ -71,314 +77,314 @@ namespace xyz
 		{
 			Console.WriteLine($"{s}({string.Join(",",i)})");
 		}
-		static public int PLACEHOLDER_ZERO(int[] i /*4*/)
+		static public int PLACEHOLDER_ZERO(bool b, int[] i /*4*/)
 		{
 			Log("PLACEHOLDER_ZERO",i);
 			return 0;
 		}
 		/*task*/
-		static public int sRotate(int[] i /*4*/)
+		static public int sRotate(bool b, int[] i /*4*/)
 		{
 			Log("sRotate",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int sRotateByAxis(int[] i /*3*/)	
+		static public int sRotateByAxis(bool b, int[] i /*3*/)	
 		{
 			Log("sRotateByAxis",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int sRotateToAxis(int[] i /*3*/)	
+		static public int sRotateToAxis(bool b, int[] i /*3*/)	
 		{
 			Log("sRotateToAxis",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int sMove(int[] i /*4*/)	
+		static public int sMove(bool b, int[] i /*4*/)	
 		{
 			Log("sMove",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int sMoveByAxis(int[] i /*3*/)	
+		static public int sMoveByAxis(bool b, int[] i /*3*/)	
 		{
 			Log("sMoveByAxis",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int sMoveAlongAxis(int[] i /*3*/)	
+		static public int sMoveAlongAxis(bool b, int[] i /*3*/)	
 		{
 			Log("sMoveAlongAxis",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int HeaderHook(int[] i /*0*/)	
+		static public int HeaderHook(bool b, int[] i /*0*/)	
 		{
 			Log("HeaderHook",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int swordAI(int[] i /*0*/)	
+		static public int swordAI(bool b, int[] i /*0*/)	
 		{
 			Log("swordAI",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int projectileAI(int[] i /*0*/)	
+		static public int projectileAI(bool b, int[] i /*0*/)	
 		{
 			Log("projectileAI",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int chargeWeapon(int[] i /*1*/)	
+		static public int chargeWeapon(bool b, int[] i /*1*/)	
 		{
 			Log("chargeWeapon",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerMain(int[] i /*0*/)	
+		static public int PlayerMain(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerMain",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PrintParms(int[] i /*8*/)	
+		static public int PrintParms(bool b, int[] i /*8*/)	
 		{
 			Log("PrintParms",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LogParms(int[] i /*8*/)	
+		static public int LogParms(bool b, int[] i /*8*/)	
 		{
 			Log("LogParms",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PrintStringParm(int[] i /*1*/)	
+		static public int PrintStringParm(bool b, int[] i /*1*/)	
 		{
 			Log("PrintStringParm",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PrintSingleParm(int[] i /*1*/)	
+		static public int PrintSingleParm(bool b, int[] i /*1*/)	
 		{
 			Log("PrintSingleParm",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SpacePressed(int[] i /*0*/)	
+		static public int SpacePressed(bool b, int[] i /*0*/)	
 		{
 			Log("SpacePressed",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int WaitOnTasks(int[] i /*0*/)	
+		static public int WaitOnTasks(bool b, int[] i /*0*/)	
 		{
 			Log("WaitOnTasks",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int updatePlayerViewAttrib(int[] i /*0*/)	
+		static public int updatePlayerViewAttrib(bool b, int[] i /*0*/)	
 		{
 			Log("updatePlayerViewAttrib",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int cameraController(int[] i /*0*/)	
+		static public int cameraController(bool b, int[] i /*0*/)	
 		{
 			Log("cameraController",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int showObjRot(int[] i /*8*/)	
+		static public int showObjRot(bool b, int[] i /*8*/)	
 		{
 			Log("showObjRot",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int showObj(int[] i /*3*/)	
+		static public int showObj(bool b, int[] i /*3*/)	
 		{
 			Log("showObj",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int showObjLoc(int[] i /*3*/)	
+		static public int showObjLoc(bool b, int[] i /*3*/)	
 		{
 			Log("showObjLoc",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int showObjPan(int[] i /*4*/)	
+		static public int showObjPan(bool b, int[] i /*4*/)	
 		{
 			Log("showObjPan",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int showObjPanLoc(int[] i /*4*/)	
+		static public int showObjPanLoc(bool b, int[] i /*4*/)	
 		{
 			Log("showObjPanLoc",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int lookObj(int[] i /*1*/)	
+		static public int lookObj(bool b, int[] i /*1*/)	
 		{
 			Log("lookObj",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int showPlayer(int[] i /*0*/)	
+		static public int showPlayer(bool b, int[] i /*0*/)	
 		{
 			Log("showPlayer",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int showPlayerPan(int[] i /*1*/)	
+		static public int showPlayerPan(bool b, int[] i /*1*/)	
 		{
 			Log("showPlayerPan",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int lookCyrus(int[] i /*1*/)	
+		static public int lookCyrus(bool b, int[] i /*1*/)	
 		{
 			Log("lookCyrus",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int showCyrus(int[] i /*3*/)	
+		static public int showCyrus(bool b, int[] i /*3*/)	
 		{
 			Log("showCyrus",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int showCyrusLoc(int[] i /*3*/)	
+		static public int showCyrusLoc(bool b, int[] i /*3*/)	
 		{
 			Log("showCyrusLoc",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int showCyrusPan(int[] i /*4*/)	
+		static public int showCyrusPan(bool b, int[] i /*4*/)	
 		{
 			Log("showCyrusPan",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int showCyrusPanLoc(int[] i /*4*/)	
+		static public int showCyrusPanLoc(bool b, int[] i /*4*/)	
 		{
 			Log("showCyrusPanLoc",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayAnimation(int[] i /*2*/)	
+		static public int PlayAnimation(bool b, int[] i /*2*/)	
 		{
 			Log("PlayAnimation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int lockoutPlayer(int[] i /*1*/)	
+		static public int lockoutPlayer(bool b, int[] i /*1*/)	
 		{
 			Log("lockoutPlayer",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int menuNew(int[] i /*0*/)	
+		static public int menuNew(bool b, int[] i /*0*/)	
 		{
 			Log("menuNew",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int menuProc(int[] i /*0*/)	
+		static public int menuProc(bool b, int[] i /*0*/)	
 		{
 			Log("menuProc",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int menuAddItem(int[] i /*3*/)	
+		static public int menuAddItem(bool b, int[] i /*3*/)	
 		{
 			Log("menuAddItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int menuSelection(int[] i /*0*/)	
+		static public int menuSelection(bool b, int[] i /*0*/)	
 		{
 			Log("menuSelection",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int RTX(int[] i /*1*/)	
+		static public int RTX(bool b, int[] i /*1*/)	
 		{
 			Log("RTX",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int rtxAnim(int[] i /*4*/)	
+		static public int rtxAnim(bool b, int[] i /*4*/)	
 		{
 			Log("rtxAnim",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int RTXpAnim(int[] i /*4*/)	
+		static public int RTXpAnim(bool b, int[] i /*4*/)	
 		{
 			Log("RTXpAnim",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int RTXp(int[] i /*1*/)	
+		static public int RTXp(bool b, int[] i /*1*/)	
 		{
 			Log("RTXp",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int Rotate(int[] i /*4*/)	
+		static public int Rotate(bool b, int[] i /*4*/)	
 		{
 			Log("Rotate",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int RotateByAxis(int[] i /*3*/)	
+		static public int RotateByAxis(bool b, int[] i /*3*/)	
 		{
 			// i[0]: axis (0/1/2)
 			// i[1]: amount
@@ -388,63 +394,63 @@ namespace xyz
 		}
 
 		/*task*/
-		static public int RotateToAxis(int[] i /*3*/)	
+		static public int RotateToAxis(bool b, int[] i /*3*/)	
 		{
 			Log("RotateToAxis",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int WalkForward(int[] i /*1*/)	
+		static public int WalkForward(bool b, int[] i /*1*/)	
 		{
 			Log("WalkForward",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int WalkBackward(int[] i /*1*/)	
+		static public int WalkBackward(bool b, int[] i /*1*/)	
 		{
 			Log("WalkBackward",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MoveForward(int[] i /*1*/)	
+		static public int MoveForward(bool b, int[] i /*1*/)	
 		{
 			Log("MoveForward",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MoveBackward(int[] i /*1*/)	
+		static public int MoveBackward(bool b, int[] i /*1*/)	
 		{
 			Log("MoveBackward",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MoveLeft(int[] i /*1*/)	
+		static public int MoveLeft(bool b, int[] i /*1*/)	
 		{
 			Log("MoveLeft",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MoveRight(int[] i /*1*/)	
+		static public int MoveRight(bool b, int[] i /*1*/)	
 		{
 			Log("MoveRight",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int Move(int[] i /*4*/)	
+		static public int Move(bool b, int[] i /*4*/)	
 		{
 			Log("Move",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MoveByAxis(int[] i /*3*/)	
+		static public int MoveByAxis(bool b, int[] i /*3*/)	
 		{
 			// i[0]: axis (0/1/2)
 			// i[1]: amount
@@ -454,49 +460,49 @@ namespace xyz
 		}
 
 		/*task*/
-		static public int MoveAlongAxis(int[] i /*3*/)	
+		static public int MoveAlongAxis(bool b, int[] i /*3*/)	
 		{
 			Log("MoveAlongAxis",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MoveObjectAxis(int[] i /*3*/)	
+		static public int MoveObjectAxis(bool b, int[] i /*3*/)	
 		{
 			Log("MoveObjectAxis",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MoveToLocation(int[] i /*2*/)	
+		static public int MoveToLocation(bool b, int[] i /*2*/)	
 		{
 			Log("MoveToLocation",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int WanderToLocation(int[] i /*2*/)	
+		static public int WanderToLocation(bool b, int[] i /*2*/)	
 		{
 			Log("WanderToLocation",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MoveToMarker(int[] i /*2*/)	
+		static public int MoveToMarker(bool b, int[] i /*2*/)	
 		{
 			Log("MoveToMarker",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SetObjectLocation(int[] i /*4*/)	
+		static public int SetObjectLocation(bool b, int[] i /*4*/)	
 		{
 			Log("SetObjectLocation",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int Wait(int[] i /*1*/)	
+		static public int Wait(bool b, int[] i /*1*/)	
 		{
 			// i[0]: time to wait
 			Log("Wait",i);
@@ -504,462 +510,462 @@ namespace xyz
 		}
 
 		/*function*/
-		static public int DistanceFromStart(int[] i /*1*/)	
+		static public int DistanceFromStart(bool b, int[] i /*1*/)	
 		{
 			Log("DistanceFromStart",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Light(int[] i /*2*/)	
+		static public int Light(bool b, int[] i /*2*/)	
 		{
 			Log("Light",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LightRadius(int[] i /*1*/)	
+		static public int LightRadius(bool b, int[] i /*1*/)	
 		{
 			Log("LightRadius",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LightIntensity(int[] i /*1*/)	
+		static public int LightIntensity(bool b, int[] i /*1*/)	
 		{
 			Log("LightIntensity",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LightOff(int[] i /*0*/)	
+		static public int LightOff(bool b, int[] i /*0*/)	
 		{
 			Log("LightOff",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LightOffset(int[] i /*3*/)	
+		static public int LightOffset(bool b, int[] i /*3*/)	
 		{
 			Log("LightOffset",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LightFlicker(int[] i /*2*/)	
+		static public int LightFlicker(bool b, int[] i /*2*/)	
 		{
 			Log("LightFlicker",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int FlickerLight(int[] i /*1*/)	
+		static public int FlickerLight(bool b, int[] i /*1*/)	
 		{
 			Log("FlickerLight",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LightFlickerOff(int[] i /*0*/)	
+		static public int LightFlickerOff(bool b, int[] i /*0*/)	
 		{
 			Log("LightFlickerOff",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LightSize(int[] i /*2*/)	
+		static public int LightSize(bool b, int[] i /*2*/)	
 		{
 			Log("LightSize",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LightSizeOff(int[] i /*0*/)	
+		static public int LightSizeOff(bool b, int[] i /*0*/)	
 		{
 			Log("LightSizeOff",i);
 			return 0;
 		}
 
 		/*multitask*/
-		static public int FxPhase(int[] i /*7*/)	
+		static public int FxPhase(bool b, int[] i /*7*/)	
 		{
 			Log("FxPhase",i);
 			return 0;
 		}
 
 		/*multitask*/
-		static public int FxFlickerOnOff(int[] i /*1*/)	
+		static public int FxFlickerOnOff(bool b, int[] i /*1*/)	
 		{
 			Log("FxFlickerOnOff",i);
 			return 0;
 		}
 
 		/*multitask*/
-		static public int FxFlickerDim(int[] i /*1*/)	
+		static public int FxFlickerDim(bool b, int[] i /*1*/)	
 		{
 			Log("FxFlickerDim",i);
 			return 0;
 		}
 
 		/*multitask*/
-		static public int FxLightSize(int[] i /*2*/)	
+		static public int FxLightSize(bool b, int[] i /*2*/)	
 		{
 			Log("FxLightSize",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Flat(int[] i /*1*/)	
+		static public int Flat(bool b, int[] i /*1*/)	
 		{
 			Log("Flat",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int FlatSetTexture(int[] i /*2*/)	
+		static public int FlatSetTexture(bool b, int[] i /*2*/)	
 		{
 			Log("FlatSetTexture",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int FlatOff(int[] i /*0*/)	
+		static public int FlatOff(bool b, int[] i /*0*/)	
 		{
 			Log("FlatOff",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int FlatOffset(int[] i /*3*/)	
+		static public int FlatOffset(bool b, int[] i /*3*/)	
 		{
 			Log("FlatOffset",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int FlatLikeStatic(int[] i /*1*/)	
+		static public int FlatLikeStatic(bool b, int[] i /*1*/)	
 		{
 			Log("FlatLikeStatic",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int FlatAnimate(int[] i /*3*/)	
+		static public int FlatAnimate(bool b, int[] i /*3*/)	
 		{
 			Log("FlatAnimate",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int FlatStop(int[] i /*0*/)	
+		static public int FlatStop(bool b, int[] i /*0*/)	
 		{
 			Log("FlatStop",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SetAttribute(int[] i /*2*/)	
+		static public int SetAttribute(bool b, int[] i /*2*/)	
 		{
 			Log("SetAttribute",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int GetAttribute(int[] i /*1*/)	
+		static public int GetAttribute(bool b, int[] i /*1*/)	
 		{
 			Log("GetAttribute",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SetGlobalFlag(int[] i /*1*/)	
+		static public int SetGlobalFlag(bool b, int[] i /*1*/)	
 		{
 			Log("SetGlobalFlag",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int TestGlobalFlag(int[] i /*1*/)	
+		static public int TestGlobalFlag(bool b, int[] i /*1*/)	
 		{
 			Log("TestGlobalFlag",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ResetGlobalFlag(int[] i /*1*/)	
+		static public int ResetGlobalFlag(bool b, int[] i /*1*/)	
 		{
 			Log("ResetGlobalFlag",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int FacePlayer(int[] i /*1*/)	
+		static public int FacePlayer(bool b, int[] i /*1*/)	
 		{
 			Log("FacePlayer",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int FacePlayerInertia(int[] i /*1*/)	
+		static public int FacePlayerInertia(bool b, int[] i /*1*/)	
 		{
 			Log("FacePlayerInertia",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int FaceAngle(int[] i /*1*/)	
+		static public int FaceAngle(bool b, int[] i /*1*/)	
 		{
 			Log("FaceAngle",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int FacePos(int[] i /*2*/)	
+		static public int FacePos(bool b, int[] i /*2*/)	
 		{
 			Log("FacePos",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int FaceObject(int[] i /*1*/)	
+		static public int FaceObject(bool b, int[] i /*1*/)	
 		{
 			Log("FaceObject",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Sound(int[] i /*3*/)	
+		static public int Sound(bool b, int[] i /*3*/)	
 		{
 			Log("Sound",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int FlatSound(int[] i /*3*/)	
+		static public int FlatSound(bool b, int[] i /*3*/)	
 		{
 			Log("FlatSound",i);
 			return 0;
 		}
 
 		/*multitask*/
-		static public int AmbientSound(int[] i /*3*/)	
+		static public int AmbientSound(bool b, int[] i /*3*/)	
 		{
 			Log("AmbientSound",i);
 			return 0;
 		}
 
 		/*multitask*/
-		static public int AmbientRtx(int[] i /*3*/)	
+		static public int AmbientRtx(bool b, int[] i /*3*/)	
 		{
 			Log("AmbientRtx",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Jump(int[] i /*0*/)	
+		static public int Jump(bool b, int[] i /*0*/)	
 		{
 			Log("Jump",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int WaitNonMulti(int[] i /*0*/)	
+		static public int WaitNonMulti(bool b, int[] i /*0*/)	
 		{
 			Log("WaitNonMulti",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int WaitOnDialog(int[] i /*0*/)	
+		static public int WaitOnDialog(bool b, int[] i /*0*/)	
 		{
 			Log("WaitOnDialog",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int HideMe(int[] i /*0*/)	
+		static public int HideMe(bool b, int[] i /*0*/)	
 		{
 			Log("HideMe",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ShowMe(int[] i /*0*/)	
+		static public int ShowMe(bool b, int[] i /*0*/)	
 		{
 			Log("ShowMe",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Rnd(int[] i /*1*/)	
+		static public int Rnd(bool b, int[] i /*1*/)	
 		{
 			Log("Rnd",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int QuickRnd(int[] i /*1*/)	
+		static public int QuickRnd(bool b, int[] i /*1*/)	
 		{
 			Log("QuickRnd",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int MyId(int[] i /*0*/)	
+		static public int MyId(bool b, int[] i /*0*/)	
 		{
 			Log("MyId",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int FaceLocation(int[] i /*2*/)	
+		static public int FaceLocation(bool b, int[] i /*2*/)	
 		{
 			Log("FaceLocation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DistanceFromLocation(int[] i /*1*/)	
+		static public int DistanceFromLocation(bool b, int[] i /*1*/)	
 		{
 			Log("DistanceFromLocation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LoadWorld(int[] i /*3*/)	
+		static public int LoadWorld(bool b, int[] i /*3*/)	
 		{
 			Log("LoadWorld",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SetAiType(int[] i /*1*/)	
+		static public int SetAiType(bool b, int[] i /*1*/)	
 		{
 			Log("SetAiType",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SetAiMode(int[] i /*1*/)	
+		static public int SetAiMode(bool b, int[] i /*1*/)	
 		{
 			Log("SetAiMode",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int MyAiType(int[] i /*0*/)	
+		static public int MyAiType(bool b, int[] i /*0*/)	
 		{
 			Log("MyAiType",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int MyAiMode(int[] i /*0*/)	
+		static public int MyAiMode(bool b, int[] i /*0*/)	
 		{
 			Log("MyAiMode",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int GotoLocation(int[] i /*1*/)	
+		static public int GotoLocation(bool b, int[] i /*1*/)	
 		{
 			Log("GotoLocation",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int Guard(int[] i /*3*/)	
+		static public int Guard(bool b, int[] i /*3*/)	
 		{
 			Log("Guard",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int Animal(int[] i /*2*/)	
+		static public int Animal(bool b, int[] i /*2*/)	
 		{
 			Log("Animal",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int TrueFunction(int[] i /*0*/)	
+		static public int TrueFunction(bool b, int[] i /*0*/)	
 		{
 			Log("TrueFunction",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int TurnToPos(int[] i /*2*/)	
+		static public int TurnToPos(bool b, int[] i /*2*/)	
 		{
 			Log("TurnToPos",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int AtPos(int[] i /*3*/)	
+		static public int AtPos(bool b, int[] i /*3*/)	
 		{
 			Log("AtPos",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int TurnToAngle(int[] i /*1*/)	
+		static public int TurnToAngle(bool b, int[] i /*1*/)	
 		{
 			Log("TurnToAngle",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int MovePos(int[] i /*3*/)	
+		static public int MovePos(bool b, int[] i /*3*/)	
 		{
 			Log("MovePos",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SetStartPosition(int[] i /*3*/)	
+		static public int SetStartPosition(bool b, int[] i /*3*/)	
 		{
 			Log("SetStartPosition",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int GetMyAttr(int[] i /*1*/)	
+		static public int GetMyAttr(bool b, int[] i /*1*/)	
 		{
 			Log("GetMyAttr",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SetMyAttr(int[] i /*2*/)	
+		static public int SetMyAttr(bool b, int[] i /*2*/)	
 		{
 			Log("SetMyAttr",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int GetFramePassed(int[] i /*0*/)	
+		static public int GetFramePassed(bool b, int[] i /*0*/)	
 		{
 			Log("GetFramePassed",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SpeedScale(int[] i /*1*/)	
+		static public int SpeedScale(bool b, int[] i /*1*/)	
 		{
 			Log("SpeedScale",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int InKey(int[] i /*1*/)	
+		static public int InKey(bool b, int[] i /*1*/)	
 		{
 			Log("InKey",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PressKey(int[] i /*1*/)	
+		static public int PressKey(bool b, int[] i /*1*/)	
 		{
 			Log("PressKey",i);
 			return 0;
@@ -967,70 +973,70 @@ namespace xyz
 
 
 		/*function in all caps?: FUNCTION	ACTIVATE	PARMS 1*/
-		static public int ACTIVATE(int[] i /*1*/)	
+		static public int ACTIVATE(bool b, int[] i /*1*/)	
 		{
 			Log("ACTIVATE",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int TorchActivate(int[] i /*1*/)	
+		static public int TorchActivate(bool b, int[] i /*1*/)	
 		{
 			Log("TorchActivate",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Deactivate(int[] i /*0*/)	
+		static public int Deactivate(bool b, int[] i /*0*/)	
 		{
 			Log("Deactivate",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ReleaseAnimation(int[] i /*0*/)	
+		static public int ReleaseAnimation(bool b, int[] i /*0*/)	
 		{
 			Log("ReleaseAnimation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int HoldAnimation(int[] i /*0*/)	
+		static public int HoldAnimation(bool b, int[] i /*0*/)	
 		{
 			Log("HoldAnimation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PauseAnimation(int[] i /*1*/)	
+		static public int PauseAnimation(bool b, int[] i /*1*/)	
 		{
 			Log("PauseAnimation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SetAction(int[] i /*1*/)	
+		static public int SetAction(bool b, int[] i /*1*/)	
 		{
 			Log("SetAction",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ResetAction(int[] i /*1*/)	
+		static public int ResetAction(bool b, int[] i /*1*/)	
 		{
 			Log("ResetAction",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ResetAllAction(int[] i /*0*/)	
+		static public int ResetAllAction(bool b, int[] i /*0*/)	
 		{
 			Log("ResetAllAction",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int PushAnimation(int[] i /*2*/)
+		static public int PushAnimation(bool b, int[] i /*2*/)
 		{
 			Log("PushAnimation",i);
 			// i[0]: animationId
@@ -1039,14 +1045,14 @@ namespace xyz
 		}
 
 		/*task*/
-		static public int PushControlAnimation(int[] i /*2*/)
+		static public int PushControlAnimation(bool b, int[] i /*2*/)
 		{
 			Log("PushControlAnimation",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int WaitAnimFrame(int[] i /*2*/)
+		static public int WaitAnimFrame(bool b, int[] i /*2*/)
 		{
 			Log("WaitAnimFrame",i);
 			// i[0]: animationId
@@ -1055,7 +1061,7 @@ namespace xyz
 		}
 
 		/*task*/
-		static public int WaitPlayerAnimFrame(int[] i /*0*/)
+		static public int WaitPlayerAnimFrame(bool b, int[] i /*0*/)
 		{
 			Log("WaitPlayerAnimFrame",i);
 			// i[0]: animationId
@@ -1064,224 +1070,224 @@ namespace xyz
 		}
 
 		/*function*/
-		static public int KillMyTasks(int[] i /*0*/)	
+		static public int KillMyTasks(bool b, int[] i /*0*/)	
 		{
 			Log("KillMyTasks",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int ObjectLineUp(int[] i /*3*/)	
+		static public int ObjectLineUp(bool b, int[] i /*3*/)	
 		{
 			Log("ObjectLineUp",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int ObjectParallelLineUp(int[] i /*3*/)	
+		static public int ObjectParallelLineUp(bool b, int[] i /*3*/)	
 		{
 			Log("ObjectParallelLineUp",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int ObjectPickupLineUp(int[] i /*3*/)	
+		static public int ObjectPickupLineUp(bool b, int[] i /*3*/)	
 		{
 			Log("ObjectPickupLineUp",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int LineUp(int[] i /*3*/)	
+		static public int LineUp(bool b, int[] i /*3*/)	
 		{
 			Log("LineUp",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int WaitLineUp(int[] i /*1*/)	
+		static public int WaitLineUp(bool b, int[] i /*1*/)	
 		{
 			Log("WaitLineUp",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int MoveAboveMe(int[] i /*4*/)	
+		static public int MoveAboveMe(bool b, int[] i /*4*/)	
 		{
 			Log("MoveAboveMe",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int KillMe(int[] i /*0*/)	
+		static public int KillMe(bool b, int[] i /*0*/)	
 		{
 			Log("KillMe",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int EndSound(int[] i /*1*/)	
+		static public int EndSound(bool b, int[] i /*1*/)	
 		{
 			Log("EndSound",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int EndMySounds(int[] i /*0*/)	
+		static public int EndMySounds(bool b, int[] i /*0*/)	
 		{
 			Log("EndMySounds",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int EndMySound(int[] i /*1*/)	
+		static public int EndMySound(bool b, int[] i /*1*/)	
 		{
 			Log("EndMySound",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int StopAllSounds(int[] i /*0*/)	
+		static public int StopAllSounds(bool b, int[] i /*0*/)	
 		{
 			Log("StopAllSounds",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int ViewGXA(int[] i /*3*/)	
+		static public int ViewGXA(bool b, int[] i /*3*/)	
 		{
 			Log("ViewGXA",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int AnimateGXA(int[] i /*4*/)	
+		static public int AnimateGXA(bool b, int[] i /*4*/)	
 		{
 			Log("AnimateGXA",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerOffset(int[] i /*3*/)	
+		static public int PlayerOffset(bool b, int[] i /*3*/)	
 		{
 			Log("PlayerOffset",i);
 			return 0;
 		}
 
 		/*multitask*/
-		static public int PlayerOffsettask(int[] i /*3*/)	
+		static public int PlayerOffsettask(bool b, int[] i /*3*/)	
 		{
 			Log("PlayerOffsettask",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Offset(int[] i /*3*/)	
+		static public int Offset(bool b, int[] i /*3*/)	
 		{
 			Log("Offset",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int UnOffset(int[] i /*0*/)	
+		static public int UnOffset(bool b, int[] i /*0*/)	
 		{
 			Log("UnOffset",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int BounceObject(int[] i /*3*/)	
+		static public int BounceObject(bool b, int[] i /*3*/)	
 		{
 			Log("BounceObject",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int OffsetLocation(int[] i /*4*/)	
+		static public int OffsetLocation(bool b, int[] i /*4*/)	
 		{
 			Log("OffsetLocation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DistanceToLocation(int[] i /*1*/)	
+		static public int DistanceToLocation(bool b, int[] i /*1*/)	
 		{
 			Log("DistanceToLocation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ShowBitmap(int[] i /*2*/)	
+		static public int ShowBitmap(bool b, int[] i /*2*/)	
 		{
 			Log("ShowBitmap",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int UnShowBitmap(int[] i /*1*/)	
+		static public int UnShowBitmap(bool b, int[] i /*1*/)	
 		{
 			Log("UnShowBitmap",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ReplenishHealth(int[] i /*0*/)	
+		static public int ReplenishHealth(bool b, int[] i /*0*/)	
 		{
 			Log("ReplenishHealth",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int InRectangle(int[] i /*4*/)	
+		static public int InRectangle(bool b, int[] i /*4*/)	
 		{
 			Log("InRectangle",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int InCircle(int[] i /*3*/)	
+		static public int InCircle(bool b, int[] i /*3*/)	
 		{
 			Log("InCircle",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ScriptParticles(int[] i /*8*/)	
+		static public int ScriptParticles(bool b, int[] i /*8*/)	
 		{
 			Log("ScriptParticles",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LightTorch(int[] i /*0*/)	
+		static public int LightTorch(bool b, int[] i /*0*/)	
 		{
 			Log("LightTorch",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int UnlightTorch(int[] i /*0*/)	
+		static public int UnlightTorch(bool b, int[] i /*0*/)	
 		{
 			Log("UnlightTorch",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int LoadStatic(int[] i /*1*/)	
+		static public int LoadStatic(bool b, int[] i /*1*/)	
 		{
 			Log("LoadStatic",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int UnLoadStatic(int[] i /*0*/)	
+		static public int UnLoadStatic(bool b, int[] i /*0*/)	
 		{
 			Log("UnLoadStatic",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PointAt(int[] i /*0*/)	
+		static public int PointAt(bool b, int[] i /*0*/)	
 		{
 			Log("PointAt",i);
 			return 0;
@@ -1290,112 +1296,112 @@ namespace xyz
 
 		//combat commands
 		/*function*/
-		static public int beginCombat(int[] i /*0*/)	
+		static public int beginCombat(bool b, int[] i /*0*/)	
 		{
 			Log("beginCombat",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int endCombat(int[] i /*0*/)	
+		static public int endCombat(bool b, int[] i /*0*/)	
 		{
 			Log("endCombat",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int isFighting(int[] i /*0*/)	
+		static public int isFighting(bool b, int[] i /*0*/)	
 		{
 			Log("isFighting",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int isDead(int[] i /*0*/)	
+		static public int isDead(bool b, int[] i /*0*/)	
 		{
 			Log("isDead",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int adjustHealth(int[] i /*2*/)	
+		static public int adjustHealth(bool b, int[] i /*2*/)	
 		{
 			Log("adjustHealth",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int setHealth(int[] i /*1*/)	
+		static public int setHealth(bool b, int[] i /*1*/)	
 		{
 			Log("setHealth",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int health(int[] i /*0*/)	
+		static public int health(bool b, int[] i /*0*/)	
 		{
 			Log("health",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int adjustStrength(int[] i /*1*/)	
+		static public int adjustStrength(bool b, int[] i /*1*/)	
 		{
 			Log("adjustStrength",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int setStrength(int[] i /*1*/)	
+		static public int setStrength(bool b, int[] i /*1*/)	
 		{
 			Log("setStrength",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int strength(int[] i /*0*/)	
+		static public int strength(bool b, int[] i /*0*/)	
 		{
 			Log("strength",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int adjustArmor(int[] i /*1*/)	
+		static public int adjustArmor(bool b, int[] i /*1*/)	
 		{
 			Log("adjustArmor",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int setArmor(int[] i /*1*/)	
+		static public int setArmor(bool b, int[] i /*1*/)	
 		{
 			Log("setArmor",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int armor(int[] i /*0*/)	
+		static public int armor(bool b, int[] i /*0*/)	
 		{
 			Log("armor",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int shoot(int[] i /*7*/)	
+		static public int shoot(bool b, int[] i /*7*/)	
 		{
 			Log("shoot",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int shootPlayer(int[] i /*4*/)	
+		static public int shootPlayer(bool b, int[] i /*4*/)	
 		{
 			Log("shootPlayer",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int resurrect(int[] i /*0*/)	
+		static public int resurrect(bool b, int[] i /*0*/)	
 		{
 			Log("resurrect",i);
 			return 0;
@@ -1404,70 +1410,70 @@ namespace xyz
 
 		//object script/task control
 		/*function*/
-		static public int EnableObject(int[] i /*0*/)	
+		static public int EnableObject(bool b, int[] i /*0*/)	
 		{
 			Log("EnableObject",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DisableObject(int[] i /*0*/)	
+		static public int DisableObject(bool b, int[] i /*0*/)	
 		{
 			Log("DisableObject",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int EnableTasks(int[] i /*0*/)	
+		static public int EnableTasks(bool b, int[] i /*0*/)	
 		{
 			Log("EnableTasks",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DisableTasks(int[] i /*0*/)	
+		static public int DisableTasks(bool b, int[] i /*0*/)	
 		{
 			Log("DisableTasks",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int EnableScript(int[] i /*0*/)	
+		static public int EnableScript(bool b, int[] i /*0*/)	
 		{
 			Log("EnableScript",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DisableScript(int[] i /*0*/)	
+		static public int DisableScript(bool b, int[] i /*0*/)	
 		{
 			Log("DisableScript",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int EnableHook(int[] i /*0*/)	
+		static public int EnableHook(bool b, int[] i /*0*/)	
 		{
 			Log("EnableHook",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DisableHook(int[] i /*0*/)	
+		static public int DisableHook(bool b, int[] i /*0*/)	
 		{
 			Log("DisableHook",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int EnableCombat(int[] i /*0*/)	
+		static public int EnableCombat(bool b, int[] i /*0*/)	
 		{
 			Log("EnableCombat",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DisableCombat(int[] i /*0*/)	
+		static public int DisableCombat(bool b, int[] i /*0*/)	
 		{
 			Log("DisableCombat",i);
 			return 0;
@@ -1477,49 +1483,49 @@ namespace xyz
 		//rotational and positional reset commands
 
 		/*function*/
-		static public int SetRotation(int[] i /*3*/)	
+		static public int SetRotation(bool b, int[] i /*3*/)	
 		{
 			Log("SetRotation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SetPosition(int[] i /*3*/)	
+		static public int SetPosition(bool b, int[] i /*3*/)	
 		{
 			Log("SetPosition",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ResetRotation(int[] i /*3*/)	
+		static public int ResetRotation(bool b, int[] i /*3*/)	
 		{
 			Log("ResetRotation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ResetPosition(int[] i /*3*/)	
+		static public int ResetPosition(bool b, int[] i /*3*/)	
 		{
 			Log("ResetPosition",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ReloadRotation(int[] i /*0*/)	
+		static public int ReloadRotation(bool b, int[] i /*0*/)	
 		{
 			Log("ReloadRotation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ReloadPosition(int[] i /*0*/)	
+		static public int ReloadPosition(bool b, int[] i /*0*/)	
 		{
 			Log("ReloadPosition",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SetLocation(int[] i /*1*/)	
+		static public int SetLocation(bool b, int[] i /*1*/)	
 		{
 			Log("SetLocation",i);
 			return 0;
@@ -1528,77 +1534,77 @@ namespace xyz
 
 		//master and slave commands
 		/*function*/
-		static public int AttachMe(int[] i /*1*/)	
+		static public int AttachMe(bool b, int[] i /*1*/)	
 		{
 			Log("AttachMe",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DetachMe(int[] i /*0*/)	
+		static public int DetachMe(bool b, int[] i /*0*/)	
 		{
 			Log("DetachMe",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DetachSlaves(int[] i /*0*/)	
+		static public int DetachSlaves(bool b, int[] i /*0*/)	
 		{
 			Log("DetachSlaves",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int KillSlaves(int[] i /*0*/)	
+		static public int KillSlaves(bool b, int[] i /*0*/)	
 		{
 			Log("KillSlaves",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int HideSlaves(int[] i /*0*/)	
+		static public int HideSlaves(bool b, int[] i /*0*/)	
 		{
 			Log("HideSlaves",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ShowSlaves(int[] i /*0*/)	
+		static public int ShowSlaves(bool b, int[] i /*0*/)	
 		{
 			Log("ShowSlaves",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int EnableSlaves(int[] i /*0*/)	
+		static public int EnableSlaves(bool b, int[] i /*0*/)	
 		{
 			Log("EnableSlaves",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DisableSlaves(int[] i /*0*/)	
+		static public int DisableSlaves(bool b, int[] i /*0*/)	
 		{
 			Log("DisableSlaves",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsSlave(int[] i /*0*/)	
+		static public int IsSlave(bool b, int[] i /*0*/)	
 		{
 			Log("IsSlave",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsMaster(int[] i /*0*/)	
+		static public int IsMaster(bool b, int[] i /*0*/)	
 		{
 			Log("IsMaster",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int FixSlaveAngle(int[] i /*2*/)	
+		static public int FixSlaveAngle(bool b, int[] i /*2*/)	
 		{
 			Log("FixSlaveAngle",i);
 			return 0;
@@ -1607,245 +1613,245 @@ namespace xyz
 
 		//player commands
 		/*function*/
-		static public int PlayerMoved(int[] i /*0*/)	
+		static public int PlayerMoved(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerMoved",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerTurned(int[] i /*0*/)	
+		static public int PlayerTurned(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerTurned",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerTurnedDirection(int[] i /*0*/)	
+		static public int PlayerTurnedDirection(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerTurnedDirection",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerMovementSpeed(int[] i /*0*/)	
+		static public int PlayerMovementSpeed(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerMovementSpeed",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int GetMovementSpeed(int[] i /*0*/)	
+		static public int GetMovementSpeed(bool b, int[] i /*0*/)	
 		{
 			Log("GetMovementSpeed",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerHealth(int[] i /*0*/)	
+		static public int PlayerHealth(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerHealth",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerStatus(int[] i /*0*/)	
+		static public int PlayerStatus(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerStatus",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerCollide(int[] i /*0*/)	
+		static public int PlayerCollide(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerCollide",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerStand(int[] i /*0*/)	
+		static public int PlayerStand(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerStand",i);
-			return 0;
+			return 1;
 		}
 
 		/*function*/
-		static public int PlayerArmed(int[] i /*0*/)	
+		static public int PlayerArmed(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerArmed",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerHanging(int[] i /*0*/)	
+		static public int PlayerHanging(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerHanging",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerInSight(int[] i /*0*/)	
+		static public int PlayerInSight(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerInSight",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerDistance(int[] i /*0*/)	
+		static public int PlayerDistance(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerDistance",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int AcuratePlayerDistance(int[] i /*0*/)	
+		static public int AcuratePlayerDistance(bool b, int[] i /*0*/)	
 		{
 			Log("AcuratePlayerDistance",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerFacing(int[] i /*2*/)	
+		static public int PlayerFacing(bool b, int[] i /*2*/)	
 		{
 			Log("PlayerFacing",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerArcTan(int[] i /*0*/)	
+		static public int PlayerArcTan(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerArcTan",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerArc(int[] i /*2*/)	
+		static public int PlayerArc(bool b, int[] i /*2*/)	
 		{
 			Log("PlayerArc",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerLooking(int[] i /*1*/)	
+		static public int PlayerLooking(bool b, int[] i /*1*/)	
 		{
 			Log("PlayerLooking",i);
 			return 0;
 		}
 
 		/*multitask*/
-		static public int PlayerTilt(int[] i /*3*/)	
+		static public int PlayerTilt(bool b, int[] i /*3*/)	
 		{
 			Log("PlayerTilt",i);
 			return 0;
 		}
 
 		/*multitask*/
-		static public int PlayerTiltRevx(int[] i /*3*/)	
+		static public int PlayerTiltRevx(bool b, int[] i /*3*/)	
 		{
 			Log("PlayerTiltRevx",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerSnap(int[] i /*3*/)	
+		static public int PlayerSnap(bool b, int[] i /*3*/)	
 		{
 			Log("PlayerSnap",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int PlayerLineUp(int[] i /*3*/)	
+		static public int PlayerLineUp(bool b, int[] i /*3*/)	
 		{
 			Log("PlayerLineUp",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int PlayerParallelLineUp(int[] i /*3*/)	
+		static public int PlayerParallelLineUp(bool b, int[] i /*3*/)	
 		{
 			Log("PlayerParallelLineUp",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int PlayerPickupLineUp(int[] i /*3*/)	
+		static public int PlayerPickupLineUp(bool b, int[] i /*3*/)	
 		{
 			Log("PlayerPickupLineUp",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int MovePlayerAboveMe(int[] i /*4*/)	
+		static public int MovePlayerAboveMe(bool b, int[] i /*4*/)	
 		{
 			Log("MovePlayerAboveMe",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PushPlayer(int[] i /*1*/)	
+		static public int PushPlayer(bool b, int[] i /*1*/)	
 		{
 			Log("PushPlayer",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PopPlayer(int[] i /*0*/)	
+		static public int PopPlayer(bool b, int[] i /*0*/)	
 		{
 			Log("PopPlayer",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int PlayerFaceObj(int[] i /*0*/)	
+		static public int PlayerFaceObj(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerFaceObj",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerOnScape(int[] i /*0*/)	
+		static public int PlayerOnScape(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerOnScape",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerCollideStatic(int[] i /*0*/)	
+		static public int PlayerCollideStatic(bool b, int[] i /*0*/)	
 		{
 			Log("PlayerCollideStatic",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int WonGame(int[] i /*0*/)	
+		static public int WonGame(bool b, int[] i /*0*/)	
 		{
 			Log("WonGame",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int MainloopExit(int[] i /*1*/)	
+		static public int MainloopExit(bool b, int[] i /*1*/)	
 		{
 			Log("MainloopExit",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int PlayerFaceTalk(int[] i /*1*/)	
+		static public int PlayerFaceTalk(bool b, int[] i /*1*/)	
 		{
 			Log("PlayerFaceTalk",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PlayerForceTalk(int[] i /*1*/)	
+		static public int PlayerForceTalk(bool b, int[] i /*1*/)	
 		{
 			Log("PlayerForceTalk",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int CollidePlayerWeapon(int[] i /*4*/)	
+		static public int CollidePlayerWeapon(bool b, int[] i /*4*/)	
 		{
 			Log("CollidePlayerWeapon",i);
 			return 0;
@@ -1854,28 +1860,28 @@ namespace xyz
 
 		//object and player health
 		/*function*/
-		static public int ZapPlayer(int[] i /*1*/)	
+		static public int ZapPlayer(bool b, int[] i /*1*/)	
 		{
 			Log("ZapPlayer",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ZapPlayerNoKill(int[] i /*1*/)	
+		static public int ZapPlayerNoKill(bool b, int[] i /*1*/)	
 		{
 			Log("ZapPlayerNoKill",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ZapObject(int[] i /*1*/)	
+		static public int ZapObject(bool b, int[] i /*1*/)	
 		{
 			Log("ZapObject",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ZapObjectNoKill(int[] i /*1*/)	
+		static public int ZapObjectNoKill(bool b, int[] i /*1*/)	
 		{
 			Log("ZapObjectNoKill",i);
 			return 0;
@@ -1884,98 +1890,98 @@ namespace xyz
 
 		//object system messaging
 		/*function*/
-		static public int SendMessage(int[] i /*1*/)	
+		static public int SendMessage(bool b, int[] i /*1*/)	
 		{
 			Log("SendMessage",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ReceiveMessage(int[] i /*0*/)	
+		static public int ReceiveMessage(bool b, int[] i /*0*/)	
 		{
 			Log("ReceiveMessage",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsMessageWaiting(int[] i /*0*/)	
+		static public int IsMessageWaiting(bool b, int[] i /*0*/)	
 		{
 			Log("IsMessageWaiting",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int GetMessageSender(int[] i /*0*/)	
+		static public int GetMessageSender(bool b, int[] i /*0*/)	
 		{
 			Log("GetMessageSender",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int GetMessageSenderId(int[] i /*0*/)	
+		static public int GetMessageSenderId(bool b, int[] i /*0*/)	
 		{
 			Log("GetMessageSenderId",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ReplySender(int[] i /*1*/)	
+		static public int ReplySender(bool b, int[] i /*1*/)	
 		{
 			Log("ReplySender",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DeleteMessage(int[] i /*0*/)	
+		static public int DeleteMessage(bool b, int[] i /*0*/)	
 		{
 			Log("DeleteMessage",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SendBroadcast(int[] i /*1*/)	
+		static public int SendBroadcast(bool b, int[] i /*1*/)	
 		{
 			Log("SendBroadcast",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ReceiveBroadcast(int[] i /*0*/)	
+		static public int ReceiveBroadcast(bool b, int[] i /*0*/)	
 		{
 			Log("ReceiveBroadcast",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DeleteBroadcast(int[] i /*0*/)	
+		static public int DeleteBroadcast(bool b, int[] i /*0*/)	
 		{
 			Log("DeleteBroadcast",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsBroadcastWaiting(int[] i /*0*/)	
+		static public int IsBroadcastWaiting(bool b, int[] i /*0*/)	
 		{
 			Log("IsBroadcastWaiting",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int GetBroadcastSender(int[] i /*0*/)	
+		static public int GetBroadcastSender(bool b, int[] i /*0*/)	
 		{
 			Log("GetBroadcastSender",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int GetBroadcastSenderId(int[] i /*0*/)	
+		static public int GetBroadcastSenderId(bool b, int[] i /*0*/)	
 		{
 			Log("GetBroadcastSenderId",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ReplyBroadcastSender(int[] i /*1*/)	
+		static public int ReplyBroadcastSender(bool b, int[] i /*1*/)	
 		{
 			Log("ReplyBroadcastSender",i);
 			return 0;
@@ -1984,21 +1990,21 @@ namespace xyz
 
 		//sync tasks and functions
 		/*function*/
-		static public int ResetGroupSync(int[] i /*0*/)	
+		static public int ResetGroupSync(bool b, int[] i /*0*/)	
 		{
 			Log("ResetGroupSync",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ResetUserSync(int[] i /*0*/)	
+		static public int ResetUserSync(bool b, int[] i /*0*/)	
 		{
 			Log("ResetUserSync",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int SyncWithGroup(int[] i /*1*/)	
+		static public int SyncWithGroup(bool b, int[] i /*1*/)	
 		{
 			Log("SyncWithGroup",i);
 			// i[0]: sync group
@@ -2006,21 +2012,21 @@ namespace xyz
 		}
 
 		/*task*/
-		static public int SyncWithUser(int[] i /*1*/)	
+		static public int SyncWithUser(bool b, int[] i /*1*/)	
 		{
 			Log("SyncWithUser",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ChangeGroup(int[] i /*1*/)	
+		static public int ChangeGroup(bool b, int[] i /*1*/)	
 		{
 			Log("ChangeGroup",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ChangeUser(int[] i /*1*/)	
+		static public int ChangeUser(bool b, int[] i /*1*/)	
 		{
 			Log("ChangeUser",i);
 			return 0;
@@ -2029,56 +2035,56 @@ namespace xyz
 
 		//pipelining functions
 		/*function*/
-		static public int PipeMyGroup(int[] i /*0*/)	
+		static public int PipeMyGroup(bool b, int[] i /*0*/)	
 		{
 			Log("PipeMyGroup",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PipeGroup(int[] i /*1*/)	
+		static public int PipeGroup(bool b, int[] i /*1*/)	
 		{
 			Log("PipeGroup",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PipeUser(int[] i /*1*/)	
+		static public int PipeUser(bool b, int[] i /*1*/)	
 		{
 			Log("PipeUser",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PipeMasters(int[] i /*0*/)	
+		static public int PipeMasters(bool b, int[] i /*0*/)	
 		{
 			Log("PipeMasters",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PipeSlaves(int[] i /*0*/)	
+		static public int PipeSlaves(bool b, int[] i /*0*/)	
 		{
 			Log("PipeSlaves",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PipeAroundMe(int[] i /*1*/)	
+		static public int PipeAroundMe(bool b, int[] i /*1*/)	
 		{
 			Log("PipeAroundMe",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PipeAroundPos(int[] i /*4*/)	
+		static public int PipeAroundPos(bool b, int[] i /*4*/)	
 		{
 			Log("PipeAroundPos",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PipeHidden(int[] i /*0*/)	
+		static public int PipeHidden(bool b, int[] i /*0*/)	
 		{
 			Log("PipeHidden",i);
 			return 0;
@@ -2087,63 +2093,63 @@ namespace xyz
 
 		//node map negotiation
 		/*task*/
-		static public int MoveNodeMarker(int[] i /*2*/)	
+		static public int MoveNodeMarker(bool b, int[] i /*2*/)	
 		{
 			Log("MoveNodeMarker",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MoveNodeLocation(int[] i /*2*/)	
+		static public int MoveNodeLocation(bool b, int[] i /*2*/)	
 		{
 			Log("MoveNodeLocation",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MoveNodePosition(int[] i /*4*/)	
+		static public int MoveNodePosition(bool b, int[] i /*4*/)	
 		{
 			Log("MoveNodePosition",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int AtNodeMarker(int[] i /*2*/)	
+		static public int AtNodeMarker(bool b, int[] i /*2*/)	
 		{
 			Log("AtNodeMarker",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int AtNodeLocation(int[] i /*2*/)	
+		static public int AtNodeLocation(bool b, int[] i /*2*/)	
 		{
 			Log("AtNodeLocation",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int AtNodePosition(int[] i /*4*/)	
+		static public int AtNodePosition(bool b, int[] i /*4*/)	
 		{
 			Log("AtNodePosition",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Wander(int[] i /*2*/)	
+		static public int Wander(bool b, int[] i /*2*/)	
 		{
 			Log("Wander",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DisableNodeMaps(int[] i /*0*/)	
+		static public int DisableNodeMaps(bool b, int[] i /*0*/)	
 		{
 			Log("DisableNodeMaps",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int EnableNodeMaps(int[] i /*0*/)	
+		static public int EnableNodeMaps(bool b, int[] i /*0*/)	
 		{
 			Log("EnableNodeMaps",i);
 			return 0;
@@ -2152,21 +2158,21 @@ namespace xyz
 
 		//node marker negotiation
 		/*task*/
-		static public int MoveMarker(int[] i /*2*/)	
+		static public int MoveMarker(bool b, int[] i /*2*/)	
 		{
 			Log("MoveMarker",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MoveLocation(int[] i /*2*/)	
+		static public int MoveLocation(bool b, int[] i /*2*/)	
 		{
 			Log("MoveLocation",i);
 			return 0;
 		}
 
 		/*task*/
-		static public int MovePosition(int[] i /*4*/)	
+		static public int MovePosition(bool b, int[] i /*4*/)	
 		{
 			Log("MovePosition",i);
 			return 0;
@@ -2175,49 +2181,49 @@ namespace xyz
 
 		//weapons and hand-objects
 		/*function*/
-		static public int DrawSword(int[] i /*0*/)	
+		static public int DrawSword(bool b, int[] i /*0*/)	
 		{
 			Log("DrawSword",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SheathSword(int[] i /*0*/)	
+		static public int SheathSword(bool b, int[] i /*0*/)	
 		{
 			Log("SheathSword",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int CheckPlayerWeapon(int[] i /*0*/)	
+		static public int CheckPlayerWeapon(bool b, int[] i /*0*/)	
 		{
 			Log("CheckPlayerWeapon",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DisplayHandModel(int[] i /*4*/)	
+		static public int DisplayHandModel(bool b, int[] i /*4*/)	
 		{
 			Log("DisplayHandModel",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DisplayHandItem(int[] i /*4*/)	
+		static public int DisplayHandItem(bool b, int[] i /*4*/)	
 		{
 			Log("DisplayHandItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DisplayHiltModel(int[] i /*4*/)	
+		static public int DisplayHiltModel(bool b, int[] i /*4*/)	
 		{
 			Log("DisplayHiltModel",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DisplayHiltItem(int[] i /*4*/)	
+		static public int DisplayHiltItem(bool b, int[] i /*4*/)	
 		{
 			Log("DisplayHiltItem",i);
 			return 0;
@@ -2226,119 +2232,119 @@ namespace xyz
 
 		//item's and the inventory
 		/*function*/
-		static public int HandItem(int[] i /*1*/)	
+		static public int HandItem(bool b, int[] i /*1*/)	
 		{
 			Log("HandItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int HaveItem(int[] i /*1*/)	
+		static public int HaveItem(bool b, int[] i /*1*/)	
 		{
 			Log("HaveItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int RemoveItem(int[] i /*1*/)	
+		static public int RemoveItem(bool b, int[] i /*1*/)	
 		{
 			Log("RemoveItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ItemUsed(int[] i /*1*/)	
+		static public int ItemUsed(bool b, int[] i /*1*/)	
 		{
 			Log("ItemUsed",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PushItem(int[] i /*2*/)	
+		static public int PushItem(bool b, int[] i /*2*/)	
 		{
 			Log("PushItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PopItem(int[] i /*1*/)	
+		static public int PopItem(bool b, int[] i /*1*/)	
 		{
 			Log("PopItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int AddItem(int[] i /*2*/)	
+		static public int AddItem(bool b, int[] i /*2*/)	
 		{
 			Log("AddItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SubItem(int[] i /*2*/)	
+		static public int SubItem(bool b, int[] i /*2*/)	
 		{
 			Log("SubItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DropItem(int[] i /*2*/)	
+		static public int DropItem(bool b, int[] i /*2*/)	
 		{
 			Log("DropItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int UseItem(int[] i /*1*/)	
+		static public int UseItem(bool b, int[] i /*1*/)	
 		{
 			Log("UseItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ShowItem(int[] i /*4*/)	
+		static public int ShowItem(bool b, int[] i /*4*/)	
 		{
 			Log("ShowItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ShowItemNoRtx(int[] i /*3*/)	
+		static public int ShowItemNoRtx(bool b, int[] i /*3*/)	
 		{
 			Log("ShowItemNoRtx",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int ActiveItem(int[] i /*0*/)	
+		static public int ActiveItem(bool b, int[] i /*0*/)	
 		{
 			Log("ActiveItem",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PushAllItems(int[] i /*1*/)	
+		static public int PushAllItems(bool b, int[] i /*1*/)	
 		{
 			Log("PushAllItems",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int PopAllItems(int[] i /*0*/)	
+		static public int PopAllItems(bool b, int[] i /*0*/)	
 		{
 			Log("PopAllItems",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DropAllItems(int[] i /*0*/)	
+		static public int DropAllItems(bool b, int[] i /*0*/)	
 		{
 			Log("DropAllItems",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int SelectItem(int[] i /*1*/)	
+		static public int SelectItem(bool b, int[] i /*1*/)	
 		{
 			Log("SelectItem",i);
 			return 0;
@@ -2347,126 +2353,126 @@ namespace xyz
 
 		//general object queries
 		/*function*/
-		static public int IsOnEdge(int[] i /*0*/)	
+		static public int IsOnEdge(bool b, int[] i /*0*/)	
 		{
 			Log("IsOnEdge",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsHoldingWeapon(int[] i /*0*/)	
+		static public int IsHoldingWeapon(bool b, int[] i /*0*/)	
 		{
 			Log("IsHoldingWeapon",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsSheathingSword(int[] i /*0*/)	
+		static public int IsSheathingSword(bool b, int[] i /*0*/)	
 		{
 			Log("IsSheathingSword",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsDrawingSword(int[] i /*0*/)	
+		static public int IsDrawingSword(bool b, int[] i /*0*/)	
 		{
 			Log("IsDrawingSword",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsDrawingOrSheathing(int[] i /*0*/)	
+		static public int IsDrawingOrSheathing(bool b, int[] i /*0*/)	
 		{
 			Log("IsDrawingOrSheathing",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsCarryingWeapon(int[] i /*0*/)	
+		static public int IsCarryingWeapon(bool b, int[] i /*0*/)	
 		{
 			Log("IsCarryingWeapon",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsCombatCapable(int[] i /*0*/)	
+		static public int IsCombatCapable(bool b, int[] i /*0*/)	
 		{
 			Log("IsCombatCapable",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsShellScript(int[] i /*0*/)	
+		static public int IsShellScript(bool b, int[] i /*0*/)	
 		{
 			Log("IsShellScript",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsWithinView(int[] i /*0*/)	
+		static public int IsWithinView(bool b, int[] i /*0*/)	
 		{
 			Log("IsWithinView",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsWithinMap(int[] i /*0*/)	
+		static public int IsWithinMap(bool b, int[] i /*0*/)	
 		{
 			Log("IsWithinMap",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsInAir(int[] i /*0*/)	
+		static public int IsInAir(bool b, int[] i /*0*/)	
 		{
 			Log("IsInAir",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsLightingOrUnlighting(int[] i /*0*/)	
+		static public int IsLightingOrUnlighting(bool b, int[] i /*0*/)	
 		{
 			Log("IsLightingOrUnlighting",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsUnlightingTorch(int[] i /*0*/)	
+		static public int IsUnlightingTorch(bool b, int[] i /*0*/)	
 		{
 			Log("IsUnlightingTorch",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsLightingTorch(int[] i /*0*/)	
+		static public int IsLightingTorch(bool b, int[] i /*0*/)	
 		{
 			Log("IsLightingTorch",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsInLava(int[] i /*0*/)	
+		static public int IsInLava(bool b, int[] i /*0*/)	
 		{
 			Log("IsInLava",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsInDeepWater(int[] i /*0*/)	
+		static public int IsInDeepWater(bool b, int[] i /*0*/)	
 		{
 			Log("IsInDeepWater",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsInWater(int[] i /*0*/)	
+		static public int IsInWater(bool b, int[] i /*0*/)	
 		{
 			Log("IsInWater",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int IsBouncing(int[] i /*0*/)	
+		static public int IsBouncing(bool b, int[] i /*0*/)	
 		{
 			Log("IsBouncing",i);
 			return 0;
@@ -2475,21 +2481,21 @@ namespace xyz
 
 		//shell AI functions
 		/*function*/
-		static public int OpenShell(int[] i /*1*/)	
+		static public int OpenShell(bool b, int[] i /*1*/)	
 		{
 			Log("OpenShell",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int CountAiShells(int[] i /*1*/)	
+		static public int CountAiShells(bool b, int[] i /*1*/)	
 		{
 			Log("CountAiShells",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int FindAiShell(int[] i /*1*/)	
+		static public int FindAiShell(bool b, int[] i /*1*/)	
 		{
 			Log("FindAiShell",i);
 			return 0;
@@ -2498,35 +2504,35 @@ namespace xyz
 
 		//effects system
 		/*function*/
-		static public int AddFlatEffect(int[] i /*6*/)	
+		static public int AddFlatEffect(bool b, int[] i /*6*/)	
 		{
 			Log("AddFlatEffect",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int AddLightEffect(int[] i /*8*/)	
+		static public int AddLightEffect(bool b, int[] i /*8*/)	
 		{
 			Log("AddLightEffect",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int GolemSteam(int[] i /*0*/)	
+		static public int GolemSteam(bool b, int[] i /*0*/)	
 		{
 			Log("GolemSteam",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int DragonBreath(int[] i /*0*/)	
+		static public int DragonBreath(bool b, int[] i /*0*/)	
 		{
 			Log("DragonBreath",i);
 			return 0;
 		}
 
 		/*multitask*/
-		static public int DragonBreathTask(int[] i /*0*/)	
+		static public int DragonBreathTask(bool b, int[] i /*0*/)	
 		{
 			Log("DragonBreathTask",i);
 			return 0;
@@ -2535,7 +2541,7 @@ namespace xyz
 
 		//Smacker functions
 		/*function*/
-		static public int QueueMovie(int[] i /*1*/)	
+		static public int QueueMovie(bool b, int[] i /*1*/)	
 		{
 			Log("QueueMovie",i);
 			return 0;
@@ -2543,14 +2549,14 @@ namespace xyz
 
 
 		/*task*/
-		static public int TestTask(int[] i /*1*/)	
+		static public int TestTask(bool b, int[] i /*1*/)	
 		{
 			Log("TestTask",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int XResetCamera(int[] i /*0*/)	
+		static public int XResetCamera(bool b, int[] i /*0*/)	
 		{
 			Log("XResetCamera",i);
 			return 0;
@@ -2559,14 +2565,14 @@ namespace xyz
 
 		//Potion functions
 		/*function*/
-		static public int SetPotion(int[] i /*2*/)	
+		static public int SetPotion(bool b, int[] i /*2*/)	
 		{
 			Log("SetPotion",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int GetPotion(int[] i /*1*/)	
+		static public int GetPotion(bool b, int[] i /*1*/)	
 		{
 			Log("GetPotion",i);
 			return 0;
@@ -2575,7 +2581,7 @@ namespace xyz
 
 		//Log Book functions
 		/*function*/
-		static public int AddLog(int[] i /*1*/)	
+		static public int AddLog(bool b, int[] i /*1*/)	
 		{
 			Log("AddLog",i);
 			return 0;
@@ -2584,118 +2590,118 @@ namespace xyz
 
 		//spare expansion functions, (do nothing at the moment)
 		/*function*/
-		static public int Spare0Parm0(int[] i /*0*/)	
+		static public int Spare0Parm0(bool b, int[] i /*0*/)	
 		{
 			Log("Spare0Parm0",i);
 			return 0;
 		}
-		static public int Spare1Parm0(int[] i /*0*/)	
+		static public int Spare1Parm0(bool b, int[] i /*0*/)	
 		{
 			Log("Spare1Parm0",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare0Parm1(int[] i /*1*/)	
+		static public int Spare0Parm1(bool b, int[] i /*1*/)	
 		{
 			Log("Spare0Parm1",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare1Parm1(int[] i /*1*/)	
+		static public int Spare1Parm1(bool b, int[] i /*1*/)	
 		{
 			Log("Spare1Parm1",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare0Parm2(int[] i /*2*/)	
+		static public int Spare0Parm2(bool b, int[] i /*2*/)	
 		{
 			Log("Spare0Parm2",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare1Parm2(int[] i /*2*/)	
+		static public int Spare1Parm2(bool b, int[] i /*2*/)	
 		{
 			Log("Spare1Parm2",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare0Parm3(int[] i /*3*/)	
+		static public int Spare0Parm3(bool b, int[] i /*3*/)	
 		{
 			Log("Spare0Parm3",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare1Parm3(int[] i /*3*/)	
+		static public int Spare1Parm3(bool b, int[] i /*3*/)	
 		{
 			Log("Spare1Parm3",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare0Parm4(int[] i /*4*/)	
+		static public int Spare0Parm4(bool b, int[] i /*4*/)	
 		{
 			Log("Spare0Parm4",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare1Parm4(int[] i /*4*/)	
+		static public int Spare1Parm4(bool b, int[] i /*4*/)	
 		{
 			Log("Spare1Parm4",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare0Parm5(int[] i /*5*/)	
+		static public int Spare0Parm5(bool b, int[] i /*5*/)	
 		{
 			Log("Spare0Parm5",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare1Parm5(int[] i /*5*/)	
+		static public int Spare1Parm5(bool b, int[] i /*5*/)	
 		{
 			Log("Spare1Parm5",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare0Parm6(int[] i /*6*/)	
+		static public int Spare0Parm6(bool b, int[] i /*6*/)	
 		{
 			Log("Spare0Parm6",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare1Parm6(int[] i /*6*/)	
+		static public int Spare1Parm6(bool b, int[] i /*6*/)	
 		{
 			Log("Spare1Parm6",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare0Parm7(int[] i /*7*/)	
+		static public int Spare0Parm7(bool b, int[] i /*7*/)	
 		{
 			Log("Spare0Parm7",i);
 			return 0;
 		}
 
 		/*function*/
-		static public int Spare1Parm7(int[] i /*8*/)	
+		static public int Spare1Parm7(bool b, int[] i /*8*/)	
 		{
 			Log("Spare1Parm7",i);
 			return 0;
 		}
-        static Func<int[], int>[] SetupFuncs()
+        static Func<bool, int[], int>[] SetupFuncs()
         {
             int sdcnt = 367;
-            Func<int[], int>[] soupdeffcn = new Func<int[], int>[sdcnt];
+            Func<bool, int[], int>[] soupdeffcn = new Func<bool, int[], int>[sdcnt];
             soupdeffcn[0]=PLACEHOLDER_ZERO;
 			soupdeffcn[1]=sRotate;
 			soupdeffcn[2]=sRotateByAxis;

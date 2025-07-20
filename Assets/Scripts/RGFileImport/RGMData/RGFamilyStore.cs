@@ -5,8 +5,42 @@ using UnityEngine;
 
 public class RGFamilyStore
 {
+    public class MasterSlavesStruct
+    {
+        public RGScriptedObject master;
+        public List<RGScriptedObject> slaves;
+        public MasterSlavesStruct()
+        {
+            master = null;
+            slaves = new List<RGScriptedObject>();
+        }
+        public void AddMaster(RGScriptedObject o)
+        {
+            master = o;
+            for(int i=0;i<slaves.Count;i++)
+            {
+                slaves[i].FamilySetParent(master);
+            }
+        }
+        public void AddSlave(RGScriptedObject o)
+        {
+            slaves.Add(o);
+            Debug.Log($"FAMILY: adding slave {o.scriptName}");
+            if(master != null)
+            {
+                Debug.Log($"FAMILY: {o.scriptName}: master NOT NULL");
+                for(int i=0;i<slaves.Count;i++)
+                {
+                    Debug.Log($"FAMILY: {o.scriptName}: setting parent for {i}:{slaves[i].scriptName}");
+                    slaves[i].FamilySetParent(master);
+                }
+            }
+
+        }
+
+    }
     public static Dictionary<uint, List<RGScriptedObject>> scriptedGroups;
-    public static Dictionary<uint, List<RGScriptedObject>> scriptedSlaves;
+    public static Dictionary<uint, MasterSlavesStruct> scriptedSlaves;
 // groups
     public static void AddToGroup(uint groupId, RGScriptedObject o)
     {
@@ -30,46 +64,62 @@ public class RGFamilyStore
     }
     public static bool DoGroupSync(uint groupId, uint sync_point)
     {
-        Debug.Log($"FAMILY: syncing group {groupId} to {sync_point}");
         for(int i=0;i<scriptedGroups[groupId].Count;i++)
         {
-            if(scriptedGroups[groupId][i].sync_point != sync_point)
+            if(!scriptedGroups[groupId][i].IsSyncPointSet(sync_point))
+            {
                 return false;
+            }
         }
-        Debug.Log($"FAMILY: done syncing group {groupId} to {sync_point}");
         // none out of sync, set to 0
         for(int i=0;i<scriptedGroups[groupId].Count;i++)
         {
-            scriptedGroups[groupId][i].sync_point = 0;
+            scriptedGroups[groupId][i].clearSyncPoint();
         }
         return true;
     }
 // master/slaves
-    public static void AddSlave(uint masterId, RGScriptedObject o)
+    public static void AddMaster(uint masterId, RGScriptedObject o)
     {
         if(scriptedSlaves == null)
-            scriptedSlaves = new Dictionary<uint, List<RGScriptedObject>>();
-
-        if( masterId!= 0)
+            scriptedSlaves = new Dictionary<uint, MasterSlavesStruct>();
+        if(masterId != 0)
         {
-            List<RGScriptedObject> slaves;
-            if(scriptedSlaves.TryGetValue(masterId, out slaves))
+            MasterSlavesStruct masterSlaves;
+            if(scriptedSlaves.TryGetValue(masterId, out masterSlaves))
             {
-                slaves.Add(o);
-                Debug.Log($"SLAVE: added {o.scriptName} to existing master {masterId}");
+                masterSlaves.AddMaster(o);
+                Debug.Log($"added master {o.scriptName} to existing master {masterId}");
             }
             else
             {
-                scriptedSlaves.Add(masterId, new List<RGScriptedObject>());
-                scriptedSlaves[masterId].Add(o);
-                Debug.Log($"SLAVE: added {o.scriptName} to new master {masterId}");
+                masterSlaves = new MasterSlavesStruct();
+                masterSlaves.AddMaster(o);
+                scriptedSlaves.Add(masterId, masterSlaves);
+                Debug.Log($"added master {o.scriptName} to new master {masterId}");
             }
         }
     }
-    public static List<RGScriptedObject> GetSlaves(uint masterId)
+
+    public static void AddSlave(uint slaveId, RGScriptedObject o)
     {
-            List<RGScriptedObject> slaves;
-            scriptedSlaves.TryGetValue(masterId, out slaves);
-            return slaves;
+        if(scriptedSlaves == null)
+            scriptedSlaves = new Dictionary<uint, MasterSlavesStruct>();
+        if(slaveId != 0)
+        {
+            MasterSlavesStruct masterSlaves;
+            if(scriptedSlaves.TryGetValue(slaveId, out masterSlaves))
+            {
+                masterSlaves.AddSlave(o);
+                Debug.Log($"added slave {o.scriptName} to existing master {slaveId}");
+            }
+            else
+            {
+                masterSlaves = new MasterSlavesStruct();
+                masterSlaves.AddSlave(o);
+                scriptedSlaves.Add(slaveId, masterSlaves);
+                Debug.Log($"added slave {o.scriptName} to new master {slaveId}");
+            }
+        }
     }
 }

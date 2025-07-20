@@ -255,6 +255,8 @@ namespace TST
 		/*function*/
 		public int lockoutPlayer(int[] i /*1*/)	
 		{
+            // Enable/disable player input
+            // i[0]: 1 disables input, 0 enables it
 			Log("lockoutPlayer",i);
 			return 0;
 		}
@@ -914,6 +916,8 @@ namespace TST
 		/*function in all caps?: FUNCTION	ACTIVATE	PARMS 1*/
 		public int ACTIVATE(int[] i /*1*/)	
 		{
+            // True if player activates an item
+            // i[0]: Stringid shown on screen when looking at the item
 			Log("ACTIVATE",i);
 			return 0;
 		}

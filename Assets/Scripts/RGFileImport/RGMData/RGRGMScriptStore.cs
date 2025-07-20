@@ -13,11 +13,11 @@ public class ScriptData
     MemoryReader memoryReader;
 
     uint objectId;
-    Func<int[], int>[] taskPointers;
+    Func<bool, int[], int>[] taskPointers;
 
 
     public RGRGMScriptStore.RGMScript scriptData;
-    public ScriptData(string scriptname, Func<int[], int>[] taskPtrs, uint meId)
+    public ScriptData(string scriptname, Func<bool, int[], int>[] taskPtrs, uint meId)
     {
         scriptName = scriptname;
         scriptData = RGRGMScriptStore.getScript(scriptname);
@@ -42,9 +42,9 @@ public class ScriptData
     }
     enum taskType
     {
-        task,
-        multitask,
-        function,
+        task      = 0,
+        multitask = 1,
+        function  = 2,
     }
     enum objectLoc
     {
@@ -225,7 +225,8 @@ void logDBG(string i)
     int doTask(string obj, taskType type, ushort task_id, int[] parameters)
     {
         Console.Write($"OBJ: {obj}_{type}_{task_id}:");
-        return taskPointers[task_id](parameters);
+        bool isMultiTask = (type == taskType.multitask);
+        return taskPointers[task_id](isMultiTask, parameters);
     }
     int doFlagAssign(ushort flag_id, List<int> vals, List<byte> ops)
     {

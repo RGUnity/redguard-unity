@@ -56,19 +56,18 @@ public class LoadWorld : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown("space"))
+//        if(Input.GetKeyDown("space"))
         {
             // OB_ENG11 = master
             // OB_ENG13 = slaved
-            /*
             ModelLoader.scriptedObjects[0x82BE25A8].allowScripting = true;
-            // OB_ENG04 + OB_ENG04
-            ModelLoader.scriptedObjects[0x82BE3D60].allowScripting = true;
-            ModelLoader.scriptedObjects[0x82BE42F8].allowScripting = true;
             // OB_ENGA + OB_ENGC
             ModelLoader.scriptedObjects[0x82BDFE40].allowScripting = true;
             ModelLoader.scriptedObjects[0x82BDCC28].allowScripting = true;
-            */
+
+            // OB_ENG04 + OB_ENG04
+            ModelLoader.scriptedObjects[0x82BE3D60].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE42F8].allowScripting = true;
             // OB_ORY01-17
             ModelLoader.scriptedObjects[0x82BDF628].allowScripting = true;
             ModelLoader.scriptedObjects[0x82BDF860].allowScripting = true;
@@ -95,6 +94,11 @@ public class LoadWorld : MonoBehaviour
             ModelLoader.scriptedObjects[0x82BE04D8].allowScripting = true;
             // 17: inside big red
             ModelLoader.scriptedObjects[0x82BE02B8].allowScripting = true;
+            // 01+02
+            ModelLoader.scriptedObjects[0x82BE3B28].allowScripting = true;
+            ModelLoader.scriptedObjects[0x82BE3830].allowScripting = true;
+            // 03: top part
+            ModelLoader.scriptedObjects[0x82BE0BF0].allowScripting = true;
             */
         }
     }

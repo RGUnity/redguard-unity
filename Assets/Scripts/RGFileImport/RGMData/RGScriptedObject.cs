@@ -15,6 +15,7 @@ public class RGScriptedObject : MonoBehaviour
     public enum TaskType
     {
         task_idle,
+        task_waitingtasks,
         task_rotating,
         task_moving,
         task_waiting,
@@ -25,8 +26,6 @@ public class RGScriptedObject : MonoBehaviour
 	
 	string objectName;
 	public string scriptName;
-	Vector3 position;
-	Vector3 rotation;
 
     // used for animations: 3DC files might not have the same vertex count
     // so we're stuck with this
@@ -47,27 +46,35 @@ public class RGScriptedObject : MonoBehaviour
 	public bool allowAnimation;
     public AnimData animations;
 // scripting
+    public bool DEBUGSCRIPTING=true;
 	public bool allowScripting;
     public ScriptData script;
 // tasks
-    TaskType currentTask;
-    float taskTimer;
-    float taskDuration;
-    // rotating
-    Vector3 rotationCenter;
-    Vector3 rotationTarget;
-    Vector3 rotationStart;
-    // moving
-    Vector3 positionTarget;
-    Vector3 positionStart;
-    // waiting
-        // nothing here ;)
-    // syncing
-    public uint sync_point;
+    class TaskData
+    {
+        public TaskType type;
+        public float timer;
+        public float duration;
+        // rotating
+        public Vector3 rotationTarget;
+        public Vector3 rotationStart;
+        // moving
+        public Vector3 positionTarget;
+        public Vector3 positionStart;
+        // waiting
+            // nothing here ;)
+        // syncing
+        public uint syncPoint;
+        public TaskData()
+        {
+            type = TaskType.task_idle;
+        }
+    }
 
+    TaskData mainTask = new TaskData();
+    List<TaskData> multiTasks = new List<TaskData>();
     static int FUNC_CNT = 367;
-    Func<int[], int>[] functions;
-    // 
+    Func<bool, int[], int>[] functions;
 
     public RGFileImport.RGRGMFile.RGMRAHDItem RAHDData;
 
@@ -143,24 +150,19 @@ public class RGScriptedObject : MonoBehaviour
         scriptName = MPOB.scriptName;
         RAHDData = filergm.RAHD.dict[scriptName];
 
-        attributes = new byte[256];
-        Array.Copy(filergm.RAAT.attributes, RAHDData.index*256, attributes, 0, 256);
-
-        if(attributes[26] != 0)
-            RGFamilyStore.AddSlave(attributes[26], this);
-        if(attributes[29] != 0)
-            RGFamilyStore.AddToGroup(attributes[29], this);
-
-		position.x = (float)(MPOB.posX)*RGM_MPOB_SCALE;
+        Vector3 position = Vector3.zero;
+ 		position.x = (float)(MPOB.posX)*RGM_MPOB_SCALE;
 		position.y = -(float)(MPOB.posY)*RGM_MPOB_SCALE;
 		position.z = -(float)(0xFFFFFF-MPOB.posZ)*RGM_MPOB_SCALE;
-		rotation = RGRGMStore.eulers_from_MPOB_data(MPOB);
+        Vector3 rotation = RGRGMStore.eulers_from_MPOB_data(MPOB);
+		gameObject.transform.position = position;
+		gameObject.transform.Rotate(rotation);
+
         allowAnimation = false;
 
         allowScripting = false;
         SetupFunctions();
 
-        currentTask = TaskType.task_idle;;
         switch(MPOB.type)
         {
             case RGFileImport.RGRGMFile.ObjectType.object_3d:
@@ -179,8 +181,18 @@ public class RGScriptedObject : MonoBehaviour
 
         script = new ScriptData(MPOB.scriptName, functions, MPOB.id);
 		
-		gameObject.transform.position = position;
-		gameObject.transform.Rotate(rotation);
+        attributes = new byte[256];
+        Array.Copy(filergm.RAAT.attributes, RAHDData.index*256, attributes, 0, 256);
+
+        // DO THIS AFTER SETTING POSITION AND ROTATION
+        if(attributes[25] != 0) // attr_master
+            RGFamilyStore.AddMaster(attributes[25], this);
+        if(attributes[26] != 0) // attr_slave
+            RGFamilyStore.AddSlave(attributes[26], this);
+        if(attributes[29] != 0) // att_group
+            RGFamilyStore.AddToGroup(attributes[29], this);
+
+
 	}
     public void SetAnim(int animId, int firstFrame)
     {
@@ -244,129 +256,77 @@ public class RGScriptedObject : MonoBehaviour
         UpdateAnimations();
     }
 
-    public void PropagatePositionDelta(Vector3 positionDelta)
+    public void FamilySetParent(RGScriptedObject parent)
     {
-        position += positionDelta;
-        gameObject.transform.position = position;
-
-        // propagate to slaves
-        if(attributes[25] != 0)
-        {
-            List<RGScriptedObject> slaves = RGFamilyStore.GetSlaves(attributes[25]);
-            for(int i=0;i<slaves.Count;i++)
-            {
-                slaves[i].PropagatePositionDelta(positionDelta);
-            }
-        }
- 
+        this.transform.SetParent(parent.transform);
     }
-
-    public void PropagateRotation2(Vector3 masterPosition, Vector3 rotationDelta, Vector3 positionDelta)
-    {
-        position += positionDelta;
-        Vector3 dir = position - masterPosition;
-        dir = Quaternion.Euler(rotationDelta) * dir;
-		gameObject.transform.Rotate(rotationDelta);
-
-        Vector3 oldPos = position;
-        positionDelta += (dir+ masterPosition)-position;
-        position += positionDelta;
-        gameObject.transform.position = position;
-
-        // propagate to slaves
-        if(attributes[25] != 0)
-        {
-            List<RGScriptedObject> slaves = RGFamilyStore.GetSlaves(attributes[25]);
-            for(int i=0;i<slaves.Count;i++)
-            {
-                slaves[i].PropagateRotation(oldPos, rotationDelta, positionDelta);
-            }
-        }
-    }
-    public void PropagateRotation(Vector3 masterPosition, Vector3 rotationDelta, Vector3 positionDelta2)
-    {
-        //position += positionDelta2;
-        Vector3 dir = position - masterPosition;
-        dir = Quaternion.Euler(rotationDelta) * dir;
-        Vector3 positionDelta = (dir+ masterPosition)-position;
-		gameObject.transform.Rotate(rotationDelta);
-        PropagatePositionDelta(positionDelta);
-    }
-
-
     void UpdateTasks()
     {
         if(!allowScripting)
             return;
+
+        UpdateTask(mainTask);
+        if(mainTask.type == TaskType.task_idle)
+            script.tickScript();
+        for(int i=multiTasks.Count-1;i>=0;i--)
+        {
+            UpdateTask(multiTasks[i]);
+            if(multiTasks[i].type == TaskType.task_idle)
+                multiTasks.RemoveAt(i);
+        }
+    }
+    void UpdateTask(TaskData taskData)
+    {
         float frameTime = Time.deltaTime;
-        switch(currentTask)
+        switch(taskData.type)
         {
             case TaskType.task_idle:
-                script.tickScript();
+                break;
+            case TaskType.task_waitingtasks:
+                if(multiTasks.Count == 0)
+                    taskData.type = TaskType.task_idle;
                 break;
             case TaskType.task_rotating:
-                taskTimer += frameTime;
+                taskData.timer += frameTime;
                 Vector3 newRotation;
-                if(taskTimer < taskDuration)
+                if(taskData.timer < taskData.duration)
                 {
-                    newRotation = Vector3.Lerp(rotationStart, rotationTarget,taskTimer/taskDuration);
+                    newRotation = Vector3.Lerp(taskData.rotationStart, taskData.rotationTarget,taskData.timer/taskData.duration);
                 }
                 else
                 {
-                    newRotation = rotationTarget;
-                    currentTask = TaskType.task_idle;
+                    newRotation = taskData.rotationTarget;
+                    taskData.type = TaskType.task_idle;
                 }
-                // propagate to slaves
-                if(attributes[25] != 0)
-                {
-                    Vector3 rotationDelta = newRotation-rotation;
-                    List<RGScriptedObject> slaves = RGFamilyStore.GetSlaves(attributes[25]);
-                    for(int i=0;i<slaves.Count;i++)
-                    {
-                        slaves[i].PropagateRotation(position, rotationDelta, Vector3.zero);
-                    }
-                }
-                rotation = newRotation;
-                gameObject.transform.eulerAngles = rotation;
+                gameObject.transform.localEulerAngles = newRotation;
                 break;
             case TaskType.task_moving:
-                taskTimer += frameTime;
+                taskData.timer += frameTime;
                 Vector3 newPosition;
-                if(taskTimer < taskDuration)
+                if(taskData.timer < taskData.duration)
                 {
-                    newPosition = Vector3.Lerp(positionStart, positionTarget,taskTimer/taskDuration);
+                    newPosition = Vector3.Lerp(taskData.positionStart, taskData.positionTarget,taskData.timer/taskData.duration);
                 }
                 else
                 {
-                    newPosition = positionTarget;
-                    currentTask = TaskType.task_idle;
+                    newPosition = taskData.positionTarget;
+                    taskData.type = TaskType.task_idle;
                 }
-                // propagate to slaves
-                if(attributes[25] != 0)
-                {
-                    Vector3 positionDelta = newPosition-position;
-                    List<RGScriptedObject> slaves = RGFamilyStore.GetSlaves(attributes[25]);
-                    for(int i=0;i<slaves.Count;i++)
-                    {
-                        slaves[i].PropagatePositionDelta(positionDelta);
-                    }
-                }
-                position = newPosition;
-                gameObject.transform.position = position;
+                gameObject.transform.localPosition = newPosition;
                 break;
             case TaskType.task_waiting:
-                taskTimer += frameTime;
-                if(taskTimer > taskDuration)
+                taskData.timer += frameTime;
+                if(taskData.timer > taskData.duration)
                 {
-                    currentTask = TaskType.task_idle;
+                    taskData.type = TaskType.task_idle;
                 }
                 break;
             case TaskType.task_syncing:
                 // VAT ARE YOU SYNCING ABOUT?
                 // ModelLoader sets this to 0 when all members are done
-                if(sync_point == 0)
+                if(taskData.syncPoint == 0)
                 {
-                    currentTask = TaskType.task_idle;
+                    taskData.type = TaskType.task_idle;
                 }
                 break;
             default:
@@ -375,12 +335,21 @@ public class RGScriptedObject : MonoBehaviour
     }
     void SetupFunctions()
     {
-        functions = new Func<int[], int>[FUNC_CNT];
+        functions = new Func<bool, int[], int>[FUNC_CNT];
+        functions[17] = WaitOnTasks;
         functions[44] = RotateByAxis;
         functions[45] = RotateToAxis;
         functions[53] = MoveByAxis;
         functions[60] = Wait;
         functions[271] = SyncWithGroup;
+
+        // overwrite all non-implemented functions with a NIMPL error
+        for(int i=0;i<FUNC_CNT;i++)
+        {
+            if(functions[i] == null)
+                functions[i] = soupdeffcn_nimpl.getNIMPL(i);
+        }
+        
     }
 // SOUPDEF function implementations
 // ASSUMTIONS:
@@ -388,16 +357,34 @@ public class RGScriptedObject : MonoBehaviour
 // axis 0,1,2 are local X,Y,Z < dont quite know
     const float TIME_VAL = 0.1f;
     const float DA2DG = -(180.0f/1024.0f); // negative angles?
-    /*task 44*/
-    public int RotateByAxis(int[] i /*3*/)    
+    /*task 17*/
+    public int WaitOnTasks(bool multitask, int[] i /*0*/)    
     {
+        Debug.Log($"{multitask}_{scriptName}_WaitOnTasks({string.Join(",",i)})");
+        // Wait for all multitasks to be completed
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_waitingtasks;
+
+        if(multitask == false)
+            mainTask = newTask;
+        else
+            multiTasks.Add(newTask);
+        return 0;
+    }
+
+    /*task 44*/
+    public int RotateByAxis(bool multitask, int[] i /*3*/)    
+    {
+        Debug.Log($"{multitask}_{scriptName}_RotateByAxis({string.Join(",",i)})");
         // rotates X degrees around local axis
         // i[0]: axis (0/1/2)
         // i[1]: amount
         // i[2]: time to complete
-        Debug.Log($"{scriptName}: RotateByAxis");
-        currentTask = TaskType.task_rotating;
-        rotationCenter = position;
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_rotating;
+        newTask.duration = ((float)i[2])*TIME_VAL;;
+        newTask.timer = 0;
+
         Vector3 rt;
         switch(i[0])
         {
@@ -414,22 +401,29 @@ public class RGScriptedObject : MonoBehaviour
                 rt = new Vector3(0,0,0);
                 break;
         }
-        rotationTarget = rotation + rt;
-        rotationStart = rotation;
-        taskDuration = ((float)i[2])*TIME_VAL;;
-        taskTimer = 0;
+        Vector3 localRotation = transform.localEulerAngles;
+        newTask.rotationTarget = localRotation+rt;
+        newTask.rotationStart = localRotation;
+        if(multitask == false)
+            mainTask = newTask;
+        else
+            multiTasks.Add(newTask);
+
         return 0;
     }
     /*task 45*/
-    public int RotateToAxis(int[] i /*3*/)    
+    public int RotateToAxis(bool multitask, int[] i /*3*/)    
     {
+        Debug.Log($"{multitask}_{scriptName}_RotateToAxis({string.Join(",",i)})");
         // Rotate until rotation is X degrees around local axis
         // i[0]: axis (0/1/2)
         // i[1]: amount
         // i[2]: time to complete
-        Debug.Log($"{scriptName}: RotateToAxis");
-        currentTask = TaskType.task_rotating;
-        rotationCenter = position;
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_rotating;
+        newTask.duration = ((float)i[2])*TIME_VAL;;
+        newTask.timer = 0;
+
         Vector3 rt;
         switch(i[0])
         {
@@ -447,24 +441,31 @@ public class RGScriptedObject : MonoBehaviour
                 break;
         }
 
-        rt.x = Mathf.DeltaAngle(rotation.x, rt.x);
-        rt.y = Mathf.DeltaAngle(rotation.y, rt.y);
-        rt.z = Mathf.DeltaAngle(rotation.z, rt.z);
-        rotationTarget = rotation+rt;
-        rotationStart = rotation;
-        taskDuration = ((float)i[2])*TIME_VAL;;
-        taskTimer = 0;
+        Vector3 localRotation = transform.localEulerAngles;
+        rt.x = Mathf.DeltaAngle(localRotation.x, rt.x);
+        rt.y = Mathf.DeltaAngle(localRotation.y, rt.y);
+        rt.z = Mathf.DeltaAngle(localRotation.z, rt.z);
+        newTask.rotationTarget = localRotation+rt;
+        newTask.rotationStart = localRotation;
+        if(multitask == false)
+            mainTask = newTask;
+        else
+            multiTasks.Add(newTask);
         return 0;
     }
     /*task 53*/
-    public int MoveByAxis(int[] i /*3*/)    
+    public int MoveByAxis(bool multitask, int[] i /*3*/)    
     {
+        Debug.Log($"{multitask}_{scriptName}_MoveByAxis({string.Join(",",i)})");
         // Moves along local axis
         // i[0]: axis (0/1/2)
         // i[1]: amount
         // i[2]: time to complete
-        Debug.Log($"{scriptName}: MoveByAxis");
-        currentTask = TaskType.task_moving;
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_moving;
+        newTask.duration = ((float)i[2])*TIME_VAL;;
+        newTask.timer = 0;
+
         Vector3 mt;
         switch(i[0])
         {
@@ -482,38 +483,53 @@ public class RGScriptedObject : MonoBehaviour
                 break;
         }
         mt = gameObject.transform.TransformDirection(mt);
-        
-        positionTarget = position + mt;
-        positionStart = position;
-        taskDuration = ((float)i[2])*TIME_VAL;;
-        taskTimer = 0;
+        newTask.positionTarget = transform.localPosition + mt;
+        newTask.positionStart = transform.localPosition;
+        if(multitask == false)
+            mainTask = newTask;
+        else
+            multiTasks.Add(newTask);
         return 0;
     }
     /*task 60*/
-    public int Wait(int[] i /*1*/)    
+    public int Wait(bool multitask, int[] i /*1*/)    
     {
+        Debug.Log($"{multitask}_{scriptName}_Wait({string.Join(",",i)})");
         // Wait some time
         // i[0]: time to wait
-        Debug.Log($"{scriptName}: Wait");
-        currentTask = TaskType.task_waiting;
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_waiting;
+        newTask.duration = ((float)i[0])*TIME_VAL;;
+        newTask.timer = 0;
 
-        taskDuration = ((float)i[0])*TIME_VAL;;
-        taskTimer = 0;
+        if(multitask == false)
+            mainTask = newTask;
+        else
+            multiTasks.Add(newTask);
         return 0;
     }
     /*task 271*/
-    public int SyncWithGroup(int[] i /*1*/)    
+    public int SyncWithGroup(bool multitask, int[] i /*1*/)    
     {
-        // Sync with group to a sync point << ASSUMPTIONS HO
+        Debug.Log($"{multitask}_{scriptName}_SyncWithGroup({string.Join(",",i)})");
+        // Sync with group to a sync point
         // i[0]: sync point to wait for
-        Debug.Log($"{scriptName}: SyncWithGroup");
-        currentTask = TaskType.task_syncing;
-        sync_point = (uint)i[0];
+        mainTask.type = TaskType.task_syncing;
+        mainTask.syncPoint = (uint)i[0];
 
-        RGFamilyStore.DoGroupSync(attributes[29], sync_point);
-        // check if the whole group has the sync point
+        // unsets the sync point when the whole group is ready
+        RGFamilyStore.DoGroupSync(attributes[29], mainTask.syncPoint);
         return 0;
     }
-
-
+    public bool IsSyncPointSet(uint i)
+    {
+        if(mainTask.syncPoint == i)
+            return true;
+        else
+            return false;
+    }
+    public void clearSyncPoint()
+    {
+        mainTask.syncPoint = 0;
+    }
 }
