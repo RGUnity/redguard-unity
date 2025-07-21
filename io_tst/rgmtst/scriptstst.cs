@@ -49,8 +49,15 @@ namespace xyz
 			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
             RGRGMScriptStore.ReadScript(filergm);
             
-            ScriptData sd = new ScriptData("OB_CON07", funcs,0);
+            ScriptData sd = new ScriptData("OB_TEL04", funcs,0);
             sd.runScript();
+            sd.runScript();
+            sd.runScript();
+            sd.runScript();
+            sd.runScript();
+            Console.WriteLine($"FLAG195: {RGRGMScriptStore.flags[195]}");
+            Console.WriteLine($"FLAG196: {RGRGMScriptStore.flags[196]}");
+            Console.WriteLine($"FLAG197: {RGRGMScriptStore.flags[197]}");
 
 /*
             Console.WriteLine($"{filergm.RAHD.dict.Count}");

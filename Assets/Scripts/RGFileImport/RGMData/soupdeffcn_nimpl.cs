@@ -459,6 +459,9 @@ public class soupdeffcn_nimpl
     /*function*/
     public static int Light(bool multitask, int[] i /*2*/)	
     {
+        // Turns on a light
+        // i[0]: light radius
+        // i[1]: light intensity
         ThrowNIMPL("Light",i);
         return 0;
     }

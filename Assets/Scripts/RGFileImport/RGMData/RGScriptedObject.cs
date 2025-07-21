@@ -341,6 +341,8 @@ public class RGScriptedObject : MonoBehaviour
         functions[45] = RotateToAxis;
         functions[53] = MoveByAxis;
         functions[60] = Wait;
+        functions[62] = Light;
+        functions[65] = LightOff;
         functions[271] = SyncWithGroup;
 
         // overwrite all non-implemented functions with a NIMPL error
@@ -401,9 +403,11 @@ public class RGScriptedObject : MonoBehaviour
                 rt = new Vector3(0,0,0);
                 break;
         }
+        rt = Vector3.Scale(rt, RG3DStore.MESH_ROT_FLIP);
         Vector3 localRotation = transform.localEulerAngles;
         newTask.rotationTarget = localRotation+rt;
         newTask.rotationStart = localRotation;
+        Debug.Log($"lr: {localRotation}\nrt: {rt}\ntar:{newTask.rotationTarget}");
         if(multitask == false)
             mainTask = newTask;
         else
@@ -440,6 +444,7 @@ public class RGScriptedObject : MonoBehaviour
                 rt = new Vector3(0,0,0);
                 break;
         }
+        rt = Vector3.Scale(rt, RG3DStore.MESH_ROT_FLIP);
 
         Vector3 localRotation = transform.localEulerAngles;
         rt.x = Mathf.DeltaAngle(localRotation.x, rt.x);
@@ -508,6 +513,32 @@ public class RGScriptedObject : MonoBehaviour
             multiTasks.Add(newTask);
         return 0;
     }
+    /*function 62*/
+    public int Light(bool multitask, int[] i /*2*/)
+    {
+        // Turns on a light
+        // i[0]: light radius
+        // i[1]: light intensity
+
+        if(light == null)
+            light = gameObject.AddComponent<Light>();
+        light.enabled = true;
+        light.type = LightType.Point;
+        light.intensity = (float)(i[1]);
+        light.range = (float)(i[0])/20.0f;
+        return 0;
+    }
+    /*function 65*/
+    public int LightOff(bool multitask, int[] i /*0*/)
+    {
+        // Turns off a light
+
+        if(light != null)
+            light.enabled = false;
+        return 0;
+    }
+
+
     /*task 271*/
     public int SyncWithGroup(bool multitask, int[] i /*1*/)    
     {
