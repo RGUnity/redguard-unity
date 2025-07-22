@@ -56,8 +56,8 @@ public class RGScriptedObject : MonoBehaviour
         public float timer;
         public float duration;
         // rotating
-        public Vector3 rotationTarget;
-        public Vector3 rotationStart;
+        public Quaternion rotationTarget;
+        public Quaternion rotationStart;
         // moving
         public Vector3 positionTarget;
         public Vector3 positionStart;
@@ -155,8 +155,8 @@ public class RGScriptedObject : MonoBehaviour
 		position.y = -(float)(MPOB.posY)*RGM_MPOB_SCALE;
 		position.z = -(float)(0xFFFFFF-MPOB.posZ)*RGM_MPOB_SCALE;
         Vector3 rotation = RGRGMStore.eulers_from_MPOB_data(MPOB);
-		gameObject.transform.position = position;
-		gameObject.transform.Rotate(rotation);
+		transform.position = position;
+		transform.Rotate(rotation);
 
         allowAnimation = false;
 
@@ -275,6 +275,16 @@ public class RGScriptedObject : MonoBehaviour
                 multiTasks.RemoveAt(i);
         }
     }
+    // LERP a quaternion without forcing it the short way around
+    public static Quaternion LerpAbsolute(Quaternion p, Quaternion q, float t)
+    {
+        Quaternion r = Quaternion.identity;
+        r.x = p.x * (1f - t) + q.x * (t);
+        r.y = p.y * (1f - t) + q.y * (t);
+        r.z = p.z * (1f - t) + q.z * (t);
+        r.w = p.w * (1f - t) + q.w * (t);
+        return r;
+    }
     void UpdateTask(TaskData taskData)
     {
         float frameTime = Time.deltaTime;
@@ -288,17 +298,17 @@ public class RGScriptedObject : MonoBehaviour
                 break;
             case TaskType.task_rotating:
                 taskData.timer += frameTime;
-                Vector3 newRotation;
+                Quaternion newRotation;
                 if(taskData.timer < taskData.duration)
                 {
-                    newRotation = Vector3.Lerp(taskData.rotationStart, taskData.rotationTarget,taskData.timer/taskData.duration);
+                    newRotation = LerpAbsolute(taskData.rotationStart, taskData.rotationTarget,taskData.timer/taskData.duration);
                 }
                 else
                 {
                     newRotation = taskData.rotationTarget;
                     taskData.type = TaskType.task_idle;
                 }
-                gameObject.transform.localEulerAngles = newRotation;
+                transform.localRotation = newRotation;
                 break;
             case TaskType.task_moving:
                 taskData.timer += frameTime;
@@ -312,7 +322,7 @@ public class RGScriptedObject : MonoBehaviour
                     newPosition = taskData.positionTarget;
                     taskData.type = TaskType.task_idle;
                 }
-                gameObject.transform.localPosition = newPosition;
+                transform.localPosition = newPosition;
                 break;
             case TaskType.task_waiting:
                 taskData.timer += frameTime;
@@ -375,6 +385,26 @@ public class RGScriptedObject : MonoBehaviour
     }
 
     /*task 44*/
+    public Vector3 RGAxisToVector3(int RGAxis)
+    {
+        Vector3 axis;
+        switch(RGAxis)
+        {
+            case 0:
+                axis = Vector3.right;
+                break;
+            case 1:
+                axis = Vector3.up;
+                break;
+            case 2:
+                axis = Vector3.forward;
+                break;
+            default: 
+                axis = Vector3.forward;
+                break;
+        }
+        return Vector3.Scale(axis, new Vector3(1.0f, 1.0f,-1.0f));
+    }
     public int RotateByAxis(bool multitask, int[] i /*3*/)    
     {
         Debug.Log($"{multitask}_{scriptName}_RotateByAxis({string.Join(",",i)})");
@@ -387,27 +417,13 @@ public class RGScriptedObject : MonoBehaviour
         newTask.duration = ((float)i[2])*TIME_VAL;;
         newTask.timer = 0;
 
-        Vector3 rt;
-        switch(i[0])
-        {
-            case 0:
-                rt = new Vector3(((float)i[1])*DA2DG, 0.0f,0.0f);
-                break;
-            case 1:
-                rt = new Vector3(0.0f, ((float)i[1])*DA2DG,0.0f);
-                break;
-            case 2:
-                rt = new Vector3(0.0f, 0.0f,((float)i[1])*DA2DG);
-                break;
-            default:
-                rt = new Vector3(0,0,0);
-                break;
-        }
-        rt = Vector3.Scale(rt, RG3DStore.MESH_ROT_FLIP);
-        Vector3 localRotation = transform.localEulerAngles;
-        newTask.rotationTarget = localRotation+rt;
+        Vector3 axis = RGAxisToVector3(i[0]);
+        Quaternion rotationDelta = Quaternion.AngleAxis(((float)i[1])*DA2DG, axis);
+        Quaternion localRotation = transform.localRotation;
+
+        newTask.rotationTarget = rotationDelta*localRotation;
         newTask.rotationStart = localRotation;
-        Debug.Log($"lr: {localRotation}\nrt: {rt}\ntar:{newTask.rotationTarget}");
+//        Debug.Log($"lr: {localRotation}\nrt: {rt}\ntar:{newTask.rotationTarget}");
         if(multitask == false)
             mainTask = newTask;
         else
@@ -428,34 +444,18 @@ public class RGScriptedObject : MonoBehaviour
         newTask.duration = ((float)i[2])*TIME_VAL;;
         newTask.timer = 0;
 
-        Vector3 rt;
-        switch(i[0])
-        {
-            case 0:
-                rt = new Vector3(((float)i[1])*DA2DG, 0.0f,0.0f);
-                break;
-            case 1:
-                rt = new Vector3(0.0f, ((float)i[1])*DA2DG,0.0f);
-                break;
-            case 2:
-                rt = new Vector3(0.0f, 0.0f,((float)i[1])*DA2DG);
-                break;
-            default:
-                rt = new Vector3(0,0,0);
-                break;
-        }
-        rt = Vector3.Scale(rt, RG3DStore.MESH_ROT_FLIP);
+        Vector3 axis = RGAxisToVector3(i[0]);
+        Quaternion rotationDelta = Quaternion.AngleAxis(((float)i[1])/DA2DG, axis);
+        Quaternion localRotation = transform.localRotation;
 
-        Vector3 localRotation = transform.localEulerAngles;
-        rt.x = Mathf.DeltaAngle(localRotation.x, rt.x);
-        rt.y = Mathf.DeltaAngle(localRotation.y, rt.y);
-        rt.z = Mathf.DeltaAngle(localRotation.z, rt.z);
-        newTask.rotationTarget = localRotation+rt;
+        newTask.rotationTarget = rotationDelta;
         newTask.rotationStart = localRotation;
+//        Debug.Log($"lr: {localRotation}\nrt: {rt}\ntar:{newTask.rotationTarget}");
         if(multitask == false)
             mainTask = newTask;
         else
             multiTasks.Add(newTask);
+
         return 0;
     }
     /*task 53*/

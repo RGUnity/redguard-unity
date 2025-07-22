@@ -70,6 +70,9 @@ public class LoadWorld : MonoBehaviour
                 RGRGMScriptStore.flags[195] = 0;
 
         }
+		ModelLoader.scriptedObjects[0x82BE3B28].allowScripting = true; // OB_ORY01
+		ModelLoader.scriptedObjects[0x82BE3830].allowScripting = true; // OB_ORY02
+		ModelLoader.scriptedObjects[0x82BE0BF0].allowScripting = true; // OB_ORY03
         if(true)
         {
 //		ModelLoader.scriptedObjects[0x82BD3750].allowScripting = true; // X
