@@ -308,6 +308,31 @@ size: {dataLength:X}
 				return o;
 			}
 		}
+		public struct RGMRAHKSection
+        {
+            public byte[] data;     // its one big array of bytes
+			public RGMRAHKSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    data = memoryReader.ReadBytes((int)size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAHK section with error:\n{ex.Message}");
+                }
+            }
+			public override string ToString()
+			{
+                string o = new String($"###################################\nRAHK Data\n###################################");
+                for(int i=0;i<data.Length;i++)
+                {
+                    o += $"{data[i]}";
+                }
+                o += $"\n###################################";
+				return o;
+			}
+		}
 		public struct RGMRAATSection
         {
             public byte[] attributes;     // size bytes
@@ -1151,7 +1176,7 @@ size: {dataLength:X}
         public RGMRASBSection RASB;
         public RGMRAVASection RAVA;
         public RGMRASCSection RASC;
-        //public RGMRAHKSection RAHK;
+        public RGMRAHKSection RAHK;
         public RGMRALCSection RALC;
         public RGMRAEXSection RAEX;
         public RGMRAATSection RAAT;
@@ -1222,6 +1247,11 @@ size: {dataLength:X}
                     else if(Sections[Sections.Count-1].sectionName == "RASC")
                     {
                         RASC = new RGMRASCSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+
+                    else if(Sections[Sections.Count-1].sectionName == "RAHK")
+                    {
+                        RAHK = new RGMRAHKSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RAAT")
                     {

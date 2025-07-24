@@ -48,9 +48,11 @@ public static class ModelLoader
         // Add Mesh Components
         MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
         MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
+        MeshCollider meshCollider = obj.AddComponent<MeshCollider>();
 
         meshFilter.mesh = data_3D.mesh;
         meshRenderer.SetMaterials(data_3D.materials);
+        meshCollider.sharedMesh = meshFilter.mesh;
 
         // Set Position & Rotation
         obj.transform.position = position;

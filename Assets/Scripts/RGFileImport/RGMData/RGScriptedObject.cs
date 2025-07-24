@@ -24,7 +24,7 @@ public class RGScriptedObject : MonoBehaviour
 	// TODO: these are duplicated from RGRGMStore
 	const float RGM_MPOB_SCALE = 1/5120.0f;
 	
-	string objectName;
+	public string objectName;
 	public string scriptName;
 
     // used for animations: 3DC files might not have the same vertex count
@@ -39,6 +39,8 @@ public class RGScriptedObject : MonoBehaviour
 
 	SkinnedMeshRenderer skinnedMeshRenderer;
     Light light;
+    Collider collider;
+    public bool playerStanding;
 
     public byte[] attributes;
 
@@ -135,6 +137,7 @@ public class RGScriptedObject : MonoBehaviour
         light.type = LightType.Point;
         light.intensity = (float)(MPOB.intensity);
         light.range = (float)(MPOB.radius)/20.0f;
+
     }
     public void InstanciateLight(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm)
     {
@@ -163,6 +166,8 @@ public class RGScriptedObject : MonoBehaviour
         allowScripting = false;
         SetupFunctions();
 
+        playerStanding = false;
+
         switch(MPOB.type)
         {
             case RGFileImport.RGRGMFile.ObjectType.object_3d:
@@ -185,6 +190,10 @@ public class RGScriptedObject : MonoBehaviour
         Array.Copy(filergm.RAAT.attributes, RAHDData.index*256, attributes, 0, 256);
 
         // DO THIS AFTER SETTING POSITION AND ROTATION
+        /*
+        if(attributes[24] != 0) // attr_player_align
+            gameObject.tag = "PLAYER_ALIGN";
+        */
         if(attributes[25] != 0) // attr_master
             RGFamilyStore.AddMaster(attributes[25], this);
         if(attributes[26] != 0) // attr_slave
@@ -192,6 +201,11 @@ public class RGScriptedObject : MonoBehaviour
         if(attributes[29] != 0) // att_group
             RGFamilyStore.AddToGroup(attributes[29], this);
 
+        if(skinnedMeshRenderer.sharedMesh != null)
+        {
+            gameObject.AddComponent<MeshCollider>();
+            gameObject.GetComponent<MeshCollider>().sharedMesh = skinnedMeshRenderer.sharedMesh;
+        }
 
 	}
     public void SetAnim(int animId, int firstFrame)
@@ -352,7 +366,9 @@ public class RGScriptedObject : MonoBehaviour
         functions[53] = MoveByAxis;
         functions[60] = Wait;
         functions[62] = Light;
+        functions[64] = LightIntensity;
         functions[65] = LightOff;
+        functions[224] = PlayerStand;
         functions[271] = SyncWithGroup;
 
         // overwrite all non-implemented functions with a NIMPL error
@@ -528,6 +544,18 @@ public class RGScriptedObject : MonoBehaviour
         light.range = (float)(i[0])/20.0f;
         return 0;
     }
+    /*function 64*/
+    public int LightIntensity(bool multitask, int[] i /*1*/)
+    {
+        // Sets the light's intensity to something
+        // i[0]: light intensity
+
+        if(light == null)
+            return 0;
+        light.intensity = (float)(i[0]);
+        return 0;
+    }
+
     /*function 65*/
     public int LightOff(bool multitask, int[] i /*0*/)
     {
@@ -537,7 +565,16 @@ public class RGScriptedObject : MonoBehaviour
             light.enabled = false;
         return 0;
     }
-
+    /*task 224*/
+    public int PlayerStand(bool multitask, int[] i /*0*/)    
+    {
+        // returns true if the player is standing on the object
+        if(playerStanding)
+            return 1;
+        else
+            return 0;
+    }
+ 
 
     /*task 271*/
     public int SyncWithGroup(bool multitask, int[] i /*1*/)    

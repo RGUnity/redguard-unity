@@ -68,10 +68,10 @@ string DBG_op_2_str(byte op)
             o+="-";
             break;
         case 3:
-            o+="/";
+            o+="*";
             break;
         case 4:
-            o+="*";
+            o+="/";
             break;
         case 5:
             o+="<<";
@@ -189,10 +189,10 @@ void logDBG(string i)
                     o -= vals[i];
                     break;
                 case 3:
-                    o /= vals[i];
+                    o *= vals[i];
                     break;
                 case 4:
-                    o *= vals[i];
+                    o /= vals[i];
                     break;
                 case 5:
                     o = o<<vals[i];

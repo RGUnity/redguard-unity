@@ -56,24 +56,28 @@ public class LoadWorld : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown("space"))
+        if(true)
         {
             // copies
             ModelLoader.scriptedObjects[0x82BE1F78].allowScripting = true; // OB_TEL04
             ModelLoader.scriptedObjects[0x82BDD868].allowScripting = true; // OB_TEL00
             ModelLoader.scriptedObjects[0x82BDD628].allowScripting = true; // OB_TEL01
-        }
-        if(Input.GetKeyDown("1"))
-        {
-            RGRGMScriptStore.flags[195]++;
-            if(RGRGMScriptStore.flags[195]>12)
-                RGRGMScriptStore.flags[195] = 0;
+            ModelLoader.scriptedObjects[0x82BE2D08].allowScripting = true; // OB_PLT00
+            ModelLoader.scriptedObjects[0x82BDB7D0].allowScripting = true; // OB_CON01
+            ModelLoader.scriptedObjects[0x82BDD3F0].allowScripting = true; // OB_CON12
+            ModelLoader.scriptedObjects[0x82BDE5F0].allowScripting = true; // OB_CON02
+            ModelLoader.scriptedObjects[0x82BE4698].allowScripting = true; // OB_CON11
+            ModelLoader.scriptedObjects[0x82BE4DA0].allowScripting = true; // OB_CON04
+            ModelLoader.scriptedObjects[0x82BE4FD8].allowScripting = true; // OB_CON03
+            ModelLoader.scriptedObjects[0x82BE5668].allowScripting = true; // OB_CON05
+            ModelLoader.scriptedObjects[0x82BE5C58].allowScripting = true; // OB_CON08
+            ModelLoader.scriptedObjects[0x82BE66C8].allowScripting = true; // OB_CON10
+            ModelLoader.scriptedObjects[0x82BE6900].allowScripting = true; // OB_CON09
+            ModelLoader.scriptedObjects[0x82BE6B78].allowScripting = true; // OB_CON06
+            ModelLoader.scriptedObjects[0x82BE7988].allowScripting = true; // OB_CON07
 
         }
-		ModelLoader.scriptedObjects[0x82BE3B28].allowScripting = true; // OB_ORY01
-		ModelLoader.scriptedObjects[0x82BE3830].allowScripting = true; // OB_ORY02
-		ModelLoader.scriptedObjects[0x82BE0BF0].allowScripting = true; // OB_ORY03
-        if(true)
+        if(false)
         {
 //		ModelLoader.scriptedObjects[0x82BD3750].allowScripting = true; // X
 //		ModelLoader.scriptedObjects[0x82BD9D00].allowScripting = true; // X
@@ -104,7 +108,7 @@ public class LoadWorld : MonoBehaviour
 //		ModelLoader.scriptedObjects[0x82BDD3F0].allowScripting = true; // OB_CON12
 //		ModelLoader.scriptedObjects[0x82BDD628].allowScripting = true; // OB_TEL01
 //		ModelLoader.scriptedObjects[0x82BDD868].allowScripting = true; // OB_TEL00
-//		ModelLoader.scriptedObjects[0x82BDDB80].allowScripting = true; // OB_DOME1
+		ModelLoader.scriptedObjects[0x82BDDB80].allowScripting = true; // OB_DOME1
 //		ModelLoader.scriptedObjects[0x82BDDDB8].allowScripting = true; // OB_DOME7
 //		ModelLoader.scriptedObjects[0x82BDE188].allowScripting = true; // OB_DOME6
 //		ModelLoader.scriptedObjects[0x82BDE3C0].allowScripting = true; // OB_PLT03
