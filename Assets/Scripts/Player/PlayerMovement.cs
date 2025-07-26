@@ -342,7 +342,11 @@ public class PlayerMovement : MonoBehaviour
         Vector3 surfaceDownhillSphere = default;
         Vector3 surfaceDownhillRay = default;
 
-        if (Physics.SphereCast(transform.position, 0.34f, Vector3.down, out RaycastHit sphereHit, 0.7f, config.groundLayers))
+        float castRadius = 0.34f;
+        float castDistance = cc.height / 2 - (castRadius - 0.14f);
+        //Debug.DrawRay(transform.position, new Vector3(0, (castDistance + castRadius)*-1, 0), Color.darkOrange);
+        
+        if (Physics.SphereCast(transform.position, castRadius, Vector3.down, out RaycastHit sphereHit, castDistance, config.groundLayers))
         {
             _isGrounded = true;
             _surfaceAngleSphere = Vector3.Angle(Vector3.up, sphereHit.normal);
@@ -389,8 +393,15 @@ public class PlayerMovement : MonoBehaviour
             _surfaceDownhill = surfaceDownhillSphere;
         }
 
+        
+        
+        
         // Overhang check - returns true if the players feet are not visibly touching ground
-        if (Physics.SphereCast(transform.position, 0.15f, Vector3.down, out RaycastHit sphereHit2, 1f, config.groundLayers))
+        
+        float castRadius2 = 0.15f;
+        float castDistance2 = cc.height / 2 - (castRadius2 - 0.25f);
+        
+        if (Physics.SphereCast(transform.position, castRadius2, Vector3.down, out RaycastHit sphereHit2, castDistance2, config.groundLayers))
         {
             _feetVisiblyGrounded = true;
         }
