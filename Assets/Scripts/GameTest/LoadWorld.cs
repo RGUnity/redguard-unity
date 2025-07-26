@@ -57,7 +57,7 @@ public class LoadWorld : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(true)
+        if(false)
         {
 		ModelLoader.scriptedObjects[0x82BDF408].allowScripting = true; // OB_PLT04
 //		ModelLoader.scriptedObjects[0x82BDBC58].allowScripting = true; // OB_PLT07
@@ -83,13 +83,13 @@ public class LoadWorld : MonoBehaviour
 //		ModelLoader.scriptedObjects[0x82BE74E8].allowScripting = true; // OB_PIPE
 //		ModelLoader.scriptedObjects[0x82BE7730].allowScripting = true; // OB_ERSL
 //		ModelLoader.scriptedObjects[0x82BE7CA0].allowScripting = true; // OB_ERS10
-//		ModelLoader.scriptedObjects[0x82BDBC58].allowScripting = true; // OB_PLT07
+		ModelLoader.scriptedObjects[0x82BDBC58].allowScripting = true; // OB_PLT07
 //		ModelLoader.scriptedObjects[0x82BDBD98].allowScripting = true; // ERASMO
 //		ModelLoader.scriptedObjects[0x82BDBF70].allowScripting = true; // OB_GEAR
 //		ModelLoader.scriptedObjects[0x82BDC140].allowScripting = true; // OB_ENG03
 //		ModelLoader.scriptedObjects[0x82BDC378].allowScripting = true; // OB_PIPE
 //		ModelLoader.scriptedObjects[0x82BDE730].allowScripting = true; // GEARSND
-//		ModelLoader.scriptedObjects[0x82BDF408].allowScripting = true; // OB_PLT04
+		ModelLoader.scriptedObjects[0x82BDF408].allowScripting = true; // OB_PLT04
 //		ModelLoader.scriptedObjects[0x82BDFAC0].allowScripting = true; // OB_STJET
 //		ModelLoader.scriptedObjects[0x82BDFC00].allowScripting = true; // OB_STJET
 //		ModelLoader.scriptedObjects[0x82BE09B0].allowScripting = true; // GEARSND

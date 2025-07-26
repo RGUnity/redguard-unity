@@ -458,7 +458,6 @@ public class RGScriptedObject : MonoBehaviour
         return 0;
     }
 
-    /*task 44*/
     public Vector3 RGAxisToVector3(int RGAxis)
     {
         Vector3 axis;
@@ -479,6 +478,7 @@ public class RGScriptedObject : MonoBehaviour
         }
         return Vector3.Scale(axis, new Vector3(1.0f, 1.0f,-1.0f));
     }
+    /*task 44*/
     public int RotateByAxis(uint caller, bool multitask, int[] i /*3*/)    
     {
         Debug.Log($"{multitask}_{scriptName}_RotateByAxis({string.Join(",",i)})");
