@@ -12,6 +12,7 @@ public class ConfigManager : MonoBehaviour
     {
         public int iniversion;
         public string redguardPath;
+        public bool useGlidePaths;
         public int windowMode;
         public bool vsync;
         public bool limitFPS;

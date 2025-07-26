@@ -7,8 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
-    [SerializeField] private ConfigManager localConfigManager;
-    public static ConfigManager configManager;
     public static ConfigManager.ConfigData configData;
 
     public static bool isPaused;
@@ -18,11 +16,9 @@ public class Game : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Awake()
+    private void Awake()
     {
-        configManager = localConfigManager;
-    
-    
+        
         isPaused = false;
         Menu.isLoadedAdditively = false;
     
