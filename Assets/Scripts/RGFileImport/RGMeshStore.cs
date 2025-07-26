@@ -127,18 +127,18 @@ using(s_load_WLD2mesh.Auto()){
     {
 using(s_load_FLAT2mesh.Auto()){
         RG3DStore.Mesh3D_intermediate mesh_i = RG3DStore.LoadMeshIntermediateFlat(meshname);
-        return LoadMesh_3DStore(mesh_i, palettename, "FLATS");
+        return LoadMesh_3DStore(mesh_i, palettename, "FLATS", 0); // TODO: check if any FLATs have overrides
 }
     }
 
-    public static UnityData_3D f3D2Mesh(string meshname, string palettename)
+    public static UnityData_3D f3D2Mesh(string meshname, string palettename, int texture_override = 0)
     {
 using(s_load_3D2mesh.Auto()){
         RG3DStore.Mesh3D_intermediate mesh_i = RG3DStore.LoadMeshIntermediate3DC(meshname);
-        return LoadMesh_3DStore(mesh_i, palettename, "DEFAULT");
+        return LoadMesh_3DStore(mesh_i, palettename, "DEFAULT", texture_override);
 }
     }
-    private static UnityData_3D LoadMesh_3DStore(RG3DStore.Mesh3D_intermediate mesh_i, string palettename, string shadername)
+    private static UnityData_3D LoadMesh_3DStore(RG3DStore.Mesh3D_intermediate mesh_i, string palettename, string shadername, int texture_override)
     {
 using(s_load_3DStore.Auto()){
         List<Material> materials = new List<Material>();
@@ -159,7 +159,12 @@ pm_loadmesh_submesh.Begin();
         foreach(var submesh in mesh_i.submeshes)
         {
             string[] keys = submesh.Key.Split("/");
-            Material mat = RGTexStore.GetMaterial(palettename,Int32.Parse(keys[0]),Int32.Parse(keys[1]), shadername);
+            int texbsi = Int32.Parse(keys[0]);
+            int img = Int32.Parse(keys[1]);
+            if(texture_override != 0 && texbsi >= 0)
+                texbsi = texture_override;
+
+            Material mat = RGTexStore.GetMaterial(palettename, texbsi, img, shadername);
             materials.Add(mat);
 
             float aspect = (float)mat.mainTexture.height/(float)mat.mainTexture.width;

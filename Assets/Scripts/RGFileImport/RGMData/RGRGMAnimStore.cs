@@ -338,7 +338,6 @@ public static class RGRGMAnimStore
                     {
                         modelFile_tmp += (char)curc;
                     }
-//                    char[] delims = ['\\', '.'];
                     char[] delims = new char[2];
                     delims[0] = '\\';
                     delims[1] = '.';

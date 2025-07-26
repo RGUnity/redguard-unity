@@ -66,7 +66,7 @@ size: {dataLength:X}
                     dict = new Dictionary<string, RGMRAHDItem>();
                     for(int i=0;i<(int)num_items;i++)
                     {
-						RGMRAHDItem cur = new RGMRAHDItem(memoryReader);
+						RGMRAHDItem cur = new RGMRAHDItem(i, memoryReader);
                         dict.Add(cur.scriptName, cur);
                     }
                     memoryReader.ReadUInt32(); // no idea what this one is?
@@ -79,7 +79,7 @@ size: {dataLength:X}
 		}
 		public struct RGMRAHDItem
 		{
-
+            public int index; // not in the file; we need this for attributes
             public int unknown0;
             public int unknown1;
             public string scriptName;
@@ -137,8 +137,9 @@ size: {dataLength:X}
             public short textureId;
             public int RAVCOffset;
 
-			public RGMRAHDItem(MemoryReader memoryReader)
+			public RGMRAHDItem(int i, MemoryReader memoryReader)
             {
+                index = i;
                 try
                 {
                     unknown0 = memoryReader.ReadInt32();
@@ -212,6 +213,7 @@ size: {dataLength:X}
             public char[] text;     // its one big string
 			public RGMRASTSection(MemoryReader memoryReader, uint size)
             {
+                Console.WriteLine($"RASBSIZE: {size:X}");
                 try
                 {
                     text = memoryReader.ReadChars((int)size);
@@ -307,6 +309,31 @@ size: {dataLength:X}
 				return o;
 			}
 		}
+		public struct RGMRAHKSection
+        {
+            public byte[] data;     // its one big array of bytes
+			public RGMRAHKSection(MemoryReader memoryReader, uint size)
+            {
+                try
+                {
+                    data = memoryReader.ReadBytes((int)size);
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load RGM RAHK section with error:\n{ex.Message}");
+                }
+            }
+			public override string ToString()
+			{
+                string o = new String($"###################################\nRAHK Data\n###################################");
+                for(int i=0;i<data.Length;i++)
+                {
+                    o += $"{data[i]}";
+                }
+                o += $"\n###################################";
+				return o;
+			}
+		}
 		public struct RGMRAATSection
         {
             public byte[] attributes;     // size bytes
@@ -372,7 +399,7 @@ size: {dataLength:X}
 		}
 		public struct RGMMPOBItem
 		{
-			public int id;           // 4 bytes 0
+			public uint id;           // 4 bytes 0
             public ObjectType type;
 			public byte isActive;    // 1 byte  5
             public string scriptName;      // 9 bytes 6
@@ -398,7 +425,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    id = memoryReader.ReadInt32();
+                    id = memoryReader.ReadUInt32();
                     type =  (ObjectType)memoryReader.ReadByte();
                     isActive =  memoryReader.ReadByte();
 
@@ -443,7 +470,7 @@ size: {dataLength:X}
 
 		public struct RGMMPSOItem
 		{
-			public int id;           //  4 bytes
+			public uint id;           //  4 bytes
             public string name;            // 12 bytes
             public int posX;              //  4 bytes; increasing moves position east
             public int posY;           //  4 bytes increasing moves position up
@@ -459,7 +486,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    id = memoryReader.ReadInt32();
+                    id = memoryReader.ReadUInt32();
                     char[] name_char;
                     name_char = memoryReader.ReadChars(12);
                     string[] name_strs = new string(name_char).Split('\0');
@@ -502,7 +529,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    num_items = memoryReader.ReadUInt32(); // why the extra 4 bytes? no idea
+                    num_items = memoryReader.ReadUInt32();
                     items = new List<RGMMPSOItem>();
                     for(int i=0;i<(int)num_items;i++)
                     {
@@ -638,7 +665,7 @@ size: {dataLength:X}
 		}
 		public struct RGMMPSFItem
 		{
-            public int id;
+            public uint id;
             public int unknown0;
             public int posX;
             public int posY;
@@ -651,7 +678,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    id = memoryReader.ReadInt32();
+                    id = memoryReader.ReadUInt32();
                     unknown0 = memoryReader.ReadInt32();
 
                     posX = memoryReader.ReadInt24();
@@ -696,7 +723,7 @@ size: {dataLength:X}
 		}
 		public struct RGMMPSLItem
 		{
-            public int id;
+            public uint id;
             public int worldId;
             public int posX;
             public int posY;
@@ -712,7 +739,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    id = memoryReader.ReadInt32();
+                    id = memoryReader.ReadUInt32();
                     worldId = memoryReader.ReadInt32();
                     posX = memoryReader.ReadInt32();
                     posY = memoryReader.ReadInt32();
@@ -754,7 +781,7 @@ size: {dataLength:X}
 		}
 		public struct RGMMPRPItem
 		{
-            public int id;
+            public uint id;
             public byte unknown0;
             public int posX;
             public int posY;
@@ -772,7 +799,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    id = memoryReader.ReadInt32();
+                    id = memoryReader.ReadUInt32();
                     unknown0 = memoryReader.ReadByte();
                     posX = memoryReader.ReadInt24();
                     memoryReader.ReadByte();
@@ -1150,7 +1177,7 @@ size: {dataLength:X}
         public RGMRASBSection RASB;
         public RGMRAVASection RAVA;
         public RGMRASCSection RASC;
-        //public RGMRAHKSection RAHK;
+        public RGMRAHKSection RAHK;
         public RGMRALCSection RALC;
         public RGMRAEXSection RAEX;
         public RGMRAATSection RAAT;
@@ -1221,6 +1248,11 @@ size: {dataLength:X}
                     else if(Sections[Sections.Count-1].sectionName == "RASC")
                     {
                         RASC = new RGMRASCSection(memoryReader, Sections[Sections.Count-1].dataLength);
+                    }
+
+                    else if(Sections[Sections.Count-1].sectionName == "RAHK")
+                    {
+                        RAHK = new RGMRAHKSection(memoryReader, Sections[Sections.Count-1].dataLength);
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RAAT")
                     {

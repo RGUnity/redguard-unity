@@ -5,6 +5,7 @@ using Unity.Profiling;
 
 public static class ModelLoader
 {
+    public static Dictionary<uint, RGScriptedObject> scriptedObjects;
     public static string RedguardPath = "C:/Program Files (x86)/GOG Galaxy/Games/Redguard/Redguard";
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -47,9 +48,11 @@ public static class ModelLoader
         // Add Mesh Components
         MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
         MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
+        MeshCollider meshCollider = obj.AddComponent<MeshCollider>();
 
         meshFilter.mesh = data_3D.mesh;
         meshRenderer.SetMaterials(data_3D.materials);
+        meshCollider.sharedMesh = meshFilter.mesh;
 
         // Set Position & Rotation
         obj.transform.position = position;
@@ -66,6 +69,7 @@ public static class ModelLoader
 
     private static List<GameObject> LoadRGM(string gamepath, string RGMname, string name_col)
     {
+        scriptedObjects = new Dictionary<uint, RGScriptedObject>();
         List<GameObject> areaObjects = new List<GameObject>();
         List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(RGMname);
         List<RGRGMStore.RGRGMData> RGM_MPSFs = RGRGMStore.LoadMPSF(RGMname);
@@ -75,6 +79,7 @@ public static class ModelLoader
         RGFileImport.RGRGMFile filergm = RGRGMStore.GetRGM(RGMname);
         s_load_RGM.End();
         RGRGMAnimStore.ReadAnim(filergm);
+        RGRGMScriptStore.ReadScript(filergm);
 
         s_load_MPOB.Begin();
         for(int i=0;i<filergm.MPOB.items.Count;i++)
@@ -87,7 +92,9 @@ public static class ModelLoader
                 
 				spawned.AddComponent<RGScriptedObject>();
 				spawned.GetComponent<RGScriptedObject>().Instanciate(filergm.MPOB.items[i], filergm, name_col);
-                spawned.GetComponent<RGScriptedObject>().SetAnim(20);
+                scriptedObjects.Add(filergm.MPOB.items[i].id, spawned.GetComponent<RGScriptedObject>());
+
+//                spawned.GetComponent<RGScriptedObject>().SetAnim(20,0);
             }
             catch(Exception ex)
             {
@@ -104,7 +111,7 @@ public static class ModelLoader
                 RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, RGM_MPSOs[i].name, name_col);
                 GameObject obj = Add3DToScene($"S{i:D3}_{RGM_MPSOs[i].name}",  data_3D, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
                 obj.isStatic = true;
-               areaObjects.Add(obj);
+                areaObjects.Add(obj);
             }
             catch(Exception ex)
             {
@@ -118,7 +125,7 @@ public static class ModelLoader
             // Create flats
             RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_flat, RGM_MPSFs[i].name, name_col);
             GameObject obj = Add3DToScene($"F{i:D3}_{RGM_MPSFs[i].name}",  data_3D, RGM_MPSFs[i].position, RGM_MPSFs[i].rotation);
-           areaObjects.Add(obj);
+            areaObjects.Add(obj);
         }
         s_load_MPSF.End();
         s_load_MPRP.Begin();
@@ -134,13 +141,13 @@ public static class ModelLoader
                 {
                     pos.y -= 0.8f; // TODO: is this always correct?
                     GameObject obj = Add3DToScene($"R{i:D3}_{j:D3}_{RGM_MPRPs[i].ropeModel}",  data_3D, pos, new Vector3(0.0f,0.0f,0.0f));
-                   areaObjects.Add(obj);
+                    areaObjects.Add(obj);
                 }
                 if(RGM_MPRPs[i].staticModel != null)
                 {
                     pos.y -= 0.8f; // TODO: is this always correct?
                     GameObject obj = Add3DToScene($"R{i:D3}_{j:D3}_{RGM_MPRPs[i].staticModel}",  data_3D, pos, new Vector3(0.0f,0.0f,0.0f));
-                   areaObjects.Add(obj);
+                    areaObjects.Add(obj);
                 }
             }
             catch(Exception ex)

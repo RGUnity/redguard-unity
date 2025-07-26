@@ -65,11 +65,55 @@ namespace xyz
 		public static void Main(string[] args)
 		{
 			RGRGMFile filergm = new RGRGMFile();
-			filergm.LoadFile("../../game_3dfx/maps/ISLAND.RGM");
-            for(int i=0;i<filergm.MPSF.num_items;i++)
+			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
+
+            /*
+            foreach(var entry in filergm.RAHD.dict)
             {
-                Console.WriteLine($"{filergm.MPSF.items[i].tex:X}");
+                Console.WriteLine($"{entry.Value.scriptName}: {entry.Value.RANMLength}");
+                MemoryReader RANMReader = new MemoryReader(filergm.RANM.data);
+                RANMReader.Seek((uint)entry.Value.RANMOffset, 0);
+
+                char[] curc = RANMReader.ReadChars(entry.Value.RANMLength -1);
+                string modelname = new string(curc);
+
+                Console.WriteLine($"NAM: {modelname}");
+ 
             }
+            */
+            /*
+            foreach(var entry in filergm.RAHD.dict)
+            {
+                Console.WriteLine($"{entry.Value.scriptName}: {entry.Value.RALCCount}/{entry.Value.RALCLength}/{entry.Value.RALCOffset}");
+                int RALC_LOC_CNT = entry.Value.RALCLength/12;
+                int RALC_LOC_OFS = entry.Value.RALCOffset/12;
+                for(int i=0;i<entry.Value.RALCCount;i++)
+                {
+                    RGRGMFile.RGMRALCItem it = filergm.RALC.items[RALC_LOC_OFS+i];
+                    Console.WriteLine($"LOC {i}: {it.offsetX},{it.offsetY},{it.offsetZ}");
+                }
+            }
+            */
+            for(int i=0;i<filergm.MPOB.num_items;i++)
+            {
+                RGRGMFile.RGMMPOBItem it = filergm.MPOB.items[i];
+                //Console.WriteLine($"//\t\tModelLoader.scriptedObjects[0x{it.id:X}].allowScripting = true; // {it.scriptName}");
+                Console.WriteLine($"{it.id:X}; {it.scriptName}");
+ 
+            }
+            /*
+            MemoryReader memoryReader = new MemoryReader(filergm.RAAN.data);
+            foreach(var entry in filergm.RAHD.dict)
+            {
+                Console.WriteLine($"{entry.Value.scriptName}:");
+                memoryReader.Seek((uint)entry.Value.RAANOffset, 0);
+
+                char[] curc = memoryReader.ReadChars(entry.Value.RAANLength);
+                string modelname = new string(curc);
+
+                Console.WriteLine($"NAM: {modelname}");
+            }
+            */
 //            Console.WriteLine(filergm.RAHD);
             //filergm.PrintRGM();
 //            print_MPOB(filergm);
