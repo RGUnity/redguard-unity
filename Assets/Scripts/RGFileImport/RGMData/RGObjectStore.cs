@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using RGFileImport;
 using UnityEngine;
 
-public class RGFamilyStore
+public class RGObjectStore
 {
     public class MasterSlavesStruct
     {
@@ -41,6 +41,17 @@ public class RGFamilyStore
     }
     public static Dictionary<uint, List<RGScriptedObject>> scriptedGroups;
     public static Dictionary<uint, MasterSlavesStruct> scriptedSlaves;
+    static RGScriptedObject player;
+
+// special objects
+    public static void SetPlayer(RGScriptedObject newPlayer)
+    {
+        player = newPlayer;
+    }
+    public static RGScriptedObject GetPlayer()
+    {
+        return player;
+    }
 // groups
     public static void AddToGroup(uint groupId, RGScriptedObject o)
     {

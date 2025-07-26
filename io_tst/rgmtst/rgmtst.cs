@@ -65,13 +65,26 @@ namespace xyz
 		public static void Main(string[] args)
 		{
 			RGRGMFile filergm = new RGRGMFile();
-			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
+			filergm.LoadFile("../../game_3dfx/maps/ISLAND.RGM");
+            foreach(var entry in filergm.RAHD.dict)
+            {
+                Console.WriteLine($"{entry.Value.scriptName}: {entry.Value.RALCCount}/{entry.Value.RALCLength}/{entry.Value.RALCOffset}");
+                int RALC_LOC_CNT = entry.Value.RALCLength/12;
+                int RALC_LOC_OFS = entry.Value.RALCOffset/12;
+                for(int i=0;i<entry.Value.RALCCount;i++)
+                {
+                    RGRGMFile.RGMRALCItem it = filergm.RALC.items[RALC_LOC_OFS+i];
+                    Console.WriteLine($"LOC {i}: {it.offsetX},{it.offsetY},{it.offsetZ}");
+                }
+            }
+            /*
             for(int i=0;i<filergm.MPOB.num_items;i++)
             {
                 RGRGMFile.RGMMPOBItem it = filergm.MPOB.items[i];
                 Console.WriteLine($"//\t\tModelLoader.scriptedObjects[0x{it.id:X}].allowScripting = true; // {it.scriptName}");
  
             }
+            */
             /*
             MemoryReader memoryReader = new MemoryReader(filergm.RAAN.data);
             foreach(var entry in filergm.RAHD.dict)
