@@ -7,12 +7,6 @@ public static class ModelLoader
 {
     public static string RedguardPath = "C:/Program Files (x86)/GOG Galaxy/Games/Redguard/Redguard";
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    static void Start()
-    {
-        // todo: load RedguardPath from config file
-    }
-    
     public static GameObject Load3DC(string f3DCname, string colname)
     {
         RGRGMStore.maps_path = RedguardPath +"/maps/";
@@ -22,6 +16,9 @@ public static class ModelLoader
         RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, f3DCname, colname);
         GameObject obj = Add3DToScene($"3DC_{f3DCname}",  data_3D, Vector3.zero, Vector3.zero);
         return obj;
+        
+        // Todo: namespace cleanup
+        //Debug.Log(Game.configData.redguardPath);
     }
 
 

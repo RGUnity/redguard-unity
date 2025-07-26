@@ -7,6 +7,9 @@ public static class Bootstrapper
     public static void Execute()
     {
         Object.DontDestroyOnLoad(Object.Instantiate(Resources.Load("Systems")));
-        SceneManager.LoadScene("Scenes/Launcher", LoadSceneMode.Additive);
+        if (SceneManager.GetActiveScene().name == "Main")
+        {
+            SceneManager.LoadScene("Scenes/Launcher", LoadSceneMode.Additive);
+        }
     }
 }

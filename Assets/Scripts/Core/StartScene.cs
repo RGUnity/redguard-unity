@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,10 +11,7 @@ public class StartScene : MonoBehaviour
     
     private void Awake()
     {
-        mainPanel.SetActive(false);
-        setupPanel.SetActive(true);
-        
-        // // Move window to the center of screen (because we deleted a PlayerPrefs key) 
+        // Move window to the center of screen (because we deleted a PlayerPrefs key) 
         List<DisplayInfo> displays = new List<DisplayInfo>();
         Screen.GetDisplayLayout(displays);
         
@@ -22,18 +19,26 @@ public class StartScene : MonoBehaviour
         int height = Display.main.systemHeight/2 - Screen.height/2;
         
         Screen.MoveMainWindowTo(displays[0], new Vector2Int(width, height));
+
+        if (redguardPathExists())
+        {
+            // Show Launcher
+            setupPanel.SetActive(false);
+            mainPanel.SetActive(true);
+            print("Redguard Path found in config. No setup needed. Path: " + Game.configData.redguardPath);
+        }
+        else
+        {
+            // Show Setup
+            setupPanel.SetActive(true);
+            mainPanel.SetActive(false);
+            print("No Redguard path found in config. Proceeding with setup window");
+        }
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private bool redguardPathExists()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        return  File.Exists(Game.configData.redguardPath + "/redguard.exe");
     }
 
     public void Button_Continue()

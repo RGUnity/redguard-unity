@@ -5,56 +5,10 @@ using UnityEngine;
 
 public class ConfigManager : MonoBehaviour
 {
-    string configPath;
-    string defaultConfigPath;
-    private ConfigData configData;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        configPath = Application.persistentDataPath + "/Config.json";
-        defaultConfigPath = Application.streamingAssetsPath + "/Config_default.json";
-        
-        if (File.Exists(configPath))
-        {
-            string jsonString = File.ReadAllText(configPath);
-            configData = JsonUtility.FromJson<ConfigData>(jsonString);
-            print("Config Found with version " + configData.iniversion );
-        }
-        else
-        {
-            print("No Config found. Restoring default config.");
-            if (File.Exists(defaultConfigPath))
-            {
-                string jsonString = File.ReadAllText(defaultConfigPath);
-                File.WriteAllText(configPath, jsonString);
-                print("Saved new config as " + configPath);
-            }
-            else
-            {
-                Debug.LogWarning("Failed to restore default config. Missing file at " + defaultConfigPath);
-            }
-        }
-        
-        
-   
+    private string ConfigPath;
+    private string DefaultConfigPath;
 
-        // print(data.Values.Count);
-        // var iniversion = data["iniversion"];
-        // print(iniversion);
-
-        // string redguardPath = configData.redguardPath;
-        // print(redguardPath);
-        // print(JsonUtility.ToJson(configData, true));
-
-        // var ConfigData = new ConfigData();
-        // var jsonString = JsonUtility.ToJson(ConfigData);
-        // print(jsonString);
-
-
-    }
-    
-    private class ConfigData
+    public class ConfigData
     {
         public int iniversion;
         public string redguardPath;
@@ -72,4 +26,38 @@ public class ConfigManager : MonoBehaviour
         public bool newControls;
     }
 
+    private void Awake()
+    {
+        InitializeConfig();
+    }
+
+    private void InitializeConfig()
+    {
+        ConfigPath = Application.persistentDataPath + "/Config.json";
+        DefaultConfigPath = Application.streamingAssetsPath + "/Config_default.json";
+    
+        // If a config already exists, load it
+        if (File.Exists(ConfigPath))
+        {
+            string jsonString = File.ReadAllText(ConfigPath);
+            Game.configData = JsonUtility.FromJson<ConfigData>(jsonString);
+            print("Config Found with version " + Game.configData.iniversion );
+        }
+        // if none is found, try to create a new config
+        else
+        {
+            print("No Config found. Restoring default config.");
+            if (File.Exists(DefaultConfigPath))
+            {
+                string jsonString = File.ReadAllText(DefaultConfigPath);
+                File.WriteAllText(ConfigPath, jsonString);
+                print("Saved new config as " + ConfigPath);
+            }
+            else
+            {
+                Debug.LogWarning("Failed to restore default config. Missing file at " + DefaultConfigPath);
+            }
+        }
+    }
 }
+
