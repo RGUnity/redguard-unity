@@ -20,19 +20,17 @@ public class StartScene : MonoBehaviour
         
         Screen.MoveMainWindowTo(displays[0], new Vector2Int(width, height));
 
-        if (PathManager.RedguardPathExists())
+        if (PathManager.CheckPaths())
         {
             // Show Launcher
             setupPanel.SetActive(false);
             mainPanel.SetActive(true);
-            print("Redguard Path found in config. No setup needed. Path: " + Game.configData.redguardPath);
         }
         else
         {
             // Show Setup
             setupPanel.SetActive(true);
             mainPanel.SetActive(false);
-            print("No Redguard path found in config. Proceeding with setup window");
         }
     }
 

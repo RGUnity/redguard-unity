@@ -40,8 +40,7 @@ public class ConfigManager : MonoBehaviour
         // If a config already exists, load it
         if (File.Exists(ConfigPath))
         {
-            string jsonString = File.ReadAllText(ConfigPath);
-            Game.configData = JsonUtility.FromJson<ConfigData>(jsonString);
+            Game.configData = LoadConfig(ConfigPath);
             print("Config Found with version " + Game.configData.iniversion );
         }
         // if none is found, try to create a new config
@@ -53,12 +52,19 @@ public class ConfigManager : MonoBehaviour
                 string jsonString = File.ReadAllText(DefaultConfigPath);
                 File.WriteAllText(ConfigPath, jsonString);
                 print("Saved new config as " + ConfigPath);
+                Game.configData = LoadConfig(ConfigPath);
             }
             else
             {
                 Debug.LogWarning("Failed to restore default config. Missing file at " + DefaultConfigPath);
             }
         }
+    }
+
+    private ConfigData LoadConfig(string path)
+    {
+        string jsonString = File.ReadAllText(path);
+        return JsonUtility.FromJson<ConfigData>(jsonString);
     }
 }
 

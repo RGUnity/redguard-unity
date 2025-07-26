@@ -1,14 +1,17 @@
+using System;
 using System.IO;
 using UnityEngine;
 
 public class PathManager : MonoBehaviour
 {
+    public static bool useGlidePaths = false;
+    
     public static string GetRootFolder()
     {
         return Game.configData.redguardPath;
     }
 
-    public string GetArtFolder()
+    public static string GetArtFolder()
     {
         if (Game.configData.useGlidePaths)
         {
@@ -20,13 +23,33 @@ public class PathManager : MonoBehaviour
         }
     }
 
-    public string GetMapsFolder()
+    public static string GetMapsFolder()
     {
         return Game.configData.redguardPath + "/maps";
     }
 
-    public static bool RedguardPathExists()
+    public static bool CheckPaths()
     {
-        return Directory.Exists(GetRootFolder());
+        var rootPath = GetRootFolder();
+        if (Directory.Exists(rootPath))
+        {
+            print("configData.redguardPath does exist. Tested with path: " + rootPath);
+            
+            if (Directory.Exists(rootPath + "/3dart"))
+            {
+                useGlidePaths = false;
+                print("Using Non-Glide Paths");
+                return true;
+            }
+
+            if (Directory.Exists(rootPath + "/fxart"))
+            {
+                useGlidePaths = true;
+                print("Using Glide Paths");
+                return true;
+            }
+        }
+        print("configData.redguardPath is invalid. Tested with path: " + rootPath);
+        return false;
     }
 }
