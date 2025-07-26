@@ -15,244 +15,244 @@ public class soupdeffcn_nimpl
     {
         throw new Exception($"NIMPL: {s}({string.Join(",",i)})");
     }
-    public static int PLACEHOLDER_ZERO(string objectName, bool multitask, int[] i /*4*/)
+    public static int PLACEHOLDER_ZERO(uint caller, bool multitask, int[] i /*4*/)
     {
         ThrowNIMPL("PLACEHOLDER_ZERO",i);
         return 0;
     }
     /*task*/
-    public static int sRotate(string objectName, bool multitask, int[] i /*4*/)
+    public static int sRotate(uint caller, bool multitask, int[] i /*4*/)
     {
         ThrowNIMPL("sRotate",i);
         return 0;
     }
 
     /*task*/
-    public static int sRotateByAxis(string objectName, bool multitask, int[] i /*3*/)	
+    public static int sRotateByAxis(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("sRotateByAxis",i);
         return 0;
     }
 
     /*task*/
-    public static int sRotateToAxis(string objectName, bool multitask, int[] i /*3*/)	
+    public static int sRotateToAxis(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("sRotateToAxis",i);
         return 0;
     }
 
     /*task*/
-    public static int sMove(string objectName, bool multitask, int[] i /*4*/)	
+    public static int sMove(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("sMove",i);
         return 0;
     }
 
     /*task*/
-    public static int sMoveByAxis(string objectName, bool multitask, int[] i /*3*/)	
+    public static int sMoveByAxis(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("sMoveByAxis",i);
         return 0;
     }
 
     /*task*/
-    public static int sMoveAlongAxis(string objectName, bool multitask, int[] i /*3*/)	
+    public static int sMoveAlongAxis(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("sMoveAlongAxis",i);
         return 0;
     }
 
     /*function*/
-    public static int HeaderHook(string objectName, bool multitask, int[] i /*0*/)	
+    public static int HeaderHook(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("HeaderHook",i);
         return 0;
     }
 
     /*task*/
-    public static int swordAI(string objectName, bool multitask, int[] i /*0*/)	
+    public static int swordAI(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("swordAI",i);
         return 0;
     }
 
     /*task*/
-    public static int projectileAI(string objectName, bool multitask, int[] i /*0*/)	
+    public static int projectileAI(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("projectileAI",i);
         return 0;
     }
 
     /*function*/
-    public static int chargeWeapon(string objectName, bool multitask, int[] i /*1*/)	
+    public static int chargeWeapon(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("chargeWeapon",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerMain(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerMain(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerMain",i);
         return 0;
     }
 
     /*function*/
-    public static int PrintParms(string objectName, bool multitask, int[] i /*8*/)	
+    public static int PrintParms(uint caller, bool multitask, int[] i /*8*/)	
     {
         ThrowNIMPL("PrintParms",i);
         return 0;
     }
 
     /*function*/
-    public static int LogParms(string objectName, bool multitask, int[] i /*8*/)	
+    public static int LogParms(uint caller, bool multitask, int[] i /*8*/)	
     {
         ThrowNIMPL("LogParms",i);
         return 0;
     }
 
     /*function*/
-    public static int PrintStringParm(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PrintStringParm(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PrintStringParm",i);
         return 0;
     }
 
     /*function*/
-    public static int PrintSingleParm(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PrintSingleParm(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PrintSingleParm",i);
         return 0;
     }
 
     /*function*/
-    public static int SpacePressed(string objectName, bool multitask, int[] i /*0*/)	
+    public static int SpacePressed(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("SpacePressed",i);
         return 0;
     }
 
     /*task*/
-    public static int WaitOnTasks(string objectName, bool multitask, int[] i /*0*/)	
+    public static int WaitOnTasks(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("WaitOnTasks",i);
         return 0;
     }
 
     /*function*/
-    public static int updatePlayerViewAttrib(string objectName, bool multitask, int[] i /*0*/)	
+    public static int updatePlayerViewAttrib(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("updatePlayerViewAttrib",i);
         return 0;
     }
 
     /*function*/
-    public static int cameraController(string objectName, bool multitask, int[] i /*0*/)	
+    public static int cameraController(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("cameraController",i);
         return 0;
     }
 
     /*task*/
-    public static int showObjRot(string objectName, bool multitask, int[] i /*8*/)	
+    public static int showObjRot(uint caller, bool multitask, int[] i /*8*/)	
     {
         ThrowNIMPL("showObjRot",i);
         return 0;
     }
 
     /*task*/
-    public static int showObj(string objectName, bool multitask, int[] i /*3*/)	
+    public static int showObj(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("showObj",i);
         return 0;
     }
 
     /*task*/
-    public static int showObjLoc(string objectName, bool multitask, int[] i /*3*/)	
+    public static int showObjLoc(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("showObjLoc",i);
         return 0;
     }
 
     /*task*/
-    public static int showObjPan(string objectName, bool multitask, int[] i /*4*/)	
+    public static int showObjPan(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("showObjPan",i);
         return 0;
     }
 
     /*task*/
-    public static int showObjPanLoc(string objectName, bool multitask, int[] i /*4*/)	
+    public static int showObjPanLoc(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("showObjPanLoc",i);
         return 0;
     }
 
     /*task*/
-    public static int lookObj(string objectName, bool multitask, int[] i /*1*/)	
+    public static int lookObj(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("lookObj",i);
         return 0;
     }
 
     /*task*/
-    public static int showPlayer(string objectName, bool multitask, int[] i /*0*/)	
+    public static int showPlayer(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("showPlayer",i);
         return 0;
     }
 
     /*task*/
-    public static int showPlayerPan(string objectName, bool multitask, int[] i /*1*/)	
+    public static int showPlayerPan(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("showPlayerPan",i);
         return 0;
     }
 
     /*task*/
-    public static int lookCyrus(string objectName, bool multitask, int[] i /*1*/)	
+    public static int lookCyrus(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("lookCyrus",i);
         return 0;
     }
 
     /*task*/
-    public static int showCyrus(string objectName, bool multitask, int[] i /*3*/)	
+    public static int showCyrus(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("showCyrus",i);
         return 0;
     }
 
     /*task*/
-    public static int showCyrusLoc(string objectName, bool multitask, int[] i /*3*/)	
+    public static int showCyrusLoc(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("showCyrusLoc",i);
         return 0;
     }
 
     /*task*/
-    public static int showCyrusPan(string objectName, bool multitask, int[] i /*4*/)	
+    public static int showCyrusPan(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("showCyrusPan",i);
         return 0;
     }
 
     /*task*/
-    public static int showCyrusPanLoc(string objectName, bool multitask, int[] i /*4*/)	
+    public static int showCyrusPanLoc(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("showCyrusPanLoc",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayAnimation(string objectName, bool multitask, int[] i /*2*/)	
+    public static int PlayAnimation(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("PlayAnimation",i);
         return 0;
     }
 
     /*function*/
-    public static int lockoutPlayer(string objectName, bool multitask, int[] i /*1*/)	
+    public static int lockoutPlayer(uint caller, bool multitask, int[] i /*1*/)	
     {
         // Enable/disable player input
         // i[0]: 1 disables input, 0 enables it
@@ -261,70 +261,70 @@ public class soupdeffcn_nimpl
     }
 
     /*function*/
-    public static int menuNew(string objectName, bool multitask, int[] i /*0*/)	
+    public static int menuNew(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("menuNew",i);
         return 0;
     }
 
     /*task*/
-    public static int menuProc(string objectName, bool multitask, int[] i /*0*/)	
+    public static int menuProc(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("menuProc",i);
         return 0;
     }
 
     /*function*/
-    public static int menuAddItem(string objectName, bool multitask, int[] i /*3*/)	
+    public static int menuAddItem(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("menuAddItem",i);
         return 0;
     }
 
     /*function*/
-    public static int menuSelection(string objectName, bool multitask, int[] i /*0*/)	
+    public static int menuSelection(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("menuSelection",i);
         return 0;
     }
 
     /*task*/
-    public static int RTX(string objectName, bool multitask, int[] i /*1*/)	
+    public static int RTX(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("RTX",i);
         return 0;
     }
 
     /*task*/
-    public static int rtxAnim(string objectName, bool multitask, int[] i /*4*/)	
+    public static int rtxAnim(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("rtxAnim",i);
         return 0;
     }
 
     /*task*/
-    public static int RTXpAnim(string objectName, bool multitask, int[] i /*4*/)	
+    public static int RTXpAnim(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("RTXpAnim",i);
         return 0;
     }
 
     /*task*/
-    public static int RTXp(string objectName, bool multitask, int[] i /*1*/)	
+    public static int RTXp(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("RTXp",i);
         return 0;
     }
 
     /*task*/
-    public static int Rotate(string objectName, bool multitask, int[] i /*4*/)	
+    public static int Rotate(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("Rotate",i);
         return 0;
     }
 
     /*task*/
-    public static int RotateByAxis(string objectName, bool multitask, int[] i /*3*/)	
+    public static int RotateByAxis(uint caller, bool multitask, int[] i /*3*/)	
     {
         // i[0]: axis (0/1/2)
         // i[1]: amount
@@ -334,63 +334,63 @@ public class soupdeffcn_nimpl
     }
 
     /*task*/
-    public static int RotateToAxis(string objectName, bool multitask, int[] i /*3*/)	
+    public static int RotateToAxis(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("RotateToAxis",i);
         return 0;
     }
 
     /*task*/
-    public static int WalkForward(string objectName, bool multitask, int[] i /*1*/)	
+    public static int WalkForward(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("WalkForward",i);
         return 0;
     }
 
     /*task*/
-    public static int WalkBackward(string objectName, bool multitask, int[] i /*1*/)	
+    public static int WalkBackward(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("WalkBackward",i);
         return 0;
     }
 
     /*task*/
-    public static int MoveForward(string objectName, bool multitask, int[] i /*1*/)	
+    public static int MoveForward(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("MoveForward",i);
         return 0;
     }
 
     /*task*/
-    public static int MoveBackward(string objectName, bool multitask, int[] i /*1*/)	
+    public static int MoveBackward(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("MoveBackward",i);
         return 0;
     }
 
     /*task*/
-    public static int MoveLeft(string objectName, bool multitask, int[] i /*1*/)	
+    public static int MoveLeft(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("MoveLeft",i);
         return 0;
     }
 
     /*task*/
-    public static int MoveRight(string objectName, bool multitask, int[] i /*1*/)	
+    public static int MoveRight(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("MoveRight",i);
         return 0;
     }
 
     /*task*/
-    public static int Move(string objectName, bool multitask, int[] i /*4*/)	
+    public static int Move(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("Move",i);
         return 0;
     }
 
     /*task*/
-    public static int MoveByAxis(string objectName, bool multitask, int[] i /*3*/)	
+    public static int MoveByAxis(uint caller, bool multitask, int[] i /*3*/)	
     {
         // i[0]: axis (0/1/2)
         // i[1]: amount
@@ -400,49 +400,49 @@ public class soupdeffcn_nimpl
     }
 
     /*task*/
-    public static int MoveAlongAxis(string objectName, bool multitask, int[] i /*3*/)	
+    public static int MoveAlongAxis(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("MoveAlongAxis",i);
         return 0;
     }
 
     /*task*/
-    public static int MoveObjectAxis(string objectName, bool multitask, int[] i /*3*/)	
+    public static int MoveObjectAxis(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("MoveObjectAxis",i);
         return 0;
     }
 
     /*task*/
-    public static int MoveToLocation(string objectName, bool multitask, int[] i /*2*/)	
+    public static int MoveToLocation(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("MoveToLocation",i);
         return 0;
     }
 
     /*task*/
-    public static int WanderToLocation(string objectName, bool multitask, int[] i /*2*/)	
+    public static int WanderToLocation(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("WanderToLocation",i);
         return 0;
     }
 
     /*task*/
-    public static int MoveToMarker(string objectName, bool multitask, int[] i /*2*/)	
+    public static int MoveToMarker(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("MoveToMarker",i);
         return 0;
     }
 
     /*function*/
-    public static int SetObjectLocation(string objectName, bool multitask, int[] i /*4*/)	
+    public static int SetObjectLocation(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("SetObjectLocation",i);
         return 0;
     }
 
     /*task*/
-    public static int Wait(string objectName, bool multitask, int[] i /*1*/)	
+    public static int Wait(uint caller, bool multitask, int[] i /*1*/)	
     {
         // i[0]: time to wait
         ThrowNIMPL("Wait",i);
@@ -450,14 +450,14 @@ public class soupdeffcn_nimpl
     }
 
     /*function*/
-    public static int DistanceFromStart(string objectName, bool multitask, int[] i /*1*/)	
+    public static int DistanceFromStart(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("DistanceFromStart",i);
         return 0;
     }
 
     /*function*/
-    public static int Light(string objectName, bool multitask, int[] i /*2*/)	
+    public static int Light(uint caller, bool multitask, int[] i /*2*/)	
     {
         // Turns on a light
         // i[0]: light radius
@@ -467,448 +467,448 @@ public class soupdeffcn_nimpl
     }
 
     /*function*/
-    public static int LightRadius(string objectName, bool multitask, int[] i /*1*/)	
+    public static int LightRadius(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("LightRadius",i);
         return 0;
     }
 
     /*function*/
-    public static int LightIntensity(string objectName, bool multitask, int[] i /*1*/)	
+    public static int LightIntensity(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("LightIntensity",i);
         return 0;
     }
 
     /*function*/
-    public static int LightOff(string objectName, bool multitask, int[] i /*0*/)	
+    public static int LightOff(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("LightOff",i);
         return 0;
     }
 
     /*function*/
-    public static int LightOffset(string objectName, bool multitask, int[] i /*3*/)	
+    public static int LightOffset(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("LightOffset",i);
         return 0;
     }
 
     /*function*/
-    public static int LightFlicker(string objectName, bool multitask, int[] i /*2*/)	
+    public static int LightFlicker(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("LightFlicker",i);
         return 0;
     }
 
     /*function*/
-    public static int FlickerLight(string objectName, bool multitask, int[] i /*1*/)	
+    public static int FlickerLight(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("FlickerLight",i);
         return 0;
     }
 
     /*function*/
-    public static int LightFlickerOff(string objectName, bool multitask, int[] i /*0*/)	
+    public static int LightFlickerOff(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("LightFlickerOff",i);
         return 0;
     }
 
     /*function*/
-    public static int LightSize(string objectName, bool multitask, int[] i /*2*/)	
+    public static int LightSize(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("LightSize",i);
         return 0;
     }
 
     /*function*/
-    public static int LightSizeOff(string objectName, bool multitask, int[] i /*0*/)	
+    public static int LightSizeOff(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("LightSizeOff",i);
         return 0;
     }
 
     /*multitask*/
-    public static int FxPhase(string objectName, bool multitask, int[] i /*7*/)	
+    public static int FxPhase(uint caller, bool multitask, int[] i /*7*/)	
     {
         ThrowNIMPL("FxPhase",i);
         return 0;
     }
 
     /*multitask*/
-    public static int FxFlickerOnOff(string objectName, bool multitask, int[] i /*1*/)	
+    public static int FxFlickerOnOff(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("FxFlickerOnOff",i);
         return 0;
     }
 
     /*multitask*/
-    public static int FxFlickerDim(string objectName, bool multitask, int[] i /*1*/)	
+    public static int FxFlickerDim(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("FxFlickerDim",i);
         return 0;
     }
 
     /*multitask*/
-    public static int FxLightSize(string objectName, bool multitask, int[] i /*2*/)	
+    public static int FxLightSize(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("FxLightSize",i);
         return 0;
     }
 
     /*function*/
-    public static int Flat(string objectName, bool multitask, int[] i /*1*/)	
+    public static int Flat(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("Flat",i);
         return 0;
     }
 
     /*function*/
-    public static int FlatSetTexture(string objectName, bool multitask, int[] i /*2*/)	
+    public static int FlatSetTexture(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("FlatSetTexture",i);
         return 0;
     }
 
     /*function*/
-    public static int FlatOff(string objectName, bool multitask, int[] i /*0*/)	
+    public static int FlatOff(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("FlatOff",i);
         return 0;
     }
 
     /*function*/
-    public static int FlatOffset(string objectName, bool multitask, int[] i /*3*/)	
+    public static int FlatOffset(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("FlatOffset",i);
         return 0;
     }
 
     /*function*/
-    public static int FlatLikeStatic(string objectName, bool multitask, int[] i /*1*/)	
+    public static int FlatLikeStatic(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("FlatLikeStatic",i);
         return 0;
     }
 
     /*function*/
-    public static int FlatAnimate(string objectName, bool multitask, int[] i /*3*/)	
+    public static int FlatAnimate(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("FlatAnimate",i);
         return 0;
     }
 
     /*function*/
-    public static int FlatStop(string objectName, bool multitask, int[] i /*0*/)	
+    public static int FlatStop(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("FlatStop",i);
         return 0;
     }
 
     /*function*/
-    public static int SetAttribute(string objectName, bool multitask, int[] i /*2*/)	
+    public static int SetAttribute(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("SetAttribute",i);
         return 0;
     }
 
     /*function*/
-    public static int GetAttribute(string objectName, bool multitask, int[] i /*1*/)	
+    public static int GetAttribute(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("GetAttribute",i);
         return 0;
     }
 
     /*function*/
-    public static int SetGlobalFlag(string objectName, bool multitask, int[] i /*1*/)	
+    public static int SetGlobalFlag(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("SetGlobalFlag",i);
         return 0;
     }
 
     /*function*/
-    public static int TestGlobalFlag(string objectName, bool multitask, int[] i /*1*/)	
+    public static int TestGlobalFlag(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("TestGlobalFlag",i);
         return 0;
     }
 
     /*function*/
-    public static int ResetGlobalFlag(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ResetGlobalFlag(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("ResetGlobalFlag",i);
         return 0;
     }
 
     /*task*/
-    public static int FacePlayer(string objectName, bool multitask, int[] i /*1*/)	
+    public static int FacePlayer(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("FacePlayer",i);
         return 0;
     }
 
     /*task*/
-    public static int FacePlayerInertia(string objectName, bool multitask, int[] i /*1*/)	
+    public static int FacePlayerInertia(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("FacePlayerInertia",i);
         return 0;
     }
 
     /*task*/
-    public static int FaceAngle(string objectName, bool multitask, int[] i /*1*/)	
+    public static int FaceAngle(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("FaceAngle",i);
         return 0;
     }
 
     /*task*/
-    public static int FacePos(string objectName, bool multitask, int[] i /*2*/)	
+    public static int FacePos(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("FacePos",i);
         return 0;
     }
 
     /*task*/
-    public static int FaceObject(string objectName, bool multitask, int[] i /*1*/)	
+    public static int FaceObject(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("FaceObject",i);
         return 0;
     }
 
     /*function*/
-    public static int Sound(string objectName, bool multitask, int[] i /*3*/)	
+    public static int Sound(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("Sound",i);
         return 0;
     }
 
     /*function*/
-    public static int FlatSound(string objectName, bool multitask, int[] i /*3*/)	
+    public static int FlatSound(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("FlatSound",i);
         return 0;
     }
 
     /*multitask*/
-    public static int AmbientSound(string objectName, bool multitask, int[] i /*3*/)	
+    public static int AmbientSound(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("AmbientSound",i);
         return 0;
     }
 
     /*multitask*/
-    public static int AmbientRtx(string objectName, bool multitask, int[] i /*3*/)	
+    public static int AmbientRtx(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("AmbientRtx",i);
         return 0;
     }
 
     /*function*/
-    public static int Jump(string objectName, bool multitask, int[] i /*0*/)	
+    public static int Jump(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("Jump",i);
         return 0;
     }
 
     /*task*/
-    public static int WaitNonMulti(string objectName, bool multitask, int[] i /*0*/)	
+    public static int WaitNonMulti(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("WaitNonMulti",i);
         return 0;
     }
 
     /*task*/
-    public static int WaitOnDialog(string objectName, bool multitask, int[] i /*0*/)	
+    public static int WaitOnDialog(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("WaitOnDialog",i);
         return 0;
     }
 
     /*function*/
-    public static int HideMe(string objectName, bool multitask, int[] i /*0*/)	
+    public static int HideMe(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("HideMe",i);
         return 0;
     }
 
     /*function*/
-    public static int ShowMe(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ShowMe(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ShowMe",i);
         return 0;
     }
 
     /*function*/
-    public static int Rnd(string objectName, bool multitask, int[] i /*1*/)	
+    public static int Rnd(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("Rnd",i);
         return 0;
     }
 
     /*function*/
-    public static int QuickRnd(string objectName, bool multitask, int[] i /*1*/)	
+    public static int QuickRnd(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("QuickRnd",i);
         return 0;
     }
 
     /*function*/
-    public static int MyId(string objectName, bool multitask, int[] i /*0*/)	
+    public static int MyId(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("MyId",i);
         return 0;
     }
 
     /*task*/
-    public static int FaceLocation(string objectName, bool multitask, int[] i /*2*/)	
+    public static int FaceLocation(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("FaceLocation",i);
         return 0;
     }
 
     /*function*/
-    public static int DistanceFromLocation(string objectName, bool multitask, int[] i /*1*/)	
+    public static int DistanceFromLocation(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("DistanceFromLocation",i);
         return 0;
     }
 
     /*function*/
-    public static int LoadWorld(string objectName, bool multitask, int[] i /*3*/)	
+    public static int LoadWorld(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("LoadWorld",i);
         return 0;
     }
 
     /*function*/
-    public static int SetAiType(string objectName, bool multitask, int[] i /*1*/)	
+    public static int SetAiType(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("SetAiType",i);
         return 0;
     }
 
     /*function*/
-    public static int SetAiMode(string objectName, bool multitask, int[] i /*1*/)	
+    public static int SetAiMode(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("SetAiMode",i);
         return 0;
     }
 
     /*function*/
-    public static int MyAiType(string objectName, bool multitask, int[] i /*0*/)	
+    public static int MyAiType(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("MyAiType",i);
         return 0;
     }
 
     /*function*/
-    public static int MyAiMode(string objectName, bool multitask, int[] i /*0*/)	
+    public static int MyAiMode(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("MyAiMode",i);
         return 0;
     }
 
     /*task*/
-    public static int GotoLocation(string objectName, bool multitask, int[] i /*1*/)	
+    public static int GotoLocation(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("GotoLocation",i);
         return 0;
     }
 
     /*task*/
-    public static int Guard(string objectName, bool multitask, int[] i /*3*/)	
+    public static int Guard(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("Guard",i);
         return 0;
     }
 
     /*task*/
-    public static int Animal(string objectName, bool multitask, int[] i /*2*/)	
+    public static int Animal(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("Animal",i);
         return 0;
     }
 
     /*function*/
-    public static int TrueFunction(string objectName, bool multitask, int[] i /*0*/)	
+    public static int TrueFunction(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("TrueFunction",i);
         return 0;
     }
 
     /*function*/
-    public static int TurnToPos(string objectName, bool multitask, int[] i /*2*/)	
+    public static int TurnToPos(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("TurnToPos",i);
         return 0;
     }
 
     /*function*/
-    public static int AtPos(string objectName, bool multitask, int[] i /*3*/)	
+    public static int AtPos(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("AtPos",i);
         return 0;
     }
 
     /*function*/
-    public static int TurnToAngle(string objectName, bool multitask, int[] i /*1*/)	
+    public static int TurnToAngle(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("TurnToAngle",i);
         return 0;
     }
 
     /*function*/
-    public static int MovePos(string objectName, bool multitask, int[] i /*3*/)	
+    public static int MovePos(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("MovePos",i);
         return 0;
     }
 
     /*function*/
-    public static int SetStartPosition(string objectName, bool multitask, int[] i /*3*/)	
+    public static int SetStartPosition(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("SetStartPosition",i);
         return 0;
     }
 
     /*function*/
-    public static int GetMyAttr(string objectName, bool multitask, int[] i /*1*/)	
+    public static int GetMyAttr(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("GetMyAttr",i);
         return 0;
     }
 
     /*function*/
-    public static int SetMyAttr(string objectName, bool multitask, int[] i /*2*/)	
+    public static int SetMyAttr(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("SetMyAttr",i);
         return 0;
     }
 
     /*function*/
-    public static int GetFramePassed(string objectName, bool multitask, int[] i /*0*/)	
+    public static int GetFramePassed(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("GetFramePassed",i);
         return 0;
     }
 
     /*function*/
-    public static int SpeedScale(string objectName, bool multitask, int[] i /*1*/)	
+    public static int SpeedScale(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("SpeedScale",i);
         return 0;
     }
 
     /*function*/
-    public static int InKey(string objectName, bool multitask, int[] i /*1*/)	
+    public static int InKey(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("InKey",i);
         return 0;
     }
 
     /*function*/
-    public static int PressKey(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PressKey(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PressKey",i);
         return 0;
@@ -916,7 +916,7 @@ public class soupdeffcn_nimpl
 
 
     /*function in all caps?: FUNCTION	ACTIVATE	PARMS 1*/
-    public static int ACTIVATE(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ACTIVATE(uint caller, bool multitask, int[] i /*1*/)	
     {
         // True if player activates an item
         // i[0]: Stringid shown on screen when looking at the item
@@ -925,63 +925,63 @@ public class soupdeffcn_nimpl
     }
 
     /*function*/
-    public static int TorchActivate(string objectName, bool multitask, int[] i /*1*/)	
+    public static int TorchActivate(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("TorchActivate",i);
         return 0;
     }
 
     /*function*/
-    public static int Deactivate(string objectName, bool multitask, int[] i /*0*/)	
+    public static int Deactivate(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("Deactivate",i);
         return 0;
     }
 
     /*function*/
-    public static int ReleaseAnimation(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ReleaseAnimation(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ReleaseAnimation",i);
         return 0;
     }
 
     /*function*/
-    public static int HoldAnimation(string objectName, bool multitask, int[] i /*0*/)	
+    public static int HoldAnimation(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("HoldAnimation",i);
         return 0;
     }
 
     /*function*/
-    public static int PauseAnimation(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PauseAnimation(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PauseAnimation",i);
         return 0;
     }
 
     /*function*/
-    public static int SetAction(string objectName, bool multitask, int[] i /*1*/)	
+    public static int SetAction(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("SetAction",i);
         return 0;
     }
 
     /*function*/
-    public static int ResetAction(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ResetAction(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("ResetAction",i);
         return 0;
     }
 
     /*function*/
-    public static int ResetAllAction(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ResetAllAction(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ResetAllAction",i);
         return 0;
     }
 
     /*task*/
-    public static int PushAnimation(string objectName, bool multitask, int[] i /*2*/)
+    public static int PushAnimation(uint caller, bool multitask, int[] i /*2*/)
     {
         ThrowNIMPL("PushAnimation",i);
         // i[0]: animationId
@@ -990,14 +990,14 @@ public class soupdeffcn_nimpl
     }
 
     /*task*/
-    public static int PushControlAnimation(string objectName, bool multitask, int[] i /*2*/)
+    public static int PushControlAnimation(uint caller, bool multitask, int[] i /*2*/)
     {
         ThrowNIMPL("PushControlAnimation",i);
         return 0;
     }
 
     /*task*/
-    public static int WaitAnimFrame(string objectName, bool multitask, int[] i /*2*/)
+    public static int WaitAnimFrame(uint caller, bool multitask, int[] i /*2*/)
     {
         ThrowNIMPL("WaitAnimFrame",i);
         // i[0]: animationId
@@ -1006,7 +1006,7 @@ public class soupdeffcn_nimpl
     }
 
     /*task*/
-    public static int WaitPlayerAnimFrame(string objectName, bool multitask, int[] i /*0*/)
+    public static int WaitPlayerAnimFrame(uint caller, bool multitask, int[] i /*0*/)
     {
         ThrowNIMPL("WaitPlayerAnimFrame",i);
         // i[0]: animationId
@@ -1015,224 +1015,224 @@ public class soupdeffcn_nimpl
     }
 
     /*function*/
-    public static int KillMyTasks(string objectName, bool multitask, int[] i /*0*/)	
+    public static int KillMyTasks(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("KillMyTasks",i);
         return 0;
     }
 
     /*task*/
-    public static int ObjectLineUp(string objectName, bool multitask, int[] i /*3*/)	
+    public static int ObjectLineUp(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("ObjectLineUp",i);
         return 0;
     }
 
     /*task*/
-    public static int ObjectParallelLineUp(string objectName, bool multitask, int[] i /*3*/)	
+    public static int ObjectParallelLineUp(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("ObjectParallelLineUp",i);
         return 0;
     }
 
     /*task*/
-    public static int ObjectPickupLineUp(string objectName, bool multitask, int[] i /*3*/)	
+    public static int ObjectPickupLineUp(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("ObjectPickupLineUp",i);
         return 0;
     }
 
     /*task*/
-    public static int LineUp(string objectName, bool multitask, int[] i /*3*/)	
+    public static int LineUp(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("LineUp",i);
         return 0;
     }
 
     /*task*/
-    public static int WaitLineUp(string objectName, bool multitask, int[] i /*1*/)	
+    public static int WaitLineUp(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("WaitLineUp",i);
         return 0;
     }
 
     /*function*/
-    public static int MoveAboveMe(string objectName, bool multitask, int[] i /*4*/)	
+    public static int MoveAboveMe(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("MoveAboveMe",i);
         return 0;
     }
 
     /*function*/
-    public static int KillMe(string objectName, bool multitask, int[] i /*0*/)	
+    public static int KillMe(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("KillMe",i);
         return 0;
     }
 
     /*function*/
-    public static int EndSound(string objectName, bool multitask, int[] i /*1*/)	
+    public static int EndSound(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("EndSound",i);
         return 0;
     }
 
     /*function*/
-    public static int EndMySounds(string objectName, bool multitask, int[] i /*0*/)	
+    public static int EndMySounds(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("EndMySounds",i);
         return 0;
     }
 
     /*function*/
-    public static int EndMySound(string objectName, bool multitask, int[] i /*1*/)	
+    public static int EndMySound(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("EndMySound",i);
         return 0;
     }
 
     /*function*/
-    public static int StopAllSounds(string objectName, bool multitask, int[] i /*0*/)	
+    public static int StopAllSounds(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("StopAllSounds",i);
         return 0;
     }
 
     /*task*/
-    public static int ViewGXA(string objectName, bool multitask, int[] i /*3*/)	
+    public static int ViewGXA(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("ViewGXA",i);
         return 0;
     }
 
     /*task*/
-    public static int AnimateGXA(string objectName, bool multitask, int[] i /*4*/)	
+    public static int AnimateGXA(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("AnimateGXA",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerOffset(string objectName, bool multitask, int[] i /*3*/)	
+    public static int PlayerOffset(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("PlayerOffset",i);
         return 0;
     }
 
     /*multitask*/
-    public static int PlayerOffsettask(string objectName, bool multitask, int[] i /*3*/)	
+    public static int PlayerOffsettask(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("PlayerOffsettask",i);
         return 0;
     }
 
     /*function*/
-    public static int Offset(string objectName, bool multitask, int[] i /*3*/)	
+    public static int Offset(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("Offset",i);
         return 0;
     }
 
     /*function*/
-    public static int UnOffset(string objectName, bool multitask, int[] i /*0*/)	
+    public static int UnOffset(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("UnOffset",i);
         return 0;
     }
 
     /*task*/
-    public static int BounceObject(string objectName, bool multitask, int[] i /*3*/)	
+    public static int BounceObject(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("BounceObject",i);
         return 0;
     }
 
     /*function*/
-    public static int OffsetLocation(string objectName, bool multitask, int[] i /*4*/)	
+    public static int OffsetLocation(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("OffsetLocation",i);
         return 0;
     }
 
     /*function*/
-    public static int DistanceToLocation(string objectName, bool multitask, int[] i /*1*/)	
+    public static int DistanceToLocation(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("DistanceToLocation",i);
         return 0;
     }
 
     /*function*/
-    public static int ShowBitmap(string objectName, bool multitask, int[] i /*2*/)	
+    public static int ShowBitmap(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("ShowBitmap",i);
         return 0;
     }
 
     /*function*/
-    public static int UnShowBitmap(string objectName, bool multitask, int[] i /*1*/)	
+    public static int UnShowBitmap(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("UnShowBitmap",i);
         return 0;
     }
 
     /*function*/
-    public static int ReplenishHealth(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ReplenishHealth(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ReplenishHealth",i);
         return 0;
     }
 
     /*function*/
-    public static int InRectangle(string objectName, bool multitask, int[] i /*4*/)	
+    public static int InRectangle(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("InRectangle",i);
         return 0;
     }
 
     /*function*/
-    public static int InCircle(string objectName, bool multitask, int[] i /*3*/)	
+    public static int InCircle(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("InCircle",i);
         return 0;
     }
 
     /*function*/
-    public static int ScriptParticles(string objectName, bool multitask, int[] i /*8*/)	
+    public static int ScriptParticles(uint caller, bool multitask, int[] i /*8*/)	
     {
         ThrowNIMPL("ScriptParticles",i);
         return 0;
     }
 
     /*function*/
-    public static int LightTorch(string objectName, bool multitask, int[] i /*0*/)	
+    public static int LightTorch(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("LightTorch",i);
         return 0;
     }
 
     /*function*/
-    public static int UnlightTorch(string objectName, bool multitask, int[] i /*0*/)	
+    public static int UnlightTorch(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("UnlightTorch",i);
         return 0;
     }
 
     /*function*/
-    public static int LoadStatic(string objectName, bool multitask, int[] i /*1*/)	
+    public static int LoadStatic(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("LoadStatic",i);
         return 0;
     }
 
     /*function*/
-    public static int UnLoadStatic(string objectName, bool multitask, int[] i /*0*/)	
+    public static int UnLoadStatic(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("UnLoadStatic",i);
         return 0;
     }
 
     /*function*/
-    public static int PointAt(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PointAt(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PointAt",i);
         return 0;
@@ -1241,112 +1241,112 @@ public class soupdeffcn_nimpl
 
     //combat commands
     /*function*/
-    public static int beginCombat(string objectName, bool multitask, int[] i /*0*/)	
+    public static int beginCombat(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("beginCombat",i);
         return 0;
     }
 
     /*function*/
-    public static int endCombat(string objectName, bool multitask, int[] i /*0*/)	
+    public static int endCombat(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("endCombat",i);
         return 0;
     }
 
     /*function*/
-    public static int isFighting(string objectName, bool multitask, int[] i /*0*/)	
+    public static int isFighting(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("isFighting",i);
         return 0;
     }
 
     /*function*/
-    public static int isDead(string objectName, bool multitask, int[] i /*0*/)	
+    public static int isDead(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("isDead",i);
         return 0;
     }
 
     /*function*/
-    public static int adjustHealth(string objectName, bool multitask, int[] i /*2*/)	
+    public static int adjustHealth(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("adjustHealth",i);
         return 0;
     }
 
     /*function*/
-    public static int setHealth(string objectName, bool multitask, int[] i /*1*/)	
+    public static int setHealth(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("setHealth",i);
         return 0;
     }
 
     /*function*/
-    public static int health(string objectName, bool multitask, int[] i /*0*/)	
+    public static int health(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("health",i);
         return 0;
     }
 
     /*function*/
-    public static int adjustStrength(string objectName, bool multitask, int[] i /*1*/)	
+    public static int adjustStrength(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("adjustStrength",i);
         return 0;
     }
 
     /*function*/
-    public static int setStrength(string objectName, bool multitask, int[] i /*1*/)	
+    public static int setStrength(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("setStrength",i);
         return 0;
     }
 
     /*function*/
-    public static int strength(string objectName, bool multitask, int[] i /*0*/)	
+    public static int strength(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("strength",i);
         return 0;
     }
 
     /*function*/
-    public static int adjustArmor(string objectName, bool multitask, int[] i /*1*/)	
+    public static int adjustArmor(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("adjustArmor",i);
         return 0;
     }
 
     /*function*/
-    public static int setArmor(string objectName, bool multitask, int[] i /*1*/)	
+    public static int setArmor(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("setArmor",i);
         return 0;
     }
 
     /*function*/
-    public static int armor(string objectName, bool multitask, int[] i /*0*/)	
+    public static int armor(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("armor",i);
         return 0;
     }
 
     /*function*/
-    public static int shoot(string objectName, bool multitask, int[] i /*7*/)	
+    public static int shoot(uint caller, bool multitask, int[] i /*7*/)	
     {
         ThrowNIMPL("shoot",i);
         return 0;
     }
 
     /*function*/
-    public static int shootPlayer(string objectName, bool multitask, int[] i /*4*/)	
+    public static int shootPlayer(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("shootPlayer",i);
         return 0;
     }
 
     /*function*/
-    public static int resurrect(string objectName, bool multitask, int[] i /*0*/)	
+    public static int resurrect(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("resurrect",i);
         return 0;
@@ -1355,70 +1355,70 @@ public class soupdeffcn_nimpl
 
     //object script/task control
     /*function*/
-    public static int EnableObject(string objectName, bool multitask, int[] i /*0*/)	
+    public static int EnableObject(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("EnableObject",i);
         return 0;
     }
 
     /*function*/
-    public static int DisableObject(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DisableObject(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DisableObject",i);
         return 0;
     }
 
     /*function*/
-    public static int EnableTasks(string objectName, bool multitask, int[] i /*0*/)	
+    public static int EnableTasks(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("EnableTasks",i);
         return 0;
     }
 
     /*function*/
-    public static int DisableTasks(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DisableTasks(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DisableTasks",i);
         return 0;
     }
 
     /*function*/
-    public static int EnableScript(string objectName, bool multitask, int[] i /*0*/)	
+    public static int EnableScript(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("EnableScript",i);
         return 0;
     }
 
     /*function*/
-    public static int DisableScript(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DisableScript(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DisableScript",i);
         return 0;
     }
 
     /*function*/
-    public static int EnableHook(string objectName, bool multitask, int[] i /*0*/)	
+    public static int EnableHook(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("EnableHook",i);
         return 0;
     }
 
     /*function*/
-    public static int DisableHook(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DisableHook(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DisableHook",i);
         return 0;
     }
 
     /*function*/
-    public static int EnableCombat(string objectName, bool multitask, int[] i /*0*/)	
+    public static int EnableCombat(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("EnableCombat",i);
         return 0;
     }
 
     /*function*/
-    public static int DisableCombat(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DisableCombat(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DisableCombat",i);
         return 0;
@@ -1428,49 +1428,49 @@ public class soupdeffcn_nimpl
     //rotational and positional reset commands
 
     /*function*/
-    public static int SetRotation(string objectName, bool multitask, int[] i /*3*/)	
+    public static int SetRotation(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("SetRotation",i);
         return 0;
     }
 
     /*function*/
-    public static int SetPosition(string objectName, bool multitask, int[] i /*3*/)	
+    public static int SetPosition(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("SetPosition",i);
         return 0;
     }
 
     /*function*/
-    public static int ResetRotation(string objectName, bool multitask, int[] i /*3*/)	
+    public static int ResetRotation(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("ResetRotation",i);
         return 0;
     }
 
     /*function*/
-    public static int ResetPosition(string objectName, bool multitask, int[] i /*3*/)	
+    public static int ResetPosition(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("ResetPosition",i);
         return 0;
     }
 
     /*function*/
-    public static int ReloadRotation(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ReloadRotation(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ReloadRotation",i);
         return 0;
     }
 
     /*function*/
-    public static int ReloadPosition(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ReloadPosition(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ReloadPosition",i);
         return 0;
     }
 
     /*function*/
-    public static int SetLocation(string objectName, bool multitask, int[] i /*1*/)	
+    public static int SetLocation(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("SetLocation",i);
         return 0;
@@ -1479,77 +1479,77 @@ public class soupdeffcn_nimpl
 
     //master and slave commands
     /*function*/
-    public static int AttachMe(string objectName, bool multitask, int[] i /*1*/)	
+    public static int AttachMe(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("AttachMe",i);
         return 0;
     }
 
     /*function*/
-    public static int DetachMe(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DetachMe(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DetachMe",i);
         return 0;
     }
 
     /*function*/
-    public static int DetachSlaves(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DetachSlaves(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DetachSlaves",i);
         return 0;
     }
 
     /*function*/
-    public static int KillSlaves(string objectName, bool multitask, int[] i /*0*/)	
+    public static int KillSlaves(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("KillSlaves",i);
         return 0;
     }
 
     /*function*/
-    public static int HideSlaves(string objectName, bool multitask, int[] i /*0*/)	
+    public static int HideSlaves(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("HideSlaves",i);
         return 0;
     }
 
     /*function*/
-    public static int ShowSlaves(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ShowSlaves(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ShowSlaves",i);
         return 0;
     }
 
     /*function*/
-    public static int EnableSlaves(string objectName, bool multitask, int[] i /*0*/)	
+    public static int EnableSlaves(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("EnableSlaves",i);
         return 0;
     }
 
     /*function*/
-    public static int DisableSlaves(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DisableSlaves(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DisableSlaves",i);
         return 0;
     }
 
     /*function*/
-    public static int IsSlave(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsSlave(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsSlave",i);
         return 0;
     }
 
     /*function*/
-    public static int IsMaster(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsMaster(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsMaster",i);
         return 0;
     }
 
     /*function*/
-    public static int FixSlaveAngle(string objectName, bool multitask, int[] i /*2*/)	
+    public static int FixSlaveAngle(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("FixSlaveAngle",i);
         return 0;
@@ -1558,245 +1558,245 @@ public class soupdeffcn_nimpl
 
     //player commands
     /*function*/
-    public static int PlayerMoved(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerMoved(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerMoved",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerTurned(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerTurned(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerTurned",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerTurnedDirection(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerTurnedDirection(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerTurnedDirection",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerMovementSpeed(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerMovementSpeed(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerMovementSpeed",i);
         return 0;
     }
 
     /*function*/
-    public static int GetMovementSpeed(string objectName, bool multitask, int[] i /*0*/)	
+    public static int GetMovementSpeed(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("GetMovementSpeed",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerHealth(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerHealth(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerHealth",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerStatus(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerStatus(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerStatus",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerCollide(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerCollide(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerCollide",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerStand(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerStand(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerStand",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerArmed(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerArmed(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerArmed",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerHanging(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerHanging(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerHanging",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerInSight(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerInSight(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerInSight",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerDistance(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerDistance(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerDistance",i);
         return 0;
     }
 
     /*function*/
-    public static int AcuratePlayerDistance(string objectName, bool multitask, int[] i /*0*/)	
+    public static int AcuratePlayerDistance(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("AcuratePlayerDistance",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerFacing(string objectName, bool multitask, int[] i /*2*/)	
+    public static int PlayerFacing(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("PlayerFacing",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerArcTan(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerArcTan(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerArcTan",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerArc(string objectName, bool multitask, int[] i /*2*/)	
+    public static int PlayerArc(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("PlayerArc",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerLooking(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PlayerLooking(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PlayerLooking",i);
         return 0;
     }
 
     /*multitask*/
-    public static int PlayerTilt(string objectName, bool multitask, int[] i /*3*/)	
+    public static int PlayerTilt(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("PlayerTilt",i);
         return 0;
     }
 
     /*multitask*/
-    public static int PlayerTiltRevx(string objectName, bool multitask, int[] i /*3*/)	
+    public static int PlayerTiltRevx(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("PlayerTiltRevx",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerSnap(string objectName, bool multitask, int[] i /*3*/)	
+    public static int PlayerSnap(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("PlayerSnap",i);
         return 0;
     }
 
     /*task*/
-    public static int PlayerLineUp(string objectName, bool multitask, int[] i /*3*/)	
+    public static int PlayerLineUp(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("PlayerLineUp",i);
         return 0;
     }
 
     /*task*/
-    public static int PlayerParallelLineUp(string objectName, bool multitask, int[] i /*3*/)	
+    public static int PlayerParallelLineUp(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("PlayerParallelLineUp",i);
         return 0;
     }
 
     /*task*/
-    public static int PlayerPickupLineUp(string objectName, bool multitask, int[] i /*3*/)	
+    public static int PlayerPickupLineUp(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("PlayerPickupLineUp",i);
         return 0;
     }
 
     /*function*/
-    public static int MovePlayerAboveMe(string objectName, bool multitask, int[] i /*4*/)	
+    public static int MovePlayerAboveMe(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("MovePlayerAboveMe",i);
         return 0;
     }
 
     /*function*/
-    public static int PushPlayer(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PushPlayer(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PushPlayer",i);
         return 0;
     }
 
     /*function*/
-    public static int PopPlayer(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PopPlayer(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PopPlayer",i);
         return 0;
     }
 
     /*task*/
-    public static int PlayerFaceObj(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerFaceObj(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerFaceObj",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerOnScape(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerOnScape(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerOnScape",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerCollideStatic(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PlayerCollideStatic(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PlayerCollideStatic",i);
         return 0;
     }
 
     /*function*/
-    public static int WonGame(string objectName, bool multitask, int[] i /*0*/)	
+    public static int WonGame(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("WonGame",i);
         return 0;
     }
 
     /*function*/
-    public static int MainloopExit(string objectName, bool multitask, int[] i /*1*/)	
+    public static int MainloopExit(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("MainloopExit",i);
         return 0;
     }
 
     /*task*/
-    public static int PlayerFaceTalk(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PlayerFaceTalk(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PlayerFaceTalk",i);
         return 0;
     }
 
     /*function*/
-    public static int PlayerForceTalk(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PlayerForceTalk(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PlayerForceTalk",i);
         return 0;
     }
 
     /*function*/
-    public static int CollidePlayerWeapon(string objectName, bool multitask, int[] i /*4*/)	
+    public static int CollidePlayerWeapon(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("CollidePlayerWeapon",i);
         return 0;
@@ -1805,28 +1805,28 @@ public class soupdeffcn_nimpl
 
     //object and player health
     /*function*/
-    public static int ZapPlayer(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ZapPlayer(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("ZapPlayer",i);
         return 0;
     }
 
     /*function*/
-    public static int ZapPlayerNoKill(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ZapPlayerNoKill(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("ZapPlayerNoKill",i);
         return 0;
     }
 
     /*function*/
-    public static int ZapObject(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ZapObject(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("ZapObject",i);
         return 0;
     }
 
     /*function*/
-    public static int ZapObjectNoKill(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ZapObjectNoKill(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("ZapObjectNoKill",i);
         return 0;
@@ -1835,98 +1835,98 @@ public class soupdeffcn_nimpl
 
     //object system messaging
     /*function*/
-    public static int SendMessage(string objectName, bool multitask, int[] i /*1*/)	
+    public static int SendMessage(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("SendMessage",i);
         return 0;
     }
 
     /*function*/
-    public static int ReceiveMessage(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ReceiveMessage(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ReceiveMessage",i);
         return 0;
     }
 
     /*function*/
-    public static int IsMessageWaiting(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsMessageWaiting(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsMessageWaiting",i);
         return 0;
     }
 
     /*function*/
-    public static int GetMessageSender(string objectName, bool multitask, int[] i /*0*/)	
+    public static int GetMessageSender(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("GetMessageSender",i);
         return 0;
     }
 
     /*function*/
-    public static int GetMessageSenderId(string objectName, bool multitask, int[] i /*0*/)	
+    public static int GetMessageSenderId(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("GetMessageSenderId",i);
         return 0;
     }
 
     /*function*/
-    public static int ReplySender(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ReplySender(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("ReplySender",i);
         return 0;
     }
 
     /*function*/
-    public static int DeleteMessage(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DeleteMessage(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DeleteMessage",i);
         return 0;
     }
 
     /*function*/
-    public static int SendBroadcast(string objectName, bool multitask, int[] i /*1*/)	
+    public static int SendBroadcast(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("SendBroadcast",i);
         return 0;
     }
 
     /*function*/
-    public static int ReceiveBroadcast(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ReceiveBroadcast(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ReceiveBroadcast",i);
         return 0;
     }
 
     /*function*/
-    public static int DeleteBroadcast(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DeleteBroadcast(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DeleteBroadcast",i);
         return 0;
     }
 
     /*function*/
-    public static int IsBroadcastWaiting(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsBroadcastWaiting(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsBroadcastWaiting",i);
         return 0;
     }
 
     /*function*/
-    public static int GetBroadcastSender(string objectName, bool multitask, int[] i /*0*/)	
+    public static int GetBroadcastSender(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("GetBroadcastSender",i);
         return 0;
     }
 
     /*function*/
-    public static int GetBroadcastSenderId(string objectName, bool multitask, int[] i /*0*/)	
+    public static int GetBroadcastSenderId(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("GetBroadcastSenderId",i);
         return 0;
     }
 
     /*function*/
-    public static int ReplyBroadcastSender(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ReplyBroadcastSender(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("ReplyBroadcastSender",i);
         return 0;
@@ -1935,21 +1935,21 @@ public class soupdeffcn_nimpl
 
     //sync tasks and functions
     /*function*/
-    public static int ResetGroupSync(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ResetGroupSync(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ResetGroupSync",i);
         return 0;
     }
 
     /*function*/
-    public static int ResetUserSync(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ResetUserSync(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ResetUserSync",i);
         return 0;
     }
 
     /*task*/
-    public static int SyncWithGroup(string objectName, bool multitask, int[] i /*1*/)	
+    public static int SyncWithGroup(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("SyncWithGroup",i);
         // i[0]: sync group
@@ -1957,21 +1957,21 @@ public class soupdeffcn_nimpl
     }
 
     /*task*/
-    public static int SyncWithUser(string objectName, bool multitask, int[] i /*1*/)	
+    public static int SyncWithUser(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("SyncWithUser",i);
         return 0;
     }
 
     /*function*/
-    public static int ChangeGroup(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ChangeGroup(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("ChangeGroup",i);
         return 0;
     }
 
     /*function*/
-    public static int ChangeUser(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ChangeUser(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("ChangeUser",i);
         return 0;
@@ -1980,56 +1980,56 @@ public class soupdeffcn_nimpl
 
     //pipelining functions
     /*function*/
-    public static int PipeMyGroup(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PipeMyGroup(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PipeMyGroup",i);
         return 0;
     }
 
     /*function*/
-    public static int PipeGroup(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PipeGroup(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PipeGroup",i);
         return 0;
     }
 
     /*function*/
-    public static int PipeUser(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PipeUser(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PipeUser",i);
         return 0;
     }
 
     /*function*/
-    public static int PipeMasters(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PipeMasters(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PipeMasters",i);
         return 0;
     }
 
     /*function*/
-    public static int PipeSlaves(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PipeSlaves(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PipeSlaves",i);
         return 0;
     }
 
     /*function*/
-    public static int PipeAroundMe(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PipeAroundMe(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PipeAroundMe",i);
         return 0;
     }
 
     /*function*/
-    public static int PipeAroundPos(string objectName, bool multitask, int[] i /*4*/)	
+    public static int PipeAroundPos(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("PipeAroundPos",i);
         return 0;
     }
 
     /*function*/
-    public static int PipeHidden(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PipeHidden(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PipeHidden",i);
         return 0;
@@ -2038,63 +2038,63 @@ public class soupdeffcn_nimpl
 
     //node map negotiation
     /*task*/
-    public static int MoveNodeMarker(string objectName, bool multitask, int[] i /*2*/)	
+    public static int MoveNodeMarker(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("MoveNodeMarker",i);
         return 0;
     }
 
     /*task*/
-    public static int MoveNodeLocation(string objectName, bool multitask, int[] i /*2*/)	
+    public static int MoveNodeLocation(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("MoveNodeLocation",i);
         return 0;
     }
 
     /*task*/
-    public static int MoveNodePosition(string objectName, bool multitask, int[] i /*4*/)	
+    public static int MoveNodePosition(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("MoveNodePosition",i);
         return 0;
     }
 
     /*function*/
-    public static int AtNodeMarker(string objectName, bool multitask, int[] i /*2*/)	
+    public static int AtNodeMarker(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("AtNodeMarker",i);
         return 0;
     }
 
     /*function*/
-    public static int AtNodeLocation(string objectName, bool multitask, int[] i /*2*/)	
+    public static int AtNodeLocation(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("AtNodeLocation",i);
         return 0;
     }
 
     /*function*/
-    public static int AtNodePosition(string objectName, bool multitask, int[] i /*4*/)	
+    public static int AtNodePosition(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("AtNodePosition",i);
         return 0;
     }
 
     /*function*/
-    public static int Wander(string objectName, bool multitask, int[] i /*2*/)	
+    public static int Wander(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("Wander",i);
         return 0;
     }
 
     /*function*/
-    public static int DisableNodeMaps(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DisableNodeMaps(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DisableNodeMaps",i);
         return 0;
     }
 
     /*function*/
-    public static int EnableNodeMaps(string objectName, bool multitask, int[] i /*0*/)	
+    public static int EnableNodeMaps(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("EnableNodeMaps",i);
         return 0;
@@ -2103,21 +2103,21 @@ public class soupdeffcn_nimpl
 
     //node marker negotiation
     /*task*/
-    public static int MoveMarker(string objectName, bool multitask, int[] i /*2*/)	
+    public static int MoveMarker(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("MoveMarker",i);
         return 0;
     }
 
     /*task*/
-    public static int MoveLocation(string objectName, bool multitask, int[] i /*2*/)	
+    public static int MoveLocation(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("MoveLocation",i);
         return 0;
     }
 
     /*task*/
-    public static int MovePosition(string objectName, bool multitask, int[] i /*4*/)	
+    public static int MovePosition(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("MovePosition",i);
         return 0;
@@ -2126,49 +2126,49 @@ public class soupdeffcn_nimpl
 
     //weapons and hand-objects
     /*function*/
-    public static int DrawSword(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DrawSword(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DrawSword",i);
         return 0;
     }
 
     /*function*/
-    public static int SheathSword(string objectName, bool multitask, int[] i /*0*/)	
+    public static int SheathSword(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("SheathSword",i);
         return 0;
     }
 
     /*function*/
-    public static int CheckPlayerWeapon(string objectName, bool multitask, int[] i /*0*/)	
+    public static int CheckPlayerWeapon(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("CheckPlayerWeapon",i);
         return 0;
     }
 
     /*function*/
-    public static int DisplayHandModel(string objectName, bool multitask, int[] i /*4*/)	
+    public static int DisplayHandModel(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("DisplayHandModel",i);
         return 0;
     }
 
     /*function*/
-    public static int DisplayHandItem(string objectName, bool multitask, int[] i /*4*/)	
+    public static int DisplayHandItem(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("DisplayHandItem",i);
         return 0;
     }
 
     /*function*/
-    public static int DisplayHiltModel(string objectName, bool multitask, int[] i /*4*/)	
+    public static int DisplayHiltModel(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("DisplayHiltModel",i);
         return 0;
     }
 
     /*function*/
-    public static int DisplayHiltItem(string objectName, bool multitask, int[] i /*4*/)	
+    public static int DisplayHiltItem(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("DisplayHiltItem",i);
         return 0;
@@ -2177,119 +2177,119 @@ public class soupdeffcn_nimpl
 
     //item's and the inventory
     /*function*/
-    public static int HandItem(string objectName, bool multitask, int[] i /*1*/)	
+    public static int HandItem(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("HandItem",i);
         return 0;
     }
 
     /*function*/
-    public static int HaveItem(string objectName, bool multitask, int[] i /*1*/)	
+    public static int HaveItem(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("HaveItem",i);
         return 0;
     }
 
     /*function*/
-    public static int RemoveItem(string objectName, bool multitask, int[] i /*1*/)	
+    public static int RemoveItem(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("RemoveItem",i);
         return 0;
     }
 
     /*function*/
-    public static int ItemUsed(string objectName, bool multitask, int[] i /*1*/)	
+    public static int ItemUsed(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("ItemUsed",i);
         return 0;
     }
 
     /*function*/
-    public static int PushItem(string objectName, bool multitask, int[] i /*2*/)	
+    public static int PushItem(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("PushItem",i);
         return 0;
     }
 
     /*function*/
-    public static int PopItem(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PopItem(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PopItem",i);
         return 0;
     }
 
     /*function*/
-    public static int AddItem(string objectName, bool multitask, int[] i /*2*/)	
+    public static int AddItem(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("AddItem",i);
         return 0;
     }
 
     /*function*/
-    public static int SubItem(string objectName, bool multitask, int[] i /*2*/)	
+    public static int SubItem(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("SubItem",i);
         return 0;
     }
 
     /*function*/
-    public static int DropItem(string objectName, bool multitask, int[] i /*2*/)	
+    public static int DropItem(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("DropItem",i);
         return 0;
     }
 
     /*function*/
-    public static int UseItem(string objectName, bool multitask, int[] i /*1*/)	
+    public static int UseItem(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("UseItem",i);
         return 0;
     }
 
     /*function*/
-    public static int ShowItem(string objectName, bool multitask, int[] i /*4*/)	
+    public static int ShowItem(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("ShowItem",i);
         return 0;
     }
 
     /*function*/
-    public static int ShowItemNoRtx(string objectName, bool multitask, int[] i /*3*/)	
+    public static int ShowItemNoRtx(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("ShowItemNoRtx",i);
         return 0;
     }
 
     /*function*/
-    public static int ActiveItem(string objectName, bool multitask, int[] i /*0*/)	
+    public static int ActiveItem(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("ActiveItem",i);
         return 0;
     }
 
     /*function*/
-    public static int PushAllItems(string objectName, bool multitask, int[] i /*1*/)	
+    public static int PushAllItems(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("PushAllItems",i);
         return 0;
     }
 
     /*function*/
-    public static int PopAllItems(string objectName, bool multitask, int[] i /*0*/)	
+    public static int PopAllItems(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("PopAllItems",i);
         return 0;
     }
 
     /*function*/
-    public static int DropAllItems(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DropAllItems(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DropAllItems",i);
         return 0;
     }
 
     /*function*/
-    public static int SelectItem(string objectName, bool multitask, int[] i /*1*/)	
+    public static int SelectItem(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("SelectItem",i);
         return 0;
@@ -2298,126 +2298,126 @@ public class soupdeffcn_nimpl
 
     //general object queries
     /*function*/
-    public static int IsOnEdge(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsOnEdge(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsOnEdge",i);
         return 0;
     }
 
     /*function*/
-    public static int IsHoldingWeapon(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsHoldingWeapon(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsHoldingWeapon",i);
         return 0;
     }
 
     /*function*/
-    public static int IsSheathingSword(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsSheathingSword(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsSheathingSword",i);
         return 0;
     }
 
     /*function*/
-    public static int IsDrawingSword(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsDrawingSword(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsDrawingSword",i);
         return 0;
     }
 
     /*function*/
-    public static int IsDrawingOrSheathing(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsDrawingOrSheathing(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsDrawingOrSheathing",i);
         return 0;
     }
 
     /*function*/
-    public static int IsCarryingWeapon(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsCarryingWeapon(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsCarryingWeapon",i);
         return 0;
     }
 
     /*function*/
-    public static int IsCombatCapable(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsCombatCapable(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsCombatCapable",i);
         return 0;
     }
 
     /*function*/
-    public static int IsShellScript(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsShellScript(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsShellScript",i);
         return 0;
     }
 
     /*function*/
-    public static int IsWithinView(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsWithinView(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsWithinView",i);
         return 0;
     }
 
     /*function*/
-    public static int IsWithinMap(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsWithinMap(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsWithinMap",i);
         return 0;
     }
 
     /*function*/
-    public static int IsInAir(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsInAir(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsInAir",i);
         return 0;
     }
 
     /*function*/
-    public static int IsLightingOrUnlighting(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsLightingOrUnlighting(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsLightingOrUnlighting",i);
         return 0;
     }
 
     /*function*/
-    public static int IsUnlightingTorch(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsUnlightingTorch(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsUnlightingTorch",i);
         return 0;
     }
 
     /*function*/
-    public static int IsLightingTorch(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsLightingTorch(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsLightingTorch",i);
         return 0;
     }
 
     /*function*/
-    public static int IsInLava(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsInLava(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsInLava",i);
         return 0;
     }
 
     /*function*/
-    public static int IsInDeepWater(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsInDeepWater(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsInDeepWater",i);
         return 0;
     }
 
     /*function*/
-    public static int IsInWater(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsInWater(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsInWater",i);
         return 0;
     }
 
     /*function*/
-    public static int IsBouncing(string objectName, bool multitask, int[] i /*0*/)	
+    public static int IsBouncing(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("IsBouncing",i);
         return 0;
@@ -2426,21 +2426,21 @@ public class soupdeffcn_nimpl
 
     //shell AI functions
     /*function*/
-    public static int OpenShell(string objectName, bool multitask, int[] i /*1*/)	
+    public static int OpenShell(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("OpenShell",i);
         return 0;
     }
 
     /*function*/
-    public static int CountAiShells(string objectName, bool multitask, int[] i /*1*/)	
+    public static int CountAiShells(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("CountAiShells",i);
         return 0;
     }
 
     /*function*/
-    public static int FindAiShell(string objectName, bool multitask, int[] i /*1*/)	
+    public static int FindAiShell(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("FindAiShell",i);
         return 0;
@@ -2449,35 +2449,35 @@ public class soupdeffcn_nimpl
 
     //effects system
     /*function*/
-    public static int AddFlatEffect(string objectName, bool multitask, int[] i /*6*/)	
+    public static int AddFlatEffect(uint caller, bool multitask, int[] i /*6*/)	
     {
         ThrowNIMPL("AddFlatEffect",i);
         return 0;
     }
 
     /*function*/
-    public static int AddLightEffect(string objectName, bool multitask, int[] i /*8*/)	
+    public static int AddLightEffect(uint caller, bool multitask, int[] i /*8*/)	
     {
         ThrowNIMPL("AddLightEffect",i);
         return 0;
     }
 
     /*function*/
-    public static int GolemSteam(string objectName, bool multitask, int[] i /*0*/)	
+    public static int GolemSteam(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("GolemSteam",i);
         return 0;
     }
 
     /*function*/
-    public static int DragonBreath(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DragonBreath(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DragonBreath",i);
         return 0;
     }
 
     /*multitask*/
-    public static int DragonBreathTask(string objectName, bool multitask, int[] i /*0*/)	
+    public static int DragonBreathTask(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("DragonBreathTask",i);
         return 0;
@@ -2486,7 +2486,7 @@ public class soupdeffcn_nimpl
 
     //Smacker functions
     /*function*/
-    public static int QueueMovie(string objectName, bool multitask, int[] i /*1*/)	
+    public static int QueueMovie(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("QueueMovie",i);
         return 0;
@@ -2494,14 +2494,14 @@ public class soupdeffcn_nimpl
 
 
     /*task*/
-    public static int TestTask(string objectName, bool multitask, int[] i /*1*/)	
+    public static int TestTask(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("TestTask",i);
         return 0;
     }
 
     /*function*/
-    public static int XResetCamera(string objectName, bool multitask, int[] i /*0*/)	
+    public static int XResetCamera(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("XResetCamera",i);
         return 0;
@@ -2510,14 +2510,14 @@ public class soupdeffcn_nimpl
 
     //Potion functions
     /*function*/
-    public static int SetPotion(string objectName, bool multitask, int[] i /*2*/)	
+    public static int SetPotion(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("SetPotion",i);
         return 0;
     }
 
     /*function*/
-    public static int GetPotion(string objectName, bool multitask, int[] i /*1*/)	
+    public static int GetPotion(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("GetPotion",i);
         return 0;
@@ -2526,7 +2526,7 @@ public class soupdeffcn_nimpl
 
     //Log Book functions
     /*function*/
-    public static int AddLog(string objectName, bool multitask, int[] i /*1*/)	
+    public static int AddLog(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("AddLog",i);
         return 0;
@@ -2535,120 +2535,120 @@ public class soupdeffcn_nimpl
 
     //spare expansion functions, (do nothing at the moment)
     /*function*/
-    public static int Spare0Parm0(string objectName, bool multitask, int[] i /*0*/)	
+    public static int Spare0Parm0(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("Spare0Parm0",i);
         return 0;
     }
-    public static int Spare1Parm0(string objectName, bool multitask, int[] i /*0*/)	
+    public static int Spare1Parm0(uint caller, bool multitask, int[] i /*0*/)	
     {
         ThrowNIMPL("Spare1Parm0",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare0Parm1(string objectName, bool multitask, int[] i /*1*/)	
+    public static int Spare0Parm1(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("Spare0Parm1",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare1Parm1(string objectName, bool multitask, int[] i /*1*/)	
+    public static int Spare1Parm1(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("Spare1Parm1",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare0Parm2(string objectName, bool multitask, int[] i /*2*/)	
+    public static int Spare0Parm2(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("Spare0Parm2",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare1Parm2(string objectName, bool multitask, int[] i /*2*/)	
+    public static int Spare1Parm2(uint caller, bool multitask, int[] i /*2*/)	
     {
         ThrowNIMPL("Spare1Parm2",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare0Parm3(string objectName, bool multitask, int[] i /*3*/)	
+    public static int Spare0Parm3(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("Spare0Parm3",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare1Parm3(string objectName, bool multitask, int[] i /*3*/)	
+    public static int Spare1Parm3(uint caller, bool multitask, int[] i /*3*/)	
     {
         ThrowNIMPL("Spare1Parm3",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare0Parm4(string objectName, bool multitask, int[] i /*4*/)	
+    public static int Spare0Parm4(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("Spare0Parm4",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare1Parm4(string objectName, bool multitask, int[] i /*4*/)	
+    public static int Spare1Parm4(uint caller, bool multitask, int[] i /*4*/)	
     {
         ThrowNIMPL("Spare1Parm4",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare0Parm5(string objectName, bool multitask, int[] i /*5*/)	
+    public static int Spare0Parm5(uint caller, bool multitask, int[] i /*5*/)	
     {
         ThrowNIMPL("Spare0Parm5",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare1Parm5(string objectName, bool multitask, int[] i /*5*/)	
+    public static int Spare1Parm5(uint caller, bool multitask, int[] i /*5*/)	
     {
         ThrowNIMPL("Spare1Parm5",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare0Parm6(string objectName, bool multitask, int[] i /*6*/)	
+    public static int Spare0Parm6(uint caller, bool multitask, int[] i /*6*/)	
     {
         ThrowNIMPL("Spare0Parm6",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare1Parm6(string objectName, bool multitask, int[] i /*6*/)	
+    public static int Spare1Parm6(uint caller, bool multitask, int[] i /*6*/)	
     {
         ThrowNIMPL("Spare1Parm6",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare0Parm7(string objectName, bool multitask, int[] i /*7*/)	
+    public static int Spare0Parm7(uint caller, bool multitask, int[] i /*7*/)	
     {
         ThrowNIMPL("Spare0Parm7",i);
         return 0;
     }
 
     /*function*/
-    public static int Spare1Parm7(string objectName, bool multitask, int[] i /*8*/)	
+    public static int Spare1Parm7(uint caller, bool multitask, int[] i /*8*/)	
     {
         ThrowNIMPL("Spare1Parm7",i);
         return 0;
     }
-    static Func<string, bool, int[], int>[] soupdefFcn;
-    public static Func<string, bool, int[], int>[] getNIMPLS()
+    static Func<uint, bool, int[], int>[] soupdefFcn;
+    public static Func<uint, bool, int[], int>[] getNIMPLS()
     {
         if(soupdefFcn == null)
         {
-            soupdefFcn = new Func<string, bool, int[], int>[367];
+            soupdefFcn = new Func<uint, bool, int[], int>[367];
             soupdefFcn[0]=PLACEHOLDER_ZERO;
             soupdefFcn[1]=sRotate;
             soupdefFcn[2]=sRotateByAxis;
@@ -3020,7 +3020,7 @@ public class soupdeffcn_nimpl
         return soupdefFcn;
     }
 
-    public static Func<string, bool, int[], int> getNIMPL(int i)
+    public static Func<uint, bool, int[], int> getNIMPL(int i)
     {
         if(soupdefFcn == null)
         {

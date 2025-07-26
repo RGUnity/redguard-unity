@@ -10,7 +10,7 @@ public class LoadWorld : MonoBehaviour
 
     // Create scripted objects
         RGFileImport.RGRGMFile.RGMMPOBItem cyrus_data = new RGFileImport.RGRGMFile.RGMMPOBItem();
-//        cyrus_data.id;
+        cyrus_data.id = 0x1337;
         cyrus_data.type = RGFileImport.RGRGMFile.ObjectType.object_3d;
 //        cyrus_data.isActive;
         cyrus_data.scriptName = "CYRUS";
@@ -51,21 +51,25 @@ public class LoadWorld : MonoBehaviour
         ModelLoader.RedguardPath = "./game_3dfx";
         ModelLoader.LoadArea("OBSERVE", "OBSERVAT", "");
         AddPlayer();
+        RGRGMScriptStore.flags[203] = 1; // OB_Fixed
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(false)
-        {
-            // telescope: missing 03, lots of task
-            ModelLoader.scriptedObjects[0x82BDD628].allowScripting = true; // OB_TEL01
-            ModelLoader.scriptedObjects[0x82BDD868].allowScripting = true; // OB_TEL00
-            ModelLoader.scriptedObjects[0x82BE1F78].allowScripting = true; // OB_TEL04
-//    		ModelLoader.scriptedObjects[0x82BE4538].allowScripting = true; // OB_TEL03
-            ModelLoader.scriptedObjects[0x82BE4B68].allowScripting = true; // OB_TEL02
-        }
         if(true)
+        {
+		ModelLoader.scriptedObjects[0x82BDF408].allowScripting = true; // OB_PLT04
+//		ModelLoader.scriptedObjects[0x82BDBC58].allowScripting = true; // OB_PLT07
+		ModelLoader.scriptedObjects[0x82BDB598].allowScripting = true; // OB_PLT05
+		ModelLoader.scriptedObjects[0x82BDB9F0].allowScripting = true; // OB_PLT06
+		ModelLoader.scriptedObjects[0x82BDE3C0].allowScripting = true; // OB_PLT03
+		ModelLoader.scriptedObjects[0x82BDE968].allowScripting = true; // OB_PLT02
+		ModelLoader.scriptedObjects[0x82BDEAD8].allowScripting = true; // OB_PLT01
+		ModelLoader.scriptedObjects[0x82BDF098].allowScripting = true; // OB_PLT08
+		ModelLoader.scriptedObjects[0x82BE2D08].allowScripting = true; // OB_PLT00
+        }
+        if(false)
         {
 //		ModelLoader.scriptedObjects[0x82BD3750].allowScripting = true; // X
 //		ModelLoader.scriptedObjects[0x82BD9D00].allowScripting = true; // X

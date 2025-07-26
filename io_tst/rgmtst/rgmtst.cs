@@ -65,7 +65,23 @@ namespace xyz
 		public static void Main(string[] args)
 		{
 			RGRGMFile filergm = new RGRGMFile();
-			filergm.LoadFile("../../game_3dfx/maps/ISLAND.RGM");
+			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
+
+            /*
+            foreach(var entry in filergm.RAHD.dict)
+            {
+                Console.WriteLine($"{entry.Value.scriptName}: {entry.Value.RANMLength}");
+                MemoryReader RANMReader = new MemoryReader(filergm.RANM.data);
+                RANMReader.Seek((uint)entry.Value.RANMOffset, 0);
+
+                char[] curc = RANMReader.ReadChars(entry.Value.RANMLength -1);
+                string modelname = new string(curc);
+
+                Console.WriteLine($"NAM: {modelname}");
+ 
+            }
+            */
+            /*
             foreach(var entry in filergm.RAHD.dict)
             {
                 Console.WriteLine($"{entry.Value.scriptName}: {entry.Value.RALCCount}/{entry.Value.RALCLength}/{entry.Value.RALCOffset}");
@@ -77,14 +93,14 @@ namespace xyz
                     Console.WriteLine($"LOC {i}: {it.offsetX},{it.offsetY},{it.offsetZ}");
                 }
             }
-            /*
+            */
             for(int i=0;i<filergm.MPOB.num_items;i++)
             {
                 RGRGMFile.RGMMPOBItem it = filergm.MPOB.items[i];
-                Console.WriteLine($"//\t\tModelLoader.scriptedObjects[0x{it.id:X}].allowScripting = true; // {it.scriptName}");
+                //Console.WriteLine($"//\t\tModelLoader.scriptedObjects[0x{it.id:X}].allowScripting = true; // {it.scriptName}");
+                Console.WriteLine($"{it.id:X}; {it.scriptName}");
  
             }
-            */
             /*
             MemoryReader memoryReader = new MemoryReader(filergm.RAAN.data);
             foreach(var entry in filergm.RAHD.dict)

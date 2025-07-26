@@ -213,6 +213,7 @@ size: {dataLength:X}
             public char[] text;     // its one big string
 			public RGMRASTSection(MemoryReader memoryReader, uint size)
             {
+                Console.WriteLine($"RASBSIZE: {size:X}");
                 try
                 {
                     text = memoryReader.ReadChars((int)size);
@@ -528,7 +529,7 @@ size: {dataLength:X}
             {
                 try
                 {
-                    num_items = memoryReader.ReadUInt32(); // why the extra 4 bytes? no idea
+                    num_items = memoryReader.ReadUInt32();
                     items = new List<RGMMPSOItem>();
                     for(int i=0;i<(int)num_items;i++)
                     {

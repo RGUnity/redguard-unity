@@ -39,9 +39,34 @@ public class RGObjectStore
         }
 
     }
-    public static Dictionary<uint, List<RGScriptedObject>> scriptedGroups;
-    public static Dictionary<uint, MasterSlavesStruct> scriptedSlaves;
+    // level objects
+    public static Dictionary<uint, RGScriptedObject> scriptedObjects;
+    // named objects
+    public static Dictionary<string , RGScriptedObject> namedScriptedObjects;
+    // special objects
     static RGScriptedObject player;
+    static RGScriptedObject camera;
+    // TODO: camera belongs here
+    // groups
+    public static Dictionary<uint, List<RGScriptedObject>> scriptedGroups;
+    // master/slaves
+    public static Dictionary<uint, MasterSlavesStruct> scriptedSlaves;
+
+    // level objects
+    public static void AddObject(uint id, string objectName, RGScriptedObject o)
+    {
+        Debug.Log($"Adding item {id} with name {objectName}");
+        if(scriptedObjects == null)
+            scriptedObjects = new Dictionary<uint, RGScriptedObject>();
+        scriptedObjects.Add(id, o);
+
+        if(objectName != null)
+        {
+            if(namedScriptedObjects == null)
+                namedScriptedObjects = new Dictionary<string, RGScriptedObject>();
+            namedScriptedObjects.Add(objectName, o);
+        }
+    }
 
 // special objects
     public static void SetPlayer(RGScriptedObject newPlayer)
@@ -52,6 +77,16 @@ public class RGObjectStore
     {
         return player;
     }
+    public static void SetCamera(RGScriptedObject newCamera)
+    {
+        camera = newCamera;
+    }
+    public static RGScriptedObject GetCamera()
+    {
+        return camera;
+    }
+
+
 // groups
     public static void AddToGroup(uint groupId, RGScriptedObject o)
     {

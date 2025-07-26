@@ -91,8 +91,7 @@ namespace RGFileImport
             List<int> o = new List<int>();
             for(int i=0;i<cnt;i++)
             {
-                o.Add((int)buffer[Position]);
-                Position+=4;
+                o.Add(ReadInt32());
             }
             return o.ToArray();
         }
@@ -103,8 +102,7 @@ namespace RGFileImport
             List<short> o = new List<short>();
             for(int i=0;i<cnt;i++)
             {
-                o.Add((short)buffer[Position]);
-                Position+=2;
+                o.Add(ReadInt16());
             }
             return o.ToArray();
         }

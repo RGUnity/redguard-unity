@@ -40,7 +40,10 @@ public class RGScriptedObject : MonoBehaviour
 	SkinnedMeshRenderer skinnedMeshRenderer;
     Light light;
     Collider collider;
+
     public bool playerStanding;
+    public RGScriptedObject offsetTarget;
+    Vector3 offsetDelta;
 
     public byte[] attributes;
 
@@ -78,7 +81,7 @@ public class RGScriptedObject : MonoBehaviour
     TaskData mainTask = new TaskData();
     List<TaskData> multiTasks = new List<TaskData>();
     static int FUNC_CNT = 367;
-    Func<string, bool, int[], int>[] functions;
+    public Func<uint, bool, int[], int>[] functions;
 
     public RGFileImport.RGRGMFile.RGMRAHDItem RAHDData;
 
@@ -141,7 +144,7 @@ public class RGScriptedObject : MonoBehaviour
         type = ScriptedObjectType.scriptedobject_static;
 		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
 			
-        string modelname = MPOB.scriptName;;
+        string modelname = MPOB.scriptName;
         RGMeshStore.UnityData_3D data_3D = RGMeshStore.f3D2Mesh(modelname, name_col, RAHDData.textureId);
     
         skinnedMeshRenderer.sharedMesh = data_3D.mesh;
@@ -195,6 +198,7 @@ public class RGScriptedObject : MonoBehaviour
         SetupFunctions();
 
         playerStanding = false;
+        offsetTarget = null;
 
         switch(MPOB.type)
         {
@@ -212,10 +216,18 @@ public class RGScriptedObject : MonoBehaviour
                 break;
         }
 
-        script = new ScriptData(MPOB.scriptName, functions, MPOB.id);
+        script = new ScriptData(MPOB.scriptName, MPOB.id);
 		
         attributes = new byte[256];
         Array.Copy(filergm.RAAT.attributes, RAHDData.index*256, attributes, 0, 256);
+
+        if(skinnedMeshRenderer.sharedMesh != null)
+        {
+            gameObject.AddComponent<MeshCollider>();
+            gameObject.GetComponent<MeshCollider>().sharedMesh = skinnedMeshRenderer.sharedMesh;
+        }
+
+// administration for RGObjectstore
 
         // DO THIS AFTER SETTING POSITION AND ROTATION
         /*
@@ -229,11 +241,17 @@ public class RGScriptedObject : MonoBehaviour
         if(attributes[29] != 0) // att_group
             RGObjectStore.AddToGroup(attributes[29], this);
 
-        if(skinnedMeshRenderer.sharedMesh != null)
+ 
+        objectName = null;
+        if(RAHDData.RANMLength > 0)
         {
-            gameObject.AddComponent<MeshCollider>();
-            gameObject.GetComponent<MeshCollider>().sharedMesh = skinnedMeshRenderer.sharedMesh;
+            MemoryReader RANMReader = new MemoryReader(filergm.RANM.data);
+            RANMReader.Seek((uint)RAHDData.RANMOffset, 0);
+            char[] curc = RANMReader.ReadChars(RAHDData.RANMLength-1);
+            objectName = new string(curc);
         }
+        
+        RGObjectStore.AddObject(MPOB.id, objectName, this);
 
 	}
     public void SetAnim(int animId, int firstFrame)
@@ -296,6 +314,12 @@ public class RGScriptedObject : MonoBehaviour
     {
         UpdateTasks();
         UpdateAnimations();
+        if(offsetTarget != null)
+        {
+            Vector3 offsetDeltaTransformed = offsetTarget.transform.position
+                                            -(offsetTarget.transform.rotation*offsetDelta);
+            transform.position = offsetDeltaTransformed;
+        }
     }
 
     public void FamilySetParent(RGScriptedObject parent)
@@ -374,8 +398,7 @@ public class RGScriptedObject : MonoBehaviour
                 }
                 break;
             case TaskType.task_syncing:
-                // VAT ARE YOU SYNCING ABOUT?
-                // ModelLoader sets this to 0 when all members are done
+                // RGObjectStore sets this to 0 when all members are done
                 if(taskData.syncPoint == 0)
                 {
                     taskData.type = TaskType.task_idle;
@@ -387,7 +410,7 @@ public class RGScriptedObject : MonoBehaviour
     }
     void SetupFunctions()
     {
-        functions = new Func<string, bool, int[], int>[FUNC_CNT];
+        functions = new Func<uint, bool, int[], int>[FUNC_CNT];
         functions[17] = WaitOnTasks;
         functions[44] = RotateByAxis;
         functions[45] = RotateToAxis;
@@ -398,6 +421,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[64] = LightIntensity;
         functions[65] = LightOff;
         functions[66] = LightOffset;
+        functions[156] = Offset;
         functions[224] = PlayerStand;
         functions[271] = SyncWithGroup;
 
@@ -423,7 +447,7 @@ public class RGScriptedObject : MonoBehaviour
     const float TIME_VAL = 0.1f;
     const float DA2DG = -(180.0f/1024.0f); // negative angles?
     /*task 17*/
-    public int WaitOnTasks(string objectName, bool multitask, int[] i /*0*/)    
+    public int WaitOnTasks(uint caller, bool multitask, int[] i /*0*/)    
     {
         Debug.Log($"{multitask}_{scriptName}_WaitOnTasks({string.Join(",",i)})");
         // Wait for all multitasks to be completed
@@ -455,7 +479,7 @@ public class RGScriptedObject : MonoBehaviour
         }
         return Vector3.Scale(axis, new Vector3(1.0f, 1.0f,-1.0f));
     }
-    public int RotateByAxis(string objectName, bool multitask, int[] i /*3*/)    
+    public int RotateByAxis(uint caller, bool multitask, int[] i /*3*/)    
     {
         Debug.Log($"{multitask}_{scriptName}_RotateByAxis({string.Join(",",i)})");
         // rotates X degrees around local axis
@@ -479,7 +503,7 @@ public class RGScriptedObject : MonoBehaviour
         return 0;
     }
     /*task 45*/
-    public int RotateToAxis(string objectName, bool multitask, int[] i /*3*/)    
+    public int RotateToAxis(uint caller, bool multitask, int[] i /*3*/)    
     {
         Debug.Log($"{multitask}_{scriptName}_RotateToAxis({string.Join(",",i)})");
         // Rotate until rotation is X degrees around local axis
@@ -503,7 +527,7 @@ public class RGScriptedObject : MonoBehaviour
         return 0;
     }
     /*task 53*/
-    public int MoveByAxis(string objectName, bool multitask, int[] i /*3*/)    
+    public int MoveByAxis(uint caller, bool multitask, int[] i /*3*/)    
     {
         Debug.Log($"{multitask}_{scriptName}_MoveByAxis({string.Join(",",i)})");
         // Moves along global axis
@@ -537,7 +561,7 @@ public class RGScriptedObject : MonoBehaviour
         return 0;
     }
     /*task 56*/
-    public int MoveToLocation(string objectName, bool multitask, int[] i /*2*/)    
+    public int MoveToLocation(uint caller, bool multitask, int[] i /*2*/)    
     {
         Debug.Log($"{multitask}_{scriptName}_MoveToLocation({string.Join(",",i)})");
         // Moves to a location
@@ -556,7 +580,7 @@ public class RGScriptedObject : MonoBehaviour
     }
  
     /*task 60*/
-    public int Wait(string objectName, bool multitask, int[] i /*1*/)    
+    public int Wait(uint caller, bool multitask, int[] i /*1*/)    
     {
         Debug.Log($"{multitask}_{scriptName}_Wait({string.Join(",",i)})");
         // Wait some time
@@ -570,7 +594,7 @@ public class RGScriptedObject : MonoBehaviour
         return 0;
     }
     /*function 62*/
-    public int Light(string objectName, bool multitask, int[] i /*2*/)
+    public int Light(uint caller, bool multitask, int[] i /*2*/)
     {
         // Turns on a light
         // i[0]: light radius
@@ -585,7 +609,7 @@ public class RGScriptedObject : MonoBehaviour
         return 0;
     }
     /*function 64*/
-    public int LightIntensity(string objectName, bool multitask, int[] i /*1*/)
+    public int LightIntensity(uint caller, bool multitask, int[] i /*1*/)
     {
         // Sets the light's intensity to something
         // i[0]: light intensity
@@ -597,7 +621,7 @@ public class RGScriptedObject : MonoBehaviour
     }
 
     /*function 65*/
-    public int LightOff(string objectName, bool multitask, int[] i /*0*/)
+    public int LightOff(uint caller, bool multitask, int[] i /*0*/)
     {
         // Turns off a light
 
@@ -606,7 +630,7 @@ public class RGScriptedObject : MonoBehaviour
         return 0;
     }
     /*function 66*/
-    public int LightOffset(string objectName, bool multitask, int[] i /*3*/)
+    public int LightOffset(uint caller, bool multitask, int[] i /*3*/)
     {
         // Offsets the light along local axis
         // i[0]: offset x
@@ -627,9 +651,29 @@ public class RGScriptedObject : MonoBehaviour
         }
         return 0;
     }
+    /*task 156*/
+    public int Offset(uint caller, bool multitask, int[] i /*3*/)    
+    {
+        Debug.Log($"{multitask}_{scriptName}_Offset({string.Join(",",i)})");
+        // Offsets the caller's location to this object's location
+        // continuously until UnOffset is called
+        // i[0]: offset x
+        // i[1]: offset y
+        // i[2]: offset z
+        RGScriptedObject offsetObject = RGObjectStore.scriptedObjects[caller];
+        Vector3 offsetPos = new Vector3(((float)i[0])*RGM_MPOB_SCALE,
+                                        -(float)((float)i[1]*RGM_MPOB_SCALE),
+                                        0.0f);
+        if(i[2] != 0)
+            offsetPos.z = -(float)((float)(0xFFFFFF-i[2])*RGM_MPOB_SCALE);
 
+        offsetObject.offsetTarget = this;
+        offsetObject.offsetDelta = offsetPos;
+        return 0;
+    }
+ 
     /*task 224*/
-    public int PlayerStand(string objectName, bool multitask, int[] i /*0*/)    
+    public int PlayerStand(uint caller, bool multitask, int[] i /*0*/)    
     {
         // returns true if the player is standing on the object
         if(playerStanding)
@@ -640,7 +684,7 @@ public class RGScriptedObject : MonoBehaviour
  
 
     /*task 271*/
-    public int SyncWithGroup(string objectName, bool multitask, int[] i /*1*/)    
+    public int SyncWithGroup(uint caller, bool multitask, int[] i /*1*/)    
     {
         Debug.Log($"{multitask}_{scriptName}_SyncWithGroup({string.Join(",",i)})");
         // Sync with group to a sync point

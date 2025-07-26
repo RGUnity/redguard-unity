@@ -13,11 +13,10 @@ public class ScriptData
     MemoryReader memoryReader;
 
     uint objectId;
-    Func<string, bool, int[], int>[] taskPointers;
 
 
     public RGRGMScriptStore.RGMScript scriptData;
-    public ScriptData(string scriptname, Func<string, bool, int[], int>[] taskPtrs, uint meId)
+    public ScriptData(string scriptname, uint meId)
     {
         scriptName = scriptname;
         scriptData = RGRGMScriptStore.getScript(scriptname);
@@ -29,7 +28,6 @@ public class ScriptData
         memoryReader = new MemoryReader(scriptData.scriptBytes);
 
         objectId = meId;
-        taskPointers = taskPtrs;
     }
     enum readerState
     {
@@ -226,7 +224,25 @@ void logDBG(string i)
     {
         Console.Write($"OBJ: {obj}_{type}_{task_id}:");
         bool isMultiTask = (type == taskType.multitask);
-        return taskPointers[task_id](obj, isMultiTask, parameters);
+
+        RGScriptedObject scriptedObject = null;
+        if(obj == "object_me")
+        {
+            scriptedObject = RGObjectStore.scriptedObjects[objectId];
+        }
+        else if(obj == "object_player")
+        {
+            scriptedObject = RGObjectStore.GetPlayer();
+        }
+        else if(obj == "object_camera")
+        {
+            scriptedObject = RGObjectStore.GetCamera();
+        }
+        else
+        {
+            scriptedObject = RGObjectStore.namedScriptedObjects[obj];
+        }
+        return scriptedObject.functions[task_id](objectId, isMultiTask, parameters);
     }
     int doFlagAssign(ushort flag_id, List<int> vals, List<byte> ops)
     {
@@ -301,13 +317,13 @@ void logDBG(string i)
                 switch(ofs)
                 {
                     case 0:
-                        obj = "ME";
+                        obj = "object_me";
                         break;
                     case 1:
-                        obj = "PLAYER";
+                        obj = "object_player";
                         break;
                     case 2:
-                        obj = "CAMERA";
+                        obj = "object_camera";
                         break;
                     default:
                         obj = "UNKNOWN";
@@ -554,11 +570,11 @@ void logDBG(string i)
         switch(instruction)
         {
             case 0x00: // task
-                return readTask("this", taskType.task); // TODO: object name
+                return readTask("object_me", taskType.task); // TODO: object name
             case 0x01: // multitask (?)
-                return readTask("this", taskType.multitask); // TODO: object name
+                return readTask("object_me", taskType.multitask); // TODO: object name
             case 0x02: // function
-                return readTask("this", taskType.function); // TODO: object name
+                return readTask("object_me", taskType.function); // TODO: object name
             case 0x03:
                 memoryReader.Position = readIf();
                 return 0xBEEF;
@@ -665,6 +681,11 @@ public static class RGRGMScriptStore
             scriptBytes = new byte[RAHD.RASCLength];
             Array.Copy(RASC.scripts, RAHD.RASCOffset, scriptBytes, 0, RAHD.RASCLength);
 
+            rasbcnt = RAHD.RASBCount;
+            rasbofs = RASB.offsets;
+            RAHDdat = RAHD;
+            RASTdat = RAST;
+            RASBdat = RASB;
             for(int i=0;i<RAHD.RASBCount;i++)
             {
                 int ofs = RASB.offsets[(RAHD.RASBOffset/4)+i];
@@ -692,10 +713,37 @@ public static class RGRGMScriptStore
             scriptPC = RAHD.RASCStartAt;
             callstack = new Stack<int>();
         }
+        int rasbcnt;
+        int []rasbofs;
+        RGRGMFile.RGMRAHDItem RAHDdat;
+        RGRGMFile.RGMRASTSection RASTdat;
+        RGRGMFile.RGMRASBSection RASBdat;
+        public string DumpStrings()
+        {
+            string o = new string($"SCR:{scriptName}:");
+            for(int i=0;i<RASBdat.offsets.Length;i++)
+            {
+                o+= $"RASB_{i}: {RASBdat.offsets[i]}\n";
+            }
+            for(int i=0;i<RASBdat.offsets.Length;i++)
+            {
+                int ofs = RASBdat.offsets[i];
+                int end = Array.IndexOf(RASTdat.text, '\0', ofs);
+                char[] tmp_char_arr = new char[end-ofs];
+
+                Array.Copy(RASTdat.text, ofs, tmp_char_arr, 0, end-ofs);
+                o += $"\n{i}: {ofs:X}:"+(new string(tmp_char_arr));
+            }
+            o += "\n########################################";
+            o += $"\nRASTlen: {RASTdat.text.Length}";
+            o += $"\nRAHD RASBcnt: {RAHDdat.RASBCount}";
+            o += $"\nRAHD RASBlen: {RAHDdat.RASBLength}";
+            o += $"\nRAHD RASBofs: {RAHDdat.RASBOffset}";
+            return o;
+        }
         public override string ToString()
         {
             string o = new string($"SCR:{scriptName}:");
-            o += "\nBYTES:\n";
             for(int i=0;i<scriptBytes.Length;i++)
             {
                 o+=$"{scriptBytes[i]:X2},";

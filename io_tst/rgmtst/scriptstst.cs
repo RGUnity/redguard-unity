@@ -3,6 +3,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using RGFileImport;
+
+    public class RGScriptedObject
+    {
+        //functions
+        public Func<uint, bool, int[], int>[] functions;
+    }
+    public class RGObjectStore 
+    {
+        public static Dictionary<uint , RGScriptedObject> scriptedObjects;
+        public static Dictionary<string, RGScriptedObject> namedScriptedObjects;
+        public static RGScriptedObject GetPlayer()
+        {
+            return null;
+        }
+        public static RGScriptedObject GetCamera()
+        {
+            return null;
+        }
+    }
 namespace xyz
 {
     public class test
@@ -48,9 +67,11 @@ namespace xyz
             Func<bool, int[], int>[] funcs = SetupFuncs();
 			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
             RGRGMScriptStore.ReadScript(filergm);
-            
+            Console.WriteLine(RGRGMScriptStore.getScript("OB_PLT04").DumpStrings());
+            //Console.WriteLine(RGRGMScriptStore.getScript("OB_PLT04"));
+           /* 
             RGRGMScriptStore.flags[195] = 6;
-            ScriptData sd = new ScriptData("OB_DOME1", funcs,0);
+            ScriptData sd = new ScriptData("OB_PLT04", 0);
             sd.runScript();
             sd.runScript();
             sd.runScript();
@@ -59,6 +80,7 @@ namespace xyz
             Console.WriteLine($"FLAG195: {RGRGMScriptStore.flags[195]}");
             Console.WriteLine($"FLAG196: {RGRGMScriptStore.flags[196]}");
             Console.WriteLine($"FLAG197: {RGRGMScriptStore.flags[197]}");
+           */ 
 
 /*
             Console.WriteLine($"{filergm.RAHD.dict.Count}");
