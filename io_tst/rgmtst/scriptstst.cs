@@ -4,23 +4,17 @@ using System.IO;
 using System.Linq;
 using RGFileImport;
 
-    public class RGScriptedObject
-    {
-        //functions
-        public Func<uint, bool, int[], int>[] functions;
-    }
     public class RGObjectStore 
     {
-        public static Dictionary<uint , RGScriptedObject> scriptedObjects;
-        public static Dictionary<string, RGScriptedObject> namedScriptedObjects;
-        public static RGScriptedObject GetPlayer()
+
+        public static int DoObjectTask(uint objectId, string subjectName, int taskId, bool isMultiTask, int[] parameters)
         {
-            return null;
+//            static Func<bool, int[], int>[] SetupFuncs()
+
+Console.WriteLine($"FUNC: {taskId}");
+            return 1;
         }
-        public static RGScriptedObject GetCamera()
-        {
-            return null;
-        }
+
     }
 namespace xyz
 {
@@ -43,20 +37,23 @@ namespace xyz
                 Console.WriteLine(o);
             }
             return;
-            Func<int[], int>[] funcs = SetupFuncs();
+            */
+            Func<bool, int[], int>[] funcs = SetupFuncs();
 
 			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
             RGRGMScriptStore.ReadScript(filergm);
             
-            ScriptData sd = new ScriptData("OB_ORY01", funcs,0);
+            RGRGMScriptStore.flags[201] = 1;
+            ScriptData sd = new ScriptData("OB_PLT07", 0);
             for(int i=0;i<100;i++)
                 Console.WriteLine($"ATTR_{i} = {sd.attributes[i]}");
-            int ticks = 8;
+            int ticks = 20;
             for(int i=0;i<ticks;i++)
             {
                 Console.Write($"{i}:");
                 sd.tickScript();
             }
+            /*
             sd = new ScriptData("OB_ENG04", funcs,0);
             for(int i=0;i<ticks;i++)
             {
@@ -64,11 +61,12 @@ namespace xyz
                 sd.tickScript();
             }
 */
+           /* 
             Func<bool, int[], int>[] funcs = SetupFuncs();
 			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
             RGRGMScriptStore.ReadScript(filergm);
             Console.WriteLine(RGRGMScriptStore.getScript("OB_PLT04").DumpStrings());
-            //Console.WriteLine(RGRGMScriptStore.getScript("OB_PLT04"));
+*/
            /* 
             RGRGMScriptStore.flags[195] = 6;
             ScriptData sd = new ScriptData("OB_PLT04", 0);

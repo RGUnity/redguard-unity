@@ -38,11 +38,14 @@ public class LoadWorld : MonoBehaviour
         */
 
 
+        RGObjectStore.AddPlayer(filergm, cyrus_data);
+        /*
         playerObject = new GameObject($"CYRUS");
 
         playerObject.AddComponent<RGScriptedObject>();
         playerObject.GetComponent<RGScriptedObject>().Instanciate(cyrus_data, filergm, "OBSERVAT");
         playerObject.GetComponent<RGScriptedObject>().allowAnimation = true;
+        */
 
         }
     void Start()
@@ -57,10 +60,11 @@ public class LoadWorld : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(false)
+        if(true)
         {
+            /*
 		ModelLoader.scriptedObjects[0x82BDF408].allowScripting = true; // OB_PLT04
-//		ModelLoader.scriptedObjects[0x82BDBC58].allowScripting = true; // OB_PLT07
+		ModelLoader.scriptedObjects[0x82BDBC58].allowScripting = true; // OB_PLT07
 		ModelLoader.scriptedObjects[0x82BDB598].allowScripting = true; // OB_PLT05
 		ModelLoader.scriptedObjects[0x82BDB9F0].allowScripting = true; // OB_PLT06
 		ModelLoader.scriptedObjects[0x82BDE3C0].allowScripting = true; // OB_PLT03
@@ -68,8 +72,12 @@ public class LoadWorld : MonoBehaviour
 		ModelLoader.scriptedObjects[0x82BDEAD8].allowScripting = true; // OB_PLT01
 		ModelLoader.scriptedObjects[0x82BDF098].allowScripting = true; // OB_PLT08
 		ModelLoader.scriptedObjects[0x82BE2D08].allowScripting = true; // OB_PLT00
+            */
+		ModelLoader.scriptedObjects[0x82BDA9B0].allowScripting = true; // OB_STEPR
+		ModelLoader.scriptedObjects[0x82BDCE60].allowScripting = true; // OB_STEP2
+		ModelLoader.scriptedObjects[0x82BDCF98].allowScripting = true; // OB_STEP1
         }
-        if(false)
+        if(true)
         {
 //		ModelLoader.scriptedObjects[0x82BD3750].allowScripting = true; // X
 //		ModelLoader.scriptedObjects[0x82BD9D00].allowScripting = true; // X
@@ -83,7 +91,7 @@ public class LoadWorld : MonoBehaviour
 //		ModelLoader.scriptedObjects[0x82BE74E8].allowScripting = true; // OB_PIPE
 //		ModelLoader.scriptedObjects[0x82BE7730].allowScripting = true; // OB_ERSL
 //		ModelLoader.scriptedObjects[0x82BE7CA0].allowScripting = true; // OB_ERS10
-		ModelLoader.scriptedObjects[0x82BDBC58].allowScripting = true; // OB_PLT07
+//		ModelLoader.scriptedObjects[0x82BDBC58].allowScripting = true; // OB_PLT07
 //		ModelLoader.scriptedObjects[0x82BDBD98].allowScripting = true; // ERASMO
 //		ModelLoader.scriptedObjects[0x82BDBF70].allowScripting = true; // OB_GEAR
 //		ModelLoader.scriptedObjects[0x82BDC140].allowScripting = true; // OB_ENG03

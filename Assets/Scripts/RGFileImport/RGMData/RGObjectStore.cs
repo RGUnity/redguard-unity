@@ -52,7 +52,28 @@ public class RGObjectStore
     // master/slaves
     public static Dictionary<uint, MasterSlavesStruct> scriptedSlaves;
 
-    // level objects
+    public static int DoObjectTask(uint objectId, string subjectName, int taskId, bool isMultiTask, int[] parameters)
+    {
+        RGScriptedObject subject = null;
+        if(subjectName == "object_me")
+        {
+            subject = scriptedObjects[objectId];
+        }
+        else if(subjectName == "object_player")
+        {
+            subject = GetPlayer();
+        }
+        else if(subjectName == "object_camera")
+        {
+            subject = GetCamera();
+        }
+        else
+        {
+            subject = namedScriptedObjects[subjectName];
+        }
+        return subject.functions[taskId](objectId, isMultiTask, parameters);
+    }
+// level objects
     public static void AddObject(uint id, string objectName, RGScriptedObject o)
     {
         Debug.Log($"Adding item {id} with name {objectName}");
@@ -69,9 +90,16 @@ public class RGObjectStore
     }
 
 // special objects
-    public static void SetPlayer(RGScriptedObject newPlayer)
+    public static void AddPlayer(RGFileImport.RGRGMFile filergm,RGFileImport.RGRGMFile.RGMMPOBItem cyrus_data)
     {
-        player = newPlayer;
+        GameObject[] playerObjects = GameObject.FindGameObjectsWithTag("PlayerObject");
+
+        playerObjects[0].AddComponent<RGScriptedObject>();
+        player = playerObjects[0].GetComponent<RGScriptedObject>();
+        player.Instanciate(cyrus_data, filergm, "OBSERVAT");
+        player.transform.localPosition = Vector3.zero;
+        player.transform.localRotation = Quaternion.identity;
+
     }
     public static RGScriptedObject GetPlayer()
     {

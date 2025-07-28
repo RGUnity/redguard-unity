@@ -28,7 +28,7 @@ public class PlayerMain: MonoBehaviour
     private InputManager _input;
     private Vector3 _smoothVelocity;
     private float _speed;
-    private RGScriptedObject _currentScriptedGround;
+    public RGScriptedObject _currentScriptedGround;
     private Vector3 _ledgeTargetPosition;
     private bool _isClimbingUpLedge;
     private Vector3 _ledgeWallNormal;
@@ -342,7 +342,10 @@ public class PlayerMain: MonoBehaviour
         Vector3 surfaceDownhillSphere = default;
         Vector3 surfaceDownhillRay = default;
 
-        if (Physics.SphereCast(transform.position, 0.34f, Vector3.down, out RaycastHit sphereHit, 0.7f, config.groundLayers))
+        float castRadius = 0.34f;
+        float castDistance = cc.height/2-(castRadius-0.14f);
+
+        if (Physics.SphereCast(transform.position, castRadius, Vector3.down, out RaycastHit sphereHit, castDistance, config.groundLayers))
         {
             _isGrounded = true;
             _surfaceAngleSphere = Vector3.Angle(Vector3.up, sphereHit.normal);
@@ -353,11 +356,13 @@ public class PlayerMain: MonoBehaviour
                 _currentScriptedGround = platform;
                 _isOnScriptedObject = true;
                 _currentScriptedGround.playerStanding = true;
+//                this.transform.SetParent(_currentScriptedGround.transform);
             }
             else
             {
                 if(_currentScriptedGround != null)
                     _currentScriptedGround.playerStanding = false;
+//                this.transform.SetParent(null);
                 _currentScriptedGround = null;
                 _isOnScriptedObject = false;
             }
@@ -368,6 +373,7 @@ public class PlayerMain: MonoBehaviour
 
             if(_currentScriptedGround != null)
                 _currentScriptedGround.playerStanding = false;
+//            this.transform.SetParent(null);
             _currentScriptedGround = null;
             _isOnScriptedObject = false;
         }
@@ -392,7 +398,11 @@ public class PlayerMain: MonoBehaviour
         }
 
         // Overhang check - returns true if the players feet are not visibly touching ground
-        if (Physics.SphereCast(transform.position, 0.15f, Vector3.down, out RaycastHit sphereHit2, 1f, config.groundLayers))
+        
+        float castRadius2 = 0.15f;
+        float castDistance2 = cc.height / 2 - (castRadius2 - 0.25f);
+        
+        if (Physics.SphereCast(transform.position, castRadius2, Vector3.down, out RaycastHit sphereHit2, castDistance2, config.groundLayers))
         {
             _feetVisiblyGrounded = true;
         }
