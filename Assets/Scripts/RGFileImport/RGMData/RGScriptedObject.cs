@@ -333,7 +333,22 @@ public class RGScriptedObject : MonoBehaviour
 
         UpdateTask(mainTask);
         if(mainTask.type == TaskType.task_idle)
+        {
+            try {
             script.tickScript();
+            }
+            catch(Exception ex)
+            {
+                Exception ex2 = ex; 
+                while(ex2.InnerException != null)
+                {
+                    Console.WriteLine($"ex: {ex2.Message}");
+                    ex2 = ex2.InnerException;
+                }
+                throw new Exception($"Script for object {scriptName} failed with error:\n{ex.Message}\nStackTrace:\n${ex.StackTrace}");
+
+            }
+        }
         for(int i=multiTasks.Count-1;i>=0;i--)
         {
             UpdateTask(multiTasks[i]);
@@ -458,7 +473,6 @@ public class RGScriptedObject : MonoBehaviour
         return 0;
     }
 
-    /*task 44*/
     public Vector3 RGAxisToVector3(int RGAxis)
     {
         Vector3 axis;
@@ -479,6 +493,7 @@ public class RGScriptedObject : MonoBehaviour
         }
         return Vector3.Scale(axis, new Vector3(1.0f, 1.0f,-1.0f));
     }
+    /*task 44*/
     public int RotateByAxis(uint caller, bool multitask, int[] i /*3*/)    
     {
         Debug.Log($"{multitask}_{scriptName}_RotateByAxis({string.Join(",",i)})");
@@ -549,12 +564,13 @@ public class RGScriptedObject : MonoBehaviour
                 mt = new Vector3(0,-(float)((float)i[1]*RGM_MPOB_SCALE),0);
                 break;
             case 2:
-                mt = new Vector3(0,0,-(float)((float)(0xFFFFFF-i[1])*RGM_MPOB_SCALE));
+                mt = new Vector3(0,0,(float)(i[1])*RGM_MPOB_SCALE);
                 break;
             default:
                 mt = new Vector3(0,0,0);
                 break;
         }
+        Debug.Log($"OUT: {mt}");
         newTask.positionTarget = transform.localPosition + mt;
         newTask.positionStart = transform.localPosition;
         AddTask(multitask, newTask);

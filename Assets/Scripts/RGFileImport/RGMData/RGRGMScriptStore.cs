@@ -8,7 +8,7 @@ public class ScriptData
     int[] vars;
     // attributes never used?
     public byte[] attributes;
-    int scriptPC;
+    public int scriptPC;
     Stack<int> callstack;
     MemoryReader memoryReader;
 
@@ -220,29 +220,31 @@ void logDBG(string i)
         }
         return o;
     }
-    int doTask(string obj, taskType type, ushort task_id, int[] parameters)
+    bool doCon(bool lhs, bool rhs, byte con)
     {
-        Console.Write($"OBJ: {obj}_{type}_{task_id}:");
-        bool isMultiTask = (type == taskType.multitask);
+        bool o = lhs;
+        switch(con)
+        {
+            case 0:
+                o = lhs;
+                break;
+            case 1:
+                o = lhs&&rhs;
+                break;
+            default:
+                o = lhs||rhs;
+                break;
+        }
+        Console.WriteLine($"CON: {lhs} {DBG_con_2_str(con)} {rhs} = {o}");
+        return o;
+    }
 
-        RGScriptedObject scriptedObject = null;
-        if(obj == "object_me")
-        {
-            scriptedObject = RGObjectStore.scriptedObjects[objectId];
-        }
-        else if(obj == "object_player")
-        {
-            scriptedObject = RGObjectStore.GetPlayer();
-        }
-        else if(obj == "object_camera")
-        {
-            scriptedObject = RGObjectStore.GetCamera();
-        }
-        else
-        {
-            scriptedObject = RGObjectStore.namedScriptedObjects[obj];
-        }
-        return scriptedObject.functions[task_id](objectId, isMultiTask, parameters);
+
+    int doTask(string obj, taskType type, ushort taskId, int[] parameters)
+    {
+        Console.Write($"OBJ: {obj}_{type}_{taskId}:");
+        bool isMultiTask = (type == taskType.multitask);
+        return RGObjectStore.DoObjectTask(objectId, obj, taskId, isMultiTask, parameters);
     }
     int doFlagAssign(ushort flag_id, List<int> vals, List<byte> ops)
     {
@@ -294,13 +296,20 @@ void logDBG(string i)
     }
     bool doIf(List<int> LHS, List<int> RHS, List<byte> cmp, List<byte> con)
     {
-        bool ret = false;
+        bool ret = true;
         string o = new string($"0x{memoryReader.Position:X4}: IF(");
+
+        List<bool> evals = new List<bool>();
         for(int i=0;i<con.Count;i++)
         {
             o+= $"{LHS[i]} {DBG_cmp_2_str(cmp[i])} {RHS[i]} {DBG_con_2_str(con[i])}";
-            // TODO: cons
-            ret = doCmp(LHS[i], RHS[i], cmp[i]);
+            evals.Add(doCmp(LHS[i], RHS[i], cmp[i]));
+        }
+        ret = evals[0];
+        for(int i=1;i<evals.Count;i++)
+        {
+            bool ret_o = ret;
+            ret = doCon(ret, evals[i], con[i-1]);
         }
         o += $" == {ret}";
         Console.WriteLine(o);
