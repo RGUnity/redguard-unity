@@ -242,6 +242,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cc: {fileID: 5460861568075509288}
   config: {fileID: 11400000, guid: c71b60b0d8cb67e449c69f963be683a6, type: 2}
+  input: {fileID: 11400000, guid: 9a89568f20838ef4e9c0876e298999d7, type: 2}
 --- !u!114 &4619516045627391771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,6 +255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3104406de8fa05e46b4a0dbf2496af52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  input: {fileID: 11400000, guid: 9a89568f20838ef4e9c0876e298999d7, type: 2}
   selectedObject: {fileID: 0}
 --- !u!1 &5972844620632379190
 GameObject:

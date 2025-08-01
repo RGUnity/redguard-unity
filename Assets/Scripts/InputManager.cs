@@ -1,23 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
     [SerializeField] private PauseMenuLoader _pauseMenuLoader;
-
-    public Vector2 move;
-    public bool moveModifier;
-    public bool use;
-    public bool jump;
-    public bool toggleInventory;
-    public bool toggleMap;
-    public bool quickSave;
-    public bool quickLoad;
-    public bool togglePauseMenu;
-    public bool dropDown;
-    public bool climbUp;
     
     // Input System Actions
     private InputAction _moveAction;
@@ -60,30 +46,30 @@ public class InputManager : MonoBehaviour
     void Update()
     {
         // Read input signals
-        move = _moveAction.ReadValue<Vector2>();
-        moveModifier = _moveModifierAction.IsPressed();
+        Game.Input.move = _moveAction.ReadValue<Vector2>();
+        Game.Input.moveModifier = _moveModifierAction.IsPressed();
         
-        use = _useAction.WasPressedThisFrame();
+        Game.Input.use = _useAction.WasPressedThisFrame();
         
         // jump is used in FixedUpdate. To avoid sync issues, PlayerMovement.cs sets it to false after processing it.
         if (_jumpAction.WasPressedThisFrame())
         {
-            jump = true;
+            Game.Input.jump = true;
         }
         
-        toggleInventory = _toggleInventoryAction.WasPressedThisFrame();
-        toggleMap = _toggleMapAction.WasPressedThisFrame();
-        quickSave = _quickSaveAction.WasPressedThisFrame();
-        quickLoad = _quickLoadAction.WasPressedThisFrame();
-        dropDown = _dropDownAction.WasPressedThisFrame();
-        climbUp = _climbUpAction.WasPressedThisFrame();
+        Game.Input.toggleInventory = _toggleInventoryAction.WasPressedThisFrame();
+        Game.Input.toggleMap = _toggleMapAction.WasPressedThisFrame();
+        Game.Input.quickSave = _quickSaveAction.WasPressedThisFrame();
+        Game.Input.quickLoad = _quickLoadAction.WasPressedThisFrame();
+        Game.Input.dropDown = _dropDownAction.WasPressedThisFrame();
+        Game.Input.climbUp = _climbUpAction.WasPressedThisFrame();
         
-        if (quickSave)
+        if (Game.Input.quickSave)
         {
             print("Input Button Called: Quick Save");
             GameSaver.QuickSave();
         }
-        if (quickLoad)
+        if (Game.Input.quickLoad)
         {
             print("Input Button Called: Quick Load");
             GameLoader.QuickLoad();
@@ -93,12 +79,12 @@ public class InputManager : MonoBehaviour
         {
             // Inputs that can only happen when the additive pause menu is HIDDEN 
 
-            if (toggleInventory)
+            if (Game.Input.toggleInventory)
             {
                 UiWindowManager.ToggleInventory();
             }
 
-            if (togglePauseMenu)
+            if (Game.Input.togglePauseMenu)
             {
                 _pauseMenuLoader.ShowMainMenu();
             }

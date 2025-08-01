@@ -219,6 +219,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   localPathManager: {fileID: 6610016801935157143}
+  localConfigManager: {fileID: 828564100825465404}
+  localInputManager: {fileID: 4963430889910768754}
 --- !u!1 &5671616913903350106
 GameObject:
   m_ObjectHideFlags: 0
@@ -308,17 +310,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pauseMenuLoader: {fileID: 6574209950967362421}
-  move: {x: 0, y: 0}
-  moveModifier: 0
-  use: 0
-  jump: 0
-  toggleInventory: 0
-  toggleMap: 0
-  quickSave: 0
-  quickLoad: 0
-  togglePauseMenu: 0
-  dropDown: 0
-  climbUp: 0
 --- !u!1 &8779399775842335127
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,9 +341,9 @@ Transform:
   m_Children:
   - {fileID: 4551374940387523371}
   - {fileID: 1143752786272711637}
+  - {fileID: 3956507541227076679}
   - {fileID: 3424070667417577379}
   - {fileID: 1164881660196016163}
-  - {fileID: 3956507541227076679}
   - {fileID: 3019939722856425875}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -1,55 +1,52 @@
-using System;
 using System.IO;
 using UnityEngine;
 
 public class PathManager : MonoBehaviour
 {
-    public static bool useGlidePaths = false;
-    
-    public static string GetRootFolder()
+    public string GetRootFolder()
     {
-        return Game.configData.redguardPath;
+        return Game.Config.redguardPath;
     }
 
-    public static string GetArtFolder()
+    public string GetArtFolder()
     {
-        if (Game.configData.useGlidePaths)
+        if (Game.Config.useGlidePaths)
         {
-            return Game.configData.redguardPath + "/fxart";
+            return Game.Config.redguardPath + "/fxart";
         }
         else
         {
-            return Game.configData.redguardPath + "/3dart";
+            return Game.Config.redguardPath + "/3dart";
         }
     }
 
-    public static string GetMapsFolder()
+    public string GetMapsFolder()
     {
-        return Game.configData.redguardPath + "/maps";
+        return Game.Config.redguardPath + "/maps";
     }
 
-    public static bool CheckPaths()
+    public bool CheckPaths()
     {
         var rootPath = GetRootFolder();
         if (Directory.Exists(rootPath))
         {
-            print("configData.redguardPath does exist. Tested with path: " + rootPath);
+            print("redguardPath does exist on this machine. Tested with path: " + rootPath);
             
             if (Directory.Exists(rootPath + "/3dart"))
             {
-                useGlidePaths = false;
-                print("Using Non-Glide Paths");
+                Game.Config.useGlidePaths = false;
+                print("Found /3dart directory. Using Non-Glide Paths");
                 return true;
             }
 
             if (Directory.Exists(rootPath + "/fxart"))
             {
-                useGlidePaths = true;
-                print("Using Glide Paths");
+                Game.Config.useGlidePaths = true;
+                print("Found /fxart directory. Using Glide Paths");
                 return true;
             }
         }
-        print("configData.redguardPath is invalid. Tested with path: " + rootPath);
+        print("redguardPath is invalid. Tested with path: " + rootPath);
         return false;
     }
 }

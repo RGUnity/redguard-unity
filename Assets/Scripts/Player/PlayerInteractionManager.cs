@@ -5,12 +5,13 @@ using UnityEngine;
 
 public class PlayerInteractionManager : MonoBehaviour
 {
+    [SerializeField] private InputData input;
     public Interactable selectedObject;
 
     void Update()
     {
         // When "Use" is pressed, trigger "Interact()" on the selectedObject
-        if (LocalScene.inputManager.use
+        if (input.use
             && selectedObject != null)
         {
             selectedObject.Interact();

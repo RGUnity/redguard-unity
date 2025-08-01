@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -8,40 +6,16 @@ public class ConfigManager : MonoBehaviour
     private string ConfigPath;
     private string DefaultConfigPath;
 
-    public class ConfigData
-    {
-        public int iniversion;
-        public string redguardPath;
-        public bool useGlidePaths;
-        public int windowMode;
-        public bool vsync;
-        public bool limitFPS;
-        public int maxFPS;
-        public bool antiAliasing;
-        public bool shadows;
-        public int music;
-        public int effects;
-        public int  voices;
-        public bool subtitles;
-        public bool autoDefend;
-        public bool newControls;
-    }
-
-    private void Awake()
-    {
-        InitializeConfig();
-    }
-
-    private void InitializeConfig()
+    public void InitializeConfig()
     {
         ConfigPath = Application.persistentDataPath + "/Config.json";
         DefaultConfigPath = Application.streamingAssetsPath + "/Config_default.json";
     
         // If a config already exists, load it
         if (File.Exists(ConfigPath))
-        {
-            Game.configData = LoadConfig(ConfigPath);
-            print("Config Found with version " + Game.configData.iniversion );
+        {   
+            LoadConfig(ConfigPath);
+            print("Config Found with version " + Game.Config.iniversion );
         }
         // if none is found, try to create a new config
         else
@@ -52,7 +26,7 @@ public class ConfigManager : MonoBehaviour
                 string jsonString = File.ReadAllText(DefaultConfigPath);
                 File.WriteAllText(ConfigPath, jsonString);
                 print("Saved new config as " + ConfigPath);
-                Game.configData = LoadConfig(ConfigPath);
+                LoadConfig(ConfigPath);
             }
             else
             {
@@ -61,10 +35,19 @@ public class ConfigManager : MonoBehaviour
         }
     }
 
-    private ConfigData LoadConfig(string path)
+    private void LoadConfig(string path)
     {
         string jsonString = File.ReadAllText(path);
-        return JsonUtility.FromJson<ConfigData>(jsonString);
+        //JsonUtility.FromJsonOverwrite(jsonString, Game.Config);
+        Game.Config = JsonUtility.FromJson<ConfigData>(jsonString);
+        print("Config loaded as " + ConfigPath);
+    }
+    
+    public void SaveConfig()
+    {
+        string jsonString = JsonUtility.ToJson(Game.Config);
+        File.WriteAllText(ConfigPath, jsonString);
+        print("Config Saved as " + ConfigPath);
     }
 }
 

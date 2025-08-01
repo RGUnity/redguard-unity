@@ -1,6 +1,7 @@
 {
     "iniversion": 1,
     "redguardPath": "",
+    "useGlidePaths": true,
     "windowMode": 0,
     "vsync": true,
     "limitFPS": false,

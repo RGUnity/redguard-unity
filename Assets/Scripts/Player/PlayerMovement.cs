@@ -25,18 +25,12 @@ public class PlayerMovement : MonoBehaviour
     private float _pointRotation;
 
     // Other variables
-    private InputManager _input;
     private Vector3 _smoothVelocity;
     private float _speed;
     private TEST_MovingPlatform _currentPlatform;
     private Vector3 _ledgeTargetPosition;
     private bool _isClimbingUpLedge;
     private Vector3 _ledgeWallNormal;
-
-    private void Start()
-    {
-        _input = LocalScene.inputManager;
-    }
 
     private void FixedUpdate()
     {
@@ -53,16 +47,16 @@ public class PlayerMovement : MonoBehaviour
             _currentMovementState = PlayerMovementStates.Airborne;
         }
         
-        if (_input.jump
+        if (Game.Input.jump
             && _currentMovementState == PlayerMovementStates.Walking)
         {
-            _input.jump = false;
+            Game.Input.jump = false;
             _currentMovementState = PlayerMovementStates.Airborne;
             Jump();
         }
-        else if (_input.jump)
+        else if (Game.Input.jump)
         {
-            _input.jump = false;
+            Game.Input.jump = false;
         }
         
         if (_isGrounded 
@@ -98,7 +92,7 @@ public class PlayerMovement : MonoBehaviour
         }
         
         if (_currentMovementState == PlayerMovementStates.Climbing 
-            && _input.dropDown)
+            && Game.Input.dropDown)
         {
             _currentMovementState = PlayerMovementStates.Walking;
             _velocity = Vector3.zero;
@@ -107,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
             // OR shorten the ledge detection ray.
         }
         else if (_currentMovementState == PlayerMovementStates.Climbing 
-                 && _input.climbUp)
+                 && Game.Input.climbUp)
         {
             PullUpLedge();
             // Todo: Check if the player has enough space to climb up
@@ -150,22 +144,22 @@ public class PlayerMovement : MonoBehaviour
         //Debug.DrawRay(transform.position + Vector3.down, _forwardOnSurface, Color.yellow);
         
         // Movement when moveModifier is pressed / is true
-        if (_input.moveModifier)
+        if (Game.Input.moveModifier)
         {
-            if (_input.move.y != 0)
+            if (Game.Input.move.y != 0)
             {
                 // Walk forward or backwards
-                _velocity = _forwardOnSurface * (_input.move.y * config.walkSpeed / 60);
+                _velocity = _forwardOnSurface * (Game.Input.move.y * config.walkSpeed / 60);
 
                 // Turn the player
-                float yRotation = _input.move.x * config.turnSpeed * Time.deltaTime * 60;
+                float yRotation = Game.Input.move.x * config.turnSpeed * Time.deltaTime * 60;
                 transform.Rotate(0, yRotation, 0);
             }
-            else if (_input.move.x != 0
-                     && _input.move.y == 0)
+            else if (Game.Input.move.x != 0
+                     && Game.Input.move.y == 0)
             {
                 // Strafe left or right
-                _velocity = _rightOnSurface * (_input.move.x * config.walkSpeed / 60);
+                _velocity = _rightOnSurface * (Game.Input.move.x * config.walkSpeed / 60);
             }
             else
             {
@@ -176,14 +170,14 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             // Run Forward
-            if (_input.move.y > 0)
+            if (Game.Input.move.y > 0)
             {
-                _velocity = _forwardOnSurface * (_input.move.y * config.runSpeed / 60);
+                _velocity = _forwardOnSurface * (Game.Input.move.y * config.runSpeed / 60);
             }
             // Walk backwards
-            else if (_input.move.y < 0)
+            else if (Game.Input.move.y < 0)
             {
-                _velocity = _forwardOnSurface * (_input.move.y * config.walkSpeed / 60);
+                _velocity = _forwardOnSurface * (Game.Input.move.y * config.walkSpeed / 60);
             }
             else
             {
@@ -191,7 +185,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             // Turn the player
-            float yRotation = _input.move.x * config.turnSpeed * Time.deltaTime * 60;
+            float yRotation = Game.Input.move.x * config.turnSpeed * Time.deltaTime * 60;
             transform.Rotate(0, yRotation, 0);
         }
         
@@ -240,17 +234,17 @@ public class PlayerMovement : MonoBehaviour
         Vector3 wallRight = Vector3.Cross(transform.up, -_ledgeWallNormal);
 
         // Move on ledge
-        if (_input.move.x > 0 && CanClimbRight())
+        if (Game.Input.move.x > 0 && CanClimbRight())
         {
             _velocity = wallRight - _ledgeWallNormal;
         }
-        else if (_input.move.x < 0 && CanClimbLeft())
+        else if (Game.Input.move.x < 0 && CanClimbLeft())
         {
             _velocity = -wallRight - _ledgeWallNormal;
         }
 
         // Keep the value positive and also hammer it towards full numbers
-        float moveDir = Mathf.Sign(Mathf.Abs(_input.move.x));
+        float moveDir = Mathf.Sign(Mathf.Abs(Game.Input.move.x));
         _velocity *= moveDir * 0.0334f * config.ledgeStrafeSpeed;
     }
 
@@ -275,7 +269,7 @@ public class PlayerMovement : MonoBehaviour
     private void HandleStepOffset()
     {
         float distance = cc.radius + cc.skinWidth + config.rayDistance;
-        Vector3 targetDirection = _forwardOnSurface * _input.move.y + transform.right * _input.move.x;
+        Vector3 targetDirection = _forwardOnSurface * Game.Input.move.y + transform.right * Game.Input.move.x;
         
         //Raycast at player's ground level in direction of movement
         bool bottomRaycast = Physics.Raycast(_playerRootPosition, targetDirection, out _, distance);
@@ -311,7 +305,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (_input.move.y > 0
+        if (Game.Input.move.y > 0
             && _speed > config.longJumpThreshold)
         {
             // Long forward jump
@@ -319,7 +313,7 @@ public class PlayerMovement : MonoBehaviour
             _velocity.y = config.jumpHeight / 10;
             _isGrounded = false;
         }
-        else if (_input.move.y > 0
+        else if (Game.Input.move.y > 0
                 && _speed > config.shortJumpThreshold)
         {
             // Short forward jump
