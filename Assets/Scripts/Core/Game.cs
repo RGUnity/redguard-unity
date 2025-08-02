@@ -31,8 +31,6 @@ public class Game : MonoBehaviour
         
         isPaused = false;
         Menu.isLoadedAdditively = false;
-
-        ModelLoader.RedguardPath = Config.redguardPath;
     
         // Look for scene data, create new if necessary
         var sceneName = SceneManager.GetActiveScene().name;
@@ -57,8 +55,6 @@ public class Game : MonoBehaviour
                 SceneManager.UnloadSceneAsync("Scenes/Setup");
                 setupIsLoaded = false;
             }
-
-            configManager.SaveConfig();
         }
         else
         {

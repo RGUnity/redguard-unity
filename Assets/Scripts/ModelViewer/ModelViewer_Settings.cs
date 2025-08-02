@@ -30,13 +30,6 @@ public class ModelViewer_Settings : MonoBehaviour
         mv_camera.useFlyMode = toggle;
     }
 
-    public void ReloadFiles()
-    {
-        ModelLoader.RedguardPath = gui.pathInput.text;
-        PlayerPrefs.SetString("ViewerRedguardPath", ModelLoader.RedguardPath);
-        mv.ViewerMode_Areas();
-    }
-
     private void ToggleUI()
     {
         showUI = !showUI;

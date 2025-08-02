@@ -34,7 +34,7 @@ public class PathManager : MonoBehaviour
         var rootPath = GetRootFolder();
         if (Directory.Exists(rootPath))
         {
-            print("redguardPath does exist on this machine. Tested with path: " + rootPath);
+            print("redguardPath is a valid path on this machine. Tested with path: " + rootPath);
             
             if (Directory.Exists(rootPath + "/3dart"))
             {
@@ -50,7 +50,7 @@ public class PathManager : MonoBehaviour
                 return true;
             }
         }
-        print("redguardPath is invalid. Tested with path: " + rootPath);
+        print("redguardPath not found. Tested with path: " + rootPath);
         return false;
     }
 }

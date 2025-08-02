@@ -27,7 +27,7 @@ public class Launcher : MonoBehaviour
         PlayerPrefs.DeleteKey("Screenmanager Fullscreen mode Default_h401710285");
         
         print("Todo: Load menu scene or whatever");
-        SceneManager.UnloadSceneAsync("Scenes/Launcher");
+        //SceneManager.UnloadSceneAsync("Scenes/Launcher");
         SceneManager.LoadScene("Movement Tests");
     }
 
@@ -36,7 +36,7 @@ public class Launcher : MonoBehaviour
         Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.MaximizedWindow);
         PlayerPrefs.DeleteKey("Screenmanager Fullscreen mode Default_h401710285");
         
-        SceneManager.UnloadSceneAsync("Scenes/Launcher");
+        //SceneManager.UnloadSceneAsync("Scenes/Launcher");
         SceneManager.LoadScene("Scenes/ModelViewer");
     }
 }

@@ -16,8 +16,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] private RectTransform root_ButtonList;
     [SerializeField] private GameObject button3DC_Prefab;
     [SerializeField] private GameObject buttonROB_Prefab;
-    [SerializeField] private GameObject errorPopup_Path;
-    [SerializeField] public TMP_InputField pathInput;
     [SerializeField] public TMP_InputField exportPathInput;
     [SerializeField] public TMP_Dropdown objectDropDown;
     [SerializeField] public GameObject overlays_AreaMode;
@@ -33,8 +31,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         IsMouseOverUI = false;
     }
-    
-    public void ClearButtonList()
+
+    private void ClearButtonList()
     {
         // Clear all buttons
         if (root_ButtonList.transform.childCount > 0)
@@ -48,7 +46,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     }
     
     // Build the UI
-    public void UpdateUI_Models(FileInfo[]  fileList)
+    public void UpdateUI_Models()
     {
         // Update Button appearance
         button_ModeLevel.GetComponent<Image>().color = Color.gray;
@@ -57,16 +55,17 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         ClearButtonList();
         
+        DirectoryInfo dirInfo = new DirectoryInfo(Game.pathManager.GetArtFolder());
+        var fileList = dirInfo.GetFiles("*.3DC");
+        
         foreach (var file in fileList)
         {
             //print(file.Name);
             SpawnButton_Model(file.Name);
         }
-        
-        // todo: generate other button lists
     }
-    
-    public void SpawnButton_Model(string fileName)
+
+    private void SpawnButton_Model(string fileName)
     {
         var prettyFileName = fileName.Replace(".3DC", "");
         
@@ -80,7 +79,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             component.SetButtonText(fileName);
         }
     }
-    
     
     public void UpdateUI_Levels()
     {
@@ -100,10 +98,9 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         for(int i=0;i<worldList.Count;i++)
             SpawnButton_Level(worldList[i].RGM,worldList[i].WLD, worldList[i].COL);
     }
-    
-    public void SpawnButton_Level(string RGM, string WLD, string COL)
+
+    private void SpawnButton_Level(string RGM, string WLD, string COL)
     {
-        
         var newButton = Instantiate(buttonROB_Prefab, root_ButtonList);
         newButton.name = "Button_" + RGM;
         
@@ -186,19 +183,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         print("Requesting area: " + RGM);
         modelViewer.SpawnArea(RGM, WLD, COL);
-    }
-
-    public void PathErrorMode(bool toggle)
-    {
-        errorPopup_Path.SetActive(toggle);
-        if (toggle)
-        {
-            pathInput.GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            pathInput.GetComponent<Image>().color = Color.white;
-        }
     }
     
     public void RequestExportGLTF()

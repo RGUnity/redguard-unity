@@ -50,8 +50,6 @@ public class LoadWorld : MonoBehaviour
         }
     void Start()
     {
-        
-        ModelLoader.RedguardPath = "./game_3dfx";
         ModelLoader.LoadArea("OBSERVE", "OBSERVAT", "");
         AddPlayer();
         RGRGMScriptStore.flags[203] = 1; // OB_Fixed

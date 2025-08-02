@@ -6,7 +6,6 @@ using Unity.Profiling;
 public static class ModelLoader
 {
     public static Dictionary<uint, RGScriptedObject> scriptedObjects;
-    public static string RedguardPath = "C:/Program Files (x86)/GOG Galaxy/Games/Redguard/Redguard";
     
     public static GameObject Load3DC(string f3DCname, string colname)
     {
@@ -153,7 +152,7 @@ public static class ModelLoader
     private static GameObject SetModel_wld(string name_wld, string name_col)
     {
         // Load the WLD data
-        string filename_wld = new string(RedguardPath + $"/maps/{name_wld}.WLD");
+        string filename_wld = new string(Game.pathManager.GetMapsFolder() + $"/{name_wld}.WLD");
         RGMeshStore.UnityData_WLD data_WLD = RGMeshStore.WLD2Mesh(filename_wld, name_col);
         
         // Build the GameObject
