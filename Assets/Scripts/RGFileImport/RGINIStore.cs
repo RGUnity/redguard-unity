@@ -8,13 +8,10 @@ public static class RGINIStore
 {
     static RGINIFile iniData;
 
-    public static string path_to_game = "./game_3dfx";
-    public static string fxart_path = path_to_game + "/fxart/";
-
     static RGINIStore()
     {
         iniData = new RGINIFile();
-        iniData.LoadFile($"{path_to_game}/WORLD.INI");
+        iniData.LoadFile($"{Game.pathManager.GetRootFolder()}/WORLD.INI");
     }
 
     public struct worldData

@@ -8,21 +8,25 @@ public class PathManager : MonoBehaviour
         return Game.Config.redguardPath;
     }
 
+    public void SetPath(string path)
+    {
+        Game.Config.redguardPath = path;
+    }
     public string GetArtFolder()
     {
         if (Game.Config.useGlidePaths)
         {
-            return Game.Config.redguardPath + "/fxart";
+            return Game.Config.redguardPath + "/fxart/";
         }
         else
         {
-            return Game.Config.redguardPath + "/3dart";
+            return Game.Config.redguardPath + "/3dart/";
         }
     }
 
     public string GetMapsFolder()
     {
-        return Game.Config.redguardPath + "/maps";
+        return Game.Config.redguardPath + "/maps/";
     }
 
     public bool CheckPaths()

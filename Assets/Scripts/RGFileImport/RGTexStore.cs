@@ -25,9 +25,6 @@ static readonly ProfilerMarker s_load_pal = new ProfilerMarker("LoadPalette");
     static Dictionary<string, RGTEXBSIFile> BSIFDict;
     static Dictionary<string, Shader> ShaderDict;
 
-    public static string path_to_game = "./game_3dfx";
-    public static string fxart_path = path_to_game + "/fxart/";
-
     static RGTexStore()
     {
         MaterialDict = new Dictionary<string, Material>();
@@ -143,7 +140,7 @@ using(s_get_mat_bsi.Auto()){
     {
 using(s_load_texbsi.Auto()){
         string texname = $"{texbsi:D3}";
-        string path = new string(fxart_path + "TEXBSI." + texname);
+        string path = new string(Game.pathManager.GetArtFolder() + "TEXBSI." + texname);
         return LoadTextureFile(texname, path);
 }
     }
@@ -151,7 +148,7 @@ using(s_load_texbsi.Auto()){
     {
 using(s_load_bsi.Auto()){
         string texname = $"bsiname";
-        string path = new string(fxart_path + bsiname + ".BSI");
+        string path = new string(Game.pathManager.GetArtFolder() + bsiname + ".BSI");
         RGBSIFile o = new RGBSIFile();
         o.LoadFile(path);
 
@@ -162,7 +159,7 @@ using(s_load_bsi.Auto()){
     {
 using(s_load_mat_bsi.Auto()){
 
-        string path = new string(fxart_path + bsiname + ".BSI");
+        string path = new string(Game.pathManager.GetArtFolder() + bsiname + ".BSI");
         RGFileImport.RGBSIFile bsi = new RGFileImport.RGBSIFile();
         bsi.LoadFile(path);
         RGCOLFile pal = LoadPalette("SKY");
@@ -209,10 +206,10 @@ using(s_load_pal.Auto()){
         else
         {
             PaletteDict.Add(palname, new RGCOLFile());
-            string palpath = fxart_path + palname + ".COL";
+            string palpath = Game.pathManager.GetArtFolder() + palname + ".COL";
             // sunset is the only palette in lowercase, thanks todd
             if(palname == "SUNSET")
-                palpath = fxart_path + "sunset.col";
+                palpath = Game.pathManager.GetArtFolder() + "sunset.col";
 
             PaletteDict[palname].LoadFile(palpath);
             return PaletteDict[palname];

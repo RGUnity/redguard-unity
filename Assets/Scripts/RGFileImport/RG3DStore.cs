@@ -50,10 +50,6 @@ static readonly ProfilerMarker pm_pass_2_face_vert_frame = new ProfilerMarker("p
 
     static Dictionary<string, Mesh3D_intermediate> MeshIntermediateDict; // key: meshname
 
-    public static string path_to_game = "./game_3dfx";
-    public static string fxart_path = path_to_game + "/fxart/";
-
-
     static RG3DStore()
     {
         MeshIntermediateDict = new Dictionary<string, Mesh3D_intermediate>();
@@ -129,7 +125,7 @@ using (s_load_i3DC.Auto()){
         }
         else
         {
-            string filename = path_to_game + "/fxart/" + meshname + ".3DC";
+            string filename = Game.pathManager.GetArtFolder() + meshname + ".3DC";
             
             RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
             file_3d.LoadFile(filename);
@@ -142,7 +138,7 @@ using (s_load_i3DC.Auto()){
     public static void LoadMeshIntermediatesROB(string ROBname)
     {
 using (s_load_iROB.Auto()){
-        string filename = path_to_game + "/fxart/" + ROBname+ ".ROB";
+        string filename = Game.pathManager.GetArtFolder() + ROBname+ ".ROB";
         RGFileImport.RGROBFile file_rob = new RGFileImport.RGROBFile();
         file_rob.LoadFile(filename);
         for(int i=0;i<file_rob.hdr.NumSegments;i++)

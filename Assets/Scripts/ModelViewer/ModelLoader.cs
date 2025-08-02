@@ -10,10 +10,6 @@ public static class ModelLoader
     
     public static GameObject Load3DC(string f3DCname, string colname)
     {
-        RGRGMStore.maps_path = RedguardPath +"/maps/";
-        RG3DStore.fxart_path = RedguardPath +"/fxart/";
-        RGTexStore.fxart_path = RedguardPath +"/fxart/";
-        
         RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, f3DCname, colname);
         GameObject obj = Add3DToScene($"3DC_{f3DCname}",  data_3D, Vector3.zero, Vector3.zero);
         return obj;
@@ -25,13 +21,9 @@ public static class ModelLoader
 
     public static List<GameObject> LoadArea(string areaname, string palettename, string wldname)
     {
-        RGRGMStore.maps_path = RedguardPath +"/maps/";
-        RG3DStore.fxart_path = RedguardPath +"/fxart/";
-        RGTexStore.fxart_path = RedguardPath +"/fxart/";
-        
         List<GameObject> areaObjects;
         RG3DStore.LoadMeshIntermediatesROB(areaname);
-        areaObjects = LoadRGM(RedguardPath, areaname, palettename);
+        areaObjects = LoadRGM(areaname, palettename);
         if(!String.IsNullOrEmpty(wldname))
             areaObjects.Add(SetModel_wld(wldname, palettename));
         return areaObjects;
@@ -64,7 +56,7 @@ public static class ModelLoader
     static readonly ProfilerMarker s_load_MPSF = new ProfilerMarker("LoadMPSF");
     static readonly ProfilerMarker s_load_MPRP = new ProfilerMarker("LoadMPRP");
 
-    private static List<GameObject> LoadRGM(string gamepath, string RGMname, string name_col)
+    private static List<GameObject> LoadRGM(string RGMname, string name_col)
     {
         scriptedObjects = new Dictionary<uint, RGScriptedObject>();
         List<GameObject> areaObjects = new List<GameObject>();
