@@ -82,7 +82,7 @@ public static class ModelLoader
 				spawned.GetComponent<RGScriptedObject>().Instanciate(filergm.MPOB.items[i], filergm, name_col);
                 scriptedObjects.Add(filergm.MPOB.items[i].id, spawned.GetComponent<RGScriptedObject>());
 
-//                spawned.GetComponent<RGScriptedObject>().SetAnim(20,0);
+                spawned.GetComponent<RGScriptedObject>().SetAnim(20,0);
             }
             catch(Exception ex)
             {
