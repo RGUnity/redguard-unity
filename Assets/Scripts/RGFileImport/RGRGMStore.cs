@@ -25,9 +25,6 @@ static readonly ProfilerMarker s_load_WDNM = new ProfilerMarker("LoadWDNM");
 
     static Dictionary<string, RGFileImport.RGRGMFile> RGMDict;
 
-    public static string path_to_game = "./game_3dfx";
-    public static string maps_path = path_to_game + "/maps/";
-
     static RGRGMStore()
     {
         RGMDict = new Dictionary<string, RGFileImport.RGRGMFile>();
@@ -52,7 +49,7 @@ using(s_load_RGM.Auto()){
         }
         else
         {
-            string path = new string(maps_path + RGMname + ".RGM");
+            string path = new string(Game.pathManager.GetMapsFolder() + RGMname + ".RGM");
             RGMDict.Add(rgm_key, new RGFileImport.RGRGMFile());
             RGMDict[rgm_key].LoadFile(path);
         }

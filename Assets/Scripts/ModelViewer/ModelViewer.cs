@@ -56,8 +56,6 @@ public class ModelViewer : MonoBehaviour
             if (File.Exists(ModelLoader.RedguardPath + "/REDGUARD.EXE"))
             {
                 print("Using Folder " + ModelLoader.RedguardPath);
-                RG3DStore.path_to_game = ModelLoader.RedguardPath;
-                RGTexStore.path_to_game = ModelLoader.RedguardPath;
 
                 // Switch the GUI to level mode
                 gui.PathErrorMode(false);
