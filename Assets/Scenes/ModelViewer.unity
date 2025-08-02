@@ -4942,7 +4942,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1931560566}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.63863486
+  m_Size: 0.9928643
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7531,6 +7531,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1065159418}
   - component: {fileID: 1065159419}
+  - component: {fileID: 1065159420}
   m_Layer: 0
   m_Name: Model VIewer Core
   m_TagString: Untagged
@@ -7568,9 +7569,24 @@ MonoBehaviour:
   settings: {fileID: 847651788}
   gui: {fileID: 189839338}
   mvCam: {fileID: 1516451609}
+  glTFExporter: {fileID: 0}
   objectRoot: {fileID: 86303902}
   cameraRoot: {fileID: 1516451608}
   pathOverride: 
+  _objectRootGenerated: {fileID: 0}
+  exportDirectory: 
+--- !u!114 &1065159420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1065159413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f4e1958a39408c428802a3aace18a57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1069757486
 GameObject:
   m_ObjectHideFlags: 0

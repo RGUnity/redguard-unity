@@ -1,26 +1,20 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
-using GLTFast;
-using GLTFast.Export;
-using TMPro;
-using UnityEngine.Serialization;
 
 public class ModelViewer : MonoBehaviour
 {
     [SerializeField] public ModelViewer_Settings settings;
     [SerializeField] private ModelViewer_GUI gui;
     [SerializeField] private ModelViewer_Camera mvCam;
+    [SerializeField] public GLTFExporter glTFExporter;
     [SerializeField] private GameObject objectRoot;
     [SerializeField] private GameObject cameraRoot;
     [SerializeField] private string pathOverride;
 
-    private GameObject _objectRootGenerated;
-    private string exportDirectory;
+    public GameObject _objectRootGenerated;
+    public string exportDirectory;
     private List<GameObject> loadedObjects;
 
     void Start()
@@ -44,7 +38,7 @@ public class ModelViewer : MonoBehaviour
         }
         
         // Update Path displayed in UI
-        gui.pathInput.text = ModelLoader.RedguardPath;
+        gui.pathInput.text = Game.Config.redguardPath;
         
         // Start in Viewer Mode
         ViewerMode_Areas();
@@ -198,37 +192,6 @@ public class ModelViewer : MonoBehaviour
         RGRGMStore.DumpDict();
         RGTexStore.DumpDict();
 
-    }
-    
-    public async Task ExportGLTF()
-    {
-        // Create Subfolder for Object
-        var exportDirWithSubfolder = exportDirectory + _objectRootGenerated.name;
-        var fullGLTFPath = exportDirWithSubfolder + "/" + _objectRootGenerated.name + ".gltf";
-
-        // If missing, create the target folder
-        if (!Directory.Exists(exportDirWithSubfolder))
-        {
-            Directory.CreateDirectory(exportDirWithSubfolder);
-        }
-        
-        // Define objects to export
-        var objectsToExport = new GameObject[] {_objectRootGenerated};
-        
-        var export = new GameObjectExport();
-        export.AddScene(objectsToExport);
-        
-        // Async glTF export
-        var success = await export.SaveToFileAndDispose(fullGLTFPath);
-
-        if (success)
-        {
-            print("Exported " + fullGLTFPath);
-        }
-        else
-        {
-            Debug.LogError("Something went wrong trying to export the model." + fullGLTFPath);
-        }
     }
 
     public void IsolateObject(string selection)
