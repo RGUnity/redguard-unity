@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -104,9 +105,11 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private void BuildButtonList_Objects()
     {
         DirectoryInfo dirInfo = new DirectoryInfo(Game.pathManager.GetArtFolder());
-        var fileList = dirInfo.GetFiles("*.3DC");
+        var fileList3D = dirInfo.GetFiles("*.3D");
+        var fileList3DC = dirInfo.GetFiles("*.3DC");
+        var combinedFileList = fileList3D.Concat(fileList3DC).ToList();
         
-        foreach (var file in fileList)
+        foreach (var file in combinedFileList)
         {
             SpawnButton_Object(file.Name);
         }
@@ -114,15 +117,23 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void SpawnButton_Object(string fileName)
     {
-        var prettyFileName = fileName.Replace(".3DC", "");
+        string objectName = null;
+        if (fileName.EndsWith(".3D"))
+        {
+            objectName = fileName.Replace(".3D", "");
+        }
+        else if (fileName.EndsWith(".3DC"))
+        {
+            objectName = fileName.Replace(".3DC", "");
+        }
         
         var newButton = Instantiate(button3DC_Prefab, root_ButtonList);
-        newButton.name = "Button_" + prettyFileName;
+        newButton.name = "Button_" + objectName;
         
         if (newButton.TryGetComponent(out ModelViewer_3DCButton component))
         {
             component.mv_GUI = this;
-            component.filename = prettyFileName;
+            component.objectName = objectName;
             component.SetButtonText(fileName);
         }
     }

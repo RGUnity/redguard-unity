@@ -9,23 +9,11 @@ public class ModelViewer_3DCButton : MonoBehaviour
     [SerializeField] private TMP_Text buttonText;
 
     public ModelViewer_GUI mv_GUI;
-    public string filename;
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public string objectName;
 
     public void OnClick()
     {
-        mv_GUI.Request3DCFile(filename);
+        mv_GUI.Request3DCFile(objectName);
     }
 
     public void SetButtonText(string text)
