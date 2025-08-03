@@ -1839,7 +1839,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modelViewer: {fileID: 1065159419}
-  button_ModeLevel: {fileID: 481778563}
+  button_ModeArea: {fileID: 481778563}
   button_ModeObjects: {fileID: 1929159475}
   button_ModeTexture: {fileID: 1312979233}
   root_ButtonList: {fileID: 824488175}
@@ -3896,7 +3896,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 189839338}
         m_TargetAssemblyTypeName: ModelViewer2_GUI, Assembly-CSharp
-        m_MethodName: ModeButton_Levels
+        m_MethodName: ModeButton_Areas
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

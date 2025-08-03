@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 public class ModelViewer : MonoBehaviour
@@ -26,54 +25,19 @@ public class ModelViewer : MonoBehaviour
             print("Redguard Path Override found in Scene. Value: " + Game.pathManager.GetRootFolder());
         }
         
-        // Start in Viewer Mode
-        ViewerMode_Areas();
+        // Start in Area Mode
+        SwitchViewerMode(ViewerModes.Area);
         
         // Set default Export path
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         exportDirectory = desktopPath + "/Redguard_Exports/";
         gui.exportPathInput.text = exportDirectory;
     }
-    
-    // Mode to for viewing full levels
-    public void ViewerMode_Areas()
+
+    public void SwitchViewerMode(ViewerModes mode)
     {
-        if (_objectRootGenerated)
-        {
-            Destroy(_objectRootGenerated);
-        }
-        
-        // Switch the GUI to level mode
-        gui.UpdateUI_Levels();
-        gui.objectDropDown.interactable = false;
-        gui.overlays_AreaMode.SetActive(true);
-        gui.ClearIsolationDropdown();
-    }
-    
-    // Mode to viewing individual Models
-    public void ViewerMode_Models()
-    {
-        if (_objectRootGenerated)
-        {
-            Destroy(_objectRootGenerated);
-        }
-    
-        // Switch the GUI to model mode
-        gui.UpdateUI_Models();
-        gui.overlays_AreaMode.SetActive(false);
-    }
-    
-    // Mode to viewing textures
-    public void ViewerMode_Textures()
-    {
-        if (_objectRootGenerated)
-        {
-            Destroy(_objectRootGenerated);
-        }
-        
-        // Switch the GUI to texture mode
-        gui.UpdateUI_Textures();
-        gui.overlays_AreaMode.SetActive(false);
+        Delete3DModel();
+        gui.UpdateGUI(mode);
     }
 
     public void Spawn3DC(string f3DCname, string colname)
@@ -134,6 +98,14 @@ public class ModelViewer : MonoBehaviour
         RG3DStore.DumpDict();
         RGRGMStore.DumpDict();
         RGTexStore.DumpDict();
+    }
+
+    private void Delete3DModel()
+    {
+        if (_objectRootGenerated)
+        {
+            Destroy(_objectRootGenerated);
+        }
     }
 
     public void IsolateObject(string selection)
