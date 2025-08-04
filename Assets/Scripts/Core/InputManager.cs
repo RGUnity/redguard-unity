@@ -81,12 +81,12 @@ public class InputManager : MonoBehaviour
 
             if (Game.Input.toggleInventory)
             {
-                UiWindowManager.ToggleInventory();
+                //UiWindowManager.ToggleInventory();
             }
 
             if (Game.Input.togglePauseMenu)
             {
-                _pauseMenuLoader.ShowMainMenu();
+                //_pauseMenuLoader.ShowMainMenu();
             }
         }
     }

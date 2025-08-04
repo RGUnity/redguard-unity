@@ -1,26 +1,27 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Assets.Scripts.RGFileImport;
-using Assets.Scripts.RGFileImport.RGGFXImport;
 using TMPro;
 using UnityEngine.EventSystems;
 
 public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private ModelViewer modelViewer;
-    [SerializeField] private RectTransform button_ModeLevel;
+    [SerializeField] private RectTransform button_ModeArea;
     [SerializeField] private RectTransform button_ModeObjects;
     [SerializeField] private RectTransform button_ModeTexture;
     [SerializeField] private RectTransform root_ButtonList;
     [SerializeField] private GameObject button3DC_Prefab;
     [SerializeField] private GameObject buttonROB_Prefab;
-    [SerializeField] private GameObject errorPopup_Path;
-    [SerializeField] public TMP_InputField pathInput;
     [SerializeField] public TMP_InputField exportPathInput;
     [SerializeField] public TMP_Dropdown objectDropDown;
     [SerializeField] public GameObject overlays_AreaMode;
+
+    private readonly Color buttonColorDefault = Color.gray;
+    private readonly Color buttonColorAccent = new(0.38f, 0.81f, 1, 1);
 
     public bool IsMouseOverUI { get; private set; }
     
@@ -34,7 +35,34 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         IsMouseOverUI = false;
     }
     
-    public void ClearButtonList()
+    public void UpdateGUI(ViewerModes mode)
+    {
+        ClearButtonList();
+        ClearIsolationDropdown();
+        objectDropDown.interactable = false;
+        overlays_AreaMode.SetActive(false);
+        
+        switch (mode)
+        {
+            case ViewerModes.Area:
+                HighlightModeTab(button_ModeArea);
+                BuildButtonList_Areas();
+                overlays_AreaMode.SetActive(true);
+                break;
+            case ViewerModes.Objects:
+                HighlightModeTab(button_ModeObjects);
+                BuildButtonList_Objects();
+                break;
+            case ViewerModes.Textures:
+                HighlightModeTab(button_ModeTexture);
+                // todo: Add Texture GUI mode
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+        }
+    }
+
+    private void ClearButtonList()
     {
         // Clear all buttons
         if (root_ButtonList.transform.childCount > 0)
@@ -46,51 +74,9 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             }
         }
     }
-    
-    // Build the UI
-    public void UpdateUI_Models(FileInfo[]  fileList)
-    {
-        // Update Button appearance
-        button_ModeLevel.GetComponent<Image>().color = Color.gray;
-        button_ModeObjects.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
-        button_ModeTexture.GetComponent<Image>().color = Color.gray;
 
-        ClearButtonList();
-        
-        foreach (var file in fileList)
-        {
-            //print(file.Name);
-            SpawnButton_Model(file.Name);
-        }
-        
-        // todo: generate other button lists
-    }
-    
-    public void SpawnButton_Model(string fileName)
+    private void BuildButtonList_Areas()
     {
-        var prettyFileName = fileName.Replace(".3DC", "");
-        
-        var newButton = Instantiate(button3DC_Prefab, root_ButtonList);
-        newButton.name = "Button_" + prettyFileName;
-        
-        if (newButton.TryGetComponent(out ModelViewer_3DCButton component))
-        {
-            component.mv_GUI = this;
-            component.filename = prettyFileName;
-            component.SetButtonText(fileName);
-        }
-    }
-    
-    
-    public void UpdateUI_Levels()
-    {
-        // Update Button appearance
-        button_ModeLevel.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
-        button_ModeObjects.GetComponent<Image>().color = Color.gray;
-        button_ModeTexture.GetComponent<Image>().color = Color.gray;
-
-        ClearButtonList();
-        
         // ROBs without RGM currently dont work:
         // INVENTRY
         // MENU
@@ -98,12 +84,11 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         // TEMPTEST
         List<RGINIStore.worldData> worldList = RGINIStore.GetWorldList();
         for(int i=0;i<worldList.Count;i++)
-            SpawnButton_Level(worldList[i].RGM,worldList[i].WLD, worldList[i].COL);
+            SpawnButton_Area(worldList[i].RGM,worldList[i].WLD, worldList[i].COL);
     }
-    
-    public void SpawnButton_Level(string RGM, string WLD, string COL)
+
+    private void SpawnButton_Area(string RGM, string WLD, string COL)
     {
-        
         var newButton = Instantiate(buttonROB_Prefab, root_ButtonList);
         newButton.name = "Button_" + RGM;
         
@@ -116,38 +101,50 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             component.SetButtonText(RGM);
         }
     }
-    
-    public void UpdateUI_Textures()
-    {
-        // Update Button appearance
-        button_ModeLevel.GetComponent<Image>().color = Color.gray;
-        button_ModeObjects.GetComponent<Image>().color = Color.gray;
-        button_ModeTexture.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
 
-        ClearButtonList();
-
-        // todo: Show Textures
-    }
-    
-    // Button Signals
-    public void ModeButton_Levels()
+    private void BuildButtonList_Objects()
     {
-        modelViewer.ViewerMode_Areas();
-    }
-    
-    public void ModeButton_Objects()
-    {
-        modelViewer.ViewerMode_Models();
-    }
-    
-    public void ModeButton_Textures()
-    {
-        modelViewer.ViewerMode_Textures();
+        DirectoryInfo dirInfo = new DirectoryInfo(Game.pathManager.GetArtFolder());
+        var fileList3D = dirInfo.GetFiles("*.3D");
+        var fileList3DC = dirInfo.GetFiles("*.3DC");
+        var combinedFileList = fileList3D.Concat(fileList3DC).ToList();
         
-        // Update Button appearance
-        button_ModeLevel.GetComponent<Image>().color = Color.gray;
-        button_ModeObjects.GetComponent<Image>().color = Color.gray;
-        button_ModeTexture.GetComponent<Image>().color = new Color(0.38f, 0.81f, 1, 1);
+        foreach (var file in combinedFileList)
+        {
+            SpawnButton_Object(file.Name);
+        }
+    }
+
+    private void SpawnButton_Object(string fileName)
+    {
+        string objectName = null;
+        if (fileName.EndsWith(".3D"))
+        {
+            objectName = fileName.Replace(".3D", "");
+        }
+        else if (fileName.EndsWith(".3DC"))
+        {
+            objectName = fileName.Replace(".3DC", "");
+        }
+        
+        var newButton = Instantiate(button3DC_Prefab, root_ButtonList);
+        newButton.name = "Button_" + objectName;
+        
+        if (newButton.TryGetComponent(out ModelViewer_3DCButton component))
+        {
+            component.mv_GUI = this;
+            component.objectName = objectName;
+            component.SetButtonText(fileName);
+        }
+    }
+
+    private void HighlightModeTab(RectTransform rect)
+    {
+        button_ModeArea.GetComponent<Image>().color = buttonColorDefault;
+        button_ModeObjects.GetComponent<Image>().color = buttonColorDefault;
+        button_ModeTexture.GetComponent<Image>().color = buttonColorDefault;
+        
+        rect.GetComponent<Image>().color = buttonColorAccent;
     }
 
     // Fill the Isolation Dropdown with all objects that are currently loaded
@@ -175,6 +172,22 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         objectDropDown.AddOptions(options);
     }
     
+    // Button Signals
+    public void ModeButton_Areas()
+    {
+        modelViewer.SwitchViewerMode(ViewerModes.Area);
+    }
+    
+    public void ModeButton_Objects()
+    {
+        modelViewer.SwitchViewerMode(ViewerModes.Objects);
+    }
+    
+    public void ModeButton_Textures()
+    {
+        modelViewer.SwitchViewerMode(ViewerModes.Textures);
+    }
+    
     // Redirected Button Signals
     public void Request3DCFile(string fileName)
     {
@@ -186,19 +199,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         print("Requesting area: " + RGM);
         modelViewer.SpawnArea(RGM, WLD, COL);
-    }
-
-    public void PathErrorMode(bool toggle)
-    {
-        errorPopup_Path.SetActive(toggle);
-        if (toggle)
-        {
-            pathInput.GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            pathInput.GetComponent<Image>().color = Color.white;
-        }
     }
     
     public void RequestExportGLTF()

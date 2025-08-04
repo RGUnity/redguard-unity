@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 public class ModelViewer : MonoBehaviour
@@ -22,112 +21,23 @@ public class ModelViewer : MonoBehaviour
         // if a path override is set, use that
         if (pathOverride.Length > 0)
         {
-            ModelLoader.RedguardPath = pathOverride;
-            print("Redgaurd Path Override found in Scene. Value: " + ModelLoader.RedguardPath);
-        }
-        // If there is no override, look for a path in the PlayerPrefs
-        else if (PlayerPrefs.HasKey("ViewerRedguardPath"))
-        {
-            ModelLoader.RedguardPath = PlayerPrefs.GetString("ViewerRedguardPath");
-            print("Path found in PlayerPrefs. Value: " + ModelLoader.RedguardPath);
-        }
-        // Show the default path
-        else
-        {
-            print("Using Default Path. Value: " + ModelLoader.RedguardPath);
+            Game.pathManager.SetPath(pathOverride);
+            print("Redguard Path Override found in Scene. Value: " + Game.pathManager.GetRootFolder());
         }
         
-        // Update Path displayed in UI
-        gui.pathInput.text = Game.Config.redguardPath;
-        
-        // Start in Viewer Mode
-        ViewerMode_Areas();
+        // Start in Area Mode
+        SwitchViewerMode(ViewerModes.Area);
         
         // Set default Export path
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         exportDirectory = desktopPath + "/Redguard_Exports/";
         gui.exportPathInput.text = exportDirectory;
     }
-    
-    private bool IsPathValid()
-    {
-        try
-        {
-            if (File.Exists(ModelLoader.RedguardPath + "/REDGUARD.EXE"))
-            {
-                print("Using Folder " + ModelLoader.RedguardPath);
 
-                // Switch the GUI to level mode
-                gui.PathErrorMode(false);
-
-                return true;
-            }
-            else
-            {
-                Debug.LogWarning("Folder does not exist: " + ModelLoader.RedguardPath);
-                gui.ClearButtonList();
-                gui.PathErrorMode(true);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            gui.PathErrorMode(true);
-            throw;
-        }
-        return false;
-    }
-    
-    // Mode to for viewing full levels
-    public void ViewerMode_Areas()
+    public void SwitchViewerMode(ViewerModes mode)
     {
-        if (_objectRootGenerated)
-        {
-            Destroy(_objectRootGenerated);
-        }
-        
-        if (IsPathValid())
-        {
-            // Switch the GUI to level mode
-            gui.UpdateUI_Levels();
-            gui.objectDropDown.interactable = false;
-            gui.overlays_AreaMode.SetActive(true);
-            gui.ClearIsolationDropdown();
-        }
-    }
-    
-    // Mode to viewing individual Models
-    public void ViewerMode_Models()
-    {
-        if (_objectRootGenerated)
-        {
-            Destroy(_objectRootGenerated);
-        }
-        
-        if (IsPathValid())
-        {
-            DirectoryInfo dirInfo = new DirectoryInfo(ModelLoader.RedguardPath + "/fxart");
-        
-            // Switch the GUI to model mode
-            gui.UpdateUI_Models(dirInfo.GetFiles("*.3DC"));
-            gui.overlays_AreaMode.SetActive(false);
-        }
-    }
-    
-    // Mode to viewing textures
-    public void ViewerMode_Textures()
-    {
-        if (_objectRootGenerated)
-        {
-            Destroy(_objectRootGenerated);
-        }
-        
-        if (IsPathValid())
-        {
-            // Switch the GUI to texture mode
-            gui.UpdateUI_Textures();
-            gui.overlays_AreaMode.SetActive(false);
-        }
+        Delete3DModel();
+        gui.UpdateGUI(mode);
     }
 
     public void Spawn3DC(string f3DCname, string colname)
@@ -151,7 +61,6 @@ public class ModelViewer : MonoBehaviour
         settings.ToggleFlyMode(false);
         settings.RequestEnableTextureFiltering(true);
         settings.RequestEnableAnimations(false);
-
         
         print("Loaded object: " + f3DCname);
 
@@ -189,7 +98,14 @@ public class ModelViewer : MonoBehaviour
         RG3DStore.DumpDict();
         RGRGMStore.DumpDict();
         RGTexStore.DumpDict();
+    }
 
+    private void Delete3DModel()
+    {
+        if (_objectRootGenerated)
+        {
+            Destroy(_objectRootGenerated);
+        }
     }
 
     public void IsolateObject(string selection)
