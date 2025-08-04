@@ -23,7 +23,7 @@ namespace xyz
 		public static void Main(string[] args)
 		{
 			RGRGMFile filergm = new RGRGMFile();
-/*
+            /*
 			filergm.LoadFile("../../game_3dfx/maps/TAVERN.RGM");
             RGRGMScriptStore.ReadScript(filergm);
             for(int i=0;i<RGRGMScriptStore.Scripts.Count;i++)

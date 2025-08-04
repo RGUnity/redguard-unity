@@ -65,7 +65,7 @@ namespace xyz
 		public static void Main(string[] args)
 		{
 			RGRGMFile filergm = new RGRGMFile();
-			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
+			filergm.LoadFile("../../game_3dfx/maps/TEMPLE.RGM");
 
             /*
             foreach(var entry in filergm.RAHD.dict)

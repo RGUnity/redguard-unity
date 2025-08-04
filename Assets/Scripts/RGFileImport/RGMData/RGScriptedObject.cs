@@ -167,6 +167,7 @@ public class RGScriptedObject : MonoBehaviour
 
 	public void Instanciate(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
 	{
+        Debug.Log($"Adding SO {MPOB.scriptName}");
         scriptName = MPOB.scriptName;
         RAHDData = filergm.RAHD.dict[scriptName];
 
@@ -221,7 +222,7 @@ public class RGScriptedObject : MonoBehaviour
         attributes = new byte[256];
         Array.Copy(filergm.RAAT.attributes, RAHDData.index*256, attributes, 0, 256);
 
-        if(skinnedMeshRenderer.sharedMesh != null)
+        if(skinnedMeshRenderer != null)
         {
             gameObject.AddComponent<MeshCollider>();
             gameObject.GetComponent<MeshCollider>().sharedMesh = skinnedMeshRenderer.sharedMesh;
