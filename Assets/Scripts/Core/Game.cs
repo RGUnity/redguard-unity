@@ -42,28 +42,29 @@ public class Game : MonoBehaviour
         }
         
         configManager.InitializeConfig();
-        StartupChecks();
+        if (!pathManager.ValidatePath(Config.redguardPath))
+        {
+            ShowSetup();
+        }
     }
 
-    public static void StartupChecks()
+    private static void ShowSetup()
     {
-        if (pathManager.CheckPaths())
+        if (!setupIsLoaded)
         {
-            if (setupIsLoaded)
-            {
-                // Exit Setup
-                SceneManager.UnloadSceneAsync("Scenes/Setup");
-                setupIsLoaded = false;
-            }
+            // Start Setup
+            SceneManager.LoadScene("Scenes/Setup", LoadSceneMode.Additive);
+            setupIsLoaded = true;
         }
-        else
+    }
+
+    public static void HideSetup()
+    {
+        if (setupIsLoaded)
         {
-            if (!setupIsLoaded)
-            {
-                // Start Setup
-                SceneManager.LoadScene("Scenes/Setup", LoadSceneMode.Additive);
-                setupIsLoaded = true;
-            }
+            // Exit Setup
+            SceneManager.UnloadSceneAsync("Scenes/Setup");
+            setupIsLoaded = false;
         }
     }
     

@@ -15,7 +15,7 @@ public class ConfigManager : MonoBehaviour
         if (File.Exists(ConfigPath))
         {   
             LoadConfig(ConfigPath);
-            print("Config Found with version " + Game.Config.iniversion );
+            print("Loaded config file from here: " + ConfigPath);
         }
         // if none is found, try to create a new config
         else
@@ -40,7 +40,6 @@ public class ConfigManager : MonoBehaviour
         string jsonString = File.ReadAllText(path);
         //JsonUtility.FromJsonOverwrite(jsonString, Game.Config);
         Game.Config = JsonUtility.FromJson<ConfigData>(jsonString);
-        print("Config loaded as " + ConfigPath);
     }
     
     public void SaveConfig()

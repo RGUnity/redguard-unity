@@ -8,9 +8,35 @@ public class PathManager : MonoBehaviour
         return Game.Config.redguardPath;
     }
 
-    public void SetPath(string path)
+    public bool SetPath(string rootPath)
     {
-        Game.Config.redguardPath = path;
+        if (Directory.Exists(rootPath))
+        {
+            print("This rootPath is a valid path on this machine: " + rootPath);
+            
+            if (Directory.Exists(rootPath + "/3dart"))
+            {
+                Game.Config.redguardPath = rootPath;
+                Game.Config.useGlidePaths = false;
+                print("Found /3dart directory. Using Non-Glide Paths");
+                return true;
+            }
+
+            if (Directory.Exists(rootPath + "/fxart"))
+            {
+                Game.Config.redguardPath = rootPath;
+                Game.Config.useGlidePaths = true;
+                print("Found /fxart directory. Using Glide Paths");
+                return true;
+            }
+            else
+            {
+                print("This rootPath exists, but there is no art folder inside");
+                return false;
+            }
+        }
+        print("rootPath not found. Tested with path: " + rootPath);
+        return false;
     }
     public string GetArtFolder()
     {
@@ -29,9 +55,8 @@ public class PathManager : MonoBehaviour
         return Game.Config.redguardPath + "/maps/";
     }
 
-    public bool CheckPaths()
+    public bool ValidatePath(string rootPath)
     {
-        var rootPath = GetRootFolder();
         if (Directory.Exists(rootPath))
         {
             print("redguardPath is a valid path on this machine. Tested with path: " + rootPath);
@@ -49,8 +74,13 @@ public class PathManager : MonoBehaviour
                 print("Found /fxart directory. Using Glide Paths");
                 return true;
             }
+            else
+            {
+                print("This rootPath exists, but there is no art folder inside");
+                return false;
+            }
         }
-        print("redguardPath not found. Tested with path: " + rootPath);
+        print("rootPath not found. Tested with path: " + rootPath);
         return false;
     }
 }
