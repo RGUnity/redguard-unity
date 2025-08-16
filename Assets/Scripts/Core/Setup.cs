@@ -10,7 +10,16 @@ public class Setup : MonoBehaviour
     public void Button_Continue()
     {
         string path = inputField.text.Replace(@"\", "/");
-        Game.Config.redguardPath = path;
-        Game.StartupChecks();
+
+        if (Game.pathManager.SetPath(path))
+        {
+            print("Path looks valid. Setup will now exit.");
+            Game.HideSetup();
+            Game.configManager.SaveConfig();
+        }
+        else
+        {
+            print("Bad path. Setup will not exit.");
+        }
     }
 }
