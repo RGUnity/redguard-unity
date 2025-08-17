@@ -441,6 +441,8 @@ public class RGScriptedObject : MonoBehaviour
         functions[101] = ShowMe;
         functions[156] = Offset;
         functions[224] = PlayerStand;
+        functions[228] = PlayerDistance;
+        functions[233] = PlayerLooking;
         functions[271] = SyncWithGroup;
 
         // overwrite all non-implemented functions with a NIMPL error
@@ -719,6 +721,38 @@ public class RGScriptedObject : MonoBehaviour
     {
         // returns true if the player is standing on the object
         if(playerStanding)
+            return 1;
+        else
+            return 0;
+    }
+    /*function 228*/
+    public int PlayerDistance(uint caller, bool multitask, int[] i /*0*/)
+    {
+        // returns the distance to the player object
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        float distance = Vector3.Distance (player.transform.position, this.transform.position);
+        int rgDistance = (int)(distance*(float)(1.0f/RGM_MPOB_SCALE));
+        // scale back to RG units
+        Debug.Log($"PLAYERDIST: {rgDistance}");
+        return rgDistance;
+    }
+    /*function 233*/
+    public int PlayerLooking(uint caller, bool multitask, int[] i /*1*/)	
+    {
+        // Returns 1 if the player is looking at the object
+        // i[0]: max degrees (DA angles) to check < ASSUMPTION
+//        Quaternion rotationDelta = Quaternion.AngleAxis(((float)i[1])/DA2DG, axis);
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        Vector3 playerFwd = player.transform.forward;
+        Vector3 relPos = this.transform.position-player.transform.position;
+
+        playerFwd.y = 0.0f;
+        relPos.y = 0.0f;
+
+        float angle = Vector3.Angle(playerFwd, relPos);
+        float maxAngle = -((float)i[0])*DA2DG;
+        Debug.Log($"PLAYERLOOKING: {angle}/{maxAngle}");
+        if(angle < maxAngle)
             return 1;
         else
             return 0;

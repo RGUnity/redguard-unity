@@ -4,18 +4,23 @@ using System.IO;
 using System.Linq;
 using RGFileImport;
 
-    public class RGObjectStore 
+public class RGObjectStore 
+{
+
+    static Func<bool, int[], int>[] funcs;
+    public static void setfuncs(Func<bool, int[], int>[] fs)
     {
-
-        public static int DoObjectTask(uint objectId, string subjectName, int taskId, bool isMultiTask, int[] parameters)
-        {
-//            static Func<bool, int[], int>[] SetupFuncs()
-
-Console.WriteLine($"FUNC: {taskId}");
-            return 1;
-        }
-
+        funcs = fs;
     }
+
+    public static int DoObjectTask(uint objectId, string subjectName, int taskId, bool isMultiTask, int[] parameters)
+    {
+        return funcs[taskId](isMultiTask, parameters);
+    }
+
+}
+
+
 namespace xyz
 {
     public class test
@@ -43,10 +48,10 @@ namespace xyz
 			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
             RGRGMScriptStore.ReadScript(filergm);
             
+        
+            RGObjectStore.setfuncs(funcs);
             RGRGMScriptStore.flags[201] = 1;
-            ScriptData sd = new ScriptData("OB_PLT07", 0);
-            for(int i=0;i<100;i++)
-                Console.WriteLine($"ATTR_{i} = {sd.attributes[i]}");
+            ScriptData sd = new ScriptData("EXTOBSRV", 0);
             int ticks = 20;
             for(int i=0;i<ticks;i++)
             {
@@ -1763,7 +1768,7 @@ namespace xyz
 		static public int PlayerLooking(bool b, int[] i /*1*/)	
 		{
 			Log("PlayerLooking",i);
-			return 0;
+			return 1;
 		}
 
 		/*multitask*/

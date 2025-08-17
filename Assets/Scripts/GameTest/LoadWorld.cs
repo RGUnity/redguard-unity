@@ -60,22 +60,9 @@ public class LoadWorld : MonoBehaviour
     {
         if(true)
         {
-            /*
-		ModelLoader.scriptedObjects[0x82BDF408].allowScripting = true; // OB_PLT04
-		ModelLoader.scriptedObjects[0x82BDBC58].allowScripting = true; // OB_PLT07
-		ModelLoader.scriptedObjects[0x82BDB598].allowScripting = true; // OB_PLT05
-		ModelLoader.scriptedObjects[0x82BDB9F0].allowScripting = true; // OB_PLT06
-		ModelLoader.scriptedObjects[0x82BDE3C0].allowScripting = true; // OB_PLT03
-		ModelLoader.scriptedObjects[0x82BDE968].allowScripting = true; // OB_PLT02
-		ModelLoader.scriptedObjects[0x82BDEAD8].allowScripting = true; // OB_PLT01
-		ModelLoader.scriptedObjects[0x82BDF098].allowScripting = true; // OB_PLT08
-		ModelLoader.scriptedObjects[0x82BE2D08].allowScripting = true; // OB_PLT00
-            */
-		ModelLoader.scriptedObjects[0x82BDA9B0].allowScripting = true; // OB_STEPR
-		ModelLoader.scriptedObjects[0x82BDCE60].allowScripting = true; // OB_STEP2
-		ModelLoader.scriptedObjects[0x82BDCF98].allowScripting = true; // OB_STEP1
+		ModelLoader.scriptedObjects[0x82BD9E40].allowScripting = true; // EXTOBSRV
         }
-        if(true)
+        if(false)
         {
 //		ModelLoader.scriptedObjects[0x82BD3750].allowScripting = true; // X
 //		ModelLoader.scriptedObjects[0x82BD9D00].allowScripting = true; // X

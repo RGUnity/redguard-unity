@@ -8,6 +8,7 @@ TagManager:
   - Item
   - Moving Platform
   - PlayerObject
+  - BottomScreenText
   layers:
   - Default
   - TransparentFX
