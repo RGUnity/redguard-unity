@@ -91,7 +91,7 @@ public class LoadWorld : MonoBehaviour
 //		ModelLoader.scriptedObjects[0x82BE7CA0].allowScripting = true; // OB_ERS10
 //		ModelLoader.scriptedObjects[0x82BDBC58].allowScripting = true; // OB_PLT07
 //		ModelLoader.scriptedObjects[0x82BDBD98].allowScripting = true; // ERASMO
-//		ModelLoader.scriptedObjects[0x82BDBF70].allowScripting = true; // OB_GEAR
+		ModelLoader.scriptedObjects[0x82BDBF70].allowScripting = true; // OB_GEAR
 //		ModelLoader.scriptedObjects[0x82BDC140].allowScripting = true; // OB_ENG03
 //		ModelLoader.scriptedObjects[0x82BDC378].allowScripting = true; // OB_PIPE
 //		ModelLoader.scriptedObjects[0x82BDE730].allowScripting = true; // GEARSND

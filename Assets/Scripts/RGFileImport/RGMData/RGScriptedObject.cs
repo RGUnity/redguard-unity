@@ -437,6 +437,8 @@ public class RGScriptedObject : MonoBehaviour
         functions[64] = LightIntensity;
         functions[65] = LightOff;
         functions[66] = LightOffset;
+        functions[100] = HideMe;
+        functions[101] = ShowMe;
         functions[156] = Offset;
         functions[224] = PlayerStand;
         functions[271] = SyncWithGroup;
@@ -666,6 +668,29 @@ public class RGScriptedObject : MonoBehaviour
                 ofs.z = -(float)((float)(0xFFFFFF-i[2])*RGM_MPOB_SCALE);
             light.gameObject.transform.localPosition = ofs;
         }
+        return 0;
+    }
+    /*function 100*/
+    public int HideMe(uint caller, bool multitask, int[] i /*0*/)
+    {
+        Debug.Log($"{multitask}_{scriptName}_HideMe({string.Join(",",i)})");
+        // Hides this object
+        if(skinnedMeshRenderer != null)
+            skinnedMeshRenderer.enabled = false;;
+        if(collider != null)
+            collider.enabled = false;;
+        return 0;
+    }
+
+    /*function 101*/
+    public int ShowMe(uint caller, bool multitask, int[] i /*0*/)
+    {
+        Debug.Log($"{multitask}_{scriptName}_ShowMe({string.Join(",",i)})");
+        // Unhides this object
+        if(skinnedMeshRenderer != null)
+            skinnedMeshRenderer.enabled = true;;
+        if(collider != null)
+            collider.enabled = true;
         return 0;
     }
     /*task 156*/
