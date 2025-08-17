@@ -439,6 +439,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[66] = LightOffset;
         functions[100] = HideMe;
         functions[101] = ShowMe;
+        functions[127] = ACTIVATE;
         functions[156] = Offset;
         functions[224] = PlayerStand;
         functions[228] = PlayerDistance;
@@ -695,6 +696,20 @@ public class RGScriptedObject : MonoBehaviour
             collider.enabled = true;
         return 0;
     }
+
+    /*function 127*/
+    public int ACTIVATE(uint caller, bool multitask, int[] i /*1*/)	
+    {
+        // True if player activates an item
+        // i[0]: Stringid shown on screen when looking at the item
+        // TODO: get input events in here somehow
+        // also i[0] is parsed as int, but thats a script runner problem
+
+        MainUIScript.SetActivateText(new string($"STR_{i[0]}"));
+
+        return 0;
+    }
+
     /*task 156*/
     public int Offset(uint caller, bool multitask, int[] i /*3*/)    
     {

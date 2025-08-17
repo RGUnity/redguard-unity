@@ -1009,7 +1009,7 @@ namespace xyz
 		static public int ACTIVATE(bool b, int[] i /*1*/)	
 		{
 			Log("ACTIVATE",i);
-			return 0;
+			return 1;
 		}
 
 		/*function*/
