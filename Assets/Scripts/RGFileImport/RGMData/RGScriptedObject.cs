@@ -434,9 +434,12 @@ public class RGScriptedObject : MonoBehaviour
         functions[56] = MoveToLocation;
         functions[60] = Wait;
         functions[62] = Light;
+        functions[63] = LightRadius;
         functions[64] = LightIntensity;
         functions[65] = LightOff;
         functions[66] = LightOffset;
+        functions[83] = SetAttribute;
+        functions[84] = GetAttribute;
         functions[100] = HideMe;
         functions[101] = ShowMe;
         functions[127] = ACTIVATE;
@@ -630,6 +633,19 @@ public class RGScriptedObject : MonoBehaviour
         light.range = (float)(i[0])/20.0f;
         return 0;
     }
+
+    /*function 63*/
+    public int LightRadius(uint caller, bool multitask, int[] i /*1*/)
+    {
+        // Sets the light's range/radius
+        // i[0]: light radius
+
+        if (light == null)
+            return 0;
+        light.range = (float)(i[0])/20.0f;
+        return 0;
+    }
+
     /*function 64*/
     public int LightIntensity(uint caller, bool multitask, int[] i /*1*/)
     {
@@ -673,6 +689,29 @@ public class RGScriptedObject : MonoBehaviour
         }
         return 0;
     }
+
+    /*function 83*/
+    public int SetAttribute(uint caller, bool multitask, int[] i /*2*/)
+    {
+        // Sets the value of an attribute to something
+        // i[0]: ID of attribute to set
+        // i[1]: Value to set to
+
+        Debug.Log($"{multitask}_{scriptName}_SetAttribute({string.Join(",", i)})");
+        attributes[i[0]] = i[1];
+        return 0;
+    }
+
+    /*function 84*/
+    public int GetAttribute(uint caller, bool multitask, int[] i /*1*/)
+    {
+        // Gets the value of an attribute
+        // i[0]: ID of attribute to get the value of
+
+        Debug.Log($"{multitask}_{scriptName}_GetAttribute({string.Join(",", i)})");
+        return attributes[i[0]];
+    }
+
     /*function 100*/
     public int HideMe(uint caller, bool multitask, int[] i /*0*/)
     {
