@@ -447,6 +447,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[224] = PlayerStand;
         functions[228] = PlayerDistance;
         functions[233] = PlayerLooking;
+        functions[243] = PlayerFaceObj;
         functions[271] = SyncWithGroup;
 
         // overwrite all non-implemented functions with a NIMPL error
@@ -811,7 +812,18 @@ public class RGScriptedObject : MonoBehaviour
         else
             return 0;
     }
- 
+
+    /*task 243*/
+    public int PlayerFaceObj(uint caller, bool multitask, int[] i /*0*/)
+    {
+        // Turns the player horizontally to face the object
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        Vector3 playerPosition = new Vector3(player.transform.position.x, this.transform.position.y, player.transform.position.z);
+        transform.LookAt(playerPosition);
+       
+        return 0;
+    }
+
 
     /*task 271*/
     public int SyncWithGroup(uint caller, bool multitask, int[] i /*1*/)    
