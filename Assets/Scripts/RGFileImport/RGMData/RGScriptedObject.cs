@@ -698,7 +698,7 @@ public class RGScriptedObject : MonoBehaviour
         // i[1]: Value to set to
 
         Debug.Log($"{multitask}_{scriptName}_SetAttribute({string.Join(",", i)})");
-        attributes[i[0]] = i[1];
+        attributes[i[0]] = (byte)i[1];
         return 0;
     }
 
