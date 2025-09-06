@@ -7,9 +7,11 @@ public class Game : MonoBehaviour
     public PathManager localPathManager;
     public ConfigManager localConfigManager;
     public InputManager localInputManager;
+    public GUIManager localGUIManager;
     public static PathManager pathManager;
     public static ConfigManager configManager;
     public static InputManager inputManager;
+    public static GUIManager guiManager;
     
     // General Variables
     public static GameDataContainer Data = new();
@@ -28,6 +30,7 @@ public class Game : MonoBehaviour
         pathManager = localPathManager;
         configManager = localConfigManager;
         inputManager =  localInputManager;
+        guiManager =  localGUIManager;
         
         isPaused = false;
         Menu.isLoadedAdditively = false;
