@@ -3,8 +3,6 @@ using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
-    [SerializeField] private PauseMenuLoader _pauseMenuLoader;
-    
     // Input System Actions
     private InputAction _moveAction;
     private InputAction _moveModifierAction;
