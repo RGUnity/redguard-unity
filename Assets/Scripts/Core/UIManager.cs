@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
     public void Start()
     {
         ClearDialogueOption();
+        HideInteractionText();
     }
 
     public void LinkData(LocalUIData data)
