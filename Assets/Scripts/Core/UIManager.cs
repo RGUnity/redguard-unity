@@ -1,15 +1,38 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
 
-    [SerializeField] public DialogueOption optionPrefab;
-    [SerializeField] public Transform optionsParent;
+    [SerializeField] private DialogueOption optionPrefab;
+    [SerializeField] private Transform optionsParent;
+    [SerializeField] private TMP_Text interactionTextDisplay;
     
     private List<DialogueOption> options = new();
 
+    public void LinkData(LocalUIData data)
+    {
+        optionPrefab = data.optionPrefab;
+        optionsParent =  data.optionsParent;
+        interactionTextDisplay = data.interactionTextDisplay;
+    }
+    
+    // GAMEPLAY UI
+
+    public void ShowInteractionText(string text)
+    {
+        interactionTextDisplay.text = text;
+    }
+
+    public void HideInteractionText()
+    {
+        interactionTextDisplay.text = "";
+    }
+    
+    // DIALOGUE UI
+    
     public void ClearDialogueOption()
     {
         // Delete all dialogue options

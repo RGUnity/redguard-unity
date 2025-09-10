@@ -5,6 +5,7 @@ using UnityEngine;
 public class Interactable : MonoBehaviour
 {
     //public int testValue;
+    public string interactionText = "Interact";
     public virtual void Interact()
     {
         print("This is the parent class for Interactables");

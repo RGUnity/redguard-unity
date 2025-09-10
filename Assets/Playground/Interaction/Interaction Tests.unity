@@ -1211,6 +1211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11498f8233113264ebe6fc8c68f2937f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactionText: Interact
 --- !u!1 &1016606416
 GameObject:
   m_ObjectHideFlags: 0
@@ -1355,6 +1356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 405dd0d83cf232b4492609669eb3ab58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactionText: Pick up Bottle
   objectInfo: {fileID: 11400000, guid: 035ad5014001d8e429706d2bdc797f85, type: 2}
   minAmount: 1
   maxAmount: 1
@@ -2313,6 +2315,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45b4ed94653aa3c42b2ed8eb0744500f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactionText: 
   config: {fileID: 11400000, guid: 6f8c9ea75fa726746bda207cd3d4fb71, type: 2}
   actionState: 0
   health: 1
@@ -2473,6 +2476,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c404608b5c1d88141b041d598e0f8fc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactionText: 
   playerCanEnter: 1
   targetSceneName: ExampleScene01
   targetSpawnPointAsset: {fileID: 11400000, guid: e89b60fe9d850d74ebf345c4d6e039f4, type: 2}

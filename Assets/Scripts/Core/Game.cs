@@ -7,7 +7,7 @@ public class Game : MonoBehaviour
     public static PathManager pathManager;
     public static ConfigManager configManager;
     public static InputManager inputManager;
-    public static UIManager UIManager;
+    public static UIManager uiManager;
     
     // Local Data
     [SerializeField] private LocalUIData localUIData;
@@ -29,12 +29,12 @@ public class Game : MonoBehaviour
         pathManager = gameObject.AddComponent<PathManager>();
         configManager = gameObject.AddComponent<ConfigManager>();
         inputManager = gameObject.AddComponent<InputManager>();
-        UIManager = gameObject.AddComponent<UIManager>();
+        uiManager = gameObject.AddComponent<UIManager>();
         
         // Link local data
-        UIManager.optionPrefab = localUIData.optionPrefab;
-        UIManager.optionsParent = localUIData.optionsParent;
+        uiManager.LinkData(localUIData);
         
+        // Some other variables
         isPaused = false;
         Menu.isLoadedAdditively = false;
     
@@ -73,7 +73,6 @@ public class Game : MonoBehaviour
             setupIsLoaded = false;
         }
     }
-    
     
     public static void PauseGame()
     {

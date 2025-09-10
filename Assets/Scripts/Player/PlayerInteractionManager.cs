@@ -16,6 +16,15 @@ public class PlayerInteractionManager : MonoBehaviour
         {
             selectedObject.Interact();
         }
+
+        if (selectedObject)
+        {
+            Game.uiManager.ShowInteractionText(selectedObject.interactionText);
+        }
+        else
+        {
+            Game.uiManager.HideInteractionText();
+        }
     }
 
     // Set selectedObject variable
@@ -24,6 +33,7 @@ public class PlayerInteractionManager : MonoBehaviour
         if (detectedCollider.TryGetComponent(out Interactable interactable))
         {
             selectedObject = interactable;
+            
         }
     }
 
