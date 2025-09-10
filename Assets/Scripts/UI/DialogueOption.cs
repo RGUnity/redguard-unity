@@ -5,12 +5,12 @@ public class DialogueOption : MonoBehaviour
 {
     [SerializeField] private TMP_Text buttonText;
     
-    [SerializeField] public GUIManager guiManager;
+    [SerializeField] public UIManager uiManager;
     
 
     public void OnClick()
     {
-        guiManager.PickDialogueOption();
+        uiManager.PickDialogueOption();
     }
     
     public void SetDisplayText(string text)

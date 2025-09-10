@@ -4,14 +4,13 @@ using UnityEngine.SceneManagement;
 public class Game : MonoBehaviour
 {
     // Managers
-    public PathManager localPathManager;
-    public ConfigManager localConfigManager;
-    public InputManager localInputManager;
-    public GUIManager localGUIManager;
     public static PathManager pathManager;
     public static ConfigManager configManager;
     public static InputManager inputManager;
-    public static GUIManager guiManager;
+    public static UIManager UIManager;
+    
+    // Local Data
+    [SerializeField] private LocalUIData localUIData;
     
     // General Variables
     public static GameDataContainer Data = new();
@@ -24,13 +23,17 @@ public class Game : MonoBehaviour
     public static EnterSceneModeEnum EnterSceneMode;
     public static Menu Menu = new();
     
-    
     private void Awake()
     {
-        pathManager = localPathManager;
-        configManager = localConfigManager;
-        inputManager =  localInputManager;
-        guiManager =  localGUIManager;
+        // Create Managers
+        pathManager = gameObject.AddComponent<PathManager>();
+        configManager = gameObject.AddComponent<ConfigManager>();
+        inputManager = gameObject.AddComponent<InputManager>();
+        UIManager = gameObject.AddComponent<UIManager>();
+        
+        // Link local data
+        UIManager.optionPrefab = localUIData.optionPrefab;
+        UIManager.optionsParent = localUIData.optionsParent;
         
         isPaused = false;
         Menu.isLoadedAdditively = false;

@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GUIManager : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
 
-    [SerializeField] private DialogueOption optionPrefab;
-    [SerializeField] private Transform optionsParent;
+    [SerializeField] public DialogueOption optionPrefab;
+    [SerializeField] public Transform optionsParent;
     
     private List<DialogueOption> options = new();
 
@@ -31,7 +31,7 @@ public class GUIManager : MonoBehaviour
     {
         // Spawn a new dialogue option
         var newOption = Instantiate(optionPrefab, optionsParent).GetComponent<DialogueOption>();
-        newOption.guiManager = this;
+        newOption.uiManager = this;
         newOption.gameObject.name = displayText;
         newOption.SetDisplayText(displayText);
         options.Add(newOption);
