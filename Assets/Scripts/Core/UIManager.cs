@@ -12,6 +12,11 @@ public class UIManager : MonoBehaviour
     
     private List<DialogueOption> options = new();
 
+    public void Start()
+    {
+        ClearDialogueOption();
+    }
+
     public void LinkData(LocalUIData data)
     {
         optionPrefab = data.optionPrefab;
