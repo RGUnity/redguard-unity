@@ -22,6 +22,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private readonly Color buttonColorDefault = Color.gray;
     private readonly Color buttonColorAccent = new(0.38f, 0.81f, 1, 1);
+    
+    private List<GameObject> buttonList =  new();
 
     public bool IsMouseOverUI { get; private set; }
     
@@ -73,6 +75,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 Destroy(childTransform.gameObject);
             }
         }
+        
+        buttonList.Clear();
     }
 
     private void BuildButtonList_Areas()
@@ -85,12 +89,22 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         List<RGINIStore.worldData> worldList = RGINIStore.GetWorldList();
         for(int i=0;i<worldList.Count;i++)
             SpawnButton_Area(worldList[i].RGM,worldList[i].WLD, worldList[i].COL);
+        
+        // Delete Island duplicates
+        Destroy(buttonList[24]);
+        print("Deleted area button #24 because that should just be the island at night.");
+        Destroy(buttonList[25]);
+        print("Deleted area button #24 because that should just be the island at sunset.");
+        
+        // Add the missing HIDEOUT area that is missing from WORLD.INI
+        SpawnButton_Area("HIDEOUT", "HIDEOUT", "HIDEOUT");
     }
 
     private void SpawnButton_Area(string RGM, string WLD, string COL)
     {
         var newButton = Instantiate(buttonROB_Prefab, root_ButtonList);
         newButton.name = "Button_" + RGM;
+        buttonList.Add(newButton);
         
         if (newButton.TryGetComponent(out ModelViewer_ROBButton component))
         {
@@ -100,6 +114,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             component.COL = COL;
             component.SetButtonText(RGM);
         }
+        
+        print("Created new button with RGM=" + RGM + ", WLD=" + WLD +  ", COL=" + COL);
     }
 
     private void BuildButtonList_Objects()
@@ -129,6 +145,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         
         var newButton = Instantiate(button3DC_Prefab, root_ButtonList);
         newButton.name = "Button_" + objectName;
+        buttonList.Add(newButton);
         
         if (newButton.TryGetComponent(out ModelViewer_3DCButton component))
         {
