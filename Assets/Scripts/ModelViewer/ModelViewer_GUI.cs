@@ -123,7 +123,9 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         DirectoryInfo dirInfo = new DirectoryInfo(Game.pathManager.GetArtFolder());
         var fileList3D = dirInfo.GetFiles("*.3D");
         var fileList3DC = dirInfo.GetFiles("*.3DC");
-        var combinedFileList = fileList3D.Concat(fileList3DC).ToList();
+        var combinedFileList = fileList3D.Concat(fileList3DC)
+            .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
         
         foreach (var file in combinedFileList)
         {
