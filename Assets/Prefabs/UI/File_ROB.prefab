@@ -102,7 +102,7 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 0}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 0.019607844}
     m_PressedColor: {r: 1, g: 1, b: 1, a: 0.019607844}
-    m_SelectedColor: {r: 1, g: 1, b: 1, a: 0.011764706}
+    m_SelectedColor: {r: 1, g: 1, b: 1, a: 0.14901961}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0
@@ -149,7 +149,9 @@ MonoBehaviour:
   buttonROB: {fileID: 4465962999504399141}
   buttonText: {fileID: 3297729382531568313}
   mv_GUI: {fileID: 0}
-  fileName: 
+  RGM: 
+  WLD: 
+  COL: 
 --- !u!1 &8207625555354029820
 GameObject:
   m_ObjectHideFlags: 0

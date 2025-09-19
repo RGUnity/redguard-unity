@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4465962999504399141}
   - component: {fileID: -7175115161117598331}
   m_Layer: 5
-  m_Name: File_3DC
+  m_Name: File_3D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -102,7 +102,7 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 0}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 0.019607844}
     m_PressedColor: {r: 1, g: 1, b: 1, a: 0.019607844}
-    m_SelectedColor: {r: 1, g: 1, b: 1, a: 0.011764706}
+    m_SelectedColor: {r: 1, g: 1, b: 1, a: 0.14901961}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0
@@ -118,7 +118,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 101531686956918338}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -149,7 +149,8 @@ MonoBehaviour:
   button3DC: {fileID: 4465962999504399141}
   buttonText: {fileID: 3297729382531568313}
   mv_GUI: {fileID: 0}
-  filename: 
+  meshName: 
+  is3dcFile: 0
 --- !u!1 &8207625555354029820
 GameObject:
   m_ObjectHideFlags: 0
