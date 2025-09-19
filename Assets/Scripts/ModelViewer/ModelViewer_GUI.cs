@@ -133,24 +133,25 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void SpawnButton_Object(string fileName)
     {
-        string objectName = null;
+        string meshName = null;
         if (fileName.EndsWith(".3D"))
         {
-            objectName = fileName.Replace(".3D", "");
+            meshName = fileName.Replace(".3D", "");
         }
         else if (fileName.EndsWith(".3DC"))
         {
-            objectName = fileName.Replace(".3DC", "");
+            meshName = fileName.Replace(".3DC", "");
         }
         
         var newButton = Instantiate(button3DC_Prefab, root_ButtonList);
-        newButton.name = "Button_" + objectName;
+        newButton.name = "Button_" + fileName;
         buttonList.Add(newButton);
         
-        if (newButton.TryGetComponent(out ModelViewer_3DCButton component))
+        if (newButton.TryGetComponent(out ModelViewer_3DButton component))
         {
             component.mv_GUI = this;
-            component.objectName = objectName;
+            component.meshName = meshName;
+            component.is3dcFile = fileName.EndsWith(".3DC");
             component.SetButtonText(fileName);
         }
     }
@@ -206,10 +207,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     }
     
     // Redirected Button Signals
-    public void Request3DCFile(string fileName)
+    public void Request3DFile(string fileName, bool is3dcFile)
     {
-        print("Requesting 3DC file: " + fileName);
-        modelViewer.Spawn3DC(fileName, "ISLAND");
+        print("Requesting 3D file: " + fileName + ", is3dcFile=" + is3dcFile);
+        modelViewer.Spawn3D(fileName, is3dcFile, "ISLAND");
     }
     
     public void RequestArea(string RGM, string WLD, string COL)

@@ -7,11 +7,21 @@ public static class ModelLoader
 {
     public static Dictionary<uint, RGScriptedObject> scriptedObjects;
     
-    public static GameObject Load3DC(string f3DCname, string colname)
+    public static GameObject Load3D(string f3Dname, bool is3dcFile, string colname)
     {
-        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, f3DCname, colname);
-        GameObject obj = Add3DToScene($"3DC_{f3DCname}",  data_3D, Vector3.zero, Vector3.zero);
-        return obj;
+        if (is3dcFile)
+        {
+            RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, f3Dname, colname);
+            GameObject obj = Add3DToScene($"3DC_{f3Dname}",  data_3D, Vector3.zero, Vector3.zero);
+            return obj;
+        }
+        else
+        {
+            RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh3D(RGMeshStore.mesh_type.mesh_3d, f3Dname, colname);
+            GameObject obj = Add3DToScene($"3D_{f3Dname}",  data_3D, Vector3.zero, Vector3.zero);
+            return obj;
+        }
+
         
         // Todo: namespace cleanup
         //Debug.Log(Game.configData.redguardPath);

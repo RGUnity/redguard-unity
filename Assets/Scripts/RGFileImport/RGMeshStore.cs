@@ -102,6 +102,49 @@ using(s_load_mesh.Auto()){
         }
 }
     }
+    
+    public static UnityData_3D LoadMesh3D(mesh_type type, string meshname, string name_col)
+    {
+        using(s_load_mesh.Auto()){
+            UnityData_3D o;
+            string typestr = new string("");
+            switch(type)
+            {
+                case mesh_type.mesh_3d:
+                    typestr = "3D";
+                    break;
+                case mesh_type.mesh_flat:
+                    typestr = "FLAT";
+                    break;
+                default:
+                    typestr = "KAPUT";
+                    break;
+            }
+            string key = new string($"{typestr}/{meshname}/{name_col}");
+            if(Mesh3DDict.TryGetValue(key, out o))
+            {
+                return o;
+            }
+            else
+            {
+                switch(type)
+                {
+                    case mesh_type.mesh_3d:
+                        o = f3D2Mesh_3D(meshname, name_col);
+                        break;
+                    case mesh_type.mesh_flat:
+                        o = FLAT2Mesh(meshname, name_col);
+                        break;
+                    default:
+                        throw new Exception($"Unknown mesh type: {type}");
+                }
+
+                Mesh3DDict.Add(key, o);
+                return Mesh3DDict[key];
+            }
+        }
+    }
+    
     public static UnityData_WLD WLD2Mesh(string filename_wld, string name_col)
     {
 
@@ -133,11 +176,22 @@ using(s_load_FLAT2mesh.Auto()){
 
     public static UnityData_3D f3D2Mesh(string meshname, string palettename, int texture_override = 0)
     {
-using(s_load_3D2mesh.Auto()){
-        RG3DStore.Mesh3D_intermediate mesh_i = RG3DStore.LoadMeshIntermediate3DC(meshname);
-        return LoadMesh_3DStore(mesh_i, palettename, "DEFAULT", texture_override);
-}
+        using(s_load_3D2mesh.Auto())
+        {
+                RG3DStore.Mesh3D_intermediate mesh_i = RG3DStore.LoadMeshIntermediate3DC(meshname);
+                return LoadMesh_3DStore(mesh_i, palettename, "DEFAULT", texture_override);
+        }
     }
+    
+    public static UnityData_3D f3D2Mesh_3D(string meshname, string palettename, int texture_override = 0)
+    {
+        using(s_load_3D2mesh.Auto())
+        {
+            RG3DStore.Mesh3D_intermediate mesh_i = RG3DStore.LoadMeshIntermediate3D(meshname);
+            return LoadMesh_3DStore(mesh_i, palettename, "DEFAULT", texture_override);
+        }
+    }
+    
     private static UnityData_3D LoadMesh_3DStore(RG3DStore.Mesh3D_intermediate mesh_i, string palettename, string shadername, int texture_override)
     {
 using(s_load_3DStore.Auto()){

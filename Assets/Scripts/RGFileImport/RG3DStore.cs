@@ -11,6 +11,7 @@ public static class RG3DStore
 
 static readonly ProfilerMarker s_load_iFLAT = new ProfilerMarker("LoadMeshIntermediateFlat");
 static readonly ProfilerMarker s_load_i3DC = new ProfilerMarker("LoadMeshIntermediate3DC");
+static readonly ProfilerMarker s_load_i3D = new ProfilerMarker("LoadMeshIntermediate3D");
 static readonly ProfilerMarker s_load_iROB = new ProfilerMarker("LoadMeshIntermediateROB");
 static readonly ProfilerMarker s_calc_3d = new ProfilerMarker("LoadMesh_3D_intermediate");
 
@@ -134,6 +135,27 @@ using (s_load_i3DC.Auto()){
             return MeshIntermediateDict[meshname];
         }
 }
+    }
+    
+    public static Mesh3D_intermediate LoadMeshIntermediate3D(string meshname)
+    {
+        using (s_load_i3D.Auto()){
+            Mesh3D_intermediate o;
+            if(MeshIntermediateDict.TryGetValue(meshname, out o))
+            {
+                return o;
+            }
+            else
+            {
+                string filename = Game.pathManager.GetArtFolder() + meshname + ".3D";
+            
+                RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
+                file_3d.LoadFile(filename);
+
+                MeshIntermediateDict.Add(meshname, LoadMesh_3D_intermediate(file_3d));
+                return MeshIntermediateDict[meshname];
+            }
+        }
     }
     public static void LoadMeshIntermediatesROB(string ROBname)
     {

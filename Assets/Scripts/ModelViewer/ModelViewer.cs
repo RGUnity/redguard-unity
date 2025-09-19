@@ -40,16 +40,16 @@ public class ModelViewer : MonoBehaviour
         gui.UpdateGUI(mode);
     }
 
-    public void Spawn3DC(string f3DCname, string colname)
+    public void Spawn3D(string f3Dname, bool is3dcFile, string colname)
     {
         // objectRootGenerated is simply a new GameObject that makes deleting objects easier
         Destroy(_objectRootGenerated);
         _objectRootGenerated = new GameObject();
         _objectRootGenerated.transform.SetParent(objectRoot.transform);
-        _objectRootGenerated.name = f3DCname;
+        _objectRootGenerated.name = f3Dname;
         
         // Create the object and parent it under the root
-        GameObject obj = ModelLoader.Load3DC(f3DCname, colname);
+        GameObject obj = ModelLoader.Load3D(f3Dname, is3dcFile, colname);
         obj.transform.SetParent(_objectRootGenerated.transform);
         
         loadedObjects = new List<GameObject>();
@@ -62,7 +62,7 @@ public class ModelViewer : MonoBehaviour
         settings.RequestEnableTextureFiltering(true);
         settings.RequestEnableAnimations(false);
         
-        print("Loaded object: " + f3DCname);
+        print("Loaded object: " + f3Dname);
 
         //SwitchTextureFilterMode(FilterMode.Point);
     }
