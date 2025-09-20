@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class Launcher : MonoBehaviour
 {
+    [SerializeField] private GameObject launcherMain;
+    
     private void Start()
     {
         // Move window to the center of screen (because we deleted a PlayerPrefs key) 
@@ -18,6 +20,7 @@ public class Launcher : MonoBehaviour
 
     public void Button_StartGame()
     {
+        launcherMain.SetActive(false);
         
         //Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
         Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow);
@@ -33,6 +36,8 @@ public class Launcher : MonoBehaviour
 
     public void Button_StartModelViewer()
     {
+        launcherMain.SetActive(false);
+        
         Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.MaximizedWindow);
         PlayerPrefs.DeleteKey("Screenmanager Fullscreen mode Default_h401710285");
         
