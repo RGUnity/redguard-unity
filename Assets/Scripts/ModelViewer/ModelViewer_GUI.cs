@@ -24,6 +24,42 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private readonly Color buttonColorAccent = new(0.38f, 0.81f, 1, 1);
     
     private List<GameObject> buttonList =  new();
+    
+    private HashSet<string> goblinFiles = new()
+    { 
+        "CV_BOOM.3D",
+        "CV_BOOM.3DC",
+        "CV_EXPL1.3DC",
+        "CV_MUSH2.3DC",
+    };
+    
+    private HashSet<string> necroisleFiles = new()
+    {
+        "DEAD.3DC",
+        "NCROCK.3D",
+        "SKELA001.3DC",
+        "SKELA002.3DC",
+        "SKELA003.3DC",
+        "SKELA004.3DC",
+        "VERMA001.3DC",
+        "VERMA002.3DC",
+        "VULTA001.3DC",
+        "ZOMBA001.3DC",
+        "ZOMBA002.3DC"
+    };
+
+    private HashSet<string> observatoryFiles = new()
+    {
+        "DGOLA001.3DC",
+        "ERASA001.3DC",
+        "GOLMA001.3DC",
+        "GOLMA002.3DC"
+    };
+    
+    private HashSet<string> hideoutFiles = new()
+    {
+        "FLAG_RL.3DC"
+    };
 
     public bool IsMouseOverUI { get; private set; }
     
@@ -127,13 +163,34 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
         
+        // Set color palette
         foreach (var file in combinedFileList)
         {
-            SpawnButton_Object(file.Name);
+            if (goblinFiles.Contains(file.Name) || file.Name.Contains("CRAK"))
+            {
+                SpawnButton_Object(file.Name, "REDCAVE");
+            }
+            else if (necroisleFiles.Contains(file.Name))
+            {
+                SpawnButton_Object(file.Name, "NECRO");
+            }
+            else if (observatoryFiles.Contains(file.Name))
+            {
+                SpawnButton_Object(file.Name, "OBSERVAT");
+            }
+            else if (hideoutFiles.Contains(file.Name))
+            {
+                SpawnButton_Object(file.Name, "HIDEOUT");
+            }
+            else
+            {
+                // If none apply, use ISLAND as the default color palette
+                SpawnButton_Object(file.Name, "ISLAND");
+            }
         }
     }
 
-    private void SpawnButton_Object(string fileName)
+    private void SpawnButton_Object(string fileName, string col)
     {
         string meshName = null;
         if (fileName.EndsWith(".3D"))
@@ -154,6 +211,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             component.mv_GUI = this;
             component.meshName = meshName;
             component.is3dcFile = fileName.EndsWith(".3DC");
+            component.COL = col;
             component.SetButtonText(fileName);
         }
     }
@@ -209,10 +267,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     }
     
     // Redirected Button Signals
-    public void Request3DFile(string fileName, bool is3dcFile)
+    public void Request3DFile(string fileName, bool is3dcFile, string col)
     {
-        print("Requesting 3D file: " + fileName + ", is3dcFile=" + is3dcFile);
-        modelViewer.Spawn3D(fileName, is3dcFile, "ISLAND");
+        print("Requesting 3D file: " + fileName + ", is3dcFile=" + is3dcFile  + ", color palette=" + col);
+        modelViewer.Spawn3D(fileName, is3dcFile, col);
     }
     
     public void RequestArea(string RGM, string WLD, string COL)
