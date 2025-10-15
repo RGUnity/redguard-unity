@@ -13,7 +13,7 @@ public class ModelViewer : MonoBehaviour
     [SerializeField] private string pathOverride;
 
     public GameObject _objectRootGenerated;
-    public string exportDirectory;
+    private string exportDirectory;
     private List<GameObject> loadedObjects;
 
     void Start()
@@ -158,5 +158,11 @@ public class ModelViewer : MonoBehaviour
                 }
             }
         }
+    }
+
+    public string GetExportDirectory()
+    {
+        exportDirectory = gui.exportPathInput.text;
+        return exportDirectory;
     }
 }
