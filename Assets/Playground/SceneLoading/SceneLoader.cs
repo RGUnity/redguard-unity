@@ -3,15 +3,14 @@ using UnityEngine;
 
 public class SceneLoader : MonoBehaviour
 {
+    [SerializeField] private GameObject sceneParent;
     [SerializeField] private string RGM;
     [SerializeField] private string WLD;
     [SerializeField] private string COL;
-    [SerializeField] private GameObject sceneRoot;
     
     private GameObject _sceneSubRoot;
     private List<GameObject> loadedObjects;
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // Maybe generate an RGM dropdown?
@@ -21,21 +20,18 @@ public class SceneLoader : MonoBehaviour
         //     print(worldList[i].RGM);
         // };
         
+        // Load scene
         SpawnArea(RGM, WLD, COL);
+        _sceneSubRoot.transform.localScale =  Vector3.one * 0.3f;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     
     public void SpawnArea(string RGM, string WLD, string COL)
     {
         // objectRootGenerated is simply a new GameObject that makes deleting objects easier
         Destroy(_sceneSubRoot);
         _sceneSubRoot = new GameObject();
-        _sceneSubRoot.transform.SetParent(sceneRoot.transform);
+        _sceneSubRoot.transform.SetParent(sceneParent.transform);
         _sceneSubRoot.name = RGM;
 
         // Create all objects of that area and parent them under the root
