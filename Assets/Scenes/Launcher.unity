@@ -421,7 +421,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3621957591314988631, guid: 28cf2e63d254da9499f57679d53d645f, type: 3}
       propertyPath: m_Name
-      value: LauncherButton
+      value: Button Play
       objectReference: {fileID: 0}
     - target: {fileID: 3844754037120580557, guid: 28cf2e63d254da9499f57679d53d645f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -562,7 +562,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef23f8506ea395042b502b41ce6f46c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launcherMain: {fileID: 1611064452}
+  mainPanel: {fileID: 1611064452}
+  playScene: IslandTest
+  modelviewerScene: ModelViewer
 --- !u!4 &1036542986
 Transform:
   m_ObjectHideFlags: 0
@@ -683,7 +685,7 @@ GameObject:
   - component: {fileID: 1611064455}
   - component: {fileID: 1611064456}
   m_Layer: 5
-  m_Name: Launcher Main
+  m_Name: Main Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1078,7 +1080,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3621957591314988631, guid: 28cf2e63d254da9499f57679d53d645f, type: 3}
       propertyPath: m_Name
-      value: LauncherButton_001
+      value: Button Modelviewer
       objectReference: {fileID: 0}
     - target: {fileID: 3844754037120580557, guid: 28cf2e63d254da9499f57679d53d645f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target

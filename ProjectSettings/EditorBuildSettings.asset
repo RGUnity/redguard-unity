@@ -12,11 +12,11 @@ EditorBuildSettings:
     path: Assets/Scenes/Setup.unity
     guid: ece516a581e0b6141902ebe95ffd621a
   - enabled: 1
-    path: Assets/Playground/Player Movement/Movement Tests.unity
-    guid: b257eee69f3340a4daa9b6be36399dcf
-  - enabled: 1
     path: Assets/Scenes/ModelViewer.unity
     guid: 5c8d3e592fbefb443a0c90ec2502231f
+  - enabled: 1
+    path: Assets/Playground/SceneLoading/IslandTest.unity
+    guid: 967a1f6c18d0ff2489aa3302e5187cc1
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: bd0848f799389174f8bdde9aaa8d52a9, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 25862ee00d93fa046872b07706edbb66, type: 3}

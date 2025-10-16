@@ -4,7 +4,9 @@ using UnityEngine.SceneManagement;
 
 public class Launcher : MonoBehaviour
 {
-    [SerializeField] private GameObject launcherMain;
+    [SerializeField] private GameObject mainPanel;
+    [SerializeField] private string playScene;
+    [SerializeField] private string modelviewerScene;
     
     private void Start()
     {
@@ -20,7 +22,7 @@ public class Launcher : MonoBehaviour
 
     public void Button_StartGame()
     {
-        launcherMain.SetActive(false);
+        mainPanel.SetActive(false);
         
         //Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
         Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow);
@@ -31,17 +33,17 @@ public class Launcher : MonoBehaviour
         
         print("Todo: Load menu scene or whatever");
         //SceneManager.UnloadSceneAsync("Scenes/Launcher");
-        SceneManager.LoadScene("Movement Tests");
+        SceneManager.LoadScene(playScene);
     }
 
     public void Button_StartModelViewer()
     {
-        launcherMain.SetActive(false);
+        mainPanel.SetActive(false);
         
         Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.MaximizedWindow);
         PlayerPrefs.DeleteKey("Screenmanager Fullscreen mode Default_h401710285");
         
         //SceneManager.UnloadSceneAsync("Scenes/Launcher");
-        SceneManager.LoadScene("Scenes/ModelViewer");
+        SceneManager.LoadScene(modelviewerScene);
     }
 }
