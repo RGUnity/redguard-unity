@@ -172,6 +172,7 @@ public static class ModelLoader
         
         obj_wld.AddComponent<MeshFilter>().mesh = data_WLD.mesh;
         obj_wld.AddComponent<MeshRenderer>().SetMaterials(data_WLD.materials);
+        obj_wld.AddComponent<MeshCollider>().sharedMesh = data_WLD.mesh;
         return obj_wld;
     }
 }
