@@ -19,6 +19,9 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public TMP_InputField exportPathInput;
     [SerializeField] public TMP_Dropdown objectDropDown;
     [SerializeField] public GameObject overlays_AreaMode;
+    [SerializeField] public Toggle filterToggle;
+    [SerializeField] public Toggle animationToggle;
+    [SerializeField] public Toggle flyModeToggle;
 
     private readonly Color buttonColorDefault = Color.gray;
     private readonly Color buttonColorAccent = new(0.38f, 0.81f, 1, 1);

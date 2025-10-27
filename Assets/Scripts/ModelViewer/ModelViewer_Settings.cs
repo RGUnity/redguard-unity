@@ -28,6 +28,7 @@ public class ModelViewer_Settings : MonoBehaviour
     public void ToggleFlyMode(bool toggle)
     {
         mv_camera.useFlyMode = toggle;
+        gui.flyModeToggle.isOn = toggle;
     }
 
     private void ToggleUI()
@@ -36,13 +37,15 @@ public class ModelViewer_Settings : MonoBehaviour
         gui.gameObject.SetActive(showUI);
     }
     
-    public void RequestEnableTextureFiltering(bool  enableFiltering)
+    public void RequestEnableTextureFiltering(bool enableFiltering)
     {
         mv.SwitchTextureFilterMode(enableFiltering ? FilterMode.Bilinear : FilterMode.Point);
+        gui.filterToggle.isOn = enableFiltering;
     }
 
     public void RequestEnableAnimations(bool enableAnimations)
     {
         mv.EnableAnimations(enableAnimations);
+        gui.animationToggle.isOn = enableAnimations;
     }
 }

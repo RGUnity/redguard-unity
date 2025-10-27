@@ -75,7 +75,7 @@ public class ModelViewer : MonoBehaviour
         
         settings.ToggleFlyMode(false);
         settings.RequestEnableTextureFiltering(true);
-        settings.RequestEnableAnimations(false);
+        settings.RequestEnableAnimations(true);
         
         print("Loaded object: " + f3Dname);
 
