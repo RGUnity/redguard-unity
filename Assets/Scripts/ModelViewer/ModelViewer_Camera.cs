@@ -11,7 +11,9 @@ public class ModelViewer_Camera : MonoBehaviour
     [SerializeField] private float rotationSpeed = 2;
     [SerializeField] private float zoomSpeed = 5;
     [SerializeField] public bool useFlyMode;
-    
+
+    private bool leftDrag;
+    private bool rightDrag;
     private bool leftDragStartedInViewport;
     private bool rightDragStartedInViewport;
     private float currentRotX = 160;
@@ -52,13 +54,16 @@ public class ModelViewer_Camera : MonoBehaviour
         {
             // movement
             Vector3 input = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Mouse ScrollWheel")*100, Input.GetAxis("Vertical"));
-            if(Input.GetKey(KeyCode.LeftShift))
-                speed_cur = speed_fast;
-            else if(Input.GetKey(KeyCode.LeftControl))
-                speed_cur = speed_slow;
-            else
-                speed_cur = speed_reg;
-            _camera.Translate(input * (speed_cur * Time.deltaTime));
+            if (input != Vector3.zero)
+            {
+                if(Input.GetKey(KeyCode.LeftShift))
+                    speed_cur = speed_fast;
+                else if(Input.GetKey(KeyCode.LeftControl))
+                    speed_cur = speed_slow;
+                else
+                    speed_cur = speed_reg;
+                _camera.Translate(input * (speed_cur * Time.deltaTime));
+            }
             
             // rotation
             if((Input.GetMouseButton(0) && leftDragStartedInViewport) || (Input.GetMouseButton(1) && rightDragStartedInViewport))
