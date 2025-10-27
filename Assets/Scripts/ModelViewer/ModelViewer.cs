@@ -32,28 +32,43 @@ public class ModelViewer : MonoBehaviour
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         exportDirectory = desktopPath + "/Redguard_Exports/";
         gui.exportPathInput.text = exportDirectory;
+        
+        //SpawnROB("INVENTRY", ModelFileType.fileROB, "ISLAND");
     }
 
     public void SwitchViewerMode(ViewerModes mode)
     {
-        Delete3DModel();
+        DeleteLoadedObject();
         gui.UpdateGUI(mode);
     }
 
-    public void Spawn3D(string f3Dname, bool is3dcFile, string colname)
+    public void SpawnModel(string f3Dname, ModelFileType fileType, string colname)
     {
         // objectRootGenerated is simply a new GameObject that makes deleting objects easier
         Destroy(_objectRootGenerated);
         _objectRootGenerated = new GameObject();
         _objectRootGenerated.transform.SetParent(objectRoot.transform);
         _objectRootGenerated.name = f3Dname;
+
+        loadedObjects = new List<GameObject>();
+        switch (fileType)
+        {
+            case ModelFileType.file3D:
+                loadedObjects.Add(ModelLoader.Load3D(f3Dname, colname));
+                break;
+            case ModelFileType.file3DC:
+                loadedObjects.Add(ModelLoader.Load3DC(f3Dname, colname));
+                break;
+            case ModelFileType.fileROB:
+                loadedObjects = ModelLoader.LoadROB(f3Dname, colname);
+                break;
+        }
         
         // Create the object and parent it under the root
-        GameObject obj = ModelLoader.Load3D(f3Dname, is3dcFile, colname);
-        obj.transform.SetParent(_objectRootGenerated.transform);
-        
-        loadedObjects = new List<GameObject>();
-        loadedObjects.Add(obj);
+        foreach (var obj in loadedObjects)
+        {
+            obj.transform.SetParent(_objectRootGenerated.transform);
+        }
 
         mvCam.useFlyMode = false;
         mvCam.FrameObject(_objectRootGenerated);
@@ -100,7 +115,22 @@ public class ModelViewer : MonoBehaviour
         RGTexStore.DumpDict();
     }
 
-    private void Delete3DModel()
+    public void SpawnROB(string fileName, ModelFileType type, string colname)
+    {
+        // ROB Loading
+        Destroy(_objectRootGenerated);
+        _objectRootGenerated = new GameObject();
+        
+        loadedObjects = ModelLoader.LoadROB("JAILINT", "ISLAND");
+        foreach (var obj in loadedObjects)
+        {
+            obj.transform.SetParent(_objectRootGenerated.transform);
+        }
+        _objectRootGenerated.name = "INVENTRY";
+        _objectRootGenerated.transform.SetParent(objectRoot.transform);
+    }
+
+    private void DeleteLoadedObject()
     {
         if (_objectRootGenerated)
         {

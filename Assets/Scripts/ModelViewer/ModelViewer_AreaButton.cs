@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class ModelViewer_ROBButton : MonoBehaviour
+public class ModelViewer_AreaButton : MonoBehaviour
 {
     [SerializeField] Button buttonROB;
     [SerializeField] private TMP_Text buttonText;

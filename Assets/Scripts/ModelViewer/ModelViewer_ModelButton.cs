@@ -3,19 +3,19 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class ModelViewer_3DButton : MonoBehaviour
+public class ModelViewer_ModelButton : MonoBehaviour
 {
     [SerializeField] Button button3DC;
     [SerializeField] private TMP_Text buttonText;
 
     public ModelViewer_GUI mv_GUI;
     public string meshName;
-    public bool is3dcFile;
+    public ModelFileType fileType;
     public string COL;
 
     public void OnClick()
     {
-            mv_GUI.Request3DFile(meshName, is3dcFile, COL);
+            mv_GUI.RequestModel(meshName, fileType, COL);
     }
 
     public void SetButtonText(string text)

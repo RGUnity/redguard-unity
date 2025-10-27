@@ -10,15 +10,15 @@ public class PlayerMeshLoader : MonoBehaviour
     public void Start()
     {
         placeholder.SetActive(false);
-        Spawn3D("CYRSA001", true, "ISLAND");
+        Spawn3DC("CYRSA001", "ISLAND");
         EnableAnimations(true);
     }
 
 
-    public void Spawn3D(string f3Dname, bool is3dcFile, string colname)
+    public void Spawn3DC(string f3Dname, string colname)
     {
         // Create the object and parent it under the root
-        playerMesh = ModelLoader.Load3D(f3Dname, is3dcFile, colname);
+        playerMesh = ModelLoader.Load3DC(f3Dname, colname);
        
         playerMesh.transform.SetParent(meshParent.transform);
         playerMesh.transform.localPosition = Vector3.zero;

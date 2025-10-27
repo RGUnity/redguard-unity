@@ -6788,7 +6788,6 @@ MonoBehaviour:
   cameraRoot: {fileID: 1516451608}
   pathOverride: 
   _objectRootGenerated: {fileID: 0}
-  exportDirectory: 
 --- !u!114 &1065159420
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8909,7 +8908,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Objects
+  m_text: Models
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -11211,7 +11210,7 @@ GameObject:
   - component: {fileID: 1929159477}
   - component: {fileID: 1929159476}
   m_Layer: 5
-  m_Name: Objects
+  m_Name: Models
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -87,7 +87,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 BuildButtonList_Areas();
                 overlays_AreaMode.SetActive(true);
                 break;
-            case ViewerModes.Objects:
+            case ViewerModes.Models:
                 HighlightModeTab(button_ModeObjects);
                 BuildButtonList_Objects();
                 break;
@@ -142,7 +142,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         newButton.name = "Button_" + RGM;
         buttonList.Add(newButton);
         
-        if (newButton.TryGetComponent(out ModelViewer_ROBButton component))
+        if (newButton.TryGetComponent(out ModelViewer_AreaButton component))
         {
             component.mv_GUI = this;
             component.RGM = RGM;
@@ -159,7 +159,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         DirectoryInfo dirInfo = new DirectoryInfo(Game.pathManager.GetArtFolder());
         var fileList3D = dirInfo.GetFiles("*.3D");
         var fileList3DC = dirInfo.GetFiles("*.3DC");
-        var combinedFileList = fileList3D.Concat(fileList3DC)
+        var fileListROB = dirInfo.GetFiles("*.ROB");
+        var combinedFileList = fileList3D.Concat(fileList3DC).Concat(fileListROB)
             .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
         
@@ -192,27 +193,32 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void SpawnButton_Object(string fileName, string col)
     {
-        string meshName = null;
-        if (fileName.EndsWith(".3D"))
-        {
-            meshName = fileName.Replace(".3D", "");
-        }
-        else if (fileName.EndsWith(".3DC"))
-        {
-            meshName = fileName.Replace(".3DC", "");
-        }
-        
         var newButton = Instantiate(button3DC_Prefab, root_ButtonList);
         newButton.name = "Button_" + fileName;
         buttonList.Add(newButton);
         
-        if (newButton.TryGetComponent(out ModelViewer_3DButton component))
+        if (newButton.TryGetComponent(out ModelViewer_ModelButton component))
         {
             component.mv_GUI = this;
-            component.meshName = meshName;
-            component.is3dcFile = fileName.EndsWith(".3DC");
             component.COL = col;
             component.SetButtonText(fileName);
+
+            // Analyze Type
+            if (fileName.EndsWith(".3D"))
+            {
+                component.fileType = ModelFileType.file3D;
+                component.meshName = fileName.Replace(".3D", "");
+            }
+            else if (fileName.EndsWith(".3DC"))
+            {
+                component.fileType = ModelFileType.file3DC;
+                component.meshName = fileName.Replace(".3DC", "");
+            }
+            else if (fileName.EndsWith(".ROB"))
+            {
+                component.fileType = ModelFileType.fileROB;
+                component.meshName = fileName.Replace(".ROB", "");
+            }
         }
     }
 
@@ -258,7 +264,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     
     public void ModeButton_Objects()
     {
-        modelViewer.SwitchViewerMode(ViewerModes.Objects);
+        modelViewer.SwitchViewerMode(ViewerModes.Models);
     }
     
     public void ModeButton_Textures()
@@ -267,10 +273,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     }
     
     // Redirected Button Signals
-    public void Request3DFile(string fileName, bool is3dcFile, string col)
+    public void RequestModel(string fileName, ModelFileType fileType, string col)
     {
-        print("Requesting 3D file: " + fileName + ", is3dcFile=" + is3dcFile  + ", color palette=" + col);
-        modelViewer.Spawn3D(fileName, is3dcFile, col);
+        print("Requesting 3D file: " + fileName + ", fileType=" + fileType  + ", color palette=" + col);
+        modelViewer.SpawnModel(fileName, fileType, col);
     }
     
     public void RequestArea(string RGM, string WLD, string COL)

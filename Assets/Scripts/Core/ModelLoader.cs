@@ -7,36 +7,37 @@ public static class ModelLoader
 {
     public static Dictionary<uint, RGScriptedObject> scriptedObjects;
     
-    public static GameObject Load3D(string f3Dname, bool is3dcFile, string colname)
+    public static GameObject Load3D(string f3Dname, string colname)
     {
-        if (is3dcFile)
-        {
-            RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, f3Dname, colname);
-            GameObject obj = Add3DToScene($"3DC_{f3Dname}",  data_3D, Vector3.zero, Vector3.zero);
-            return obj;
-        }
-        else
-        {
-            RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh3D(RGMeshStore.mesh_type.mesh_3d, f3Dname, colname);
-            GameObject obj = Add3DToScene($"3D_{f3Dname}",  data_3D, Vector3.zero, Vector3.zero);
-            return obj;
-        }
-
-        
-        // Todo: namespace cleanup
-        //Debug.Log(Game.configData.redguardPath);
+        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh3D(RGMeshStore.mesh_type.mesh_3d, f3Dname, colname);
+        GameObject obj = Add3DToScene($"3D_{f3Dname}",  data_3D, Vector3.zero, Vector3.zero);
+        return obj;
     }
-
-
-    public static List<GameObject> LoadArea(string areaname, string palettename, string wldname)
+    
+    public static GameObject Load3DC(string f3Dname, string colname)
     {
-        List<GameObject> areaObjects;
-        RG3DStore.LoadMeshIntermediatesROB(areaname);
-        areaObjects = LoadRGM(areaname, palettename);
-        if(!String.IsNullOrEmpty(wldname))
-            areaObjects.Add(SetModel_wld(wldname, palettename));
-        return areaObjects;
-   }
+        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, f3Dname, colname);
+        GameObject obj = Add3DToScene($"3DC_{f3Dname}",  data_3D, Vector3.zero, Vector3.zero);
+        return obj;
+    }
+    
+    public static List<GameObject> LoadROB(string ROBname, string name_col)
+    {
+        List<GameObject> ROBObjects = new List<GameObject>();
+        
+        RG3DStore.MeshIntermediateDict.Clear();
+        RG3DStore.LoadMeshIntermediatesROB(ROBname);
+        
+        foreach (var mesh in RG3DStore.MeshIntermediateDict)
+        {
+            Debug.Log(mesh.Key);
+            
+            RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, mesh.Key, name_col);
+            GameObject obj = Add3DToScene(mesh.Key,  data_3D, Vector3.zero, Vector3.zero);
+            ROBObjects.Add(obj);
+        }
+        return ROBObjects;
+    }
 
     private static GameObject Add3DToScene(string name, RGMeshStore.UnityData_3D data_3D, Vector3 position, Vector3 eulers)
     {
@@ -57,6 +58,16 @@ public static class ModelLoader
         obj.transform.Rotate(eulers);
         
         return obj;
+    }
+    
+    public static List<GameObject> LoadArea(string areaname, string palettename, string wldname)
+    {
+        List<GameObject> areaObjects;
+        RG3DStore.LoadMeshIntermediatesROB(areaname);
+        areaObjects = LoadRGM(areaname, palettename);
+        if(!String.IsNullOrEmpty(wldname))
+            areaObjects.Add(SetModel_wld(wldname, palettename));
+        return areaObjects;
     }
     
     static readonly ProfilerMarker s_load_RGM = new ProfilerMarker("LoadRGM");

@@ -49,7 +49,7 @@ static readonly ProfilerMarker pm_pass_2_face_vert_frame = new ProfilerMarker("p
     }
 
 
-    static Dictionary<string, Mesh3D_intermediate> MeshIntermediateDict; // key: meshname
+    public static Dictionary<string, Mesh3D_intermediate> MeshIntermediateDict; // key: meshname
 
     static RG3DStore()
     {

@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 6389602712627564685}
   - component: {fileID: 101531686956918338}
   - component: {fileID: 4465962999504399141}
-  - component: {fileID: 830128256550334852}
+  - component: {fileID: -7175115161117598331}
   m_Layer: 5
-  m_Name: File_ROB
+  m_Name: File_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -118,12 +118,12 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 101531686956918338}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 830128256550334852}
-        m_TargetAssemblyTypeName: ModelViewer_ROBButton, ModelViewer
+      - m_Target: {fileID: -7175115161117598331}
+        m_TargetAssemblyTypeName: ModelViewer_3DCButton, ModelViewer
         m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
@@ -134,7 +134,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &830128256550334852
+--- !u!114 &-7175115161117598331
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -143,15 +143,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2613659532384351701}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 168f800bb84df934391dcba0bf46bc56, type: 3}
+  m_Script: {fileID: 11500000, guid: 72cf57913de7c13448079af69e0ee484, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonROB: {fileID: 4465962999504399141}
+  button3DC: {fileID: 4465962999504399141}
   buttonText: {fileID: 3297729382531568313}
   mv_GUI: {fileID: 0}
-  RGM: 
-  WLD: 
-  COL: 
+  meshName: 
+  is3dcFile: 0
 --- !u!1 &8207625555354029820
 GameObject:
   m_ObjectHideFlags: 0
