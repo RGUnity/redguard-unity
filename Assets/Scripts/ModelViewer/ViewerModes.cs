@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum ViewerModes
 {
-    Area,
+    Areas,
     Models,
     Textures
 }

@@ -82,7 +82,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         
         switch (mode)
         {
-            case ViewerModes.Area:
+            case ViewerModes.Areas:
                 HighlightModeTab(button_ModeArea);
                 BuildButtonList_Areas();
                 overlays_AreaMode.SetActive(true);
@@ -259,7 +259,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     // Button Signals
     public void ModeButton_Areas()
     {
-        modelViewer.SwitchViewerMode(ViewerModes.Area);
+        modelViewer.SwitchViewerMode(ViewerModes.Areas);
     }
     
     public void ModeButton_Objects()

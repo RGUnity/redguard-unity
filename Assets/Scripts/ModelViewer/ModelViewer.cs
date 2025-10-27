@@ -26,7 +26,7 @@ public class ModelViewer : MonoBehaviour
         }
         
         // Start in Area Mode
-        SwitchViewerMode(ViewerModes.Area);
+        SwitchViewerMode(ViewerModes.Areas);
         
         // Set default Export path
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
