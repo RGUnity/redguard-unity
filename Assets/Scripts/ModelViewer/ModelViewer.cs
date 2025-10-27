@@ -32,8 +32,6 @@ public class ModelViewer : MonoBehaviour
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         exportDirectory = desktopPath + "/Redguard_Exports/";
         gui.exportPathInput.text = exportDirectory;
-        
-        //SpawnROB("INVENTRY", ModelFileType.fileROB, "ISLAND");
     }
 
     public void SwitchViewerMode(ViewerModes mode)
@@ -64,6 +62,8 @@ public class ModelViewer : MonoBehaviour
                 break;
         }
         
+        SpreadObjects(loadedObjects);
+        
         // Create the object and parent it under the root
         foreach (var obj in loadedObjects)
         {
@@ -80,6 +80,25 @@ public class ModelViewer : MonoBehaviour
         print("Loaded object: " + f3Dname);
 
         //SwitchTextureFilterMode(FilterMode.Point);
+    }
+
+    // Spread the loaded objects in negative X direction
+    private void SpreadObjects(List<GameObject> objects)
+    {
+        float occupiedDistance = 0;
+        
+        foreach (var obj in objects)
+        {
+            var component = obj.GetComponent<Renderer>();
+            float objectWidth = component.bounds.size.x;
+            float originOffset =  obj.transform.position.x + component.bounds.center.x;
+            
+            float xPosition = (occupiedDistance + objectWidth / 2 + originOffset) * -1;
+            obj.transform.position = new Vector3(xPosition, 0, 0);
+            
+            float spacing = 0.5f;
+            occupiedDistance += objectWidth + spacing;
+        }
     }
     
     public void SpawnArea(string RGM, string WLD, string COL)
@@ -113,21 +132,6 @@ public class ModelViewer : MonoBehaviour
         RG3DStore.DumpDict();
         RGRGMStore.DumpDict();
         RGTexStore.DumpDict();
-    }
-
-    public void SpawnROB(string fileName, ModelFileType type, string colname)
-    {
-        // ROB Loading
-        Destroy(_objectRootGenerated);
-        _objectRootGenerated = new GameObject();
-        
-        loadedObjects = ModelLoader.LoadROB("JAILINT", "ISLAND");
-        foreach (var obj in loadedObjects)
-        {
-            obj.transform.SetParent(_objectRootGenerated.transform);
-        }
-        _objectRootGenerated.name = "INVENTRY";
-        _objectRootGenerated.transform.SetParent(objectRoot.transform);
     }
 
     private void DeleteLoadedObject()
