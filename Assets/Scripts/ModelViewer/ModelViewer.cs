@@ -15,7 +15,7 @@ public class ModelViewer : MonoBehaviour
     public string loadedFileName;
     public GameObject _objectRootGenerated;
     private string exportDirectory;
-    private List<GameObject> loadedObjects;
+    public List<GameObject> loadedObjects;
 
     void Start()
     {
@@ -75,10 +75,6 @@ public class ModelViewer : MonoBehaviour
         loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
         loadedFileName = RGM;
         
-        // Configure Object Picker
-        gui.objectDropDown.interactable = true;
-        gui.InitializeIsolationDropdown(loadedObjects);
-        
         FinalizeLoad();
         print("Loaded area: " + loadedFileName);
     }
@@ -86,7 +82,6 @@ public class ModelViewer : MonoBehaviour
     private void PrepareLoad()
     {
         DeleteLoadedObject();
-        gui.ResetIsolationDropdown();
     }
 
     private void FinalizeLoad()
@@ -98,11 +93,8 @@ public class ModelViewer : MonoBehaviour
         settings.ToggleFlyMode(false);
         settings.RequestEnableTextureFiltering(true);
         settings.RequestEnableAnimations(true);
-
-        if (loadedObjects.Count > 1)
-        {
-            gui.InitializeIsolationDropdown(loadedObjects);
-        }
+        
+        gui.UpdateOverlays();
         
         RGMeshStore.DumpDict();
         RG3DStore.DumpDict();

@@ -95,9 +95,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     
     public void UpdateGUI(ViewerModes mode)
     {
-        ResetIsolationDropdown();
-        SetFileNameText();
-        
         switch (mode)
         {
             case ViewerModes.Areas:
@@ -115,6 +112,14 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             default:
                 throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
         }
+
+        UpdateOverlays();
+    }
+
+    public void UpdateOverlays()
+    {
+        UpdateIsolationDropdown();
+        UpdateFileNameDisplay();
     }
 
     private void ClearButtonList()
@@ -238,31 +243,38 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         rect.GetComponent<Image>().color = buttonColorAccent;
     }
 
-    // Fill the Isolation Dropdown with all objects that are currently loaded
-    public void InitializeIsolationDropdown(List<GameObject> objects)
+    private void UpdateFileNameDisplay()
     {
-        List<TMP_Dropdown.OptionData>  options = new List<TMP_Dropdown.OptionData>();
-        options.Add(new TMP_Dropdown.OptionData("None"));
-        
-        foreach (var obj in objects)
+        if (modelViewer.loadedFileName == String.Empty)
         {
-            options.Add(new TMP_Dropdown.OptionData(obj.name));
+            fileNameText.text = "None";
         }
-        
-        objectDropDown.ClearOptions();
-        objectDropDown.AddOptions(options);
-        objectDropDown.interactable = true;
+        else
+        {
+            fileNameText.text = modelViewer.loadedFileName;
+        }
     }
-
-    // Clear the dropdown and display an idle text
-    public void ResetIsolationDropdown()
+    
+    private void UpdateIsolationDropdown()
     {
-        List<TMP_Dropdown.OptionData>  options = new List<TMP_Dropdown.OptionData>();
-        options.Add(new TMP_Dropdown.OptionData("None"));
-        
         objectDropDown.ClearOptions();
-        objectDropDown.AddOptions(options);
-        objectDropDown.interactable = false;
+        
+        List<TMP_Dropdown.OptionData>  optionsList = new List<TMP_Dropdown.OptionData>();
+        optionsList.Add(new TMP_Dropdown.OptionData("None"));
+
+        if (modelViewer.loadedObjects.Count > 1)
+        {
+            foreach (var obj in modelViewer.loadedObjects)
+            {
+                optionsList.Add(new TMP_Dropdown.OptionData(obj.name));
+            }
+            objectDropDown.AddOptions(optionsList);
+            objectDropDown.interactable = true;
+        }
+        else
+        {
+            objectDropDown.interactable = false;
+        }
     }
     
     // Button Signals
@@ -286,14 +298,12 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         print("Requesting 3D file: " + fileName + ", fileType=" + fileType  + ", color palette=" + col);
         modelViewer.SpawnModel(fileName, fileType, col);
-        SetFileNameText();
     }
     
     public void RequestArea(string RGM, string WLD, string COL)
     {
         print("Requesting area: " + RGM);
         modelViewer.SpawnArea(RGM, WLD, COL);
-        SetFileNameText();
     }
     
     public void RequestExportGLTF()
@@ -304,17 +314,5 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void RequestObjectIsolation()
     {
         modelViewer.IsolateObject(objectDropDown.options[objectDropDown.value].text);
-    }
-
-    public void SetFileNameText()
-    {
-        if (modelViewer.loadedFileName == String.Empty)
-        {
-            fileNameText.text = "None";
-        }
-        else
-        {
-            fileNameText.text = modelViewer.loadedFileName;
-        }
     }
 }
