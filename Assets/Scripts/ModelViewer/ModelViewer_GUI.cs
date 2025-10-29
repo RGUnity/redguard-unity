@@ -28,41 +28,52 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     
     private List<GameObject> buttonList =  new();
     
-    private HashSet<string> goblinFiles = new()
-    { 
-        "CV_BOOM.3D",
-        "CV_BOOM.3DC",
-        "CV_EXPL1.3DC",
-        "CV_MUSH2.3DC",
-    };
+    private Dictionary<string, string> fileToPalette = new()
+{
+    // Necromancer Isle, City Jail
+    ["DEAD.3DC"] = "NECRO",
+    ["JAILINT.ROB"] = "NECRO",
+    ["NECRISLE.ROB"] = "NECRO",
+    ["NECRTOWR.ROB"] = "NECRO",
+    ["NCROCK.3D"] = "NECRO",
+    ["SKELA001.3DC"] = "NECRO",
+    ["SKELA002.3DC"] = "NECRO",
+    ["SKELA003.3DC"] = "NECRO",
+    ["SKELA004.3DC"] = "NECRO",
+    ["VERMA001.3DC"] = "NECRO",
+    ["VERMA002.3DC"] = "NECRO",
+    ["VULTA001.3DC"] = "NECRO",
+    ["ZOMBA001.3DC"] = "NECRO",
+    ["ZOMBA002.3DC"] = "NECRO",
     
-    private HashSet<string> necroisleFiles = new()
-    {
-        "DEAD.3DC",
-        "NCROCK.3D",
-        "SKELA001.3DC",
-        "SKELA002.3DC",
-        "SKELA003.3DC",
-        "SKELA004.3DC",
-        "VERMA001.3DC",
-        "VERMA002.3DC",
-        "VULTA001.3DC",
-        "ZOMBA001.3DC",
-        "ZOMBA002.3DC"
-    };
-
-    private HashSet<string> observatoryFiles = new()
-    {
-        "DGOLA001.3DC",
-        "ERASA001.3DC",
-        "GOLMA001.3DC",
-        "GOLMA002.3DC"
-    };
+    // Goblin Caves, Mages Guild
+    ["CAVERNS.ROB"] = "REDCAVE",
+    ["CV_BOOM.3D"] = "REDCAVE",
+    ["CV_BOOM.3DC"] = "REDCAVE",
+    ["CV_EXPL1.3DC"] = "REDCAVE",
+    ["CV_MUSH2.3DC"] = "REDCAVE",
+    ["MGUILD.ROB"] = "REDCAVE",
     
-    private HashSet<string> hideoutFiles = new()
-    {
-        "FLAG_RL.3DC"
-    };
+    // Observatory, Dwemer Caves
+    ["DGOLA001.3DC"] = "OBSERVAT",
+    ["DRINT.ROB"] = "OBSERVAT",
+    ["ERASA001.3DC"] = "OBSERVAT",
+    ["GOLMA001.3DC"] = "OBSERVAT",
+    ["GOLMA002.3DC"] = "OBSERVAT",
+    ["OBSERVE.ROB"] = "OBSERVAT",
+    
+    // Restless League Hideout
+    ["FLAG_RL.3DC"] = "HIDEOUT",
+    ["HIDEINT.ROB"] = "HIDEOUT",
+    ["HIDEOUT.ROB"] = "HIDEOUT",
+    
+    // Imperial Palace
+    ["PALACE.ROB"] = "PALACE00",
+    ["PALATEST.ROB"] = "PALACE00",
+    
+    // Catacombs
+    ["CATACOMB.ROB"] = "CATACOMB"
+};
 
     public bool IsMouseOverUI { get; private set; }
     
@@ -120,11 +131,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void BuildButtonList_Areas()
     {
-        // ROBs without RGM currently dont work:
-        // INVENTRY
-        // MENU
-        // PALATEST
-        // TEMPTEST
         List<RGINIStore.worldData> worldList = RGINIStore.GetWorldList();
         for(int i=0;i<worldList.Count;i++)
             SpawnButton_Area(worldList[i].RGM,worldList[i].WLD, worldList[i].COL);
@@ -170,27 +176,18 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         // Set color palette
         foreach (var file in combinedFileList)
         {
-            if (goblinFiles.Contains(file.Name) || file.Name.Contains("CRAK"))
+            string palette = "ISLAND"; // Default
+    
+            if (fileToPalette.TryGetValue(file.Name, out string customPalette))
             {
-                SpawnButton_Object(file.Name, "REDCAVE");
+                palette = customPalette;
             }
-            else if (necroisleFiles.Contains(file.Name))
+            else if (file.Name.Contains("CRAK"))
             {
-                SpawnButton_Object(file.Name, "NECRO");
+                palette = "REDCAVE";
             }
-            else if (observatoryFiles.Contains(file.Name))
-            {
-                SpawnButton_Object(file.Name, "OBSERVAT");
-            }
-            else if (hideoutFiles.Contains(file.Name))
-            {
-                SpawnButton_Object(file.Name, "HIDEOUT");
-            }
-            else
-            {
-                // If none apply, use ISLAND as the default color palette
-                SpawnButton_Object(file.Name, "ISLAND");
-            }
+    
+            SpawnButton_Object(file.Name, palette);
         }
     }
 
