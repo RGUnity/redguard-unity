@@ -93,6 +93,7 @@ public class ModelViewer : MonoBehaviour
         settings.RequestEnableAnimations(true);
         
         gui.UpdateOverlays();
+        gui.UpdateExportButton();
         
         RGMeshStore.DumpDict();
         RG3DStore.DumpDict();
