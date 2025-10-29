@@ -10,18 +10,24 @@ using UnityEngine.EventSystems;
 public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private ModelViewer modelViewer;
+    
+    [Header("Left Panel")]
     [SerializeField] private RectTransform button_ModeArea;
     [SerializeField] private RectTransform button_ModeObjects;
     [SerializeField] private RectTransform button_ModeTexture;
     [SerializeField] private RectTransform root_ButtonList;
     [SerializeField] private GameObject button3DC_Prefab;
     [SerializeField] private GameObject buttonROB_Prefab;
-    [SerializeField] public TMP_InputField exportPathInput;
+
+    [Header("Center Area")]
     [SerializeField] public TMP_Dropdown objectDropDown;
-    [SerializeField] public GameObject overlays_AreaMode;
+    [SerializeField] public TMP_Text fileNameText;
+    
+    [Header("Right Panel")]
     [SerializeField] public Toggle filterToggle;
     [SerializeField] public Toggle animationToggle;
     [SerializeField] public Toggle flyModeToggle;
+    [SerializeField] public TMP_InputField exportPathInput;
 
     private readonly Color buttonColorDefault = Color.gray;
     private readonly Color buttonColorAccent = new(0.38f, 0.81f, 1, 1);
@@ -89,17 +95,14 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     
     public void UpdateGUI(ViewerModes mode)
     {
-        ClearButtonList();
-        ClearIsolationDropdown();
-        objectDropDown.interactable = false;
-        overlays_AreaMode.SetActive(false);
+        ResetIsolationDropdown();
+        SetFileNameText();
         
         switch (mode)
         {
             case ViewerModes.Areas:
                 HighlightModeTab(button_ModeArea);
                 BuildButtonList_Areas();
-                overlays_AreaMode.SetActive(true);
                 break;
             case ViewerModes.Models:
                 HighlightModeTab(button_ModeObjects);
@@ -131,6 +134,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void BuildButtonList_Areas()
     {
+        ClearButtonList();
+        
         List<RGINIStore.worldData> worldList = RGINIStore.GetWorldList();
         for(int i=0;i<worldList.Count;i++)
             SpawnButton_Area(worldList[i].RGM,worldList[i].WLD, worldList[i].COL);
@@ -165,6 +170,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void BuildButtonList_Objects()
     {
+        ClearButtonList();
+        
         DirectoryInfo dirInfo = new DirectoryInfo(Game.pathManager.GetArtFolder());
         var fileList3D = dirInfo.GetFiles("*.3D");
         var fileList3DC = dirInfo.GetFiles("*.3DC");
@@ -232,7 +239,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     }
 
     // Fill the Isolation Dropdown with all objects that are currently loaded
-    public void PopulateIsolationDropdown(List<GameObject> objects)
+    public void InitializeIsolationDropdown(List<GameObject> objects)
     {
         List<TMP_Dropdown.OptionData>  options = new List<TMP_Dropdown.OptionData>();
         options.Add(new TMP_Dropdown.OptionData("None"));
@@ -244,16 +251,18 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         
         objectDropDown.ClearOptions();
         objectDropDown.AddOptions(options);
+        objectDropDown.interactable = true;
     }
 
     // Clear the dropdown and display an idle text
-    public void ClearIsolationDropdown()
+    public void ResetIsolationDropdown()
     {
         List<TMP_Dropdown.OptionData>  options = new List<TMP_Dropdown.OptionData>();
         options.Add(new TMP_Dropdown.OptionData("None"));
         
         objectDropDown.ClearOptions();
         objectDropDown.AddOptions(options);
+        objectDropDown.interactable = false;
     }
     
     // Button Signals
@@ -277,12 +286,14 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         print("Requesting 3D file: " + fileName + ", fileType=" + fileType  + ", color palette=" + col);
         modelViewer.SpawnModel(fileName, fileType, col);
+        SetFileNameText();
     }
     
     public void RequestArea(string RGM, string WLD, string COL)
     {
         print("Requesting area: " + RGM);
         modelViewer.SpawnArea(RGM, WLD, COL);
+        SetFileNameText();
     }
     
     public void RequestExportGLTF()
@@ -293,5 +304,17 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void RequestObjectIsolation()
     {
         modelViewer.IsolateObject(objectDropDown.options[objectDropDown.value].text);
+    }
+
+    public void SetFileNameText()
+    {
+        if (modelViewer.loadedFileName == String.Empty)
+        {
+            fileNameText.text = "None";
+        }
+        else
+        {
+            fileNameText.text = modelViewer.loadedFileName;
+        }
     }
 }

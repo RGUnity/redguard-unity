@@ -37,7 +37,6 @@ public class ModelViewer : MonoBehaviour
 
     public void SwitchViewerMode(ViewerModes mode)
     {
-        DeleteLoadedObject();
         gui.UpdateGUI(mode);
     }
     
@@ -50,15 +49,15 @@ public class ModelViewer : MonoBehaviour
         {
             case ModelFileType.file3D:
                 loadedObjects.Add(ModelLoader.Load3D(f3Dname, colname));
-                loadedFileName = f3Dname + ".3D";
+                loadedFileName = "/Redguard/fxart/" + f3Dname + ".3D";
                 break;
             case ModelFileType.file3DC:
                 loadedObjects.Add(ModelLoader.Load3DC(f3Dname, colname));
-                loadedFileName = f3Dname + ".3DC";
+                loadedFileName = "/Redguard/fxart/" + f3Dname + ".3DC";
                 break;
             case ModelFileType.fileROB:
                 loadedObjects = ModelLoader.LoadROB(f3Dname, colname);
-                loadedFileName = f3Dname + ".ROB";
+                loadedFileName = "/Redguard/fxart/" + f3Dname + ".ROB";
                 break;
         }
         
@@ -78,7 +77,7 @@ public class ModelViewer : MonoBehaviour
         
         // Configure Object Picker
         gui.objectDropDown.interactable = true;
-        gui.PopulateIsolationDropdown(loadedObjects);
+        gui.InitializeIsolationDropdown(loadedObjects);
         
         FinalizeLoad();
         print("Loaded area: " + loadedFileName);
@@ -86,10 +85,8 @@ public class ModelViewer : MonoBehaviour
     
     private void PrepareLoad()
     {
-        // objectRootGenerated is simply a new GameObject that makes deleting objects easier
-        Destroy(_objectRootGenerated);
-        _objectRootGenerated = new GameObject();
-        _objectRootGenerated.transform.SetParent(objectRoot.transform);
+        DeleteLoadedObject();
+        gui.ResetIsolationDropdown();
     }
 
     private void FinalizeLoad()
@@ -101,6 +98,11 @@ public class ModelViewer : MonoBehaviour
         settings.ToggleFlyMode(false);
         settings.RequestEnableTextureFiltering(true);
         settings.RequestEnableAnimations(true);
+
+        if (loadedObjects.Count > 1)
+        {
+            gui.InitializeIsolationDropdown(loadedObjects);
+        }
         
         RGMeshStore.DumpDict();
         RG3DStore.DumpDict();
@@ -137,10 +139,13 @@ public class ModelViewer : MonoBehaviour
 
     private void DeleteLoadedObject()
     {
+        // objectRootGenerated is simply a new GameObject that makes deleting objects easier
         if (_objectRootGenerated)
         {
             Destroy(_objectRootGenerated);
         }
+        _objectRootGenerated = new GameObject();
+        _objectRootGenerated.transform.SetParent(objectRoot.transform);
     }
 
     public void IsolateObject(string selection)
