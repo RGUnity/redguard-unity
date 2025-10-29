@@ -12,9 +12,9 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] private ModelViewer modelViewer;
     
     [Header("Left Panel")]
-    [SerializeField] private RectTransform button_ModeArea;
-    [SerializeField] private RectTransform button_ModeObjects;
-    [SerializeField] private RectTransform button_ModeTexture;
+    [SerializeField] private Image highlighter_ModeArea;
+    [SerializeField] private Image highlighter_ModeObjects;
+    [SerializeField] private Image highlighter_ModeTexture;
     [SerializeField] private RectTransform root_ButtonList;
     [SerializeField] private GameObject button3DC_Prefab;
     [SerializeField] private GameObject buttonROB_Prefab;
@@ -98,15 +98,15 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         switch (mode)
         {
             case ViewerModes.Areas:
-                HighlightModeTab(button_ModeArea);
+                HighlightModeTab(highlighter_ModeArea);
                 BuildButtonList_Areas();
                 break;
             case ViewerModes.Models:
-                HighlightModeTab(button_ModeObjects);
+                HighlightModeTab(highlighter_ModeObjects);
                 BuildButtonList_Objects();
                 break;
             case ViewerModes.Textures:
-                HighlightModeTab(button_ModeTexture);
+                HighlightModeTab(highlighter_ModeTexture);
                 // todo: Add Texture GUI mode
                 break;
             default:
@@ -234,13 +234,13 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
     }
 
-    private void HighlightModeTab(RectTransform rect)
+    private void HighlightModeTab(Image selectedImage)
     {
-        button_ModeArea.GetComponent<Image>().color = buttonColorDefault;
-        button_ModeObjects.GetComponent<Image>().color = buttonColorDefault;
-        button_ModeTexture.GetComponent<Image>().color = buttonColorDefault;
+        highlighter_ModeArea.enabled = false;
+        highlighter_ModeObjects.enabled = false;
+        highlighter_ModeTexture.enabled = false;
         
-        rect.GetComponent<Image>().color = buttonColorAccent;
+        selectedImage.enabled = true;;
     }
 
     private void UpdateFileNameDisplay()
