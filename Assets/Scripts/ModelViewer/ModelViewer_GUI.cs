@@ -28,10 +28,13 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public Toggle animationToggle;
     [SerializeField] public Toggle flyModeToggle;
     [SerializeField] public Button exportButton;
+
+    private List<GameObject> areaButtonList = new();
+    private List<GameObject> modelButtonList = new();
+    private List<RGINIStore.worldData> areaList = new();
+    private List<FileInfo> modelList = new();
     
-    private List<GameObject> buttonList =  new();
-    
-    private Dictionary<string, string> fileToPalette = new()
+    private Dictionary<string, string> modelPaletteDict = new()
     {
         // Necromancer Isle, City Jail
         ["DEAD.3DC"] = "NECRO",
@@ -124,45 +127,53 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         exportButton.interactable = modelViewer.loadedObjects.Count > 0;
     }
 
-    private void ClearButtonList()
-    {
-        // Clear all buttons
-        if (root_ButtonList.transform.childCount > 0)
-        {
-            for (int i = 0; i < root_ButtonList.transform.childCount; i++)
-            {
-                Transform childTransform = root_ButtonList.transform.GetChild(i);
-                Destroy(childTransform.gameObject);
-            }
-        }
-        
-        buttonList.Clear();
-    }
-
     private void BuildButtonList_Areas()
-    {
-        ClearButtonList();
+    { 
+        // generate the area list, if it is missing
+        if (areaList.Count <= 0)
+        {
+            areaList = RGINIStore.GetWorldList();
         
-        List<RGINIStore.worldData> worldList = RGINIStore.GetWorldList();
-        
-        // Delete Island duplicates
-        worldList.RemoveAll(area =>
+            // Delete Island duplicates from list
+            areaList.RemoveAll(area =>
                 (area.RGM == "ISLAND" && area.COL == "NIGHTSKY") 
                 || (area.RGM == "ISLAND" && area.COL == "SUNSET")
-                );
-        
-        for(int i=0;i<worldList.Count;i++)
-            SpawnButton_Area(worldList[i].RGM,worldList[i].WLD, worldList[i].COL);
-        
-        // Add the missing HIDEOUT area that is missing from WORLD.INI
-        if (File.Exists(Game.pathManager.GetMapsFolder() + "HIDEOUT.RGM"))
-        {
-            SpawnButton_Area("HIDEOUT", "HIDEOUT", "HIDEOUT");
-            print("HIDEOUT.RGM found, adding button");
+            );
         }
+
+        // Hide all model buttons, if they exist
+        if (modelButtonList.Count > 0)
+        {
+            foreach (var button in modelButtonList)
+            {
+                button.SetActive(false);
+            }
+        }
+    
+        // generate the area buttons, if they are missing
+        if (areaButtonList.Count <= 0)
+        {
+            for(int i=0;i<areaList.Count;i++)
+                SpawnButton_Area(areaList[i].RGM,areaList[i].WLD, areaList[i].COL);
+        
+            // Add the missing HIDEOUT area that is missing from WORLD.INI
+            if (File.Exists(Game.pathManager.GetMapsFolder() + "HIDEOUT.RGM"))
+            {
+                SpawnButton_Area("HIDEOUT", "HIDEOUT", "HIDEOUT");
+                print("HIDEOUT.RGM found, adding button");
+            }
+            else
+            {
+                print("HIDEOUT.RGM not found, button will not be added");
+            }
+        }
+        // show them if they already exist
         else
         {
-            print("HIDEOUT.RGM not found, button will not be added");
+            foreach (var button in areaButtonList)
+            {
+                button.SetActive(true);
+            }
         }
     }
 
@@ -170,7 +181,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         var newButton = Instantiate(buttonROB_Prefab, root_ButtonList);
         newButton.name = "Button_" + RGM;
-        buttonList.Add(newButton);
+        areaButtonList.Add(newButton);
         
         if (newButton.TryGetComponent(out ModelViewer_AreaButton component))
         {
@@ -186,31 +197,51 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void BuildButtonList_Objects()
     {
-        ClearButtonList();
-        
-        DirectoryInfo dirInfo = new DirectoryInfo(Game.pathManager.GetArtFolder());
-        var fileList3D = dirInfo.GetFiles("*.3D");
-        var fileList3DC = dirInfo.GetFiles("*.3DC");
-        var fileListROB = dirInfo.GetFiles("*.ROB");
-        var combinedFileList = fileList3D.Concat(fileList3DC).Concat(fileListROB)
-            .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-        
-        // Set color palette
-        foreach (var file in combinedFileList)
+        // generate the model list, if it is missing
+        if (modelList.Count <= 0)
         {
-            string palette = "ISLAND"; // Default
-    
-            if (fileToPalette.TryGetValue(file.Name, out string customPalette))
+            DirectoryInfo dirInfo = new DirectoryInfo(Game.pathManager.GetArtFolder());
+            var fileList3D = dirInfo.GetFiles("*.3D");
+            var fileList3DC = dirInfo.GetFiles("*.3DC");
+            var fileListROB = dirInfo.GetFiles("*.ROB");
+            modelList = fileList3D.Concat(fileList3DC).Concat(fileListROB)
+                .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        // hide the area buttons, if they exist
+        if (areaButtonList.Count > 0)
+        {
+            foreach (var button in areaButtonList)
             {
-                palette = customPalette;
+                button.SetActive(false);
             }
-            else if (file.Name.Contains("CRAK"))
+        }
+        
+        // generate the model buttons, if they are missing
+        if (modelButtonList.Count <= 0)
+        {
+            // Set color palette
+            foreach (var file in modelList)
             {
-                palette = "REDCAVE";
-            }
+                string palette = "ISLAND"; // Default
     
-            SpawnButton_Object(file.Name, palette);
+                if (modelPaletteDict.TryGetValue(file.Name, out string customPalette))
+                {
+                    palette = customPalette;
+                }
+                else if (file.Name.Contains("CRAK"))
+                {
+                    palette = "REDCAVE";
+                }
+    
+                SpawnButton_Object(file.Name, palette);
+            }
+        }
+        // show the model buttons, if they do exist
+        foreach (var button in modelButtonList)
+        {
+            button.SetActive(true);
         }
     }
 
@@ -218,7 +249,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         var newButton = Instantiate(button3DC_Prefab, root_ButtonList);
         newButton.name = "Button_" + fileName;
-        buttonList.Add(newButton);
+        modelButtonList.Add(newButton);
         
         if (newButton.TryGetComponent(out ModelViewer_ModelButton component))
         {
