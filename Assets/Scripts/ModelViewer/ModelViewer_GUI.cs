@@ -27,7 +27,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public Toggle filterToggle;
     [SerializeField] public Toggle animationToggle;
     [SerializeField] public Toggle flyModeToggle;
-    [SerializeField] public TMP_InputField exportPathInput;
+    [SerializeField] public Button exportButton;
     
     private List<GameObject> buttonList =  new();
     
@@ -90,7 +90,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         IsMouseOverUI = false;
     }
     
-    public void UpdateGUI(ViewerModes mode)
+    public void SwitchViewerModeGUI(ViewerModes mode)
     {
         switch (mode)
         {
@@ -109,14 +109,19 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             default:
                 throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
         }
-
         UpdateOverlays();
+        UpdateExportButton();
     }
 
     public void UpdateOverlays()
     {
         UpdateIsolationDropdown();
         UpdateFileNameDisplay();
+    }
+
+    public void UpdateExportButton()
+    {
+        exportButton.interactable = modelViewer.loadedObjects.Count > 0;
     }
 
     private void ClearButtonList()

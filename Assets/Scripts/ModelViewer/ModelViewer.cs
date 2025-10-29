@@ -15,7 +15,6 @@ public class ModelViewer : MonoBehaviour
     public string loadedFileName;
     public string minimalLoadedFileName;
     public GameObject _objectRootGenerated;
-    private string exportDirectory;
     public List<GameObject> loadedObjects;
 
     void Start()
@@ -29,16 +28,11 @@ public class ModelViewer : MonoBehaviour
         
         // Start in Area Mode
         SwitchViewerMode(ViewerModes.Areas);
-        
-        // Set default Export path
-        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        exportDirectory = desktopPath + "/Redguard_Exports/";
-        gui.exportPathInput.text = exportDirectory;
     }
 
     public void SwitchViewerMode(ViewerModes mode)
     {
-        gui.UpdateGUI(mode);
+        gui.SwitchViewerModeGUI(mode);
     }
     
     public void SpawnModel(string f3Dname, ModelFileType fileType, string colname)
@@ -200,11 +194,5 @@ public class ModelViewer : MonoBehaviour
                 }
             }
         }
-    }
-
-    public string GetExportDirectory()
-    {
-        exportDirectory = gui.exportPathInput.text;
-        return exportDirectory;
     }
 }
