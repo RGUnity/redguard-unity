@@ -142,17 +142,26 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         ClearButtonList();
         
         List<RGINIStore.worldData> worldList = RGINIStore.GetWorldList();
+        
+        // Delete Island duplicates
+        worldList.RemoveAll(area =>
+                (area.RGM == "ISLAND" && area.COL == "NIGHTSKY") 
+                || (area.RGM == "ISLAND" && area.COL == "SUNSET")
+                );
+        
         for(int i=0;i<worldList.Count;i++)
             SpawnButton_Area(worldList[i].RGM,worldList[i].WLD, worldList[i].COL);
         
-        // Delete Island duplicates
-        Destroy(buttonList[24]);
-        print("Deleted area button #24 because that should just be the island at night.");
-        Destroy(buttonList[25]);
-        print("Deleted area button #24 because that should just be the island at sunset.");
-        
         // Add the missing HIDEOUT area that is missing from WORLD.INI
-        SpawnButton_Area("HIDEOUT", "HIDEOUT", "HIDEOUT");
+        if (File.Exists(Game.pathManager.GetMapsFolder() + "HIDEOUT.RGM"))
+        {
+            SpawnButton_Area("HIDEOUT", "HIDEOUT", "HIDEOUT");
+            print("HIDEOUT.RGM found, adding button");
+        }
+        else
+        {
+            print("HIDEOUT.RGM not found, button will not be added");
+        }
     }
 
     private void SpawnButton_Area(string RGM, string WLD, string COL)
