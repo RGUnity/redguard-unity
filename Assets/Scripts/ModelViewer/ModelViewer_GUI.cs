@@ -203,10 +203,12 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             DirectoryInfo dirInfo = new DirectoryInfo(Game.pathManager.GetArtFolder());
             var fileList3D = dirInfo.GetFiles("*.3D");
             var fileList3DC = dirInfo.GetFiles("*.3DC");
+
+            var List3Dand3DC = fileList3D.Concat(fileList3DC);
+            List3Dand3DC = List3Dand3DC.OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase);
+            
             var fileListROB = dirInfo.GetFiles("*.ROB");
-            modelList = fileList3D.Concat(fileList3DC).Concat(fileListROB)
-                .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            modelList = List3Dand3DC.Concat(fileListROB).ToList();
         }
 
         // hide the area buttons, if they exist
