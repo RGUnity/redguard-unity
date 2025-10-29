@@ -13,6 +13,7 @@ public class ModelViewer : MonoBehaviour
     [SerializeField] private string pathOverride;
 
     public string loadedFileName;
+    public string minimalLoadedFileName;
     public GameObject _objectRootGenerated;
     private string exportDirectory;
     public List<GameObject> loadedObjects;
@@ -60,6 +61,8 @@ public class ModelViewer : MonoBehaviour
                 loadedFileName = "/Redguard/fxart/" + f3Dname + ".ROB";
                 break;
         }
+
+        minimalLoadedFileName = f3Dname;
         
         SpreadObjects(loadedObjects);
         
@@ -74,6 +77,7 @@ public class ModelViewer : MonoBehaviour
         // Load Area objects
         loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
         loadedFileName = RGM;
+        minimalLoadedFileName = RGM;
         
         FinalizeLoad();
         print("Loaded area: " + loadedFileName);

@@ -314,7 +314,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     
     public void RequestExportGLTF()
     {
-        modelViewer.glTFExporter.ExportGLTF(modelViewer._objectRootGenerated, modelViewer.GetExportDirectory());
+        modelViewer.glTFExporter.ExportGLTF(modelViewer._objectRootGenerated, modelViewer.minimalLoadedFileName);
     }
 
     public void RequestObjectIsolation()
