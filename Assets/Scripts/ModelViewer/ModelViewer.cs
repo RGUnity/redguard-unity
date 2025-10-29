@@ -12,6 +12,7 @@ public class ModelViewer : MonoBehaviour
     [SerializeField] private GameObject cameraRoot;
     [SerializeField] private string pathOverride;
 
+    public string loadedFileName;
     public GameObject _objectRootGenerated;
     private string exportDirectory;
     private List<GameObject> loadedObjects;
@@ -39,52 +40,74 @@ public class ModelViewer : MonoBehaviour
         DeleteLoadedObject();
         gui.UpdateGUI(mode);
     }
-
+    
     public void SpawnModel(string f3Dname, ModelFileType fileType, string colname)
     {
-        // objectRootGenerated is simply a new GameObject that makes deleting objects easier
-        Destroy(_objectRootGenerated);
-        _objectRootGenerated = new GameObject();
-        _objectRootGenerated.transform.SetParent(objectRoot.transform);
+        PrepareLoad();
         
-
         loadedObjects = new List<GameObject>();
         switch (fileType)
         {
             case ModelFileType.file3D:
                 loadedObjects.Add(ModelLoader.Load3D(f3Dname, colname));
-                _objectRootGenerated.name = f3Dname + ".3D";
+                loadedFileName = f3Dname + ".3D";
                 break;
             case ModelFileType.file3DC:
                 loadedObjects.Add(ModelLoader.Load3DC(f3Dname, colname));
-                _objectRootGenerated.name = f3Dname + ".3DC";
+                loadedFileName = f3Dname + ".3DC";
                 break;
             case ModelFileType.fileROB:
                 loadedObjects = ModelLoader.LoadROB(f3Dname, colname);
-                _objectRootGenerated.name = f3Dname + ".ROB";
+                loadedFileName = f3Dname + ".ROB";
                 break;
         }
         
         SpreadObjects(loadedObjects);
         
-        // Create the object and parent it under the root
-        foreach (var obj in loadedObjects)
-        {
-            obj.transform.SetParent(_objectRootGenerated.transform);
-        }
+        FinalizeLoad();
+        print("Loaded object: " + loadedFileName);
+    }
+    
+    public void SpawnArea(string RGM, string WLD, string COL)
+    {
+        PrepareLoad();
+        
+        // Load Area objects
+        loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
+        loadedFileName = RGM;
+        
+        // Configure Object Picker
+        gui.objectDropDown.interactable = true;
+        gui.PopulateIsolationDropdown(loadedObjects);
+        
+        FinalizeLoad();
+        print("Loaded area: " + loadedFileName);
+    }
+    
+    private void PrepareLoad()
+    {
+        // objectRootGenerated is simply a new GameObject that makes deleting objects easier
+        Destroy(_objectRootGenerated);
+        _objectRootGenerated = new GameObject();
+        _objectRootGenerated.transform.SetParent(objectRoot.transform);
+    }
 
-        mvCam.useFlyMode = false;
+    private void FinalizeLoad()
+    {
+        _objectRootGenerated.name = loadedFileName;
+        ParentListObjects(loadedObjects, _objectRootGenerated);
         mvCam.FrameObject(_objectRootGenerated);
         
         settings.ToggleFlyMode(false);
         settings.RequestEnableTextureFiltering(true);
         settings.RequestEnableAnimations(true);
         
-        print("Loaded object: " + f3Dname);
-
-        //SwitchTextureFilterMode(FilterMode.Point);
+        RGMeshStore.DumpDict();
+        RG3DStore.DumpDict();
+        RGRGMStore.DumpDict();
+        RGTexStore.DumpDict();
     }
-
+    
     // Spread the loaded objects in negative X direction
     private void SpreadObjects(List<GameObject> objects)
     {
@@ -103,38 +126,13 @@ public class ModelViewer : MonoBehaviour
             occupiedDistance += objectWidth + spacing;
         }
     }
-    
-    public void SpawnArea(string RGM, string WLD, string COL)
-    {
-        // objectRootGenerated is simply a new GameObject that makes deleting objects easier
-        Destroy(_objectRootGenerated);
-        _objectRootGenerated = new GameObject();
-        _objectRootGenerated.transform.SetParent(objectRoot.transform);
-        _objectRootGenerated.name = RGM;
 
-        // Create all objects of that area and parent them under the root
-        loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
-        
-        foreach (var obj in loadedObjects)
+    private void ParentListObjects(List<GameObject> objects, GameObject parent)
+    {
+        foreach (var obj in objects)
         {
-            obj.transform.SetParent(_objectRootGenerated.transform);
+            obj.transform.SetParent(parent.transform);
         }
-        
-        settings.ToggleFlyMode(false);
-        settings.RequestEnableTextureFiltering(true);
-        settings.RequestEnableAnimations(true);
-        
-        mvCam.useFlyMode = false;
-        mvCam.FrameObject(_objectRootGenerated);
-        
-        gui.objectDropDown.interactable = true;
-        gui.PopulateIsolationDropdown(loadedObjects);
-        
-        print("Loaded area: " + RGM);
-        RGMeshStore.DumpDict();
-        RG3DStore.DumpDict();
-        RGRGMStore.DumpDict();
-        RGTexStore.DumpDict();
     }
 
     private void DeleteLoadedObject()
@@ -177,21 +175,27 @@ public class ModelViewer : MonoBehaviour
     
     public void SwitchTextureFilterMode(FilterMode mode)
     {
-        foreach (var mat in RGTexStore.MaterialDict)
+        if (RGTexStore.MaterialDict != null)
         {
-            mat.Value.mainTexture.filterMode = mode;
+            foreach (var mat in RGTexStore.MaterialDict)
+            {
+                mat.Value.mainTexture.filterMode = mode;
+            }
         }
     }
 
     public void EnableAnimations(bool enableAnimations)
     {
-        foreach (var obj in loadedObjects)
+        if (loadedObjects != null)
         {
-            if (obj.TryGetComponent(out RGScriptedObject rgso))
+            foreach (var obj in loadedObjects)
             {
-                if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
+                if (obj.TryGetComponent(out RGScriptedObject rgso))
                 {
-                    rgso.allowAnimation = enableAnimations;
+                    if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
+                    {
+                        rgso.allowAnimation = enableAnimations;
+                    }
                 }
             }
         }
