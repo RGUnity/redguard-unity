@@ -46,19 +46,22 @@ public class ModelViewer : MonoBehaviour
         Destroy(_objectRootGenerated);
         _objectRootGenerated = new GameObject();
         _objectRootGenerated.transform.SetParent(objectRoot.transform);
-        _objectRootGenerated.name = f3Dname;
+        
 
         loadedObjects = new List<GameObject>();
         switch (fileType)
         {
             case ModelFileType.file3D:
                 loadedObjects.Add(ModelLoader.Load3D(f3Dname, colname));
+                _objectRootGenerated.name = f3Dname + ".3D";
                 break;
             case ModelFileType.file3DC:
                 loadedObjects.Add(ModelLoader.Load3DC(f3Dname, colname));
+                _objectRootGenerated.name = f3Dname + ".3DC";
                 break;
             case ModelFileType.fileROB:
                 loadedObjects = ModelLoader.LoadROB(f3Dname, colname);
+                _objectRootGenerated.name = f3Dname + ".ROB";
                 break;
         }
         
