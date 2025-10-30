@@ -6305,7 +6305,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1119678405}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.93964475
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6457,6 +6457,9 @@ MonoBehaviour:
   gui: {fileID: 189839338}
   mv_camera: {fileID: 1516451609}
   showUI: 0
+  useTextureFiltering: 0
+  playAnimations: 0
+  useFlyMode: 0
 --- !u!4 &847651789
 Transform:
   m_ObjectHideFlags: 0
@@ -9425,6 +9428,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcd96bebc083c034083672c9c3ec4ade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  settings: {fileID: 847651788}
   gui: {fileID: 189839338}
   eventSystem: {fileID: 1585982906}
   _camera: {fileID: 1613269919}

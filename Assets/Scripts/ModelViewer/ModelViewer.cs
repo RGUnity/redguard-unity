@@ -30,6 +30,21 @@ public class ModelViewer : MonoBehaviour
         SwitchViewerMode(ViewerModes.Areas);
     }
 
+    private void Update()
+    {
+        // Input Event: Toggle UI
+        if (Input.GetKeyUp(KeyCode.Tab))
+        {
+            settings.ToggleUI();
+        }
+
+        // Input Event: Focus object
+        if (Input.GetKeyUp(KeyCode.F))
+        {
+            mvCam.FrameObject(_objectRootGenerated);
+        }
+    }
+
     public void SwitchViewerMode(ViewerModes mode)
     {
         gui.SwitchViewerModeGUI(mode);
@@ -86,6 +101,7 @@ public class ModelViewer : MonoBehaviour
     {
         _objectRootGenerated.name = loadedFileName;
         ParentListObjects(loadedObjects, _objectRootGenerated);
+        
         mvCam.FrameObject(_objectRootGenerated);
         
         gui.UpdateOverlays();

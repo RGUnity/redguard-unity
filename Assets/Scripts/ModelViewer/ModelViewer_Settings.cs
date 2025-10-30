@@ -12,6 +12,7 @@ public class ModelViewer_Settings : MonoBehaviour
     public bool showUI;
     public bool useTextureFiltering;
     public bool playAnimations;
+    public bool useFlyMode;
 
     private void Start()
     {
@@ -21,22 +22,7 @@ public class ModelViewer_Settings : MonoBehaviour
         ToggleAnimations(false);
     }
 
-    private void Update()
-    {
-        // ToggleUi Trigger
-        if (Input.GetKeyUp(KeyCode.Tab))
-        {
-            ToggleUI();
-        }
-    }
-
-    public void ToggleFlyMode(bool toggle)
-    {
-        mv_camera.useFlyMode = toggle;
-        gui.flyModeToggle.isOn = toggle;
-    }
-
-    private void ToggleUI()
+    public void ToggleUI()
     {
         showUI = !showUI;
         gui.gameObject.SetActive(showUI);
@@ -55,4 +41,12 @@ public class ModelViewer_Settings : MonoBehaviour
         gui.animationToggle.isOn = enableAnimations;
         mv.ApplyAnimationSetting();
     }
+    
+    public void ToggleFlyMode(bool toggle)
+    {
+        useFlyMode = toggle;
+        gui.flyModeToggle.isOn = toggle;
+        mv_camera.useFlyMode = toggle;
+    }
+    
 }

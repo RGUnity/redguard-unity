@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 
 public class ModelViewer_Camera : MonoBehaviour
 {
+    [SerializeField] public ModelViewer_Settings settings;
     [SerializeField] private ModelViewer_GUI gui;
     [SerializeField] private EventSystem eventSystem;
     [SerializeField] private Transform _camera;
@@ -84,16 +85,7 @@ public class ModelViewer_Camera : MonoBehaviour
         }
         else if (!useFlyMode)
         {
-            // When exiting Fly Mode, reset Position & Rotation
-            if (_camera.localPosition != Vector3.zero)
-            {
-                _camera.localPosition = Vector3.zero;
-            }
-
-            if (_camera.localRotation != Quaternion.identity)
-            {
-                _camera.localRotation =  Quaternion.identity;
-            }
+            ResetFlyModeTransforms();
             
             // Mouse Rotation
             if (Input.GetMouseButton(0) && leftDragStartedInViewport)
@@ -105,7 +97,6 @@ public class ModelViewer_Camera : MonoBehaviour
                 // Calculate Y axis
                 currentRotY += Input.GetAxis("Mouse X") * rotationSpeed;
             }
-            
             
             // Apply values to both objects
             rotationRootX.localRotation = Quaternion.Euler(currentRotX, 0, 0);
@@ -127,9 +118,31 @@ public class ModelViewer_Camera : MonoBehaviour
             }
         }
     }
+
+    private void ResetFlyModeTransforms()
+    {
+        // When exiting Fly Mode, reset Position & Rotation
+        if (_camera.localPosition != Vector3.zero)
+        {
+            _camera.localPosition = Vector3.zero;
+        }
+
+        if (_camera.localRotation != Quaternion.identity)
+        {
+            _camera.localRotation =  Quaternion.identity;
+        }
+    }
     
     public void FrameObject(GameObject target)
     {
+        if (!target)
+        {
+            Debug.LogWarning("FrameObject target is null, cancelling FrameObject()");
+            return;
+        }
+        
+        ResetFlyModeTransforms();
+        
         var bounds = GetMaxBounds(target);
 
         // Move camera root to the center
@@ -139,6 +152,7 @@ public class ModelViewer_Camera : MonoBehaviour
         float distance = bounds.size.magnitude;
         cameraRootZ.localPosition = new Vector3(0, 0, distance) * -1;
     }
+    
     // Get bounding box of all spawned objects combined
     Bounds GetMaxBounds(GameObject g) {
         var renderers = g.GetComponentsInChildren<Renderer>();
