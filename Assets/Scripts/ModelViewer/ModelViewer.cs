@@ -88,12 +88,11 @@ public class ModelViewer : MonoBehaviour
         ParentListObjects(loadedObjects, _objectRootGenerated);
         mvCam.FrameObject(_objectRootGenerated);
         
-        settings.ToggleFlyMode(false);
-        settings.RequestEnableTextureFiltering(true);
-        settings.RequestEnableAnimations(true);
-        
         gui.UpdateOverlays();
         gui.UpdateExportButton();
+
+        ApplyTextureFilterSetting();
+        ApplyAnimationSetting();
         
         RGMeshStore.DumpDict();
         RG3DStore.DumpDict();
@@ -169,31 +168,43 @@ public class ModelViewer : MonoBehaviour
         mvCam.FrameObject(objectRoot);
     }
     
-    public void SwitchTextureFilterMode(FilterMode mode)
+    public void ApplyTextureFilterSetting()
     {
-        if (RGTexStore.MaterialDict != null)
+        if (RGTexStore.MaterialDict == null)
         {
-            foreach (var mat in RGTexStore.MaterialDict)
+            return;
+        }
+
+        foreach (var mat in RGTexStore.MaterialDict)
+        {
+            if (settings.useTextureFiltering)
             {
-                mat.Value.mainTexture.filterMode = mode;
+                mat.Value.mainTexture.filterMode = FilterMode.Bilinear;
+            }
+            else
+            {
+                mat.Value.mainTexture.filterMode = FilterMode.Point;
             }
         }
     }
 
-    public void EnableAnimations(bool enableAnimations)
+    public void ApplyAnimationSetting()
     {
-        if (loadedObjects != null)
+        if (loadedObjects == null)
         {
-            foreach (var obj in loadedObjects)
+            return;
+        }
+
+        foreach (var obj in loadedObjects)
+        {
+            if (obj.TryGetComponent(out RGScriptedObject rgso))
             {
-                if (obj.TryGetComponent(out RGScriptedObject rgso))
+                if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
                 {
-                    if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
-                    {
-                        rgso.allowAnimation = enableAnimations;
-                    }
+                    rgso.allowAnimation = settings.playAnimations;
                 }
             }
+            print("Set animation on " + obj.name + " To " + settings.playAnimations);
         }
     }
 }

@@ -8,12 +8,17 @@ public class ModelViewer_Settings : MonoBehaviour
     [SerializeField] private ModelViewer mv;
     [SerializeField] private ModelViewer_GUI gui;
     [SerializeField] private ModelViewer_Camera mv_camera;
+    
     public bool showUI;
+    public bool useTextureFiltering;
+    public bool playAnimations;
 
     private void Start()
     {
         // Initialize showUI
         showUI = gui.gameObject.activeSelf;
+        ToggleTextureFiltering(false);
+        ToggleAnimations(false);
     }
 
     private void Update()
@@ -37,15 +42,17 @@ public class ModelViewer_Settings : MonoBehaviour
         gui.gameObject.SetActive(showUI);
     }
     
-    public void RequestEnableTextureFiltering(bool enableFiltering)
+    public void ToggleTextureFiltering(bool enableFiltering)
     {
-        mv.SwitchTextureFilterMode(enableFiltering ? FilterMode.Bilinear : FilterMode.Point);
+        useTextureFiltering = enableFiltering;
         gui.filterToggle.isOn = enableFiltering;
+        mv.ApplyTextureFilterSetting();
     }
 
-    public void RequestEnableAnimations(bool enableAnimations)
+    public void ToggleAnimations(bool enableAnimations)
     {
-        mv.EnableAnimations(enableAnimations);
+        playAnimations = enableAnimations;
         gui.animationToggle.isOn = enableAnimations;
+        mv.ApplyAnimationSetting();
     }
 }

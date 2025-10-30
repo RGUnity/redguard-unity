@@ -3460,7 +3460,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 847651788}
         m_TargetAssemblyTypeName: ModelViewer2_Settings, ModelViewer
-        m_MethodName: RequestEnableTextureFiltering
+        m_MethodName: ToggleTextureFiltering
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5400,7 +5400,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 847651788}
         m_TargetAssemblyTypeName: ModelViewer2_Settings, ModelViewer
-        m_MethodName: RequestEnableAnimations
+        m_MethodName: ToggleAnimations
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
