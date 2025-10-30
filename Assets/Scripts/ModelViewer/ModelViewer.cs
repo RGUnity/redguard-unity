@@ -101,8 +101,11 @@ public class ModelViewer : MonoBehaviour
     {
         _objectRootGenerated.name = loadedFileName;
         ParentListObjects(loadedObjects, _objectRootGenerated);
-        
-        mvCam.FrameObject(_objectRootGenerated);
+
+        if (!settings.useFlyMode)
+        {
+            mvCam.FrameObject(_objectRootGenerated);
+        }
         
         gui.UpdateOverlays();
         gui.UpdateExportButton();
