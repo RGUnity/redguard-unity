@@ -650,7 +650,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 121.5, y: -62.42}
+  m_AnchoredPosition: {x: 121.5, y: -90.07}
   m_SizeDelta: {x: 223, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &29258673
@@ -673,9 +673,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Toggle UI: Press Tab
+  m_text: '- Toggle UI: Press Tab
 
-    Fly Mode Movement: WASD Keys and Scroll Wheel'
+    - Fly Mode: WASD Keys for movement. Scroll
+    Wheel for up/down. Shift/Ctrl to fly faster/slower.
+
+    - Recenter Camera: F'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1984,7 +1987,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 141.5, y: -362.27002}
+  m_AnchoredPosition: {x: 141.5, y: -389.92}
   m_SizeDelta: {x: 243, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &204121032
@@ -6853,7 +6856,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 283, y: -216.095}
+  m_AnchoredPosition: {x: 283, y: -243.745}
   m_SizeDelta: {x: 283, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &962905849
