@@ -81,6 +81,38 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         ["CATACOMB.ROB"] = "CATACOMB"
     };
 
+    private Dictionary<string, string> areaNameDict = new()
+    {
+        ["BELLTOWR"] = "Bell Tower",
+        ["BRENNANS"] = "Brennan's Ship",
+        ["CARTOGR"] = "Cartographer",
+        ["CATACOMB"] = "Palace Catacombs",
+        ["CAVERNS"] = "Goblin Caverns",
+        ["DRINT"] = "Dwarven Ruins",
+        ["EXTPALAC"] = "Palace Courtyard",
+        ["GERRICKS"] = "Gerrick's Store",
+        ["HARBTOWR"] = "Harbor Tower",
+        ["HIDEINT"] = "League Hideout Interior",
+        ["HIDEOUT"] = "League Hideout Exterior",
+        ["ISLAND"] = "Stros M'kai",
+        ["JAILINT"] = "City Jail",
+        ["JFFERS"] = "J'ffer's Book Store",
+        ["MGUILD"] = "Mages Guild",
+        ["NECRISLE"] = "N'Gasta's Island",
+        ["NECRTOWR"] = "N'Gasta's Tower",
+        ["OBSERVE"] = "Dwarven Observatory",
+        ["PALACE"] = "Palace Interior",
+        ["ROLLOS"] = "Rollo's House",
+        ["SILVER1"] = "Silversmith's",
+        ["SILVER2"] = "Krisandra's Dwelling",
+        ["SMDEN"] = "Smuggler's Den",
+        ["START"] = "Starting Area",
+        ["TAVERN"] = "Draggin Tale Tavern",
+        ["TEMPLE"] = "Temple of Arkay",
+        ["VILE"] = "Realm of Clavicus Vile"
+    };
+        
+
     public bool IsMouseOverUI { get; private set; }
     
     public void OnPointerEnter(PointerEventData eventData)
@@ -139,6 +171,48 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 (area.RGM == "ISLAND" && area.COL == "NIGHTSKY") 
                 || (area.RGM == "ISLAND" && area.COL == "SUNSET")
             );
+            
+            // Add the missing HIDEOUT area that is missing from WORLD.INI
+            if (File.Exists(Game.pathManager.GetMapsFolder() + "HIDEOUT.RGM"))
+            {
+                areaList.Add(new RGINIStore.worldData
+                {
+                    RGM = "HIDEOUT", 
+                    COL = "HIDEOUT", 
+                    WLD = "HIDEOUT" 
+                });
+                print("HIDEOUT.RGM found, adding button");
+            }
+            else
+            {
+                print("HIDEOUT.RGM not found, button will not be added");
+            }
+            
+            
+            // Remove the second "BRENNANS" entry because it has no noteworthy differences
+            int brennansCount = 0;
+            for (int i = 0; i < areaList.Count; i++)
+            {
+                if (areaList[i].RGM == "BRENNANS")
+                {
+                    if (brennansCount >= 1)
+                    {
+                        areaList.RemoveAt(i);
+                    }
+                    brennansCount++;
+                }
+            }
+            
+            // Sort areaList alphabetically
+            areaList = areaList.OrderBy(item => 
+                    areaNameDict.GetValueOrDefault(item.RGM, item.RGM), 
+                StringComparer.OrdinalIgnoreCase).ToList();
+
+
+            foreach (var area in areaList)
+            {
+                print(area.RGM);
+            }
         }
 
         // Hide all model buttons, if they exist
@@ -149,23 +223,12 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 button.SetActive(false);
             }
         }
-    
+        
         // generate the area buttons, if they are missing
         if (areaButtonList.Count <= 0)
         {
             for(int i=0;i<areaList.Count;i++)
                 SpawnButton_Area(areaList[i].RGM,areaList[i].WLD, areaList[i].COL);
-        
-            // Add the missing HIDEOUT area that is missing from WORLD.INI
-            if (File.Exists(Game.pathManager.GetMapsFolder() + "HIDEOUT.RGM"))
-            {
-                SpawnButton_Area("HIDEOUT", "HIDEOUT", "HIDEOUT");
-                print("HIDEOUT.RGM found, adding button");
-            }
-            else
-            {
-                print("HIDEOUT.RGM not found, button will not be added");
-            }
         }
         // show them if they already exist
         else
@@ -189,7 +252,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             component.RGM = RGM;
             component.WLD = WLD;
             component.COL = COL;
-            component.SetButtonText(RGM);
+            // Look for a pretty name in areaNameDict, or use the RGM string as text
+            component.SetButtonText(areaNameDict.GetValueOrDefault(RGM, RGM));
         }
         
         print("Created new button with RGM=" + RGM + ", WLD=" + WLD +  ", COL=" + COL);
