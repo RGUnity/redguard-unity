@@ -46,4 +46,9 @@ public class Launcher : MonoBehaviour
         //SceneManager.UnloadSceneAsync("Scenes/Launcher");
         SceneManager.LoadScene(modelviewerScene);
     }
+    
+    public void Button_EditPath()
+    {
+        Game.ShowSetup();
+    }
 }
