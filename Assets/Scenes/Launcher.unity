@@ -682,9 +682,21 @@ PrefabInstance:
       value: Play Redguard Unity
       objectReference: {fileID: 0}
     - target: {fileID: 8504319381551786345, guid: 28cf2e63d254da9499f57679d53d645f, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: e8c4fe28841972549a48a4567233f6a8, type: 2}
+    - target: {fileID: 8504319381551786345, guid: 28cf2e63d254da9499f57679d53d645f, type: 3}
+      propertyPath: m_fontStyle
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8504319381551786345, guid: 28cf2e63d254da9499f57679d53d645f, type: 3}
       propertyPath: m_fontSizeBase
       value: 16
       objectReference: {fileID: 0}
+    - target: {fileID: 8504319381551786345, guid: 28cf2e63d254da9499f57679d53d645f, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -1227964388068723181, guid: e8c4fe28841972549a48a4567233f6a8, type: 2}
     - target: {fileID: 8504319381551786345, guid: 28cf2e63d254da9499f57679d53d645f, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
