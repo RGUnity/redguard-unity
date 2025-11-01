@@ -12,11 +12,12 @@ public class ModelViewer_AreaButton : MonoBehaviour
     public string RGM;
     public string WLD;
     public string COL;
+    public string prettyAreaName;
     
     
     public void OnClick()
     {
-        mv_GUI.RequestArea(RGM, WLD,COL);
+        mv_GUI.RequestArea(RGM, WLD,COL, prettyAreaName);
     }
 
     public void SetButtonText(string text)

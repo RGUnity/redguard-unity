@@ -79,14 +79,23 @@ public class ModelViewer : MonoBehaviour
         print("Loaded object: " + loadedFileName);
     }
     
-    public void SpawnArea(string RGM, string WLD, string COL)
+    public void SpawnArea(string RGM, string WLD, string COL, string prettyAreaName)
     {
         PrepareLoad();
         
         // Load Area objects
         loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
-        loadedFileName = RGM;
         minimalLoadedFileName = RGM;
+
+        if (WLD.Equals(string.Empty))
+        {
+            loadedFileName = prettyAreaName + " (" + RGM + ".RGM, " + COL + ".COL)";
+        }
+        else
+        {
+            loadedFileName = prettyAreaName + " (" + RGM + ".RGM, " + COL + ".COL, " + WLD + ".WLD)";
+        }
+        
         
         FinalizeLoad();
         print("Loaded area: " + loadedFileName);

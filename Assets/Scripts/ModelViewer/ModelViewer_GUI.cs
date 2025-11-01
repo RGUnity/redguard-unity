@@ -252,8 +252,11 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             component.RGM = RGM;
             component.WLD = WLD;
             component.COL = COL;
+            
             // Look for a pretty name in areaNameDict, or use the RGM string as text
-            component.SetButtonText(areaNameDict.GetValueOrDefault(RGM, RGM));
+            var prettyAreaName = areaNameDict.GetValueOrDefault(RGM, RGM);
+            component.prettyAreaName = prettyAreaName;
+            component.SetButtonText(prettyAreaName);
         }
         
         print("Created new button with RGM=" + RGM + ", WLD=" + WLD +  ", COL=" + COL);
@@ -408,10 +411,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         modelViewer.SpawnModel(fileName, fileType, col);
     }
     
-    public void RequestArea(string RGM, string WLD, string COL)
+    public void RequestArea(string RGM, string WLD, string COL, string prettyAreaName)
     {
         print("Requesting area: " + RGM);
-        modelViewer.SpawnArea(RGM, WLD, COL);
+        modelViewer.SpawnArea(RGM, WLD, COL, prettyAreaName);
     }
     
     public void RequestExportGLTF()
