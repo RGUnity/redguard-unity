@@ -104,7 +104,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         ["PALACE"] = "Palace Interior",
         ["ROLLOS"] = "Rollo's House",
         ["SILVER1"] = "Silversmith's",
-        ["SILVER2"] = "Krisandra's Dwelling",
+        ["SILVER2"] = "Silversmith's Dwelling",
         ["SMDEN"] = "Smuggler's Den",
         ["START"] = "Starting Area",
         ["TAVERN"] = "Draggin Tale Tavern",
