@@ -2,6 +2,7 @@
   "dependencies": {
     "com.bgtools.playerprefseditor": "https://github.com/Dysman/bgTools-playerPrefsEditor.git#upm",
     "com.kelvip.quick-scene-switcher": "https://github.com/Kelvin-CD/Quick-Scene-Switcher.git#upm",
+    "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.cloud.gltfast": "6.12.1",
     "com.unity.ide.rider": "3.0.38",
