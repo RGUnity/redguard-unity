@@ -39,7 +39,7 @@ public class Launcher : MonoBehaviour
         mainPanel.SetActive(false);
         
         Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.MaximizedWindow);
-        
+        DeleteSavedWindowMode();
         
         //SceneManager.UnloadSceneAsync("Scenes/Launcher");
         SceneManager.LoadScene(modelviewerScene);
