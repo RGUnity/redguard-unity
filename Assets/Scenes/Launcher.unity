@@ -741,8 +741,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainPanel: {fileID: 1611064452}
+  scaler: {fileID: 1811043967}
   playScene: IslandTest
-  modelviewerScene: ModelViewer
+  modelViewerScene: ModelViewer
 --- !u!4 &1036542986
 Transform:
   m_ObjectHideFlags: 0
@@ -772,7 +773,7 @@ GameObject:
   - component: {fileID: 1130070027}
   - component: {fileID: 1130070028}
   m_Layer: 5
-  m_Name: RawImage_001
+  m_Name: Logo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -954,7 +955,7 @@ GameObject:
   - component: {fileID: 1684046235}
   - component: {fileID: 1684046234}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: Spacer_Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1050,7 +1051,7 @@ GameObject:
   - component: {fileID: 1764582478}
   - component: {fileID: 1764582477}
   m_Layer: 5
-  m_Name: Panel_001
+  m_Name: Spacer_Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1145,6 +1146,7 @@ GameObject:
   - component: {fileID: 1811043966}
   - component: {fileID: 1811043965}
   - component: {fileID: 1811043964}
+  - component: {fileID: 1811043967}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1235,6 +1237,20 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1811043967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1811043962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6cc34edd576a7428683d5447676298, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaler: {fileID: 1811043965}
+  baseDPI: 96
 --- !u!1 &1994565111
 GameObject:
   m_ObjectHideFlags: 0
@@ -1370,7 +1386,7 @@ GameObject:
   - component: {fileID: 2032245454}
   - component: {fileID: 2032245457}
   m_Layer: 5
-  m_Name: Button List
+  m_Name: VGroup_Buttons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1475,7 +1491,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: 176.2
+  m_MinWidth: 160
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: -1

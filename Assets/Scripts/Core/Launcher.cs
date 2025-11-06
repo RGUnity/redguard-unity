@@ -5,18 +5,24 @@ using UnityEngine.SceneManagement;
 public class Launcher : MonoBehaviour
 {
     [SerializeField] private GameObject mainPanel;
+    [SerializeField] private DPIScaler scaler;
     [SerializeField] private string playScene;
-    [SerializeField] private string modelviewerScene;
+    [SerializeField] private string modelViewerScene;
     
     private void Start()
     {
+        // Apply system scale to window resolution
+        float systemScale = scaler.GetScaleFactor();
+        int scaledWidth = (int)(Screen.width * systemScale);
+        int scaledHeight = (int)(Screen.height * systemScale);
+        Screen.SetResolution(scaledWidth,  scaledHeight, FullScreenMode.Windowed);
+        
         // Move window to the center of screen (because we deleted a PlayerPrefs key) 
         List<DisplayInfo> displays = new List<DisplayInfo>();
         Screen.GetDisplayLayout(displays);
-        
-        int width = Display.main.systemWidth/2 - Screen.width/2;
-        int height = Display.main.systemHeight/2 - Screen.height/2;
-        
+        int width = Display.main.systemWidth/2 - scaledWidth/2;
+        int height = Display.main.systemHeight/2 - scaledHeight/2;
+
         Screen.MoveMainWindowTo(displays[0], new Vector2Int(width, height));
     }
 
@@ -24,9 +30,7 @@ public class Launcher : MonoBehaviour
     {
         mainPanel.SetActive(false);
         
-        //Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
         Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow);
-
         DeleteSavedWindowMode();
         
         print("Todo: Load menu scene or whatever");
@@ -38,11 +42,11 @@ public class Launcher : MonoBehaviour
     {
         mainPanel.SetActive(false);
         
-        Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.MaximizedWindow);
+        Screen.SetResolution(Mathf.RoundToInt(Display.main.systemWidth * 0.8f), Mathf.RoundToInt(Display.main.systemHeight * 0.8f), FullScreenMode.MaximizedWindow);
         DeleteSavedWindowMode();
         
         //SceneManager.UnloadSceneAsync("Scenes/Launcher");
-        SceneManager.LoadScene(modelviewerScene);
+        SceneManager.LoadScene(modelViewerScene);
     }
     
     public void Button_EditPath()

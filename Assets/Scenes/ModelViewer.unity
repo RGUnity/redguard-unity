@@ -1425,6 +1425,7 @@ GameObject:
   - component: {fileID: 189839335}
   - component: {fileID: 189839334}
   - component: {fileID: 189839338}
+  - component: {fileID: 189839339}
   m_Layer: 5
   m_Name: Model Viewer GUI
   m_TagString: Untagged
@@ -1540,6 +1541,20 @@ MonoBehaviour:
   animationToggle: {fileID: 673970576}
   flyModeToggle: {fileID: 2050248997}
   exportButton: {fileID: 1630758340}
+--- !u!114 &189839339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 189839333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6cc34edd576a7428683d5447676298, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaler: {fileID: 189839335}
+  baseDPI: 96
 --- !u!1 &204121030
 GameObject:
   m_ObjectHideFlags: 0
@@ -3745,8 +3760,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 42.605, y: -25}
-  m_SizeDelta: {x: 45.21, y: 40}
+  m_AnchoredPosition: {x: 42.870003, y: -25}
+  m_SizeDelta: {x: 45.74, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &481778565
 MonoBehaviour:
@@ -8980,8 +8995,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 187.20999, y: -25}
-  m_SizeDelta: {x: 69.2, y: 40}
+  m_AnchoredPosition: {x: 188.18501, y: -25}
+  m_SizeDelta: {x: 69.29, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1312979235
 MonoBehaviour:
@@ -11446,8 +11461,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 108.91, y: -25}
-  m_SizeDelta: {x: 57.4, y: 40}
+  m_AnchoredPosition: {x: 109.64001, y: -25}
+  m_SizeDelta: {x: 57.8, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1929159477
 MonoBehaviour:
