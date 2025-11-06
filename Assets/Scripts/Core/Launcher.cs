@@ -54,6 +54,11 @@ public class Launcher : MonoBehaviour
         Game.ShowSetup();
     }
 
+    public void Button_Exit()
+    {
+        Application.Quit();
+    }
+    
     private void DeleteSavedWindowMode()
     {
         // This ensures that the program starts using the window mode as it is defined in the project settings
