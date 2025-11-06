@@ -27,9 +27,7 @@ public class Launcher : MonoBehaviour
         //Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
         Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow);
 
-        // This ensures that the game always starts in windowed mode for the launcher
-        // I tried setting the PlayerPrefs, but that didnt work so no we're simply deleting it...
-        PlayerPrefs.DeleteKey("Screenmanager Fullscreen mode Default_h401710285");
+        DeleteSavedWindowMode();
         
         print("Todo: Load menu scene or whatever");
         //SceneManager.UnloadSceneAsync("Scenes/Launcher");
@@ -41,7 +39,7 @@ public class Launcher : MonoBehaviour
         mainPanel.SetActive(false);
         
         Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.MaximizedWindow);
-        PlayerPrefs.DeleteKey("Screenmanager Fullscreen mode Default_h401710285");
+        
         
         //SceneManager.UnloadSceneAsync("Scenes/Launcher");
         SceneManager.LoadScene(modelviewerScene);
@@ -50,5 +48,16 @@ public class Launcher : MonoBehaviour
     public void Button_EditPath()
     {
         Game.ShowSetup();
+    }
+
+    private void DeleteSavedWindowMode()
+    {
+        // This ensures that the program starts using the window mode as it is defined in the project settings
+        PlayerPrefs.DeleteKey("Screenmanager Fullscreen mode Default_h401710285");
+    }
+
+    private void OnApplicationQuit()
+    {
+        DeleteSavedWindowMode();
     }
 }
