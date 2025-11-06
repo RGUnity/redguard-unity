@@ -32,38 +32,40 @@ public class Setup : MonoBehaviour
         };
         
         var filePathArray = StandaloneFileBrowser.OpenFilePanel("Find Redguard.exe", "", extensionList, false);
-
         var filePath = filePathArray.SingleOrDefault();
         
-        
-        if (filePath == null)
+        if (filePath != null)
         {
-            print("No file selected");
-        }
-        else
-        {
-            string filePathSanitized = filePath.Replace(@"\", "/");
-            inputField.text = filePathSanitized;
+            IsInputValid(filePath);
         }
     }
     
     public void Button_Continue()
     {
-        string rootFolder = inputField.text.Replace(@"\", "/");
-        rootFolder = rootFolder.Replace("/REDGUARD.EXE", "");
+        if (IsInputValid(inputField.text))
+        {
+            Game.HideSetup();
+            Game.configManager.SaveConfig();
+        }
+    }
+
+    private bool IsInputValid(string exePath)
+    {
+        string sanitizedExePath = exePath.Replace(@"\", "/");
+        inputField.text = sanitizedExePath;
+        string rootFolder = sanitizedExePath.Replace("/REDGUARD.EXE", "");
 
         if (Game.pathManager.SetPath(rootFolder))
         {
             errorText.text = string.Empty;
-            
             print("Path looks valid. Setup will now exit.");
-            Game.HideSetup();
-            Game.configManager.SaveConfig();
+            return true;
         }
         else
         {
             errorText.text = "Invalid path";
             print("Bad path. Setup will not exit.");
+            return false;
         }
     }
 }
