@@ -105,12 +105,15 @@ public class RGObjectStore
     {
         return player;
     }
+
     public static void SetCamera(RGScriptedObject newCamera)
     {
+        GameObject[] cameraObjects = GameObject.FindGameObjectsWithTag("MainCamera");
         camera = newCamera;
     }
     public static RGScriptedObject GetCamera()
     {
+        //return CameraMain.mainCamera;
         return camera;
     }
 

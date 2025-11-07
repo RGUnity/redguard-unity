@@ -51,8 +51,9 @@ namespace xyz
         
             RGObjectStore.setfuncs(funcs);
             RGRGMScriptStore.flags[201] = 1;
-            ScriptData sd = new ScriptData("EXTOBSRV", 0);
-            int ticks = 20;
+            ScriptData sd = new ScriptData("OB_ENG21", 0);
+            Console.Write(RGRGMScriptStore.getScript("OB_ENG21").ToString());
+            int ticks = 50;
             for(int i=0;i<ticks;i++)
             {
                 Console.Write($"{i}:");

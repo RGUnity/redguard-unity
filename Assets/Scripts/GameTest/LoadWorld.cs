@@ -60,7 +60,10 @@ public class LoadWorld : MonoBehaviour
     {
         if(true)
         {
-		ModelLoader.scriptedObjects[0x82BD9E40].allowScripting = true; // EXTOBSRV
+//		ModelLoader.scriptedObjects[0x82BD9E40].allowScripting = true; // EXTOBSRV
+		ModelLoader.scriptedObjects[0x82BDA6A0].allowScripting = true; // OB_ENG21
+		ModelLoader.scriptedObjects[0x82BDA330].allowScripting = true; // OB_DOR02
+		ModelLoader.scriptedObjects[0x82BDA470].allowScripting = true; // OB_DOR01
         }
         if(false)
         {

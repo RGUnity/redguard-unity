@@ -428,6 +428,7 @@ public class RGScriptedObject : MonoBehaviour
     {
         functions = new Func<uint, bool, int[], int>[FUNC_CNT];
         functions[17] = WaitOnTasks;
+        functions[21] = showObj;
         functions[44] = RotateByAxis;
         functions[45] = RotateToAxis;
         functions[53] = MoveByAxis;
@@ -503,6 +504,24 @@ public class RGScriptedObject : MonoBehaviour
         }
         return Vector3.Scale(axis, new Vector3(1.0f, 1.0f,-1.0f));
     }
+
+    /*function 21*/
+    public int showObj(uint caller, bool multitask, int[] i /*3*/)	
+    {
+        // Targets the camera to show the object, settings its position
+        // i[0]: camera XYZ-axis offset (not sure which)
+        // i[1]: camera up-axis offset
+        // i[2]: camera XYZ-axis offset (not sure which)
+        Vector3 offsetPos = new Vector3(((float)i[0])*RGM_MPOB_SCALE,
+                                       -((float)i[1])*RGM_MPOB_SCALE,
+                                        ((float)i[2])*RGM_MPOB_SCALE);
+        Debug.Log($"{multitask}_{scriptName}_showObj({string.Join(",",i)}) : {offsetPos}");
+        CameraMain.ShowObj(this, offsetPos, Vector3.zero, true);
+        //return CameraMain.mainCamera;
+        return 0;
+    }
+
+
     /*task 44*/
     public int RotateByAxis(uint caller, bool multitask, int[] i /*3*/)    
     {
