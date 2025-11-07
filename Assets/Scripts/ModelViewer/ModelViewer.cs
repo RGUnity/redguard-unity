@@ -232,7 +232,6 @@ public class ModelViewer : MonoBehaviour
                     rgso.allowAnimation = settings.playAnimations;
                 }
             }
-            print("Set animation on " + obj.name + " To " + settings.playAnimations);
         }
     }
 }
