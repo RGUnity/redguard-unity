@@ -46,10 +46,10 @@ public class SceneLoader : MonoBehaviour
         EnableAnimations(true);
         
         print("Loaded area: " + RGM);
-        RGMeshStore.DumpDict();
-        RG3DStore.DumpDict();
-        RGRGMStore.DumpDict();
-        RGTexStore.DumpDict();
+        // RGMeshStore.DumpDict();
+        // RG3DStore.DumpDict();
+        // RGRGMStore.DumpDict();
+        // RGTexStore.DumpDict();
     }
     
     public void SwitchTextureFilterMode(FilterMode mode)

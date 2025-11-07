@@ -49,9 +49,9 @@ public static class ModelLoader
         MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
         MeshCollider meshCollider = obj.AddComponent<MeshCollider>();
 
-        meshFilter.mesh = data_3D.mesh;
+        meshFilter.sharedMesh = data_3D.mesh;
         meshRenderer.SetMaterials(data_3D.materials);
-        meshCollider.sharedMesh = meshFilter.mesh;
+        meshCollider.sharedMesh = data_3D.mesh;
 
         // Set Position & Rotation
         obj.transform.position = position;
@@ -62,6 +62,8 @@ public static class ModelLoader
     
     public static List<GameObject> LoadArea(string areaname, string palettename, string wldname)
     {
+        RG3DStore.MeshIntermediateDict.Clear();
+        
         List<GameObject> areaObjects;
         RG3DStore.LoadMeshIntermediatesROB(areaname);
         areaObjects = LoadRGM(areaname, palettename);
@@ -181,7 +183,7 @@ public static class ModelLoader
         obj_wld.isStatic = true;
         obj_wld.name = "Terrain";
         
-        obj_wld.AddComponent<MeshFilter>().mesh = data_WLD.mesh;
+        obj_wld.AddComponent<MeshFilter>().sharedMesh = data_WLD.mesh;
         obj_wld.AddComponent<MeshRenderer>().SetMaterials(data_WLD.materials);
         obj_wld.AddComponent<MeshCollider>().sharedMesh = data_WLD.mesh;
         return obj_wld;

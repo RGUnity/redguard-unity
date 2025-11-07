@@ -122,10 +122,10 @@ public class ModelViewer : MonoBehaviour
         ApplyTextureFilterSetting();
         ApplyAnimationSetting();
         
-        RGMeshStore.DumpDict();
-        RG3DStore.DumpDict();
-        RGRGMStore.DumpDict();
-        RGTexStore.DumpDict();
+        // RGMeshStore.DumpDict();
+        // RG3DStore.DumpDict();
+        // RGRGMStore.DumpDict();
+        // RGTexStore.DumpDict();
     }
     
     // Spread the loaded objects in negative X direction
