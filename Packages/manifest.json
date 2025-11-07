@@ -2,6 +2,7 @@
   "dependencies": {
     "com.bgtools.playerprefseditor": "https://github.com/Dysman/bgTools-playerPrefsEditor.git#upm",
     "com.kelvip.quick-scene-switcher": "https://github.com/Kelvin-CD/Quick-Scene-Switcher.git#upm",
+    "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.cloud.gltfast": "6.12.1",
     "com.unity.ide.rider": "3.0.38",
@@ -12,6 +13,7 @@
     "com.unity.render-pipelines.universal": "17.1.0",
     "com.unity.toolchain.linux-x86_64": "2.0.10",
     "com.unity.ugui": "2.0.0",
+    "io.github.gkngkc.unity-standalone-file-browser": "1.3.4",
     "com.unity.modules.accessibility": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
@@ -44,5 +46,15 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "OpenUPM",
+      "url": "https://package.openupm.com/",
+      "scopes": [
+        "io.github.gkngkc.unity-standalone-file-browser"
+      ],
+      "overrideBuiltIns": true
+    }
+  ]
 }

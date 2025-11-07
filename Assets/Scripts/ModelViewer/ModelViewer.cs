@@ -12,9 +12,10 @@ public class ModelViewer : MonoBehaviour
     [SerializeField] private GameObject cameraRoot;
     [SerializeField] private string pathOverride;
 
+    public string loadedFileName;
+    public string minimalLoadedFileName;
     public GameObject _objectRootGenerated;
-    private string exportDirectory;
-    private List<GameObject> loadedObjects;
+    public List<GameObject> loadedObjects;
 
     void Start()
     {
@@ -27,61 +28,106 @@ public class ModelViewer : MonoBehaviour
         
         // Start in Area Mode
         SwitchViewerMode(ViewerModes.Areas);
-        
-        // Set default Export path
-        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        exportDirectory = desktopPath + "/Redguard_Exports/";
-        gui.exportPathInput.text = exportDirectory;
+    }
+
+    private void Update()
+    {
+        // Input Event: Toggle UI
+        if (Input.GetKeyUp(KeyCode.Tab))
+        {
+            settings.ToggleUI();
+        }
+
+        // Input Event: Focus object
+        if (Input.GetKeyUp(KeyCode.F))
+        {
+            mvCam.FrameObject(_objectRootGenerated);
+        }
     }
 
     public void SwitchViewerMode(ViewerModes mode)
     {
-        DeleteLoadedObject();
-        gui.UpdateGUI(mode);
+        gui.SwitchViewerModeGUI(mode);
     }
-
+    
     public void SpawnModel(string f3Dname, ModelFileType fileType, string colname)
     {
-        // objectRootGenerated is simply a new GameObject that makes deleting objects easier
-        Destroy(_objectRootGenerated);
-        _objectRootGenerated = new GameObject();
-        _objectRootGenerated.transform.SetParent(objectRoot.transform);
-        _objectRootGenerated.name = f3Dname;
-
+        PrepareLoad();
+        
         loadedObjects = new List<GameObject>();
         switch (fileType)
         {
             case ModelFileType.file3D:
                 loadedObjects.Add(ModelLoader.Load3D(f3Dname, colname));
+                loadedFileName = "/Redguard/fxart/" + f3Dname + ".3D";
                 break;
             case ModelFileType.file3DC:
                 loadedObjects.Add(ModelLoader.Load3DC(f3Dname, colname));
+                loadedFileName = "/Redguard/fxart/" + f3Dname + ".3DC";
                 break;
             case ModelFileType.fileROB:
                 loadedObjects = ModelLoader.LoadROB(f3Dname, colname);
+                loadedFileName = "/Redguard/fxart/" + f3Dname + ".ROB";
                 break;
         }
+
+        minimalLoadedFileName = f3Dname;
         
         SpreadObjects(loadedObjects);
         
-        // Create the object and parent it under the root
-        foreach (var obj in loadedObjects)
+        FinalizeLoad();
+        print("Loaded object: " + loadedFileName);
+    }
+    
+    public void SpawnArea(string RGM, string WLD, string COL, string prettyAreaName)
+    {
+        PrepareLoad();
+        
+        // Load Area objects
+        loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
+        minimalLoadedFileName = RGM;
+
+        if (WLD.Equals(string.Empty))
         {
-            obj.transform.SetParent(_objectRootGenerated.transform);
+            loadedFileName = prettyAreaName + " (" + RGM + ".RGM, " + COL + ".COL)";
         }
-
-        mvCam.useFlyMode = false;
-        mvCam.FrameObject(_objectRootGenerated);
+        else
+        {
+            loadedFileName = prettyAreaName + " (" + RGM + ".RGM, " + COL + ".COL, " + WLD + ".WLD)";
+        }
         
-        settings.ToggleFlyMode(false);
-        settings.RequestEnableTextureFiltering(true);
-        settings.RequestEnableAnimations(true);
         
-        print("Loaded object: " + f3Dname);
-
-        //SwitchTextureFilterMode(FilterMode.Point);
+        FinalizeLoad();
+        print("Loaded area: " + loadedFileName);
+    }
+    
+    private void PrepareLoad()
+    {
+        DeleteLoadedObject();
     }
 
+    private void FinalizeLoad()
+    {
+        _objectRootGenerated.name = loadedFileName;
+        ParentListObjects(loadedObjects, _objectRootGenerated);
+
+        if (!settings.useFlyMode)
+        {
+            mvCam.FrameObject(_objectRootGenerated);
+        }
+        
+        gui.UpdateOverlays();
+        gui.UpdateExportButton();
+
+        ApplyTextureFilterSetting();
+        ApplyAnimationSetting();
+        
+        RGMeshStore.DumpDict();
+        RG3DStore.DumpDict();
+        RGRGMStore.DumpDict();
+        RGTexStore.DumpDict();
+    }
+    
     // Spread the loaded objects in negative X direction
     private void SpreadObjects(List<GameObject> objects)
     {
@@ -100,46 +146,24 @@ public class ModelViewer : MonoBehaviour
             occupiedDistance += objectWidth + spacing;
         }
     }
-    
-    public void SpawnArea(string RGM, string WLD, string COL)
-    {
-        // objectRootGenerated is simply a new GameObject that makes deleting objects easier
-        Destroy(_objectRootGenerated);
-        _objectRootGenerated = new GameObject();
-        _objectRootGenerated.transform.SetParent(objectRoot.transform);
-        _objectRootGenerated.name = RGM;
 
-        // Create all objects of that area and parent them under the root
-        loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
-        
-        foreach (var obj in loadedObjects)
+    private void ParentListObjects(List<GameObject> objects, GameObject parent)
+    {
+        foreach (var obj in objects)
         {
-            obj.transform.SetParent(_objectRootGenerated.transform);
+            obj.transform.SetParent(parent.transform);
         }
-        
-        settings.ToggleFlyMode(false);
-        settings.RequestEnableTextureFiltering(true);
-        settings.RequestEnableAnimations(true);
-        
-        mvCam.useFlyMode = false;
-        mvCam.FrameObject(_objectRootGenerated);
-        
-        gui.objectDropDown.interactable = true;
-        gui.PopulateIsolationDropdown(loadedObjects);
-        
-        print("Loaded area: " + RGM);
-        RGMeshStore.DumpDict();
-        RG3DStore.DumpDict();
-        RGRGMStore.DumpDict();
-        RGTexStore.DumpDict();
     }
 
     private void DeleteLoadedObject()
     {
+        // objectRootGenerated is simply a new GameObject that makes deleting objects easier
         if (_objectRootGenerated)
         {
             Destroy(_objectRootGenerated);
         }
+        _objectRootGenerated = new GameObject();
+        _objectRootGenerated.transform.SetParent(objectRoot.transform);
     }
 
     public void IsolateObject(string selection)
@@ -172,31 +196,43 @@ public class ModelViewer : MonoBehaviour
         mvCam.FrameObject(objectRoot);
     }
     
-    public void SwitchTextureFilterMode(FilterMode mode)
+    public void ApplyTextureFilterSetting()
     {
+        if (RGTexStore.MaterialDict == null)
+        {
+            return;
+        }
+
         foreach (var mat in RGTexStore.MaterialDict)
         {
-            mat.Value.mainTexture.filterMode = mode;
+            if (settings.useTextureFiltering)
+            {
+                mat.Value.mainTexture.filterMode = FilterMode.Bilinear;
+            }
+            else
+            {
+                mat.Value.mainTexture.filterMode = FilterMode.Point;
+            }
         }
     }
 
-    public void EnableAnimations(bool enableAnimations)
+    public void ApplyAnimationSetting()
     {
+        if (loadedObjects == null)
+        {
+            return;
+        }
+
         foreach (var obj in loadedObjects)
         {
             if (obj.TryGetComponent(out RGScriptedObject rgso))
             {
                 if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
                 {
-                    rgso.allowAnimation = enableAnimations;
+                    rgso.allowAnimation = settings.playAnimations;
                 }
             }
+            print("Set animation on " + obj.name + " To " + settings.playAnimations);
         }
-    }
-
-    public string GetExportDirectory()
-    {
-        exportDirectory = gui.exportPathInput.text;
-        return exportDirectory;
     }
 }

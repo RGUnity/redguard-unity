@@ -54,7 +54,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    private static void ShowSetup()
+    public static void ShowSetup()
     {
         if (!setupIsLoaded)
         {
