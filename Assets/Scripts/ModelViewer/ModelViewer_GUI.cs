@@ -207,12 +207,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             areaList = areaList.OrderBy(item => 
                     areaNameDict.GetValueOrDefault(item.RGM, item.RGM), 
                 StringComparer.OrdinalIgnoreCase).ToList();
-
-
-            foreach (var area in areaList)
-            {
-                print(area.RGM);
-            }
         }
 
         // Hide all model buttons, if they exist
@@ -258,8 +252,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             component.prettyAreaName = prettyAreaName;
             component.SetButtonText(prettyAreaName);
         }
-        
-        print("Created new button with RGM=" + RGM + ", WLD=" + WLD +  ", COL=" + COL);
     }
 
     private void BuildButtonList_Objects()
