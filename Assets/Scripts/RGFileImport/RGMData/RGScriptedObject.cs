@@ -25,6 +25,7 @@ public class RGScriptedObject : MonoBehaviour
 	const float RGM_MPOB_SCALE = 1/5120.0f;
 	
 	public string objectName;
+	public uint objectId;
 	public string scriptName;
 
     // used for animations: 3DC files might not have the same vertex count
@@ -52,7 +53,7 @@ public class RGScriptedObject : MonoBehaviour
     public AnimData animations;
 // scripting
     public bool DEBUGSCRIPTING=true;
-	public bool allowScripting;
+	bool allowScripting;
     public ScriptData script;
 
     public List<Vector3> locations;
@@ -141,6 +142,7 @@ public class RGScriptedObject : MonoBehaviour
 
     public void InstanciateLightObject(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
     {
+		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
         type = ScriptedObjectType.scriptedobject_static;
 		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
 			
@@ -226,10 +228,26 @@ public class RGScriptedObject : MonoBehaviour
             gameObject.AddComponent<MeshCollider>();
             gameObject.GetComponent<MeshCollider>().sharedMesh = skinnedMeshRenderer.sharedMesh;
         }
-
-// administration for RGObjectstore
+         
+        objectName = null;
+        objectId = MPOB.id;
+        if(RAHDData.RANMLength > 0)
+        {
+            MemoryReader RANMReader = new MemoryReader(filergm.RANM.data);
+            RANMReader.Seek((uint)RAHDData.RANMOffset, 0);
+            char[] curc = RANMReader.ReadChars(RAHDData.RANMLength-1);
+            objectName = new string(curc);
+        }
+        
 
         // DO THIS AFTER SETTING POSITION AND ROTATION
+//        EnableScripting();
+
+	}
+    public void EnableScripting()
+    {
+        // administration for RGObjectstore
+
         /*
         if(attributes[24] != 0) // attr_player_align
             gameObject.tag = "PLAYER_ALIGN";
@@ -241,19 +259,8 @@ public class RGScriptedObject : MonoBehaviour
         if(attributes[29] != 0) // att_group
             RGObjectStore.AddToGroup(attributes[29], this);
 
- 
-        objectName = null;
-        if(RAHDData.RANMLength > 0)
-        {
-            MemoryReader RANMReader = new MemoryReader(filergm.RANM.data);
-            RANMReader.Seek((uint)RAHDData.RANMOffset, 0);
-            char[] curc = RANMReader.ReadChars(RAHDData.RANMLength-1);
-            objectName = new string(curc);
-        }
-        
-        RGObjectStore.AddObject(MPOB.id, objectName, this);
-
-	}
+         RGObjectStore.AddObject(objectId, objectName, this);
+    }
     public void SetAnim(int animId, int firstFrame)
     {
         if(type == ScriptedObjectType.scriptedobject_animated)

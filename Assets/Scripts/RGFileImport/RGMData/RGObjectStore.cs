@@ -52,6 +52,19 @@ public class RGObjectStore
     // master/slaves
     public static Dictionary<uint, MasterSlavesStruct> scriptedSlaves;
 
+    public void Clear()
+    {
+        // TODO: clear these decently
+        if(scriptedObjects != null)
+            scriptedObjects = new Dictionary<uint, RGScriptedObject>();
+        if(namedScriptedObjects != null)
+            namedScriptedObjects = new Dictionary<string, RGScriptedObject>();
+        if(scriptedGroups != null)
+            scriptedGroups = new Dictionary<uint, List<RGScriptedObject>>();
+        if(scriptedSlaves != null)
+            scriptedSlaves = new Dictionary<uint, MasterSlavesStruct>();
+    }
+
     public static int DoObjectTask(uint objectId, string subjectName, int taskId, bool isMultiTask, int[] parameters)
     {
         RGScriptedObject subject = null;
