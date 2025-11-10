@@ -910,6 +910,7 @@ MonoBehaviour:
   scaler: {fileID: 1811043967}
   playScene: IslandTest
   modelViewerScene: ModelViewer
+  baseWindowSize: {x: 800, y: 480}
 --- !u!4 &1036542986
 Transform:
   m_ObjectHideFlags: 0
