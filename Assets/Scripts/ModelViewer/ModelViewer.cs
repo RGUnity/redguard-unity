@@ -161,6 +161,7 @@ public class ModelViewer : MonoBehaviour
         if (_objectRootGenerated)
         {
             Destroy(_objectRootGenerated);
+            Resources.UnloadUnusedAssets();
         }
         _objectRootGenerated = new GameObject();
         _objectRootGenerated.transform.SetParent(objectRoot.transform);

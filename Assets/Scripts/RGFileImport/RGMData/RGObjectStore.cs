@@ -101,6 +101,16 @@ public class RGObjectStore
             namedScriptedObjects.Add(objectName, o);
         }
     }
+    public static void RemoveObject(uint id, string objectName)
+    {
+        Debug.Log($"Removing item {id} with name {objectName}");
+        scriptedObjects.Remove(id);
+        if(objectName != null)
+        {
+            namedScriptedObjects.Remove(objectName);
+        }
+    }
+
 
 // special objects
     public static void AddPlayer(RGFileImport.RGRGMFile filergm,RGFileImport.RGRGMFile.RGMMPOBItem cyrus_data)

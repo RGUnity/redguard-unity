@@ -86,6 +86,13 @@ public class RGScriptedObject : MonoBehaviour
 
     public RGFileImport.RGRGMFile.RGMRAHDItem RAHDData;
 
+    ~RGScriptedObject()
+    {
+         // remove this object from the object store to prevent leaks
+         // Note that meshes will only get cleaned up after calling Resources.UnloadUnusedAssets
+         RGObjectStore.RemoveObject(objectId, objectName);
+    }
+
     public void AddLight()
     {
         GameObject lightGO = new GameObject();
@@ -142,7 +149,6 @@ public class RGScriptedObject : MonoBehaviour
 
     public void InstanciateLightObject(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
     {
-		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
         type = ScriptedObjectType.scriptedobject_static;
 		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
 			
@@ -241,7 +247,7 @@ public class RGScriptedObject : MonoBehaviour
         
 
         // DO THIS AFTER SETTING POSITION AND ROTATION
-//        EnableScripting();
+        EnableScripting();
 
 	}
     public void EnableScripting()
