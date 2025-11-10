@@ -15,7 +15,6 @@ public class Launcher : MonoBehaviour
     private void Start()
     {
         float systemScale = scaler.GetScaleFactor();
-        print("systemScale is " +  systemScale);
         scaledWindowSize.x = Mathf.RoundToInt(baseWindowSize.x * systemScale);
         scaledWindowSize.y = Mathf.RoundToInt(baseWindowSize.y * systemScale);   
 
