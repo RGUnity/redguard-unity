@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,23 +9,24 @@ public class Launcher : MonoBehaviour
     [SerializeField] private DPIScaler scaler;
     [SerializeField] private string playScene;
     [SerializeField] private string modelViewerScene;
-    [SerializeField] private Vector2 baseWindowSize;
+    [SerializeField] private int2 baseWindowSize;
+    [SerializeField] private int2 scaledWindowSize;
     
     private void Start()
     {
         float systemScale = scaler.GetScaleFactor();
         print("systemScale is " +  systemScale);
-        int scaledWidth = (int)(baseWindowSize.x * systemScale);
-        int scaledHeight = (int)(baseWindowSize.y * systemScale);   
+        scaledWindowSize.x = Mathf.RoundToInt(baseWindowSize.x * systemScale);
+        scaledWindowSize.y = Mathf.RoundToInt(baseWindowSize.y * systemScale);   
 
         // Apply system scale to window size
-        Screen.SetResolution(scaledWidth,  scaledHeight, FullScreenMode.Windowed);
+        Screen.SetResolution(scaledWindowSize.x,  scaledWindowSize.y, FullScreenMode.Windowed);
     
         // Move window to the center of screen (because we deleted a PlayerPrefs key) 
         List<DisplayInfo> displays = new List<DisplayInfo>();
         Screen.GetDisplayLayout(displays);
-        int width = Mathf.RoundToInt(Display.main.systemWidth/2 - scaledWidth/2);
-        int height = Mathf.RoundToInt(Display.main.systemHeight/2 - scaledHeight/2);
+        int width = Display.main.systemWidth/2 - scaledWindowSize.x/2;
+        int height = Display.main.systemHeight/2 - scaledWindowSize.y/2;
 
         Screen.MoveMainWindowTo(displays[0], new Vector2Int(width, height));
     }
@@ -44,8 +46,15 @@ public class Launcher : MonoBehaviour
     public void Button_StartModelViewer()
     {
         mainPanel.SetActive(false);
-        
-        Screen.SetResolution(Mathf.RoundToInt(Display.main.systemWidth * 0.8f), Mathf.RoundToInt(Display.main.systemHeight * 0.8f), FullScreenMode.MaximizedWindow);
+
+        if (Application.platform == RuntimePlatform.WindowsPlayer)
+        {
+            Screen.SetResolution(Mathf.RoundToInt(Display.main.systemWidth * 0.8f), Mathf.RoundToInt(Display.main.systemHeight * 0.8f), FullScreenMode.MaximizedWindow);
+        }
+        else if (Application.platform == RuntimePlatform.OSXPlayer)
+        {
+            Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.Windowed);
+        }
         DeleteSavedWindowMode();
         
         //SceneManager.UnloadSceneAsync("Scenes/Launcher");
