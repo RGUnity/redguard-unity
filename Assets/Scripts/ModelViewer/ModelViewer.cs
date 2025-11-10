@@ -52,6 +52,12 @@ public class ModelViewer : MonoBehaviour
     
     public void SpawnModel(string f3Dname, ModelFileType fileType, string colname)
     {
+        // If the same model is already loaded, stop
+        if (f3Dname == minimalLoadedFileName)
+        {
+            return;
+        }
+        
         PrepareLoad();
         
         loadedObjects = new List<GameObject>();
@@ -81,6 +87,12 @@ public class ModelViewer : MonoBehaviour
     
     public void SpawnArea(string RGM, string WLD, string COL, string prettyAreaName)
     {
+        // If the same area is already loaded, stop
+        if (RGM == minimalLoadedFileName)
+        {
+            return;
+        }
+        
         PrepareLoad();
         
         // Load Area objects
