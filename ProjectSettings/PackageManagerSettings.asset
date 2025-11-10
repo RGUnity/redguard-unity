@@ -32,6 +32,8 @@ MonoBehaviour:
     m_Url: https://package.openupm.com
     m_Scopes:
     - io.github.gkngkc.unity-standalone-file-browser
+    - com.kelvip.quick-scene-switcher
+    - com.bgtools.playerprefseditor
     m_IsDefault: 0
     m_Capabilities: 0
     m_ConfigSource: 4

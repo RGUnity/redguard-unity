@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "com.bgtools.playerprefseditor": "https://github.com/Dysman/bgTools-playerPrefsEditor.git#upm",
-    "com.kelvip.quick-scene-switcher": "https://github.com/Kelvin-CD/Quick-Scene-Switcher.git#upm",
+    "com.bgtools.playerprefseditor": "1.2.4",
+    "com.kelvip.quick-scene-switcher": "1.0.1",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.cloud.gltfast": "6.12.1",
@@ -50,9 +50,11 @@
   "scopedRegistries": [
     {
       "name": "OpenUPM",
-      "url": "https://package.openupm.com/",
+      "url": "https://package.openupm.com",
       "scopes": [
-        "io.github.gkngkc.unity-standalone-file-browser"
+        "io.github.gkngkc.unity-standalone-file-browser",
+        "com.kelvip.quick-scene-switcher",
+        "com.bgtools.playerprefseditor"
       ],
       "overrideBuiltIns": true
     }
