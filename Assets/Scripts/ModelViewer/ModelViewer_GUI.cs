@@ -112,7 +112,12 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         ["VILE"] = "Realm of Clavicus Vile"
     };
         
-
+    public void Initialize()
+    {
+        SwitchMode(ViewerModes.Areas);
+        UpdateModelDependentUI();
+    }
+    
     public bool IsMouseOverUI { get; private set; }
     
     public void OnPointerEnter(PointerEventData eventData)
@@ -124,8 +129,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         IsMouseOverUI = false;
     }
-    
-    public void SwitchViewerModeGUI(ViewerModes mode)
+
+    private void SwitchMode(ViewerModes mode)
     {
         switch (mode)
         {
@@ -144,21 +149,65 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             default:
                 throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
         }
-        UpdateOverlays();
+    }
+
+    private void HighlightModeTab(Image selectedImage)
+    {
+        highlighter_ModeArea.enabled = false;
+        highlighter_ModeObjects.enabled = false;
+        highlighter_ModeTexture.enabled = false;
+        
+        selectedImage.enabled = true;;
+    }
+    
+    public void UpdateModelDependentUI()
+    {
+        UpdateFileNameDisplay();
+        UpdateIsolationDropdown();
         UpdateExportButton();
     }
 
-    public void UpdateOverlays()
+    private void UpdateFileNameDisplay()
     {
-        UpdateIsolationDropdown();
-        UpdateFileNameDisplay();
+        if (modelViewer.loadedFileName == String.Empty)
+        {
+            fileNameText.text = "";
+            fileNameText.transform.parent.gameObject.SetActive(false);
+        }
+        else
+        {
+            fileNameText.transform.parent.gameObject.SetActive(true);
+            fileNameText.text = modelViewer.loadedFileName;
+        }
+    }
+    
+    private void UpdateIsolationDropdown()
+    {
+        objectDropDown.ClearOptions();
+        
+        List<TMP_Dropdown.OptionData>  optionsList = new List<TMP_Dropdown.OptionData>();
+        optionsList.Add(new TMP_Dropdown.OptionData("All"));
+
+        if (modelViewer.loadedObjects.Count > 1)
+        {
+            objectDropDown.transform.parent.gameObject.SetActive(true);
+            foreach (var obj in modelViewer.loadedObjects)
+            {
+                optionsList.Add(new TMP_Dropdown.OptionData(obj.name));
+            }
+            objectDropDown.AddOptions(optionsList);
+        }
+        else
+        {
+            objectDropDown.transform.parent.gameObject.SetActive(false);
+        }
     }
 
-    public void UpdateExportButton()
+    private void UpdateExportButton()
     {
         exportButton.interactable = modelViewer.loadedObjects.Count > 0;
     }
-
+    
     private void BuildButtonList_Areas()
     { 
         // generate the area list, if it is missing
@@ -336,64 +385,21 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             }
         }
     }
-
-    private void HighlightModeTab(Image selectedImage)
-    {
-        highlighter_ModeArea.enabled = false;
-        highlighter_ModeObjects.enabled = false;
-        highlighter_ModeTexture.enabled = false;
-        
-        selectedImage.enabled = true;;
-    }
-
-    private void UpdateFileNameDisplay()
-    {
-        if (modelViewer.loadedFileName == String.Empty)
-        {
-            fileNameText.text = "None";
-        }
-        else
-        {
-            fileNameText.text = modelViewer.loadedFileName;
-        }
-    }
-    
-    private void UpdateIsolationDropdown()
-    {
-        objectDropDown.ClearOptions();
-        
-        List<TMP_Dropdown.OptionData>  optionsList = new List<TMP_Dropdown.OptionData>();
-        optionsList.Add(new TMP_Dropdown.OptionData("None"));
-
-        if (modelViewer.loadedObjects.Count > 1)
-        {
-            foreach (var obj in modelViewer.loadedObjects)
-            {
-                optionsList.Add(new TMP_Dropdown.OptionData(obj.name));
-            }
-            objectDropDown.AddOptions(optionsList);
-            objectDropDown.interactable = true;
-        }
-        else
-        {
-            objectDropDown.interactable = false;
-        }
-    }
     
     // Button Signals
     public void ModeButton_Areas()
     {
-        modelViewer.SwitchViewerMode(ViewerModes.Areas);
+        SwitchMode(ViewerModes.Areas);
     }
     
     public void ModeButton_Objects()
     {
-        modelViewer.SwitchViewerMode(ViewerModes.Models);
+        SwitchMode(ViewerModes.Models);
     }
     
     public void ModeButton_Textures()
     {
-        modelViewer.SwitchViewerMode(ViewerModes.Textures);
+        SwitchMode(ViewerModes.Textures);
     }
     
     // Redirected Button Signals

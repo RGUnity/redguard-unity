@@ -17,7 +17,7 @@ public class ModelViewer : MonoBehaviour
     public GameObject _objectRootGenerated;
     public List<GameObject> loadedObjects;
 
-    void Start()
+    private void Start()
     {
         // if a path override is set, use that
         if (pathOverride.Length > 0)
@@ -26,8 +26,8 @@ public class ModelViewer : MonoBehaviour
             print("Redguard Path Override found in Scene. Value: " + Game.pathManager.GetRootFolder());
         }
         
-        // Start in Area Mode
-        SwitchViewerMode(ViewerModes.Areas);
+        // Initialize GUI
+        gui.Initialize();
     }
 
     private void Update()
@@ -43,11 +43,6 @@ public class ModelViewer : MonoBehaviour
         {
             mvCam.FrameObject(_objectRootGenerated);
         }
-    }
-
-    public void SwitchViewerMode(ViewerModes mode)
-    {
-        gui.SwitchViewerModeGUI(mode);
     }
     
     public void SpawnModel(string f3Dname, ModelFileType fileType, string colname)
@@ -108,7 +103,6 @@ public class ModelViewer : MonoBehaviour
             loadedFileName = prettyAreaName + " (" + RGM + ".RGM, " + COL + ".COL, " + WLD + ".WLD)";
         }
         
-        
         FinalizeLoad();
         print("Loaded area: " + loadedFileName);
     }
@@ -128,16 +122,10 @@ public class ModelViewer : MonoBehaviour
             mvCam.FrameObject(_objectRootGenerated);
         }
         
-        gui.UpdateOverlays();
-        gui.UpdateExportButton();
+        gui.UpdateModelDependentUI();
 
         ApplyTextureFilterSetting();
         ApplyAnimationSetting();
-        
-        // RGMeshStore.DumpDict();
-        // RG3DStore.DumpDict();
-        // RGRGMStore.DumpDict();
-        // RGTexStore.DumpDict();
     }
     
     // Spread the loaded objects in negative X direction

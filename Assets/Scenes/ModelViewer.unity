@@ -643,7 +643,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: 110
+  m_MinWidth: 39.5
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: -1
@@ -1971,7 +1971,7 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 1224684689}
   toggleTransition: 1
-  graphic: {fileID: 1213759945}
+  graphic: {fileID: 0}
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
@@ -2658,7 +2658,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -3
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2694,7 +2694,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.5
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3025,7 +3025,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -3
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3061,7 +3061,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.5
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3356,7 +3356,7 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 1905549950}
-  toggleTransition: 1
+  toggleTransition: 0
   graphic: {fileID: 857262768}
   m_Group: {fileID: 0}
   onValueChanged:
@@ -3965,7 +3965,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: -10}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: 18, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &510999006
 MonoBehaviour:
@@ -4903,7 +4903,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 93424466869167024, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_text
-      value: None
+      value: All
       objectReference: {fileID: 0}
     - target: {fileID: 1498408589938887934, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_Name
@@ -4971,7 +4971,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -7.4999695
+      value: -7.5
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -5383,7 +5383,7 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 510999006}
-  toggleTransition: 1
+  toggleTransition: 0
   graphic: {fileID: 824548829}
   m_Group: {fileID: 0}
   onValueChanged:
@@ -5401,7 +5401,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!1 &679977276
 GameObject:
   m_ObjectHideFlags: 0
@@ -6298,7 +6298,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 15, y: 15}
+  m_SizeDelta: {x: 12, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &824548829
 MonoBehaviour:
@@ -6313,15 +6313,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.20901565, g: 0.35293034, b: 0.5754717, a: 1}
+  m_Color: {r: 0.09938826, g: 0.57279545, b: 0.7764706, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -6500,7 +6500,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: -10}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: 18, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &828418475
 MonoBehaviour:
@@ -6626,7 +6626,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 15, y: 15}
+  m_SizeDelta: {x: 12, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &857262768
 MonoBehaviour:
@@ -6641,15 +6641,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.20901565, g: 0.35293034, b: 0.5754717, a: 1}
+  m_Color: {r: 0.101960786, g: 0.5764706, b: 0.7764706, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -6657,7 +6657,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2
 --- !u!222 &857262769
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7380,7 +7380,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -5, y: -5}
-  m_SizeDelta: {x: 300.1783, y: 35.6347}
+  m_SizeDelta: {x: 260, y: 35.6347}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1145280229
 MonoBehaviour:
@@ -8036,7 +8036,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1213759944
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8498,7 +8498,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -3
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8534,7 +8534,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.5
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -9766,7 +9766,7 @@ MonoBehaviour:
   m_MultiSelect: 0
   m_Options:
     m_Options:
-    - m_Text: None
+    - m_Text: All
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_OnValueChanged:
@@ -10063,7 +10063,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1630758341}
   m_OnClick:
     m_PersistentCalls:
@@ -10128,7 +10128,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 93424466869167024, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_text
-      value: 'Isolate Object:'
+      value: View
       objectReference: {fileID: 0}
     - target: {fileID: 93424466869167024, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_fontStyle
@@ -10353,7 +10353,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_SizeDelta.x
-      value: -30
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_SizeDelta.y
@@ -10389,7 +10389,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2271973217157019735, guid: 2f230c8e4488fbf4a8d063d2181bd715, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -11290,7 +11290,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 15, y: 15}
+  m_SizeDelta: {x: 12, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1815771771
 MonoBehaviour:
@@ -11305,15 +11305,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.20901565, g: 0.35293034, b: 0.5754717, a: 1}
+  m_Color: {r: 0.101960786, g: 0.5764706, b: 0.7764706, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -11382,7 +11382,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: -10}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: 18, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1905549950
 MonoBehaviour:
@@ -12291,7 +12291,7 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 828418475}
-  toggleTransition: 1
+  toggleTransition: 0
   graphic: {fileID: 1815771771}
   m_Group: {fileID: 0}
   onValueChanged:
