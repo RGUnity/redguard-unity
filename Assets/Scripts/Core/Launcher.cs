@@ -10,7 +10,7 @@ public class Launcher : MonoBehaviour
     [SerializeField] private string playScene;
     [SerializeField] private string modelViewerScene;
     [SerializeField] private int2 baseWindowSize;
-    [SerializeField] private int2 scaledWindowSize;
+    private int2 scaledWindowSize;
     
     private void Start()
     {
