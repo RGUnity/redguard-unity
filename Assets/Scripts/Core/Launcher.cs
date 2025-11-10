@@ -11,11 +11,16 @@ public class Launcher : MonoBehaviour
     
     private void Start()
     {
-        // Apply system scale to window resolution
         float systemScale = scaler.GetScaleFactor();
+        print("systemScale is " +  systemScale);
         int scaledWidth = (int)(Screen.width * systemScale);
-        int scaledHeight = (int)(Screen.height * systemScale);
-        Screen.SetResolution(scaledWidth,  scaledHeight, FullScreenMode.Windowed);
+        int scaledHeight = (int)(Screen.height * systemScale);   
+        
+        if (Application.platform == RuntimePlatform.WindowsPlayer)
+        {
+            // Apply system scale to window size resolution because Windows doesnt do that automatically
+            Screen.SetResolution(scaledWidth,  scaledHeight, FullScreenMode.Windowed);
+        }
         
         // Move window to the center of screen (because we deleted a PlayerPrefs key) 
         List<DisplayInfo> displays = new List<DisplayInfo>();
