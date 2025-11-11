@@ -21,6 +21,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     [Header("Center Area")]
     [SerializeField] public TMP_Dropdown objectDropDown;
+    [SerializeField] public string objectDropdownResetText = "All";
     [SerializeField] public TMP_Text fileNameText;
     
     [Header("Right Panel")]
@@ -186,7 +187,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         objectDropDown.ClearOptions();
         
         List<TMP_Dropdown.OptionData>  optionsList = new List<TMP_Dropdown.OptionData>();
-        optionsList.Add(new TMP_Dropdown.OptionData("All"));
+        optionsList.Add(new TMP_Dropdown.OptionData(objectDropdownResetText));
 
         if (modelViewer.loadedObjects.Count > 1)
         {
@@ -422,6 +423,15 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void RequestObjectIsolation()
     {
-        modelViewer.IsolateObject(objectDropDown.options[objectDropDown.value].text);
+        string selectedButtonText = objectDropDown.options[objectDropDown.value].text;
+        
+        if (selectedButtonText == objectDropdownResetText)
+        {
+            modelViewer.ResetIsolation();
+        }
+        else
+        {
+            modelViewer.IsolateObject(selectedButtonText);
+        }
     }
 }

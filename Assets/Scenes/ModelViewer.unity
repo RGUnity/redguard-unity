@@ -1536,6 +1536,7 @@ MonoBehaviour:
   button3DC_Prefab: {fileID: 2613659532384351701, guid: d95c396dd97f0ee4691ee997364bc6f4, type: 3}
   buttonROB_Prefab: {fileID: 2613659532384351701, guid: 9bd740a6c40dcc448b7635dda9f81fe2, type: 3}
   objectDropDown: {fileID: 1595056877}
+  objectDropdownResetText: All
   fileNameText: {fileID: 631808500}
   filterToggle: {fileID: 422946365}
   animationToggle: {fileID: 673970576}
@@ -3374,7 +3375,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!1001 &444245425
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6421,7 +6422,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1119678405}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.93964475
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9773,7 +9774,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 189839338}
-        m_TargetAssemblyTypeName: ModelViewer2_GUI, ModelViewer
+        m_TargetAssemblyTypeName: ModelViewer_GUI, Assembly-CSharp
         m_MethodName: RequestObjectIsolation
         m_Mode: 1
         m_Arguments:

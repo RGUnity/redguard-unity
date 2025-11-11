@@ -169,32 +169,28 @@ public class ModelViewer : MonoBehaviour
 
     public void IsolateObject(string selection)
     {
-        if (selection == "None")
+        // show the selected object
+        foreach (var obj in loadedObjects)
         {
-            // Show all objects
-            foreach (var obj in loadedObjects)
+            if (obj.name == selection)
             {
                 obj.gameObject.SetActive(true);
             }
-        }
-        else
-        {
-            // show the selected object
-            foreach (var obj in loadedObjects)
+            else
             {
-                if (obj.name == selection)
-                {
-                    obj.gameObject.SetActive(true);
-                }
-                else
-                {
-                    obj.gameObject.SetActive(false);
-                }
+                obj.gameObject.SetActive(false);
             }
         }
-
-        mvCam.useFlyMode = false;
         mvCam.FrameObject(objectRoot);
+    }
+
+    public void ResetIsolation()
+    {
+        // Show all objects
+        foreach (var obj in loadedObjects)
+        {
+            obj.gameObject.SetActive(true);
+        }
     }
     
     public void ApplyTextureFilterSetting()
