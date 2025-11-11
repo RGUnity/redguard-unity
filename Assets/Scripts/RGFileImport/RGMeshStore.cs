@@ -47,8 +47,8 @@ static readonly ProfilerMarker pm_loadmesh_framedata = new ProfilerMarker("pm_lo
     }
 
     static Dictionary<string, UnityData_3D> Mesh3DDict; // key:    
-                                                        // models: 3D/meshname/colname
-                                                        // flats:  FLAT/name/colname
+                                                        // models: 3D/meshname/colname/texoverride
+                                                        // flats:  FLAT/name/colname/texoverride
 
     static RGMeshStore()
     {
@@ -61,7 +61,7 @@ static readonly ProfilerMarker pm_loadmesh_framedata = new ProfilerMarker("pm_lo
         for(int i=0;i<keys.Count;i++)
             Debug.Log($"{i:D3}: {keys[i]}");
     }
-    public static UnityData_3D LoadMesh(mesh_type type, string meshname, string name_col)
+    public static UnityData_3D LoadMesh(mesh_type type, string meshname, string name_col, int texture_override = 0)
     {
 using(s_load_mesh.Auto()){
         UnityData_3D o;
@@ -78,7 +78,7 @@ using(s_load_mesh.Auto()){
                 typestr = "KAPUT";
                 break;
         }
-        string key = new string($"{typestr}/{meshname}/{name_col}");
+        string key = new string($"{typestr}/{meshname}/{name_col}/{texture_override:D3}");
         if(Mesh3DDict.TryGetValue(key, out o))
         {
             return o;
@@ -88,7 +88,7 @@ using(s_load_mesh.Auto()){
             switch(type)
             {
                 case mesh_type.mesh_3d:
-                    o = f3D2Mesh(meshname, name_col);
+                    o = f3D2Mesh(meshname, name_col, texture_override);
                     break;
                 case mesh_type.mesh_flat:
                     o = FLAT2Mesh(meshname, name_col);
@@ -120,7 +120,7 @@ using(s_load_mesh.Auto()){
                     typestr = "KAPUT";
                     break;
             }
-            string key = new string($"{typestr}/{meshname}/{name_col}");
+            string key = new string($"{typestr}/{meshname}/{name_col}/{0:D3}");
             if(Mesh3DDict.TryGetValue(key, out o))
             {
                 return o;

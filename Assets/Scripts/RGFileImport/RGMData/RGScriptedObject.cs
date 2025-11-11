@@ -117,7 +117,10 @@ public class RGScriptedObject : MonoBehaviour
 			Debug.Log($"ANIMATED {scriptName}");
             type = ScriptedObjectType.scriptedobject_animated;
 
-			RGMeshStore.UnityData_3D data_3D = RGMeshStore.f3D2Mesh(animations.animationData.RAANItems[0].modelFile, name_col, RAHDData.textureId);
+			RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d,
+                                                                    animations.animationData.RAANItems[0].modelFile,
+                                                                    name_col,
+                                                                    RAHDData.textureId);
 
             meshes = new Mesh[animations.animationData.RAANItems.Count];
             meshFrameCount = new int[animations.animationData.RAANItems.Count];
@@ -126,7 +129,10 @@ public class RGScriptedObject : MonoBehaviour
             for(int j=0;j<animations.animationData.RAANItems.Count;j++)
             {
                 string modelname_frame = animations.animationData.RAANItems[j].modelFile;
-                RGMeshStore.UnityData_3D data_frame = RGMeshStore.f3D2Mesh(modelname_frame, name_col, RAHDData.textureId);
+                RGMeshStore.UnityData_3D data_frame = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d,
+                                                                           modelname_frame,
+                                                                           name_col,
+                                                                           RAHDData.textureId);
                 meshes[j] = data_frame.mesh;
                 meshFrameCount[j] = data_frame.framecount;
                 totalFrames+=data_frame.framecount;
@@ -139,7 +145,10 @@ public class RGScriptedObject : MonoBehaviour
 		{
             type = ScriptedObjectType.scriptedobject_static;
             string modelname = MPOB.modelName.Split('.')[0];
-			RGMeshStore.UnityData_3D data_3D = RGMeshStore.f3D2Mesh(modelname, name_col, RAHDData.textureId);
+			RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d,
+                                                                    modelname,
+                                                                    name_col,
+                                                                    RAHDData.textureId);
 		
 			skinnedMeshRenderer.sharedMesh = data_3D.mesh;
 			skinnedMeshRenderer.SetMaterials(data_3D.materials);
@@ -153,7 +162,10 @@ public class RGScriptedObject : MonoBehaviour
 		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
 			
         string modelname = MPOB.scriptName;
-        RGMeshStore.UnityData_3D data_3D = RGMeshStore.f3D2Mesh(modelname, name_col, RAHDData.textureId);
+        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d,
+                                                                modelname,
+                                                                name_col,
+                                                                RAHDData.textureId);
     
         skinnedMeshRenderer.sharedMesh = data_3D.mesh;
         skinnedMeshRenderer.SetMaterials(data_3D.materials);
