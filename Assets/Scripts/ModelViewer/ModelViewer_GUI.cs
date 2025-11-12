@@ -194,7 +194,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             objectDropDown.transform.parent.gameObject.SetActive(true);
             foreach (var obj in modelViewer.loadedObjects)
             {
-                optionsList.Add(new TMP_Dropdown.OptionData(obj.name));
+                if (obj.TryGetComponent(out Renderer component))
+                {
+                    optionsList.Add(new TMP_Dropdown.OptionData(obj.name));
+                }
             }
             objectDropDown.AddOptions(optionsList);
         }
