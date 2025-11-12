@@ -194,22 +194,18 @@ using(s_load_FLAT2mesh.Auto()){
     
     private static UnityData_3D LoadMesh_3DStore(RG3DStore.Mesh3D_intermediate mesh_i, string palettename, string shadername, int texture_override)
     {
-using(s_load_3DStore.Auto()){
         List<Material> materials = new List<Material>();
         Mesh mesh_3d = new Mesh();
         mesh_3d.subMeshCount = mesh_i.subMeshCount;
         mesh_3d.vertices = mesh_i.vertices.ToArray();
         mesh_3d.normals = mesh_i.normals.ToArray();
-pm_loadmesh_blendshapes.Begin();
         for(int j=0;j<mesh_i.framecount;j++)
         {
             mesh_3d.AddBlendShapeFrame($"FRAME_{j}", 100.0f, mesh_i.frameDeltaVertices[j].ToArray(), mesh_i.frameDeltaNormals[j].ToArray(), null);
         }
-pm_loadmesh_blendshapes.End();
 
         List<Vector2> nuvs = new List<Vector2>(mesh_i.uv);
         int i = 0;
-pm_loadmesh_submesh.Begin();
         foreach(var submesh in mesh_i.submeshes)
         {
             string[] keys = submesh.Key.Split("/");
@@ -225,7 +221,6 @@ pm_loadmesh_submesh.Begin();
             float h = (float)mat.mainTexture.height;
             float w = (float)mat.mainTexture.width;
 
-pm_loadmesh_submesh_uvs.Begin();
             List<int> tri_lst = submesh.Value;
             for(int j=0;j<tri_lst.Count;j++)
             {
@@ -234,11 +229,9 @@ pm_loadmesh_submesh_uvs.Begin();
 
                 nuvs[tri_lst[j]] = new Vector2(uv_x/w, uv_y/h);
              }
-pm_loadmesh_submesh_uvs.End();
             mesh_3d.SetTriangles(tri_lst.ToArray(), i);
             i++;
         }
-pm_loadmesh_submesh.End();
         mesh_3d.uv = nuvs.ToArray();
 
         UnityData_3D data = new UnityData_3D();
@@ -248,22 +241,18 @@ pm_loadmesh_submesh.End();
 
         data.frameDeltaVertices = new Vector3[data.framecount][];
         data.frameDeltaNormals = new Vector3[data.framecount][];
-pm_loadmesh_framedata.Begin();
         for(int j=1;j<data.framecount;j++)
         {
             data.frameDeltaVertices[j] = mesh_i.frameDeltaVertices[j].ToArray();
             data.frameDeltaNormals[j] = mesh_i.frameDeltaNormals[j].ToArray();
         }
-pm_loadmesh_framedata.End();
         data.mesh = mesh_3d;
         data.materials = materials;
 
         return data;
-}
     }
     private static Mesh LoadMesh_WLD(RGFileImport.RGWLDFile file_wld)
     {
-using(s_load_WLD.Auto()){
         Mesh mesh = new Mesh();
 
         file_wld.BuildMeshes();
@@ -296,6 +285,5 @@ using(s_load_WLD.Auto()){
             mesh.SetTriangles(tri_lst[i],i);
         mesh.RecalculateNormals();
         return mesh;
-}
     }
 }

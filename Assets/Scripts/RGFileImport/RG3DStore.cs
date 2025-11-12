@@ -204,10 +204,8 @@ using (s_load_iROB.Auto()){
 
     private static Mesh3D_intermediate LoadMesh_3D_intermediate(RGFileImport.RG3DFile file_3d)
     {
-using (s_calc_3d.Auto()){
         Mesh3D_intermediate mesh = new Mesh3D_intermediate();
 // 1st pass: load verts/normals/faces
-pm_pass_1.Begin();
         List<Vector3> vec_tmp_lst = new List<Vector3>();
         List<int> tri_tmp_lst = new List<int>();
         List<Vector3> norm_tmp_lst = new List<Vector3>();
@@ -217,7 +215,6 @@ pm_pass_1.Begin();
         List<Vector3>[] frame_vec_tmp_lst = new List<Vector3>[mesh.framecount];
         List<Vector3>[] frame_norm_tmp_lst = new List<Vector3>[mesh.framecount];
 
-pm_pass_1_verts.Begin();
         for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
         {
             // big scale down so it fits
@@ -226,14 +223,11 @@ pm_pass_1_verts.Begin();
                                       file_3d.VertexCoordinates[i].z*MESH_SCALE_FACTOR);
             vec_tmp_lst.Add(vec);
         }
-pm_pass_1_verts.End();
 
-pm_pass_1_frames.Begin();
         for(int f=0;f<mesh.framecount;f++)
         {
             frame_vec_tmp_lst[f] = new List<Vector3>();
             frame_norm_tmp_lst[f] = new List<Vector3>();
-pm_pass_1_frames_vert.Begin();
             for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
             {
                 // big scale down so it fits
@@ -247,11 +241,8 @@ pm_pass_1_frames_vert.Begin();
                 frame_norm_tmp_lst[f].Add(norm);
 
             }
-pm_pass_1_frames_vert.End();
         }
-pm_pass_1_frames.End();
 
-pm_pass_1_norms.Begin();
         for(int i=0;i<file_3d.FaceNormals.Count;i++)
         {
             Vector3 normal = new Vector3( file_3d.FaceNormals[i].x,
@@ -260,8 +251,6 @@ pm_pass_1_norms.Begin();
             normal.Normalize();
             norm_tmp_lst.Add(normal);
         }
-pm_pass_1_norms.End();
-pm_pass_1_face.Begin();
         List<Face_3DC> face_lst = new List<Face_3DC>();
         for(int i=0;i<file_3d.FaceDataCollection.Count;i++)
         {
@@ -281,7 +270,6 @@ pm_pass_1_face.Begin();
             {
                 cur_face.texid = $"{file_3d.FaceDataCollection[i].TextureId}/{file_3d.FaceDataCollection[i].ImageId}";
             }
-pm_pass_1_face_vert.Begin();
             // regular verts
             for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count;j++)
             {
@@ -289,14 +277,11 @@ pm_pass_1_face_vert.Begin();
                 vec = Vector3.Scale(vec, MESH_VERT_FLIP);
                 cur_face.verts.Add(vec);
             }
-pm_pass_1_face_vert.End();
             // frame verts (offsets)
-pm_pass_1_face_frame.Begin();
             for(int f=0;f<mesh.framecount;f++)
             {
                 cur_face.frameverts[f] = new List<Vector3>();
                 cur_face.framenorms[f] = new List<Vector3>();
-pm_pass_1_face_frame_vert.Begin();
                 for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count;j++)
                 {
                     Vector3 vec = frame_vec_tmp_lst[f][(int)file_3d.FaceDataCollection[i].VertexData[j].VertexIndex];
@@ -306,11 +291,8 @@ pm_pass_1_face_frame_vert.Begin();
                     norm = Vector3.Scale(vec, MESH_VERT_FLIP);
                     cur_face.framenorms[f].Add(norm);
                 }
-pm_pass_1_face_frame_vert.End();
             }
-pm_pass_1_face_frame.End();
 
-pm_pass_1_face_vert.Begin();
             for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count;j++)
             {
                 cur_face.uvs.Add(new Vector2(
@@ -318,13 +300,9 @@ pm_pass_1_face_vert.Begin();
                                 file_3d.FaceDataCollection[i].VertexData[j].V
 								));
             }
-pm_pass_1_face_vert.End();
             face_lst.Add(cur_face);
         }
-pm_pass_1_face.End();
-pm_pass_1.End();
 
-pm_pass_2.Begin();
 // 2nd pass: sort faces by texture id and split verts/norms/uvs
         List<Vector3> vec_lst = new List<Vector3>();
         List<Vector3> norm_lst = new List<Vector3>();
@@ -338,11 +316,9 @@ pm_pass_2.Begin();
             framevec_lst[f] = new List<Vector3>();
             framenorm_lst[f] = new List<Vector3>();
         }
-pm_pass_2_face.Begin();
         int tri_cnt = 0;
         for(int i=0;i<face_lst.Count;i++)
         {
-pm_pass_2_face_vert.Begin();
             for(int j=0;j<=face_lst[i].vert_cnt-3;j++)
             {
 
@@ -355,7 +331,6 @@ pm_pass_2_face_vert.Begin();
                 norm_lst.Add(face_lst[i].norm);
                 norm_lst.Add(face_lst[i].norm);
 
-pm_pass_2_face_vert_frame.Begin();
                 for(int f=0;f<mesh.framecount;f++)
                 {
                     framevec_lst[f].Add(face_lst[i].frameverts[f][0]);
@@ -366,7 +341,6 @@ pm_pass_2_face_vert_frame.Begin();
                     framenorm_lst[f].Add(face_lst[i].framenorms[f][vert_ofs+j]);
                     framenorm_lst[f].Add(face_lst[i].framenorms[f][vert_ofs+j+1]);
                 }
-pm_pass_2_face_vert_frame.End();
 
                 uv_lst.Add(new Vector2(
                                 face_lst[i].uvs[0].x,
@@ -393,10 +367,7 @@ pm_pass_2_face_vert_frame.End();
                 tri_lst[face_lst[i].texid].Add(tri_cnt*3+0);
                 tri_cnt++;
             }
-pm_pass_2_face_vert.End();
         }
-pm_pass_2_face.End();
-pm_pass_2.End();
 
         mesh.subMeshCount = tri_lst.Count;
         mesh.vertices = vec_lst;
@@ -407,7 +378,6 @@ pm_pass_2.End();
         mesh.frameDeltaNormals = framenorm_lst;
 
         return mesh;
-}
     }
     static Vector3 calculateTriNormal(Vector3 p1, Vector3 p2, Vector3 p3)
     {

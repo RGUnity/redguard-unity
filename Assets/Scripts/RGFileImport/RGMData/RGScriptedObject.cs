@@ -283,56 +283,59 @@ public class RGScriptedObject : MonoBehaviour
     {
         if(type == ScriptedObjectType.scriptedobject_animated)
         {
-            if(animations.PushAnimation((RGRGMAnimStore.AnimGroup)animId,firstFrame) != 0)
+            if(animations.PushAnimation((RGRGMAnimStore.AnimGroup)animId,firstFrame) == 0)
+            {
+                // this resets the blend frames
+                // TODO: smooth reset to frame 0 and then go from there
+                // TODO 2: is there a reset frame defined?
+                for(int i=0;i<skinnedMeshRenderer.sharedMesh.blendShapeCount;i++)
+                    skinnedMeshRenderer.SetBlendShapeWeight(i, 0.0f);
+            }
+            else
                 Debug.Log($"{scriptName}: animation {(RGRGMAnimStore.AnimGroup)animId} requested but doesnt exist");
         }
     }
-    int normalizeFrame()
+    void UpdateAnimationsOffset()
     {
-        if(animations.nextKeyFrame >= 0)
+        int nextframe = animations.peekNextFrame();
+        Debug.Log($"nextframe: {nextframe}");
+
+        if(nextframe < 0 || nextframe > meshFrameCount[currentMesh])
         {
             int cnt_tot = 0;
             for(int i=0;i<meshFrameCount.Length;i++)
             {
-                if(animations.currentKeyFrame<cnt_tot + meshFrameCount[i])
+                if(nextframe < (cnt_tot + meshFrameCount[i]))
                 {
+                    animations.offsetKeyFrame = cnt_tot;
                     currentMesh = i;
-                    return cnt_tot;
+                    skinnedMeshRenderer.sharedMesh = meshes[currentMesh];
+                    Debug.Log($"need model: {i} OFS: {cnt_tot}");
+                    break;
                 }
                 cnt_tot += meshFrameCount[i];
             }
         }
-        return 0;
     }
     void UpdateAnimations()
 	{
 		if (allowAnimation)
 		{
-            skinnedMeshRenderer.SetBlendShapeWeight(animations.currentKeyFrame, 0.0f);
-            skinnedMeshRenderer.SetBlendShapeWeight(animations.nextKeyFrame, 0.0f);
+            skinnedMeshRenderer.SetBlendShapeWeight(animations.getCurrentFrame(), 0.0f);
+            skinnedMeshRenderer.SetBlendShapeWeight(animations.getNextFrame(), 0.0f);
             animations.runAnimation(Time.deltaTime);
-/*
-            if(animations.nextKeyFrame >= data_3D.framecount)
-            {
-                Debug.Log($"{scriptName}: Frame {animations.nextKeyFrame} requested, but 3DC only has {data_3D.framecount} frames.");
-                return;
-            }
-            else
-*/
-            
-                int frameofs = normalizeFrame();
-                int currentKeyFrame = animations.currentKeyFrame - frameofs;
-                int nextKeyFrame = animations.nextKeyFrame - frameofs;
-                /*
-                skinnedMeshRenderer.SetBlendShapeWeight(animations.currentKeyFrame, 0.0f);
-                skinnedMeshRenderer.SetBlendShapeWeight(animations.nextKeyFrame, 100.0f);
-                */
+            UpdateAnimationsOffset();
+       
+            /*
+            skinnedMeshRenderer.SetBlendShapeWeight(animations.currentKeyFrame, 0.0f);
+            skinnedMeshRenderer.SetBlendShapeWeight(animations.nextKeyFrame, 100.0f);
+            */
 
-                // for animation blending, we need to track current and next frame
-                float blend1 = (animations.frameTime/AnimData.FRAMETIME_VAL)*100.0f;
-                float blend2 = 100.0f-blend1;
-                skinnedMeshRenderer.SetBlendShapeWeight(currentKeyFrame, blend1);
-                skinnedMeshRenderer.SetBlendShapeWeight(nextKeyFrame, blend2);
+            // for animation blending, we need to track current and next frame
+            float blend1 = (animations.frameTime/AnimData.FRAMETIME_VAL)*100.0f;
+            float blend2 = 100.0f-blend1;
+            skinnedMeshRenderer.SetBlendShapeWeight(animations.getCurrentFrame(), blend1);
+            skinnedMeshRenderer.SetBlendShapeWeight(animations.getNextFrame(), blend2);
 		}
 	}
 	void Update()

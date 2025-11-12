@@ -1,7 +1,10 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class LoadWorld : MonoBehaviour
 {
+    List<int> allowedAnims;
+    int player_anim;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     GameObject playerObject;
     void AddPlayer()
@@ -37,28 +40,32 @@ public class LoadWorld : MonoBehaviour
         cyrus_data.blue;
         */
 
+        player_anim = 0;
+        allowedAnims = new List<int>(){
+                                    0, // idle1
+                                    1, // idle1
+                                    2, // idle1
+                                    3, // idle1
+                                    106, // attack lunge
+                                    142, // swim fwd
+                                    32, // JUMP_START
+                                    26, // step right
+                                    24, // step left
+                                    20, // walk fwd
+                                    22, // walk backward
+                                    18, // run fwd
+                                    };
 
         RGObjectStore.AddPlayer(filergm, cyrus_data);
-        /*
-        playerObject = new GameObject($"CYRUS");
-
-        playerObject.AddComponent<RGScriptedObject>();
-        playerObject.GetComponent<RGScriptedObject>().Instanciate(cyrus_data, filergm, "OBSERVAT");
-        playerObject.GetComponent<RGScriptedObject>().allowAnimation = true;
-        */
-
+        RGObjectStore.GetPlayer().allowAnimation = true;;
+        RGObjectStore.GetPlayer().SetAnim(allowedAnims[player_anim],0);
         }
     void Start()
     {
         ModelLoader.LoadArea("OBSERVE", "OBSERVAT", "");
         AddPlayer();
         RGRGMScriptStore.flags[203] = 1; // OB_Fixed
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if(true)
+       if(true)
         {
             /*
 		ModelLoader.scriptedObjects[0x82BDF408].EnableScripting(); // OB_PLT04
@@ -172,6 +179,19 @@ public class LoadWorld : MonoBehaviour
 		ModelLoader.scriptedObjects[0x82BE7988].EnableScripting(); // OB_CON07
 		ModelLoader.scriptedObjects[0x82BE7FB8].EnableScripting(); // OB_ERS08
 
+        }
+     }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if(Input.GetKeyUp("space"))
+        {
+            player_anim++;
+            if(player_anim >= allowedAnims.Count)
+                player_anim = 0;
+            RGObjectStore.GetPlayer().SetAnim(allowedAnims[player_anim],0);
+            Debug.Log($"PLAYER ANIM: {player_anim}: {allowedAnims[player_anim]}");
         }
     }
 }

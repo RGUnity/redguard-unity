@@ -8,18 +8,20 @@ public class AnimData
     public static float FRAMETIME_VAL = 0.1f;
 
     public bool running;
-    public int currentKeyFrame;
-    public int nextKeyFrame;
+    int currentKeyFrame;
+    int nextKeyFrame;
+    public int offsetKeyFrame;
     int currentAnimFrame;
     public float frameTime;
     public RGRGMAnimStore.RGMAnim animationData;
-    Stack<RGRGMAnimStore.AnimGroup> animationStack;
+    public Stack<RGRGMAnimStore.AnimGroup> animationStack;
     public List<RGRGMAnimStore.AnimGroup> validAnims;
     public AnimData(string scriptname)
     {
         running = false;
         currentKeyFrame = 0;
         nextKeyFrame = 0;
+        offsetKeyFrame = 0;
         currentAnimFrame = 0;
         frameTime = FRAMETIME_VAL;
         animationData = RGRGMAnimStore.getAnim(scriptname);
@@ -27,6 +29,14 @@ public class AnimData
         animationStack.Push(RGRGMAnimStore.AnimGroup.anim_panic);
         validAnims = getValidAnimations();
 
+    }
+    public int getCurrentFrame()
+    {
+        return currentKeyFrame - offsetKeyFrame;
+    }
+    public int getNextFrame()
+    {
+        return nextKeyFrame - offsetKeyFrame;
     }
     public List<RGRGMAnimStore.AnimGroup> getValidAnimations()
     {
@@ -60,7 +70,8 @@ public class AnimData
 
         running = true;
         animationStack.Push((RGRGMAnimStore.AnimGroup)anim_i);
-        currentKeyFrame = firstframe;
+        currentKeyFrame = 0;
+        currentAnimFrame = firstframe;
         return 0;
     }
     public void runAnimation(float deltatime)
@@ -82,6 +93,13 @@ public class AnimData
         }
     }
 
+    public int peekNextFrame()
+    {
+        int animframe_pre = currentAnimFrame;
+        int nextframe3DC = NextFrame();
+        currentAnimFrame = animframe_pre;
+        return nextframe3DC - offsetKeyFrame;
+    }
     public int NextFrame()
     {
         currentAnimFrame++;
