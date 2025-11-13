@@ -226,7 +226,10 @@ public class ModelViewer : MonoBehaviour
             {
                 if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
                 {
-                    rgso.allowAnimation = settings.playAnimations;
+                    if(settings.playAnimations == true)
+                        rgso.SetAnim(20,0);
+                    else
+                        rgso.ClearAnim();
                 }
             }
         }

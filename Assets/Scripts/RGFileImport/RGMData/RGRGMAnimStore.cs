@@ -70,8 +70,9 @@ public class AnimData
 
         running = true;
         animationStack.Push((RGRGMAnimStore.AnimGroup)anim_i);
-        currentKeyFrame = 0;
         currentAnimFrame = firstframe;
+        currentKeyFrame = NextFrame();
+        nextKeyFrame = peekNextFrame();
         return 0;
     }
     public void runAnimation(float deltatime)

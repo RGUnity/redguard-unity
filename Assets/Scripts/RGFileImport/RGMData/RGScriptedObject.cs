@@ -279,6 +279,11 @@ public class RGScriptedObject : MonoBehaviour
 
          RGObjectStore.AddObject(objectId, objectName, this);
     }
+    public void ClearAnim()
+    {
+        animations.running = false;
+        allowAnimation = false;
+    }
     public void SetAnim(int animId, int firstFrame)
     {
         if(type == ScriptedObjectType.scriptedobject_animated)
@@ -290,6 +295,8 @@ public class RGScriptedObject : MonoBehaviour
                 // TODO 2: is there a reset frame defined?
                 for(int i=0;i<skinnedMeshRenderer.sharedMesh.blendShapeCount;i++)
                     skinnedMeshRenderer.SetBlendShapeWeight(i, 0.0f);
+                UpdateAnimationsOffset();
+                allowAnimation = true;
             }
             else
                 Debug.Log($"{scriptName}: animation {(RGRGMAnimStore.AnimGroup)animId} requested but doesnt exist");
