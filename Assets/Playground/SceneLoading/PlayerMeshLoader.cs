@@ -44,7 +44,10 @@ public class PlayerMeshLoader : MonoBehaviour
         {
             if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
             {
-                rgso.allowAnimation = enableAnimations;
+                if(enableAnimations)
+			rgso.SetAnim(20,0);
+		else
+			rgso.ClearAnim();
             }
         }
     }
