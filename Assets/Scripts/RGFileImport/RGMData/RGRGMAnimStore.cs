@@ -18,6 +18,8 @@ public class AnimData
     public List<RGRGMAnimStore.AnimGroup> validAnims;
     public Func<bool> shouldExitFcn;
     public Action doExitFcn;
+
+    public bool alwaysPanic;
     public AnimData(string scriptname)
     {
         running = false;
@@ -33,6 +35,7 @@ public class AnimData
 
         shouldExitFcn = this.shouldExitFcn_default;
         doExitFcn = this.doExitFcn_default;
+        alwaysPanic = false;
 
     }
 
@@ -128,7 +131,7 @@ public class AnimData
 
     public int NextFrame()
     {
-        if(animationData.RAGRItems[(int)animationStack.Peek()].animType == RGRGMAnimStore.AnimType.animtype_stop)
+        if(animationData.RAGRItems[(int)animationStack.Peek()].animType == RGRGMAnimStore.AnimType.animtype_stop || alwaysPanic == true)
         {
             if(shouldExitFcn() == true)
             {

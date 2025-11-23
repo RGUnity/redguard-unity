@@ -101,6 +101,7 @@ public class PlayerMain: MonoBehaviour
                 wantAnimState = AnimState.state_panic;
                 player.animations.shouldExitFcn = animShouldExitFcn;
                 player.animations.doExitFcn = animDoExitFcn;
+                player.animations.alwaysPanic = true;
                 animDoExitFcn();
                 break;
 
