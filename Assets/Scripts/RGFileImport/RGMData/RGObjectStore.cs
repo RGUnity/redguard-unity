@@ -116,10 +116,9 @@ public class RGObjectStore
     public static void AddPlayer(RGFileImport.RGRGMFile filergm,RGFileImport.RGRGMFile.RGMMPOBItem cyrus_data)
     {
         GameObject[] playerObjects = GameObject.FindGameObjectsWithTag("PlayerObject");
-
         playerObjects[0].AddComponent<RGScriptedObject>();
         player = playerObjects[0].GetComponent<RGScriptedObject>();
-        player.Instanciate(cyrus_data, filergm, "OBSERVAT");
+        player.Instanciate(cyrus_data, filergm, "ISLAND");
         player.transform.localPosition = Vector3.zero;
         player.transform.localRotation = Quaternion.identity;
 

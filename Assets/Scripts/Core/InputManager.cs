@@ -16,6 +16,11 @@ public class InputManager : MonoBehaviour
     private InputAction _togglePauseMenuAction;
     private InputAction _dropDownAction;
     private InputAction _climbUpAction;
+
+    private InputAction _moveForwardAction;
+    private InputAction _moveBackwardAction;
+    private InputAction _turnLeftAction;
+    private InputAction _turnRightAction;
     
     private UIWindowManager UiWindowManager;
     
@@ -38,6 +43,11 @@ public class InputManager : MonoBehaviour
         _togglePauseMenuAction = InputSystem.actions.FindAction("Toggle Pause Menu");
         _dropDownAction = InputSystem.actions.FindAction("Drop Down");
         _climbUpAction = InputSystem.actions.FindAction("Climb Up");
+
+        _moveForwardAction = InputSystem.actions.FindAction("move_forward");
+        _moveBackwardAction = InputSystem.actions.FindAction("move_backward");
+        _turnLeftAction = InputSystem.actions.FindAction("turn_left");
+        _turnRightAction = InputSystem.actions.FindAction("turn_right");
     }
 
     // Update is called once per frame
@@ -62,6 +72,11 @@ public class InputManager : MonoBehaviour
         Game.Input.dropDown = _dropDownAction.WasPressedThisFrame();
         Game.Input.climbUp = _climbUpAction.WasPressedThisFrame();
         
+        Game.Input.moveForward = _moveForwardAction.IsPressed();
+        Game.Input.moveBackward = _moveBackwardAction.IsPressed();
+        Game.Input.turnLeft = _turnLeftAction.IsPressed();
+        Game.Input.turnRight = _turnRightAction.IsPressed();
+
         if (Game.Input.quickSave)
         {
             print("Input Button Called: Quick Save");

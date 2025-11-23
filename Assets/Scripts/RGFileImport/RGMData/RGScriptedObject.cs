@@ -295,8 +295,8 @@ public class RGScriptedObject : MonoBehaviour
                 // TODO 2: is there a reset frame defined?
                 for(int i=0;i<skinnedMeshRenderer.sharedMesh.blendShapeCount;i++)
                     skinnedMeshRenderer.SetBlendShapeWeight(i, 0.0f);
-                UpdateAnimationsOffset();
                 allowAnimation = true;
+                UpdateAnimationsOffset();
             }
             else
                 Debug.Log($"{scriptName}: animation {(RGRGMAnimStore.AnimGroup)animId} requested but doesnt exist");
@@ -305,7 +305,6 @@ public class RGScriptedObject : MonoBehaviour
     void UpdateAnimationsOffset()
     {
         int nextframe = animations.peekNextFrame();
-        Debug.Log($"nextframe: {nextframe}");
 
         if(nextframe < 0 || nextframe > meshFrameCount[currentMesh])
         {
@@ -318,6 +317,7 @@ public class RGScriptedObject : MonoBehaviour
                     currentMesh = i;
                     skinnedMeshRenderer.sharedMesh = meshes[currentMesh];
                     Debug.Log($"need model: {i} OFS: {cnt_tot}");
+                    animations.runAnimation(Time.deltaTime, true);
                     break;
                 }
                 cnt_tot += meshFrameCount[i];
@@ -331,7 +331,6 @@ public class RGScriptedObject : MonoBehaviour
             skinnedMeshRenderer.SetBlendShapeWeight(animations.getCurrentFrame(), 0.0f);
             skinnedMeshRenderer.SetBlendShapeWeight(animations.getNextFrame(), 0.0f);
             animations.runAnimation(Time.deltaTime);
-            UpdateAnimationsOffset();
        
             /*
             skinnedMeshRenderer.SetBlendShapeWeight(animations.currentKeyFrame, 0.0f);

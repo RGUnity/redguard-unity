@@ -4,6 +4,21 @@ using UnityEngine.Serialization;
 
 public class PlayerMain: MonoBehaviour
 {
+    enum AnimState
+    {
+        state_init              = -1,
+        state_panic             = RGRGMAnimStore.AnimGroup.anim_panic,
+        state_walk_forward      = RGRGMAnimStore.AnimGroup.anim_walk_forward,
+        state_walk_backward     = RGRGMAnimStore.AnimGroup.anim_walk_backward,
+        state_run_forward       = RGRGMAnimStore.AnimGroup.anim_run_forward,
+        state_turn_left         = RGRGMAnimStore.AnimGroup.anim_turn_left,
+        state_turn_right        = RGRGMAnimStore.AnimGroup.anim_turn_right,
+    }
+
+    private RGScriptedObject player;
+    [SerializeField] AnimState currentAnimState;
+    [SerializeField] AnimState wantAnimState;
+
     [SerializeField] private CharacterController cc;
     [SerializeField] private PlayerMovementConfig config;
 
@@ -31,6 +46,104 @@ public class PlayerMain: MonoBehaviour
     private Vector3 _ledgeTargetPosition;
     private bool _isClimbingUpLedge;
     private Vector3 _ledgeWallNormal;
+
+    public PlayerMain()
+    {
+        currentAnimState = AnimState.state_init;
+        wantAnimState = AnimState.state_init;
+    }
+
+    bool animShouldExitFcn()
+    {
+        if(wantAnimState != currentAnimState)
+            return true;
+        return false;
+    }
+    void animDoExitFcn()
+    {
+        currentAnimState = wantAnimState;
+        player.SetAnim((int)currentAnimState, 0);
+    }
+    
+    private void doAnimStateMachine()
+    {
+        if(Game.Input.moveForward)
+        {
+            if (Game.Input.moveModifier)
+                wantAnimState = AnimState.state_walk_forward;
+            else
+                wantAnimState = AnimState.state_run_forward;
+        }
+        else if(Game.Input.moveBackward)
+        {
+            wantAnimState = AnimState.state_walk_backward;
+        }
+        else if(Game.Input.turnLeft)
+        {
+            wantAnimState = AnimState.state_turn_left;
+        }
+        else if(Game.Input.turnRight)
+        {
+            wantAnimState = AnimState.state_turn_right;
+        }
+        else
+        {
+            wantAnimState = AnimState.state_panic;
+        }
+        float yRotation = 0.0f;
+
+        switch(currentAnimState)
+        {
+
+            case AnimState.state_init:
+                player = RGObjectStore.GetPlayer();
+                currentAnimState = AnimState.state_panic;
+                wantAnimState = AnimState.state_panic;
+                player.animations.shouldExitFcn = animShouldExitFcn;
+                player.animations.doExitFcn = animDoExitFcn;
+                animDoExitFcn();
+                break;
+
+            case AnimState.state_panic:
+                _velocity = Vector3.zero;
+                break;
+            case AnimState.state_walk_forward:
+                _velocity = _forwardOnSurface * (1.0f * config.walkSpeed / 60);
+                // can turn when walking
+                if(Game.Input.turnLeft)
+                    yRotation = -1.0f * config.turnSpeed * Time.deltaTime * 60;
+                else if(Game.Input.turnRight)
+                    yRotation = 1.0f * config.turnSpeed * Time.deltaTime * 60;
+                transform.Rotate(0, yRotation, 0);
+                break;
+            case AnimState.state_walk_backward:
+                _velocity = _forwardOnSurface * (-1.0f * config.walkSpeed / 60);
+                // can turn when walking
+                if(Game.Input.turnLeft)
+                    yRotation = -1.0f * config.turnSpeed * Time.deltaTime * 60;
+                else if(Game.Input.turnRight)
+                    yRotation = 1.0f * config.turnSpeed * Time.deltaTime * 60;
+                transform.Rotate(0, yRotation, 0);
+                break;
+            case AnimState.state_run_forward:
+                _velocity = _forwardOnSurface * (1.0f * config.runSpeed / 60);
+                // can turn when walking
+                if(Game.Input.turnLeft)
+                    yRotation = -1.0f * config.turnSpeed * Time.deltaTime * 60;
+                else if(Game.Input.turnRight)
+                    yRotation = 1.0f * config.turnSpeed * Time.deltaTime * 60;
+                transform.Rotate(0, yRotation, 0);
+                break;
+            case AnimState.state_turn_left:
+                yRotation = -1.0f * config.turnSpeed * Time.deltaTime * 60;
+                transform.Rotate(0, yRotation, 0);
+                break;
+            case AnimState.state_turn_right:
+                yRotation = 1.0f * config.turnSpeed * Time.deltaTime * 60;
+                transform.Rotate(0, yRotation, 0);
+                break;
+        }
+    }
     
     private void FixedUpdate()
     {
@@ -40,6 +153,31 @@ public class PlayerMain: MonoBehaviour
 
         GroundCheck();
         HandleStepOffset();
+        doAnimStateMachine();
+        // Apply ground magnet
+        _velocity.y += config.groundMagnet;
+        
+        // Apply smoothing with MoveTowards
+        _smoothVelocity = Vector3.MoveTowards(_smoothVelocity, _velocity, (1 / config.velocitySmoothing));
+        _velocity.z = _smoothVelocity.z;
+        _velocity.x = _smoothVelocity.x;
+        
+        // Step dropping
+        if (_isGrounded
+            && !_feetVisiblyGrounded
+            && _velocity.magnitude < 1
+            && cc.velocity.y < 0.01)
+        {
+            ForceDropDown();
+        }
+
+        // Apply the velocity to the CC
+        cc.Move(_velocity);
+
+        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
+
+
+        return;
 
         // Airborne State Entry and Exit
         if (!_isGrounded)
@@ -196,9 +334,6 @@ public class PlayerMain: MonoBehaviour
         _smoothVelocity = Vector3.MoveTowards(_smoothVelocity, _velocity, (1 / config.velocitySmoothing));
         _velocity.z = _smoothVelocity.z;
         _velocity.x = _smoothVelocity.x;
-        
-        // Stay on moving and rotating platforms
-        StickToPlatforms();
         
         // Step dropping
         if (_isGrounded
@@ -411,26 +546,6 @@ public class PlayerMain: MonoBehaviour
         // Add velocity in the downhill direction
         _surfaceDownhill += Vector3.down * 2;
         _velocity = _surfaceDownhill.normalized * (config.slopeSlideSpeed*2);
-    }
-
-    private void StickToPlatforms()
-    {
-        /*
-        // Moving platforms
-        if (_isOnScriptedObject)
-        {
-            // Get the Velocity of the platform and add it to the player
-            _velocity += _currentScriptedGround.linearVelocity;
-
-            // Get the rotation of the platform and rotate the player with it
-            Vector3 newPosition = RotateVectorAroundTransform(transform.position, _currentScriptedGround.rotationRoot, Vector3.up, _currentScriptedGround.angularVelocityY);
-
-            Vector3 movementVector = newPosition - transform.position;
-            Debug.DrawRay(transform.position, movementVector * 10, Color.magenta);
-            _velocity += movementVector;
-            transform.Rotate(transform.up, _currentScriptedGround.angularVelocityY);
-        }
-        */
     }
 
     public Vector3 RotateVectorAroundTransform(Vector3 vector, Transform transform, Vector3 axis, float angle)

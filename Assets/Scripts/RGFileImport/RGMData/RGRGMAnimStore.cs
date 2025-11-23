@@ -16,6 +16,8 @@ public class AnimData
     public RGRGMAnimStore.RGMAnim animationData;
     public Stack<RGRGMAnimStore.AnimGroup> animationStack;
     public List<RGRGMAnimStore.AnimGroup> validAnims;
+    public Func<bool> shouldExitFcn;
+    public Action doExitFcn;
     public AnimData(string scriptname)
     {
         running = false;
@@ -29,7 +31,18 @@ public class AnimData
         animationStack.Push(RGRGMAnimStore.AnimGroup.anim_panic);
         validAnims = getValidAnimations();
 
+        shouldExitFcn = this.shouldExitFcn_default;
+        doExitFcn = this.doExitFcn_default;
+
     }
+
+    bool shouldExitFcn_default()
+    {
+        return false;
+    }
+    void doExitFcn_default()
+    {}
+
     public int getCurrentFrame()
     {
         return currentKeyFrame - offsetKeyFrame;
@@ -75,7 +88,7 @@ public class AnimData
         nextKeyFrame = peekNextFrame();
         return 0;
     }
-    public void runAnimation(float deltatime)
+    public void runAnimation(float deltatime, bool force_tick = false)
     {
         if(!running)
             return;
@@ -85,7 +98,7 @@ public class AnimData
                 return;
 
             frameTime -= deltatime;
-            if(frameTime <= 0.0f)
+            if(frameTime <= 0.0f || force_tick == true)
             {
                 currentKeyFrame = nextKeyFrame;
                 nextKeyFrame = NextFrame();
@@ -96,13 +109,36 @@ public class AnimData
 
     public int peekNextFrame()
     {
+        if(!running)
+            return 0;
         int animframe_pre = currentAnimFrame;
         int nextframe3DC = NextFrame();
         currentAnimFrame = animframe_pre;
         return nextframe3DC - offsetKeyFrame;
     }
+    int EndAnimation()
+    {
+        // reached the end, pop anim, stop playing and call the exit function
+        animationStack.Pop();
+        running = false;
+        doExitFcn();
+        return -1;
+
+    }
+
     public int NextFrame()
     {
+        if(animationData.RAGRItems[(int)animationStack.Peek()].animType == RGRGMAnimStore.AnimType.animtype_stop)
+        {
+            if(shouldExitFcn() == true)
+            {
+                return EndAnimation();
+            }
+        }
+
+        if(currentAnimFrame >= (int)animationData.RAGRItems[(int)animationStack.Peek()].animFrames.Length)
+            return EndAnimation();
+
         currentAnimFrame++;
         int frame3DC = -1;
         
@@ -112,21 +148,40 @@ public class AnimData
                 frame3DC = (int)animationData.RAGRItems[(int)animationStack.Peek()].animFrames[currentAnimFrame].frameValue;
                 break;
             case RGRGMAnimStore.FrameType.frametype_end:
-                animationStack.Pop();
-                return -1;
+                return EndAnimation();
+                break;
             case RGRGMAnimStore.FrameType.frametype_goback:
-                currentAnimFrame = (int)animationData.RAGRItems[(int)animationStack.Peek()].animFrames[currentAnimFrame].frameValue;
-                frame3DC = NextFrame();
+                // if we want to exit, keep going forward
+                // if not, loop back
+                if(shouldExitFcn() == true)
+                {
+                    frame3DC = NextFrame();
+                }
+                else
+                {
+                    currentAnimFrame = (int)animationData.RAGRItems[(int)animationStack.Peek()].animFrames[currentAnimFrame].frameValue;
+                    frame3DC = NextFrame();
+                }
                 break;
             case RGRGMAnimStore.FrameType.frametype_gofwd:
-                frame3DC = NextFrame();
+                // if we want to exit, skip forward to frame
+                // if not, continue going
+                if(shouldExitFcn() == true)
+                {
+                    currentAnimFrame = (int)animationData.RAGRItems[(int)animationStack.Peek()].animFrames[currentAnimFrame].frameValue;
+                }
+                else
+                {
+                    frame3DC = NextFrame();
+                }
                 break;
             case RGRGMAnimStore.FrameType.frametype_sound:
                 // play sound: RAGRItems[currentAnimationId].frameValue;
                 frame3DC = NextFrame();
                 break;
             case RGRGMAnimStore.FrameType.frametype_break:
-                // can break out here
+                // assumption was that we could break out here, but it looks like the goback frame type does that
+                // not sure what this one does then; looks like all (most?) framevals are 0?
                 frame3DC = NextFrame();
                 break;
             case RGRGMAnimStore.FrameType.frametype_rumble:

@@ -140,6 +140,42 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "move_forward",
+                    "type": "Button",
+                    "id": "49168cf5-1e4e-4c81-a019-53c50c5f9025",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "move_backward",
+                    "type": "Button",
+                    "id": "a6460ee5-f3c9-4777-9fe7-ee7723517575",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "turn_left",
+                    "type": "Button",
+                    "id": "eb874f96-973d-43df-8614-e69ef202b878",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "turn_right",
+                    "type": "Button",
+                    "id": "54482260-0c4f-408a-a2ab-638b34131fa3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -580,6 +616,50 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Climb Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "936a4cb0-3c43-40b1-b6b0-89deda31daec",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "move_forward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c9f2551a-5162-4407-84f3-06d31e2aaacb",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "move_backward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0edf37e8-6511-408b-addf-4866546aec89",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "turn_left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4d7ef002-66ea-46af-bcfa-a0d047309214",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "turn_right",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

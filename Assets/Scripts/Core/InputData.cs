@@ -14,4 +14,9 @@ public struct InputData
     public bool togglePauseMenu;
     public bool dropDown;
     public bool climbUp;
+
+    public bool moveForward;
+    public bool moveBackward;
+    public bool turnLeft;
+    public bool turnRight;
 }
