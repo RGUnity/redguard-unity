@@ -5,31 +5,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Assets.Scripts.RGFileImport.RGGFXImport;
 
-using Unity.Profiling;
 public static class RG3DStore
 {
-
-static readonly ProfilerMarker s_load_iFLAT = new ProfilerMarker("LoadMeshIntermediateFlat");
-static readonly ProfilerMarker s_load_i3DC = new ProfilerMarker("LoadMeshIntermediate3DC");
-static readonly ProfilerMarker s_load_i3D = new ProfilerMarker("LoadMeshIntermediate3D");
-static readonly ProfilerMarker s_load_iROB = new ProfilerMarker("LoadMeshIntermediateROB");
-static readonly ProfilerMarker s_calc_3d = new ProfilerMarker("LoadMesh_3D_intermediate");
-
-static readonly ProfilerMarker pm_pass_1 = new ProfilerMarker("pm_pass_1");
-static readonly ProfilerMarker pm_pass_1_face = new ProfilerMarker("pm_pass_1_face");
-static readonly ProfilerMarker pm_pass_1_face_frame = new ProfilerMarker("pm_pass_1_face_frame");
-static readonly ProfilerMarker pm_pass_1_face_frame_vert = new ProfilerMarker("pm_pass_1_face_frame_vert");
-static readonly ProfilerMarker pm_pass_1_face_vert = new ProfilerMarker("pm_pass_1_face_vert");
-static readonly ProfilerMarker pm_pass_1_frames = new ProfilerMarker("pm_pass_1_frames");
-static readonly ProfilerMarker pm_pass_1_frames_vert = new ProfilerMarker("pm_pass_1_frames_vert");
-static readonly ProfilerMarker pm_pass_1_norms = new ProfilerMarker("pm_pass_1_norms");
-static readonly ProfilerMarker pm_pass_1_verts = new ProfilerMarker("pm_pass_1_verts");
-static readonly ProfilerMarker pm_pass_2 = new ProfilerMarker("pm_pass_2");
-static readonly ProfilerMarker pm_pass_2_face = new ProfilerMarker("pm_pass_2_face");
-static readonly ProfilerMarker pm_pass_2_face_vert = new ProfilerMarker("pm_pass_2_face_vert");
-static readonly ProfilerMarker pm_pass_2_face_vert_frame = new ProfilerMarker("pm_pass_2_face_vert_frame");
-
-
     const float MESH_SCALE_FACTOR = 1/5120.0f;
     static public Vector3 MESH_VERT_FLIP = new Vector3(1.0f, -1.0f, 1.0f);
     static public Vector3 MESH_ROT_FLIP = new Vector3(-1.0f, 1.0f, -1.0f);
@@ -66,7 +43,6 @@ static readonly ProfilerMarker pm_pass_2_face_vert_frame = new ProfilerMarker("p
 
     public static Mesh3D_intermediate LoadMeshIntermediateFlat(string flatDesc)
     {
-using (s_load_iFLAT.Auto()){
        Mesh3D_intermediate o;
         if(MeshIntermediateDict.TryGetValue(flatDesc, out o))
         {
@@ -112,13 +88,11 @@ using (s_load_iFLAT.Auto()){
             MeshIntermediateDict.Add(flatDesc, o);
             return MeshIntermediateDict[flatDesc];
         }
-}
     }
 
     // for now, assuming we only want to explicitly load 3dc files and that all 3d files are in the ROB files
     public static Mesh3D_intermediate LoadMeshIntermediate3DC(string meshname)
     {
-using (s_load_i3DC.Auto()){
         Mesh3D_intermediate o;
         if(MeshIntermediateDict.TryGetValue(meshname, out o))
         {
@@ -134,32 +108,28 @@ using (s_load_i3DC.Auto()){
             MeshIntermediateDict.Add(meshname, LoadMesh_3D_intermediate(file_3d));
             return MeshIntermediateDict[meshname];
         }
-}
     }
     
     public static Mesh3D_intermediate LoadMeshIntermediate3D(string meshname)
     {
-        using (s_load_i3D.Auto()){
-            Mesh3D_intermediate o;
-            if(MeshIntermediateDict.TryGetValue(meshname, out o))
-            {
-                return o;
-            }
-            else
-            {
-                string filename = Game.pathManager.GetArtFolder() + meshname + ".3D";
-            
-                RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
-                file_3d.LoadFile(filename);
+        Mesh3D_intermediate o;
+        if(MeshIntermediateDict.TryGetValue(meshname, out o))
+        {
+            return o;
+        }
+        else
+        {
+            string filename = Game.pathManager.GetArtFolder() + meshname + ".3D";
+        
+            RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
+            file_3d.LoadFile(filename);
 
-                MeshIntermediateDict.Add(meshname, LoadMesh_3D_intermediate(file_3d));
-                return MeshIntermediateDict[meshname];
-            }
+            MeshIntermediateDict.Add(meshname, LoadMesh_3D_intermediate(file_3d));
+            return MeshIntermediateDict[meshname];
         }
     }
     public static void LoadMeshIntermediatesROB(string ROBname)
     {
-using (s_load_iROB.Auto()){
         string filename = Game.pathManager.GetArtFolder() + ROBname+ ".ROB";
         RGFileImport.RGROBFile file_rob = new RGFileImport.RGROBFile();
         file_rob.LoadFile(filename);
@@ -171,7 +141,7 @@ using (s_load_iROB.Auto()){
                 if(file_rob.segments[i].Size > 0) // probably the 512 thing?
                 {
                     RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
-                    file_3d.LoadMemory(file_rob.segments[i].Data, false);
+                    file_3d.LoadMemory(file_rob.segments[i].Data);
                     MeshIntermediateDict.Add(file_rob.segments[i].SegmentID, LoadMesh_3D_intermediate(file_3d));
                 }
                 else
@@ -186,7 +156,6 @@ using (s_load_iROB.Auto()){
                 }
             }
         }
-}
     }
 
 
@@ -211,16 +180,16 @@ using (s_load_iROB.Auto()){
         List<Vector3> norm_tmp_lst = new List<Vector3>();
         List<Vector2> uv_tmp_lst = new List<Vector2>();
 
-        mesh.framecount = (int)file_3d.header.NumFrames;
+        mesh.framecount = (int)file_3d.header.numFrames;
         List<Vector3>[] frame_vec_tmp_lst = new List<Vector3>[mesh.framecount];
         List<Vector3>[] frame_norm_tmp_lst = new List<Vector3>[mesh.framecount];
 
-        for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
+        for(int i=0;i<file_3d.vertexData.coords.Count;i++)
         {
             // big scale down so it fits
-            Vector3 vec = new Vector3(file_3d.VertexCoordinates[i].x*MESH_SCALE_FACTOR,
-                                      file_3d.VertexCoordinates[i].y*MESH_SCALE_FACTOR,
-                                      file_3d.VertexCoordinates[i].z*MESH_SCALE_FACTOR);
+            Vector3 vec = new Vector3(file_3d.vertexData.coords[i].x*MESH_SCALE_FACTOR,
+                                      file_3d.vertexData.coords[i].y*MESH_SCALE_FACTOR,
+                                      file_3d.vertexData.coords[i].z*MESH_SCALE_FACTOR);
             vec_tmp_lst.Add(vec);
         }
 
@@ -228,12 +197,12 @@ using (s_load_iROB.Auto()){
         {
             frame_vec_tmp_lst[f] = new List<Vector3>();
             frame_norm_tmp_lst[f] = new List<Vector3>();
-            for(int i=0;i<file_3d.VertexCoordinates.Count;i++)
+            for(int i=0;i<file_3d.vertexData.coords.Count;i++)
             {
                 // big scale down so it fits
-                Vector3 vec = new Vector3(-file_3d.VertexFrameDeltas[f][i].x*MESH_SCALE_FACTOR,
-                                          -file_3d.VertexFrameDeltas[f][i].y*MESH_SCALE_FACTOR,
-                                          -file_3d.VertexFrameDeltas[f][i].z*MESH_SCALE_FACTOR);
+                Vector3 vec = new Vector3(-file_3d.frameVertexData.coords[f][i].x*MESH_SCALE_FACTOR,
+                                          -file_3d.frameVertexData.coords[f][i].y*MESH_SCALE_FACTOR,
+                                          -file_3d.frameVertexData.coords[f][i].z*MESH_SCALE_FACTOR);
                 frame_vec_tmp_lst[f].Add(vec);
                 Vector3 norm = new Vector3(0.0f,
                                            0.0f,
@@ -243,37 +212,37 @@ using (s_load_iROB.Auto()){
             }
         }
 
-        for(int i=0;i<file_3d.FaceNormals.Count;i++)
+        for(int i=0;i<file_3d.normalData.coords.Count;i++)
         {
-            Vector3 normal = new Vector3( file_3d.FaceNormals[i].x,
-                                         file_3d.FaceNormals[i].y,
-                                          file_3d.FaceNormals[i].z);
+            Vector3 normal = new Vector3( file_3d.normalData.coords[i].x,
+                                         file_3d.normalData.coords[i].y,
+                                          file_3d.normalData.coords[i].z);
             normal.Normalize();
             norm_tmp_lst.Add(normal);
         }
         List<Face_3DC> face_lst = new List<Face_3DC>();
-        for(int i=0;i<file_3d.FaceDataCollection.Count;i++)
+        for(int i=0;i<file_3d.faceDataList.faceData.Count;i++)
         {
             Face_3DC cur_face = new Face_3DC();
-            cur_face.vert_cnt = file_3d.FaceDataCollection[i].VertexData.Count;
+            cur_face.vert_cnt = file_3d.faceDataList.faceData[i].vertexData.Count;
             cur_face.verts = new List<Vector3>();
             cur_face.uvs = new List<Vector2>();
             cur_face.norm = Vector3.Scale(norm_tmp_lst[i], MESH_VERT_FLIP);
             cur_face.frameverts = new List<Vector3>[mesh.framecount];
             cur_face.framenorms = new List<Vector3>[mesh.framecount];
 
-            if(file_3d.FaceDataCollection[i].solid_color)
+            if(file_3d.faceDataList.faceData[i].solidColor)
             {
-                cur_face.texid = $"-1/{file_3d.FaceDataCollection[i].ColorIndex}";
+                cur_face.texid = $"-1/{file_3d.faceDataList.faceData[i].colorIndex}";
             }
             else
             {
-                cur_face.texid = $"{file_3d.FaceDataCollection[i].TextureId}/{file_3d.FaceDataCollection[i].ImageId}";
+                cur_face.texid = $"{file_3d.faceDataList.faceData[i].textureId}/{file_3d.faceDataList.faceData[i].imageId}";
             }
             // regular verts
-            for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count;j++)
+            for(int j=0;j<file_3d.faceDataList.faceData[i].vertexData.Count;j++)
             {
-                Vector3 vec = vec_tmp_lst[(int)file_3d.FaceDataCollection[i].VertexData[j].VertexIndex];
+                Vector3 vec = vec_tmp_lst[(int)file_3d.faceDataList.faceData[i].vertexData[j].vertexIndex];
                 vec = Vector3.Scale(vec, MESH_VERT_FLIP);
                 cur_face.verts.Add(vec);
             }
@@ -282,22 +251,22 @@ using (s_load_iROB.Auto()){
             {
                 cur_face.frameverts[f] = new List<Vector3>();
                 cur_face.framenorms[f] = new List<Vector3>();
-                for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count;j++)
+                for(int j=0;j<file_3d.faceDataList.faceData[i].vertexData.Count;j++)
                 {
-                    Vector3 vec = frame_vec_tmp_lst[f][(int)file_3d.FaceDataCollection[i].VertexData[j].VertexIndex];
+                    Vector3 vec = frame_vec_tmp_lst[f][(int)file_3d.faceDataList.faceData[i].vertexData[j].vertexIndex];
                     vec = Vector3.Scale(vec, MESH_VERT_FLIP);
                     cur_face.frameverts[f].Add(vec);
-                    Vector3 norm = frame_norm_tmp_lst[f][(int)file_3d.FaceDataCollection[i].VertexData[j].VertexIndex];
+                    Vector3 norm = frame_norm_tmp_lst[f][(int)file_3d.faceDataList.faceData[i].vertexData[j].vertexIndex];
                     norm = Vector3.Scale(vec, MESH_VERT_FLIP);
                     cur_face.framenorms[f].Add(norm);
                 }
             }
 
-            for(int j=0;j<file_3d.FaceDataCollection[i].VertexData.Count;j++)
+            for(int j=0;j<file_3d.faceDataList.faceData[i].vertexData.Count;j++)
             {
                 cur_face.uvs.Add(new Vector2(
-                                file_3d.FaceDataCollection[i].VertexData[j].U,
-                                file_3d.FaceDataCollection[i].VertexData[j].V
+                                file_3d.faceDataList.faceData[i].vertexData[j].u,
+                                file_3d.faceDataList.faceData[i].vertexData[j].v
 								));
             }
             face_lst.Add(cur_face);

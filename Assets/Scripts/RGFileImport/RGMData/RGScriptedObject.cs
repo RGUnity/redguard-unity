@@ -241,10 +241,13 @@ public class RGScriptedObject : MonoBehaviour
         attributes = new byte[256];
         Array.Copy(filergm.RAAT.attributes, RAHDData.index*256, attributes, 0, 256);
 
-        if(skinnedMeshRenderer.sharedMesh != null)
+        if(skinnedMeshRenderer != null)
         {
-            gameObject.AddComponent<MeshCollider>();
-            gameObject.GetComponent<MeshCollider>().sharedMesh = skinnedMeshRenderer.sharedMesh;
+            if(skinnedMeshRenderer.sharedMesh != null)
+            {
+                gameObject.AddComponent<MeshCollider>();
+                gameObject.GetComponent<MeshCollider>().sharedMesh = skinnedMeshRenderer.sharedMesh;
+            }
         }
          
         objectName = null;
