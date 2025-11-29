@@ -69,7 +69,7 @@ namespace RGFileImport
         string fullName;
         string name;
         bool is3DCFile;
-        long fileSize;
+        public long fileSize;
         uint endFaceDataOffset;
         int totalFaceVertexes;
         public int version;

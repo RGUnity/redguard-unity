@@ -18,5 +18,28 @@
 		public uint OffsetFaceNormals { get; set; }
 		public uint NumUVOffsets2 { get; set; }
 		public uint OffsetFaceData { get; set; }
-	}
+        public override string ToString()
+        {
+            return $@"###################################
+3DHeader
+###################################
+version: {Version}
+numVertices: {NumVertices}
+numFaces: {NumFaces}
+radius: {Radius}
+numFrames: {NumFrames}
+offsetFrameData: {OffsetFrameData}
+numUVOffsets: {NumUVOffsets}
+offsetSection4: {OffsetSection4}
+Section4Count: {Section4Count}
+unknown1: {Unknown4}
+offsetUVOffsets: {OffsetUVOffsets}
+offsetUVData: {OffsetUVData}
+offsetVertexCoords: {OffsetVertexCoords}
+offsetFaceNormals: {OffsetFaceNormals}
+numUVOffsets2: {NumUVOffsets2}
+offsetFaceData: {OffsetFaceData}
+###################################";
+        }
+    }
 }

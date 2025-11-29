@@ -154,6 +154,12 @@ namespace xyz
                 Vector3 basev = new Vector3(file_3d.VertexCoordinates[i].x,
                                             file_3d.VertexCoordinates[i].y,
                                             file_3d.VertexCoordinates[i].z);
+
+            /*
+                Vector3 basev = new Vector3(file_3d.VertexFrameDeltas[0][i].x,
+                                            file_3d.VertexFrameDeltas[0][i].y,
+                                            file_3d.VertexFrameDeltas[0][i].z);
+            */
                  // big scale down so it fits
                 vec_tmp_lst.Add(new Vector3((basev.x-file_3d.VertexFrameDeltas[frame][i].x)/5000.0f,
                                         (basev.y-file_3d.VertexFrameDeltas[frame][i].y)/5000.0f,
@@ -352,10 +358,10 @@ namespace xyz
 		public static void Main(string[] args)
 		{
             List<string> mesh_names = new List<string>();
-            for(int i=0;i<24;i++)
-                mesh_names.Add(new string($"CYRSA{i:d3}"));
+            for(int i=0;i<4;i++)
+                mesh_names.Add(new string($"TROLA{i:d3}"));
             int totframes = 0;
-            for(int i=1;i<24;i++)
+            for(int i=1;i<4;i++)
             {
                 RGFileImport.RG3DFile file_3d = new RGFileImport.RG3DFile();
                 file_3d.LoadFile($"../../game_3dfx/fxart/{mesh_names[i]}.3DC");
