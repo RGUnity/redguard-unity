@@ -218,6 +218,11 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (areaList.Count <= 0)
         {
             areaList = RGINIStore.GetWorldList();
+
+            for(int i=0;i<areaList.Count;i++)
+            {
+                Debug.Log($"area {i}: {areaList[i].RGM}, {areaList[i].WLD}, {areaList[i].COL}, {areaList[i].skyBoxGXA}, {areaList[i].skyBoxBSI}, {areaList[i].sunImage}, {areaList[i].loadScreen}");
+            }
         
             // Delete Island duplicates from list
             areaList.RemoveAll(area =>

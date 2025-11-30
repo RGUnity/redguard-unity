@@ -115,27 +115,6 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
                         }
                     }
                 }
-                /*
-                for (int i=0; i<width*height;i++)
-                {
-                    if(gxa.BBMP.BBMPItems[f].data[i] == 0) // assuming 0 is transparent
-                    {
-                        pixels[i*4+0] = 0;
-                        pixels[i*4+1] = 0;
-                        pixels[i*4+2] = 0;
-                        pixels[i*4+3] = 0;
-                    }
-                    else
-                    {
-                        var bpalColor = gxa.BPAL.colors[gxa.BBMP.BBMPItems[f].data[i]];
-                        pixels[i*4+0] = bpalColor.r;
-                        pixels[i*4+1] = bpalColor.g;
-                        pixels[i*4+2] = bpalColor.b;
-                        pixels[i*4+3] = 255;
-                    }
-                }
-                */
-
                 texture.SetPixelData(pixels,0,0);
                 // Disable pixel interpolation
                 //texture.filterMode = FilterMode.Point;

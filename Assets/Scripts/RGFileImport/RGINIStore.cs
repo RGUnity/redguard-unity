@@ -19,6 +19,10 @@ public static class RGINIStore
         public string RGM; // doubles as name
         public string WLD;
         public string COL;
+        public string skyBoxGXA;
+        public string skyBoxBSI;
+        public string sunImage;
+        public string loadScreen;
     }
     public static List<worldData> GetWorldList()
     {
@@ -55,6 +59,41 @@ public static class RGINIStore
             }
             else
                 w.COL = "";
+            if(!string.IsNullOrEmpty(world.sky))
+            {
+                // example input: system\sunset.GXA
+                // remove system/ and .GXA:
+                w.skyBoxGXA = world.sky.Substring(7).ToUpper();
+                w.skyBoxGXA = w.skyBoxGXA.Substring(0, w.skyBoxGXA.IndexOf("."));
+            }
+            else
+                w.skyBoxGXA = "";
+            if(!string.IsNullOrEmpty(world.skyfx))
+            {
+                // example input: sky899.bsi
+                // remove .BSI:
+                w.skyBoxBSI = world.skyfx.Substring(0, world.skyfx.IndexOf(".")).ToUpper();
+            }
+            else
+                w.skyBoxBSI = "";
+            if(!string.IsNullOrEmpty(world.sunimg))
+            {
+                // example input: sun001.bsi
+                // remove .BSI:
+                w.skyBoxBSI = world.sunimg.Substring(0, world.sunimg.IndexOf(".")).ToUpper();
+            }
+            else
+                w.sunImage = "";
+            if(!string.IsNullOrEmpty(world.flash_filename))
+            {
+                // example input: system\island.gxa
+                // remove system/ and .gxa
+                w.loadScreen = world.flash_filename.Substring(7).ToUpper();
+                w.loadScreen = w.loadScreen.Substring(0, w.loadScreen.IndexOf("."));
+            }
+            else
+                w.loadScreen = "";
+
             o.Add(w);
         }
         return o;
