@@ -222,6 +222,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             for(int i=0;i<areaList.Count;i++)
             {
                 Debug.Log($"area {i}: {areaList[i].RGM}, {areaList[i].WLD}, {areaList[i].COL}, {areaList[i].skyBoxGXA}, {areaList[i].skyBoxBSI}, {areaList[i].sunImage}, {areaList[i].loadScreen}");
+                // to get materials for GXA/BSI:
+                // GXA: RGTexStore.GetMaterial_GXA(GXA, 0);
+                // BSI: RGTexStore.GetMaterial_BSI(COL, BSI);
+
             }
         
             // Delete Island duplicates from list

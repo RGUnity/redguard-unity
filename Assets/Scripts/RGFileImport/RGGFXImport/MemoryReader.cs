@@ -75,6 +75,17 @@ namespace RGFileImport
             Position+=1;
             return o;
         }
+
+        public char ReadChar()
+        {
+            mark_usage(Position, 1);
+            if(Position+1 > Length)
+                throw new Exception($"MemoryReader: read address 0x{Position:X} + {1} is greater than buffer length 0x{Length:X}");
+            char o = (char)buffer[Position];
+            Position+=1;
+            return o;
+        }
+
         public char[] ReadChars(int cnt)
         {
             mark_usage(Position, cnt);
