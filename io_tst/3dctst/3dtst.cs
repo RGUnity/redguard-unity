@@ -13,6 +13,7 @@ namespace xyz
 			RGFileImport.RG3DFile file3d = new RG3DFile();
 			RGFileImport2.RG3DFile file3d2 = new RGFileImport2.RG3DFile();
 			file3d.LoadFile("../../game_3dfx/fxart/CYRSA001.3DC");
+//			file3d2.LoadFile("../../game_soft/3dart/CYRSA001.3DC");
 			file3d2.LoadFile("../../game_3dfx/fxart/CYRSA001.3DC");
 
             Console.WriteLine($"OG");
@@ -119,24 +120,26 @@ FrameDataList
             */
 
             Console.WriteLine($"NW");
+            Console.WriteLine($"faces:\n{file3d2.faceDataList}");
 
             /*
-            Console.WriteLine($"framevertices:\n{file3d2.frameVertexData}");
             Console.WriteLine($"vertices:\n{file3d2.vertexData}");
-            Console.WriteLine($"faces:\n{file3d2.faceDataList}");
-            Console.WriteLine($"Filesize: {file3d2.fileSize}");
-            */
             Console.WriteLine($"frames:\n{file3d2.frameDataList}");
-            Console.WriteLine($"{file3d2.header}");
+            Console.WriteLine($"framevertices:\n{file3d2.frameVertexData}");
+            Console.WriteLine($"Filesize: {file3d2.fileSize}");
             Console.WriteLine($"size: {file3d2.fileSize}");
+            Console.WriteLine($"size: {file3d2.unknownData}");
+            */
+            Console.WriteLine($"{file3d2.header}");
 
-            int num = 1884;
+/*
+            int num = 3432;
             for(int i=1;i<num;i++)
             {
                 if(num%i == 0)
                     Console.WriteLine($"NUM: {num} / {i} = {num/i}");
             }
-/*
+
 */
 		}
 	}

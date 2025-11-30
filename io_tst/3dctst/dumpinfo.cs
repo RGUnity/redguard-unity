@@ -10,134 +10,299 @@ namespace xyz
 
 		public static void Main(string[] args)
 		{
-			RGFileImport.RG3DFile file3d = new RG3DFile();
+            List<string> files = new List<string>(){
+"TV_BOTTL.3D",
+"MAKOA001.3DC",
+"TV_BANNR.3D",
+"SKELA003.3DC",
+"LHBM3.3D",
+"MKCRATE1.3D",
+"CV_TRAP6.3D",
+"TOBIAS_A.3DC",
+"CRAK0009.3DC",
+"SERPA001.3DC",
+"ZOMBA002.3DC",
+"CYRSA010.3DC",
+"CYRSTEST.3DC",
+"VR_DOOR.3DC",
+"MENUA001.3DC",
+"BASIA001.3DC",
+"TIRBA001.3DC",
+"CV_FISH.3DC",
+"CRAK0003.3DC",
+"CRAK0021.3DC",
+"CYRSA005.3DC",
+"CV_SPR4.3D",
+"CRAK0014.3DC",
+"FLAGA01.3DC",
+"ROBOA003.3DC",
+"CYRSA004.3DC",
+"BEAMA001.3DC",
+"CYRSA009.3DC",
+"TROLA001.3DC",
+"CYRSA016.3DC",
+"NGASA001.3DC",
+"CRAK0010.3DC",
+"LHBMA001.3DC",
+"SEAGA001.3DC",
+"CRAK0004.3DC",
+"CRAK0020.3DC",
+"ZOMBA001.3DC",
+"CV_TRAP2.3D",
+"CRAK0005.3DC",
+"CRAK0017.3D",
+"CVFTL001.3DC",
+"CYRSA006.3DC",
+"CRAK0017.3DC",
+"DREKA001.3DC",
+"FVPRA002.3DC",
+"GARDA001.3DC",
+"LHBM0.3DC",
+"CRAK0004.3D",
+"SABAA003.3DC",
+"RICHA001.3DC",
+"CRAK0002.3DC",
+"CRAK0013.3D",
+"LHBM0.3D",
+"THUGA002.3DC",
+"TOBYA001.3DC",
+"NCROCK05.3D",
+"GBLNA002.3DC",
+"NGASA002.3DC",
+"CRAK0016.3DC",
+"CRAK0008.3D",
+"FVPRA001.3DC",
+"SKELA004.3DC",
+"CRAK0000.3DC",
+"TV_BAR.3D",
+"CYRSA001.3DC",
+"CYRSA022.3DC",
+"JAGAA001.3DC",
+"CANAA002.3DC",
+"TS_RP.3DC",
+"CRAK0024.3D",
+"TV_BMUGG.3D",
+"GOLMA001.3DC",
+"NCROCK08.3D",
+"CRAK0016.3D",
+"ROBOA002.3DC",
+"LHBM4.3D",
+"CYRSA023.3DC",
+"CYRSA013.3DC",
+"SWAPA001.3DC",
+"NCROCK00.3D",
+"TROLA002.3DC",
+"JOTOA001.3DC",
+"PRISA001.3DC",
+"SEAGULL.3DC",
+"CRAK0011.3D",
+"CV_TRAP5.3DC",
+"GBLNA003.3DC",
+"GOATA001.3DC",
+"THUGA005.3DC",
+"VULTA001.3DC",
+"CRAK0019.3DC",
+"CRAK0010.3D",
+"TENTA001.3DC",
+"CRAK0001.3D",
+"SCR3D02.3DC",
+"GARDSDED.3DC",
+"SCR3D1.3DC",
+"LAKEA001.3DC",
+"LHBM2.3DC",
+"NCROCK06.3D",
+"CYRSA012.3DC",
+"GRRKA001.3DC",
+"TV_BTTL2.3D",
+"TV_BOTTL.3DC",
+"CV_TRAP1.3D",
+"NCROCK02.3D",
+"SKELETON.3DC",
+"NFARA001.3DC",
+"CRAK0021.3D",
+"CV_SPR5.3D",
+"CRAK0019.3D",
+"XBUCKET.3D",
+"CRAK0015.3DC",
+"NCROCK03.3D",
+"FLAG_RL.3DC",
+"ROBOA001.3DC",
+"4TODD001.3DC",
+"CV_TRAP6.3DC",
+"NCROCK.3D",
+"CV_BOOM.3DC",
+"SEALOW.3DC",
+"BLOBA001.3DC",
+"CLAVA001.3DC",
+"CRAK0007.3DC",
+"OB_TEL05.3DC",
+"SKELA001.3DC",
+"CV_ROPE.3DC",
+"VERMA001.3DC",
+"CV_BOOM.3D",
+"TUFFA001.3DC",
+"CV_EXPL1.3DC",
+"LHBM1.3DC",
+"SCR3D00.3DC",
+"CRAK0009.3D",
+"LHBM1.3D",
+"CYRSA003.3DC",
+"CV_MUSH2.3DC",
+"GARDA002.3DC",
+"CYRUSA01.3DC",
+"NFARA002.3DC",
+"LHBM4.3DC",
+"AVIKA001.3DC",
+"TROLA000.3DC",
+"GBLNA001.3DC",
+"GREMA001.3DC",
+"CV_TRAP1.3DC",
+"CRAK0015.3D",
+"CV_MUSH1.3DC",
+"DOGA001.3DC",
+"NCROCK04.3D",
+"CYRSA014.3DC",
+"MBPGA003.3DC",
+"HEADA001.3DC",
+"DRAMA003.3DC",
+"CRAK0007.3D",
+"GARDA004.3DC",
+"JFFRA001.3DC",
+"CYRSA007.3DC",
+"NCROCK01.3D",
+"THUGA001.3DC",
+"CRAK0011.3DC",
+"JOTOA002.3DC",
+"VERMA002.3DC",
+"CRAK0022.3D",
+"DGOLA001.3DC",
+"DRAMA001.3DC",
+"CV_TRAP3.3DC",
+"CRAK0023.3DC",
+"CRAK0002.3D",
+"EFCTA001.3DC",
+"LASRA001.3DC",
+"XWANTED.3D",
+"CRAK0005.3D",
+"COYLA001.3DC",
+"TV_BTTL1.3D",
+"TROLA003.3DC",
+"OXA001.3DC",
+"BAT.3DC",
+"CV_SPR2.3D",
+"OGREA002.3DC",
+"TV_BARRL.3D",
+"CV_SPR3.3D",
+"CYRSA020.3DC",
+"CV_SKUL3.3DC",
+"CRAK0012.3DC",
+"FIDOA001.3DC",
+"SKELA002.3DC",
+"SABAA001.3DC",
+"GERRA001.3DC",
+"YAELA001.3DC",
+"NFARA003.3DC",
+"TIRBA002.3DC",
+"KANA001.3DC",
+"SNAKA01.3DC",
+"CRAK0014.3D",
+"TV_BTTL3.3D",
+"SABAA002.3DC",
+"CYRSA018.3DC",
+"CV_TRAP4.3D",
+"SCR3D03.3DC",
+"DR_SPIKE.3DC",
+"THUGA004.3DC",
+"CRAK0008.3DC",
+"XBUCKETE.3D",
+"OGREA001.3DC",
+"PRRTA001.3DC",
+"VANDA002.3DC",
+"MKCRATE.3D",
+"CRAK0003.3D",
+"CANAA001.3DC",
+"CV_TRAP4.3DC",
+"VANDA003.3DC",
+"CRAK0000.3D",
+"SCR3D01.3DC",
+"CRAK0020.3D",
+"TOMJONES.3DC",
+"CRAK0018.3D",
+"MBPGA001.3DC",
+"3DFXCYRS.3DC",
+"CRAK0001.3DC",
+"THUGA003.3DC",
+"RICHA002.3DC",
+"CRAK0022.3DC",
+"NCROCK1.3D",
+"XBUCKETF.3D",
+"CRAK0018.3DC",
+"CRAK0013.3DC",
+"COYLA002.3DC",
+"TROLL.3DC",
+"BULLA001.3DC",
+"CV_TRAP3.3D",
+"CRAK0023.3D",
+"BMANA001.3DC",
+"CYRSA011.3DC",
+"KOTAA001.3DC",
+"ISZAA001.3DC",
+"CV_TRAP5.3D",
+"CYRSA021.3DC",
+"NIDAA001.3DC",
+"CV_SPR1.3D",
+"MBPGA002.3DC",
+"GARDA003.3DC",
+"CYRSA015.3DC",
+"TOBIAS.3DC",
+"OB_TEL06.3DC",
+"DRAMA002.3DC",
+"LHBM0000.3DC",
+"CYRSA002.3DC",
+"VILEGARD.3DC",
+"JOTOA003.3DC",
+"CRAK0024.3DC",
+"FALIA001.3DC",
+"XBOWA001.3DC",
+"DEAD.3DC",
+"CRAK0006.3DC",
+"WOMEA001.3DC",
+"PIGA001.3DC",
+"CYRSA019.3DC",
+"CYRSA008.3DC",
+"GOLMA002.3DC",
+"CYRSA017.3DC",
+"CRAK0012.3D",
+"CRAK0006.3D",
+"LHBM3.3DC",
+"CV_TRAP2.3DC",
+"CRENA001.3DC",
+"BWAGA001.3DC",
+"ERASA001.3DC",
+"VANDA001.3DC",
+            };
+            
 			RGFileImport2.RG3DFile file3d2 = new RGFileImport2.RG3DFile();
-			file3d.LoadFile("../../game_3dfx/fxart/CYRSA001.3DC");
-			file3d2.LoadFile("../../game_3dfx/fxart/CYRSA001.3DC");
 
-            Console.WriteLine($"OG");
-// face normals 
-/*
-            string o = new String($@"###################################
-NormalDataList
-###################################");
-            o += "\n";
-            for(int i=0;i<file3d.FaceNormals.Count;i++)
+            for(int i=0;i<files.Count;i++)
             {
-                o += $"{file3d.FaceNormals[i].x},";
-                o += $"{file3d.FaceNormals[i].y},";
-                o += $"{file3d.FaceNormals[i].z}\n";
-            }
-            o += "###################################";
-            Console.WriteLine(o);
-*/
-// frame vertex offsets
-/*
-                string o = new String($@"###################################
-FrameVertexDataList
-###################################");
-                o += "\n";
-                for(int f=0;f<file3d.VertexFrameDeltas.Count;f++)
-                {
-                    o += $"FRAME {f}:\n";
-                    for(int i=0;i<file3d.VertexFrameDeltas.Count;i++)
-                    {
-                        o += $"{file3d.VertexFrameDeltas[f][i].x},";
-                        o += $"{file3d.VertexFrameDeltas[f][i].y},";
-                        o += $"{file3d.VertexFrameDeltas[f][i].z}\n";
-                    }
-                }
-                o += "###################################";
-            Console.WriteLine(o);
-
-*/
-// vertex coords
-/*
-            string o = new String($@"###################################
-VertexDataList
-###################################");
-            o += "\n";
-            for(int i=0;i<file3d.VertexCoordinates.Count;i++)
-            {
-                o += $"{file3d.VertexCoordinates[i].x},";
-                o += $"{file3d.VertexCoordinates[i].y},";
-                o += $"{file3d.VertexCoordinates[i].z}\n";
-            }
-            o += "###################################";
-            Console.WriteLine(o);
-*/
-
-// facedata
-/*
-            string o = new String($@"###################################
-            FaceDataList
-            ###################################");
-            o += "\n";
-            for(int i=0;i<file3d.FaceDataCollection.Count;i++)
-            {
-                o += $"{i:D3} ";
-                o += $"{file3d.FaceDataCollection[i].VertexCount:X8} ";
-                o += $"{file3d.FaceDataCollection[i].U1:X8} ";
-                o += $"{file3d.FaceDataCollection[i].TextureData:X8} ";
-                o += $"{file3d.FaceDataCollection[i].U4:X8} ";
-                // vertexdata
-
-                // calculated values
-                o += $"{file3d.FaceDataCollection[i].TextureId:X8} ";
-                o += $"{file3d.FaceDataCollection[i].ImageId:X8} ";
-                o += $"{file3d.FaceDataCollection[i].solid_color:X8} ";
-                o += $"{file3d.FaceDataCollection[i].ColorIndex:X8}\n";
-
-                for(int j=0;j<file3d.FaceDataCollection[i].VertexData.Count;j++)
-                {
-                    o += $"{file3d.FaceDataCollection[i].VertexData[j].VertexIndex:X3} ";
-                    o += $"{file3d.FaceDataCollection[i].VertexData[j].U:X3} ";
-                    o += $"{file3d.FaceDataCollection[i].VertexData[j].V:X3}\n";
-                }
-
-            }
-            o += "###################################";
-            Console.WriteLine(o);
-*/
-// framedata
-/*
-            string o = new String($@"###################################
-FrameDataList
-###################################");
-                o += "\n";
-                for(int i=0;i<file3d.frameData.Count;i++)
-                {
-                    o += $"{file3d.frameData[i].FrameVertexOffset:X8} {file3d.frameData[i].FrameNormalOffset:X8} {file3d.frameData[i].u1:X8} {file3d.frameData[i].u2:X8}\n";
-                }
-                o += "###################################";
-                Console.WriteLine(o);
- 
-*/
-            /*
-            Console.WriteLine($"Filesize: {file3d.fileSize}");
-            Console.WriteLine($"{file3d.header}");
-            */
-
-            Console.WriteLine($"NW");
+                file3d2.LoadFile($"../../game_3dfx/fxart/{files[i]}");
+                if(file3d2.frameDataList.frameData[0].u2==4)
+                    Console.WriteLine($"{file3d2.header.numVertices:D3}, {file3d2.frameDataList.frameData[0].u1}, {file3d2.frameDataList.frameData[0].u2} \t {files[i]} MARK");
+                else
+                    Console.WriteLine($"NOPE");
 
             /*
             Console.WriteLine($"framevertices:\n{file3d2.frameVertexData}");
             Console.WriteLine($"vertices:\n{file3d2.vertexData}");
             Console.WriteLine($"faces:\n{file3d2.faceDataList}");
             Console.WriteLine($"Filesize: {file3d2.fileSize}");
-            */
             Console.WriteLine($"frames:\n{file3d2.frameDataList}");
-            Console.WriteLine($"{file3d2.header}");
             Console.WriteLine($"size: {file3d2.fileSize}");
+            Console.WriteLine($"{file3d2.header}");
+            */
 
-            int num = 1884;
-            for(int i=1;i<num;i++)
-            {
-                if(num%i == 0)
-                    Console.WriteLine($"NUM: {num} / {i} = {num/i}");
             }
-/*
-*/
 		}
 	}
 }

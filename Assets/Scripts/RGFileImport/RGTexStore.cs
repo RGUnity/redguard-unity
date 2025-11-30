@@ -8,15 +8,6 @@ using Unity.Profiling;
 
 public static class RGTexStore
 {
-
-static readonly ProfilerMarker s_get_mat = new ProfilerMarker("GetMaterial");
-static readonly ProfilerMarker s_get_mat_bsi = new ProfilerMarker("GetMaterial_BSI");
-static readonly ProfilerMarker s_load_texbsi = new ProfilerMarker("LoadTEXBSI");
-static readonly ProfilerMarker s_load_bsi = new ProfilerMarker("LoadBSI");
-static readonly ProfilerMarker s_load_mat_bsi = new ProfilerMarker("LoadMaterialBSI");
-static readonly ProfilerMarker s_load_texf = new ProfilerMarker("LoadTextureFile");
-static readonly ProfilerMarker s_load_pal = new ProfilerMarker("LoadPalette");
-
     // keys like this:
     // PAL/TEXBSI#/IMG#/SHADER
     // PAL/-1/COL#/SHADER
@@ -25,12 +16,19 @@ static readonly ProfilerMarker s_load_pal = new ProfilerMarker("LoadPalette");
     static Dictionary<string, RGTEXBSIFile> BSIFDict;
     static Dictionary<string, Shader> ShaderDict;
 
+    // keys like this:
+    // FILENAME/IMG#
+    // uppercase filename without extention; eg MIRROR0
+    public static Dictionary<string, Material> GXADict;
+
     static RGTexStore()
     {
         MaterialDict = new Dictionary<string, Material>();
         PaletteDict = new Dictionary<string, RGCOLFile>();
         BSIFDict = new Dictionary<string, RGTEXBSIFile>();
         ShaderDict = new Dictionary<string, Shader>();
+
+        GXADict = new Dictionary<string, Material>();
 
         ShaderDict.Add("DEFAULT", Shader.Find("Universal Render Pipeline/Simple Lit"));
         ShaderDict.Add("FLATS", Shader.Find("Universal Render Pipeline/Unlit"));
@@ -58,8 +56,6 @@ static readonly ProfilerMarker s_load_pal = new ProfilerMarker("LoadPalette");
     }
     public static Material GetMaterial(string palname, int texbsi, int img, string shadername)
     {
-        
-using(s_get_mat.Auto()){
         string mat_key = $"{palname}/{texbsi:D3}/{img:D3}/{shadername}";
         Material o;
         if(MaterialDict.TryGetValue(mat_key, out o))
@@ -103,12 +99,10 @@ using(s_get_mat.Auto()){
         }
 
         return MaterialDict[mat_key];
-}
     }
 
     public static Material GetMaterial_BSI(string palname, string bsi)
     {
-using(s_get_mat_bsi.Auto()){
         string mat_key = $"{palname}/{bsi}";
         Material o;
         if(MaterialDict.TryGetValue(mat_key, out o))
@@ -133,53 +127,13 @@ using(s_get_mat_bsi.Auto()){
         }
 
         return MaterialDict[mat_key];
-}
     }
 
     private static RGTEXBSIFile LoadTEXBSI(int texbsi)
     {
-using(s_load_texbsi.Auto()){
         string texname = $"{texbsi:D3}";
         string path = new string(Game.pathManager.GetArtFolder() + "TEXBSI." + texname);
-        return LoadTextureFile(texname, path);
-}
-    }
-    private static RGBSIFile LoadBSI(string bsiname)
-    {
-using(s_load_bsi.Auto()){
-        string texname = $"bsiname";
-        string path = new string(Game.pathManager.GetArtFolder() + bsiname + ".BSI");
-        RGBSIFile o = new RGBSIFile();
-        o.LoadFile(path);
 
-        return o;
-}
-    }
-    public static Material LoadMaterialBSI(string bsiname)
-    {
-using(s_load_mat_bsi.Auto()){
-
-        string path = new string(Game.pathManager.GetArtFolder() + bsiname + ".BSI");
-        RGFileImport.RGBSIFile bsi = new RGFileImport.RGBSIFile();
-        bsi.LoadFile(path);
-        RGCOLFile pal = LoadPalette("SKY");
-        List<Texture2D> cur_tex = GraphicsConverter.RGBSIToTexture2D(bsi, pal);
-
-        Material mat = new Material(Shader.Find("Legacy Shaders/Diffuse Fast"));
-        mat.mainTexture = cur_tex[0];
-
-        for(int j=0;j<cur_tex.Count;j++)
-        {
-            mat.SetTexture($"FRAME_{j}", cur_tex[j]);
-        }
-        return mat;
-}
-    }
-
-
-    private static RGTEXBSIFile LoadTextureFile(string texname, string path)
-    {
-using(s_load_texf.Auto()){
         RGTEXBSIFile o;
 
         if(BSIFDict.TryGetValue(texname, out o))
@@ -192,12 +146,64 @@ using(s_load_texf.Auto()){
             BSIFDict[texname].LoadFile(path);
             return BSIFDict[texname];
         }
-}
     }
+    private static RGBSIFile LoadBSI(string bsiname)
+    {
+        string path = new string(Game.pathManager.GetArtFolder() + bsiname + ".BSI");
+        RGBSIFile o = new RGBSIFile();
+        o.LoadFile(path);
+
+        return o;
+    }
+
+    public static Material GetMaterial_GXA(string gxaname, int img)
+    {
+        string mat_key = $"{gxaname}/{img:D3}";
+        Material o;
+        if(GXADict.TryGetValue(mat_key, out o))
+        {
+            return o;
+        }
+        else
+        {
+            RGGXAFile gxa = LoadGXA(gxaname);
+
+            List<Texture2D> cur_tex = GraphicsConverter.RGGXAToTexture2D(gxa);
+
+
+            for(int j=0;j<cur_tex.Count;j++)
+            {
+                string new_mat_key = $"{gxaname}/{j:D3}";
+                GXADict.Add(new_mat_key, new Material(ShaderDict["DEFAULT"]));
+                GXADict[new_mat_key].mainTexture = cur_tex[j];
+            }
+        }
+
+        return GXADict[mat_key];
+    }
+
+
+    private static RGGXAFile LoadGXA(string gxaname)
+    {
+        string path = new string(Game.pathManager.GetSystemFolder() + gxaname + ".GXA");
+        RGGXAFile o = new RGGXAFile();
+        try
+        {
+            o.LoadFile(path);
+        }
+        catch(Exception ex)
+        {
+            Debug.Log($"Failed to read GXA file with error {ex.Message}. Retrying lowercase.");
+            path = new string(Game.pathManager.GetSystemFolder() + gxaname.ToLower() + ".gxa");
+            o.LoadFile(path.ToLower());
+        }
+
+        return o;
+    }
+    
     private static RGCOLFile LoadPalette(string palname)
     {
         
-using(s_load_pal.Auto()){
         RGCOLFile o;
         if(PaletteDict.TryGetValue(palname, out o))
         {
@@ -214,6 +220,5 @@ using(s_load_pal.Auto()){
             PaletteDict[palname].LoadFile(palpath);
             return PaletteDict[palname];
         }
-}
     }
 }

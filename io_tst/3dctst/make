@@ -1,2 +1,2 @@
-mcs -debug 3dtst.cs RG3DFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RG3DHeader.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RG3DFile.cs 
-mcs -debug dumpinfo.cs RG3DFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RG3DHeader.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RG3DFile.cs 
+mcs -debug 3dtst.cs RG3DFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RG3DFile.cs 
+mcs -debug dumpinfo.cs RG3DFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RG3DFile.cs 

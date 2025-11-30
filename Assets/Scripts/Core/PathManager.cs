@@ -55,6 +55,11 @@ public class PathManager : MonoBehaviour
         return Game.Config.redguardPath + "/maps/";
     }
 
+    public string GetSystemFolder()
+    {
+        return Game.Config.redguardPath + "/system/";
+    }
+
     public bool ValidatePath(string rootPath)
     {
         if (Directory.Exists(rootPath))

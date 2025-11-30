@@ -77,5 +77,75 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
 
             return textures;
         }
+        public static List<Texture2D> RGGXAToTexture2D(RGGXAFile gxa)
+        {
+            List<Texture2D> textures = new List<Texture2D>();
+
+            for (int f=0; f<gxa.BMHD.numImages;f++)
+            {
+                int width = gxa.BBMP.BBMPItems[f].width;
+                int height = gxa.BBMP.BBMPItems[f].height;
+
+                byte[] pixels = new byte[width*height*4];
+                // flip width and height here to rotate image upright
+                Texture2D texture = new Texture2D(height, width, TextureFormat.RGBA32, false);
+                for (int y=0; y<height;y++)
+                {
+                    for (int x=0; x<width;x++)
+                    {
+                        int i = x+(y*width);
+                        if(gxa.BBMP.BBMPItems[f].data[i] == 0) // assuming 0 is transparent
+                        {
+                            // flip width and height here
+                            int ti = y+(x*height);
+                            pixels[ti*4+0] = 0;
+                            pixels[ti*4+1] = 0;
+                            pixels[ti*4+2] = 0;
+                            pixels[ti*4+3] = 0;
+                        }
+                        else
+                        {
+                            var bpalColor = gxa.BPAL.colors[gxa.BBMP.BBMPItems[f].data[i]];
+                            // flip width and height here
+                            int ti = y+(x*height);
+                            pixels[ti*4+0] = bpalColor.r;
+                            pixels[ti*4+1] = bpalColor.g;
+                            pixels[ti*4+2] = bpalColor.b;
+                            pixels[ti*4+3] = 255;
+                        }
+                    }
+                }
+                /*
+                for (int i=0; i<width*height;i++)
+                {
+                    if(gxa.BBMP.BBMPItems[f].data[i] == 0) // assuming 0 is transparent
+                    {
+                        pixels[i*4+0] = 0;
+                        pixels[i*4+1] = 0;
+                        pixels[i*4+2] = 0;
+                        pixels[i*4+3] = 0;
+                    }
+                    else
+                    {
+                        var bpalColor = gxa.BPAL.colors[gxa.BBMP.BBMPItems[f].data[i]];
+                        pixels[i*4+0] = bpalColor.r;
+                        pixels[i*4+1] = bpalColor.g;
+                        pixels[i*4+2] = bpalColor.b;
+                        pixels[i*4+3] = 255;
+                    }
+                }
+                */
+
+                texture.SetPixelData(pixels,0,0);
+                // Disable pixel interpolation
+                //texture.filterMode = FilterMode.Point;
+                //texture.wrapMode = TextureWrapMode.Clamp;
+                texture.Apply();
+                textures.Add(texture);
+            }
+
+            return textures;
+        }
+
     }
 }

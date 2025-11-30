@@ -22,6 +22,7 @@ public class LoadWorld : MonoBehaviour
         */
 
         /*
+        // these positions are accurate, but get overwritten by the player gameobject
         // entrance for observatory
         cyrus_data.posX = (int)11296768;
         cyrus_data.posY = (int)-884224;

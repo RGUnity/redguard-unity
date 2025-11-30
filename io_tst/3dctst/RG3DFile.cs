@@ -23,22 +23,22 @@ namespace RGFileImport2
 
         public struct RG3DHeader
         {
-            public uint version;            //
-            public uint numVertices;        //
-            public uint numFaces;           //
-            public uint radius;             // unused
-            public uint numFrames;          //
-            public uint offsetFrameData;    //
-            public uint numUVOffsets;       // unused
-            public uint offsetSection4;     // unused
-            public uint Section4Count;      // unused
-            public uint unknown1;           // unused
-            public uint offsetUVOffsets;    // unused
-            public uint offsetUVData;       // unused; points to numVertices*12 bytes size block
-            public uint offsetVertexCoords; //
-            public uint offsetFaceNormals;  //
-            public uint numUVOffsets2;      // unused
-            public uint offsetFaceData;     //
+            public uint version;                //
+            public uint numVertices;            //
+            public uint numFaces;               //
+            public uint radius;                 // unused
+            public uint numFrames;              //
+            public uint offsetFrameData;        //
+            public uint numUnknownOffsets;      // 
+            public uint offsetSection4;         // unused
+            public uint Section4Count;          // unused
+            public uint unknown1;               // unused
+            public uint offsetUnknownOffsets;   //
+            public uint offsetUnknownData;      // unknown, per-vertex data presumeably normals?
+            public uint offsetVertexCoords;     //
+            public uint offsetFaceNormals;      //
+            public uint numUnknownOffsets2;          // unused
+            public uint offsetFaceData;         //
 
             public RG3DHeader(MemoryReader memoryReader)
             {
@@ -50,15 +50,15 @@ namespace RGFileImport2
                     radius = memoryReader.ReadUInt32();
                     numFrames = memoryReader.ReadUInt32();
                     offsetFrameData = memoryReader.ReadUInt32();
-                    numUVOffsets = memoryReader.ReadUInt32();
+                    numUnknownOffsets = memoryReader.ReadUInt32();
                     offsetSection4 = memoryReader.ReadUInt32();
                     Section4Count = memoryReader.ReadUInt32();
                     unknown1 = memoryReader.ReadUInt32();
-                    offsetUVOffsets = memoryReader.ReadUInt32();
-                    offsetUVData = memoryReader.ReadUInt32();
+                    offsetUnknownOffsets = memoryReader.ReadUInt32();
+                    offsetUnknownData = memoryReader.ReadUInt32();
                     offsetVertexCoords = memoryReader.ReadUInt32();
                     offsetFaceNormals = memoryReader.ReadUInt32();
-                    numUVOffsets2 = memoryReader.ReadUInt32();
+                    numUnknownOffsets2 = memoryReader.ReadUInt32();
                     offsetFaceData = memoryReader.ReadUInt32();
 
                     switch(version)
@@ -97,15 +97,15 @@ numFaces: {numFaces}
 radius: {radius}
 numFrames: {numFrames}
 offsetFrameData: {offsetFrameData:X8}
-numUVOffsets: {numUVOffsets}
+numUnknownOffsets: {numUnknownOffsets}
 offsetSection4: {offsetSection4:X8}
 Section4Count: {Section4Count}
 unknown1: {unknown1}
-offsetUVOffsets: {offsetUVOffsets:X8}
-offsetUVData: {offsetUVData:X8}
+offsetUnknownOffsets: {offsetUnknownOffsets:X8}
+offsetUnknownData: {offsetUnknownData:X8}
 offsetVertexCoords: {offsetVertexCoords:X8}
 offsetFaceNormals: {offsetFaceNormals:X8}
-numUVOffsets2: {numUVOffsets2}
+numUnknownOffsets2: {numUnknownOffsets2}
 offsetFaceData: {offsetFaceData:X8}
 ###################################";
             }
@@ -116,6 +116,12 @@ offsetFaceData: {offsetFaceData:X8}
             public uint frameNormalOffset;
             public uint u1;
             public uint u2;
+            /* frameVertexOffset works mostly
+             * frameNormalOffset might not be normals, it seems to be controlled by u2:
+             * if u2 == 2, it contains 4 bytes per face
+             * if u2 == 4, UNKNOWN, but not face-related
+             * if u2 == 8, UNKNOWN
+            */
 
             public FrameDataItem(MemoryReader memoryReader)
             {
@@ -312,21 +318,17 @@ FaceDataList
                 {
                     o += $"{i:D3} ";
                     o += $"{faceData[i].vertexCount:X8} ";
-                    o += $"{faceData[i].u1:X8} ";
-                    o += $"{faceData[i].textureData:X8} ";
-                    o += $"{faceData[i].u2:X8} ";
-                    // vertexdata
-
                     // calculated values
                     o += $"{faceData[i].textureId:X8} ";
                     o += $"{faceData[i].imageId:X8} ";
                     o += $"{faceData[i].solidColor:X8} ";
                     o += $"{faceData[i].colorIndex:X8}\n";
+                    // vertexdata
                     for(int j=0;j<faceData[i].vertexData.Count;j++)
                     {
-                        o += $"{faceData[i].vertexData[j].vertexIndex:X3} ";
-                        o += $"{faceData[i].vertexData[j].u:X3} ";
-                        o += $"{faceData[i].vertexData[j].v:X3}\n";
+                        o += $"{faceData[i].vertexData[j].vertexIndex:D3} ";
+                        o += $"{faceData[i].vertexData[j].u:X3} ({faceData[i].vertexData[j].u}) ";
+                        o += $"{faceData[i].vertexData[j].v:X3} ({faceData[i].vertexData[j].v})\n";
                     }
                 }
                 o += "###################################";
@@ -484,6 +486,7 @@ FrameVertexDataList
         public VertexData vertexData;
         public NormalData normalData;
         public FrameVertexData frameVertexData;
+        public UnknownData unknownData;
 
         public void LoadFile(string filename)
         {
@@ -508,12 +511,8 @@ FrameVertexDataList
                 MemoryReader memoryReader = new MemoryReader(buffer, true);
                 memoryReader.set_usage_marker("HEADER");
                 header = new RG3DHeader(memoryReader);
-
                 memoryReader.set_usage_marker("FRAMEDAT");
                 frameDataList = new FrameDataList(memoryReader, header);
-
-                memoryReader.set_usage_marker("FVDAT");
-                frameVertexData = new FrameVertexData(memoryReader, header, frameDataList);
 
                 memoryReader.set_usage_marker("FACEDAT");
                 faceDataList = new FaceDataList(memoryReader, header);
@@ -523,7 +522,14 @@ FrameVertexDataList
 
                 memoryReader.set_usage_marker("NORMDAT");
                 normalData = new NormalData(memoryReader, header);
+/*
+                memoryReader.set_usage_marker("FVERDAT");
+                frameVertexData = new FrameVertexData(memoryReader, header, frameDataList);
+*/
 
+                unknownData = new UnknownData(memoryReader, header);
+/*
+*/
                 Console.WriteLine(memoryReader.print_usage());
             }
             catch(Exception ex)
@@ -531,6 +537,80 @@ FrameVertexDataList
                 throw new Exception($"Failed to load 3D(C) file from memory with error:\n{ex.Message}");
             }
         }
+        public struct UnknownData
+        {
+            // currently unknown data, 3*int per vertex, MKCRATE looks like normals?
+            public List<Coord3DInt> unknownData;
+
+            public UnknownData(MemoryReader memoryReader, RG3DHeader header)
+            {
+                try
+                {
+                    // if the offsetUnknowOffsets is not set, this data is 12 bytes per vertex
+                    // found at the offsetUnknownData location
+                    if(header.offsetUnknownOffsets == 0)
+                    {
+                        memoryReader.set_usage_marker("UKNDAT");
+                        unknownData = new List<Coord3DInt>();
+                        memoryReader.Seek(header.offsetUnknownData,0);
+
+                        for(int i=0;i<header.numVertices;i++)
+                        {
+                            int x = memoryReader.ReadInt32();
+                            int y = memoryReader.ReadInt32();
+                            int z = memoryReader.ReadInt32();
+                            unknownData.Add(new Coord3DInt(x, y, z));
+                        }
+
+                    }
+                    else
+                    {
+                        memoryReader.set_usage_marker("UKNOFS");
+                        List<uint> unknownDataOffsets = new List<uint>();
+
+                        memoryReader.Seek(header.offsetUnknownOffsets,0);
+                        for(int i=0;i<header.numUnknownOffsets;i++)
+                        {
+                            uint cur = memoryReader.ReadUInt32();
+                            unknownDataOffsets.Add(cur);
+                        }
+
+                        memoryReader.set_usage_marker("UKNDAT");
+                        unknownData = new List<Coord3DInt>();
+                        for(int i=0;i<unknownDataOffsets.Count;i++)
+                        {
+                            memoryReader.Seek(unknownDataOffsets[i],0);
+                            int x = memoryReader.ReadInt32();
+                            int y = memoryReader.ReadInt32();
+                            int z = memoryReader.ReadInt32();
+                            unknownData.Add(new Coord3DInt(x, y, z));
+
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load 3D(C) UnknownData with error:\n{ex.Message}");
+                }
+            }
+            public override string ToString()
+            {
+                string o = new String($@"###################################
+UnknownDataOffsets
+###################################");
+                o += "\n";
+                for(int i=0;i<unknownData.Count;i++)
+                {
+                    o += $"{i:D3}: {unknownData[i].x:D5},{unknownData[i].y:D5},{unknownData[i].z:D5}\n";
+                }
+                o += "###################################";
+                return o;
+                
+            }
+
+        }
+
+
 
     }
 }

@@ -1,0 +1,2 @@
+mcs -debug gxatst.cs RGGXAFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs
+mcs -debug dumpinfo.cs RGGXAFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs
