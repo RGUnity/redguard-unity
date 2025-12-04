@@ -125,6 +125,56 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
 
             return textures;
         }
+        public static List<Texture2D> RGFNTToTexture2D(RGFNTFile fnt)
+        {
+            // TODO: add character/font data in struct along with texture
+            List<Texture2D> textures = new List<Texture2D>();
+
+            for (int f=0; f<fnt.FNHD.numCharacters;f++)
+            {
+                int width = fnt.FBMP.characters[f].width;
+                int height = fnt.FBMP.characters[f].height;
+
+                byte[] pixels = new byte[width*height*4];
+                // flip width and height here to rotate image upright
+                Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+                for (int y=0; y<height;y++)
+                {
+                    for (int x=0; x<width;x++)
+                    {
+                        int i = x+(y*width);
+                        if(fnt.FBMP.characters[f].data[i] == 0) // assuming 0 is transparent
+                        {
+                            // flip width and height here
+                            int ti = x+(y*width);
+                            pixels[ti*4+0] = 0;
+                            pixels[ti*4+1] = 0;
+                            pixels[ti*4+2] = 0;
+                            pixels[ti*4+3] = 0;
+                        }
+                        else
+                        {
+                            var bpalColor = fnt.BPAL.colors[fnt.FBMP.characters[f].data[i]];
+                            // flip width and height here
+                            int ti = x+(y*width);
+                            pixels[ti*4+0] = bpalColor.r;
+                            pixels[ti*4+1] = bpalColor.g;
+                            pixels[ti*4+2] = bpalColor.b;
+                            pixels[ti*4+3] = 255;
+                        }
+                    }
+                }
+                texture.SetPixelData(pixels,0,0);
+                // Disable pixel interpolation
+                //texture.filterMode = FilterMode.Point;
+                //texture.wrapMode = TextureWrapMode.Clamp;
+                texture.Apply();
+                textures.Add(texture);
+            }
+
+            return textures;
+        }
+
 
     }
 }

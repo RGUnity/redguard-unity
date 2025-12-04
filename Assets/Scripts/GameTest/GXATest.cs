@@ -1,83 +1,30 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using RGFileImport;
 
 public class GXATest : MonoBehaviour
 {
-    List<string> GXAfiles;
-    int curmat;
+    List<Material> mats;
+    List<Texture2D> textures;
+    int curchar;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        GXAfiles = new List<string>() {
-"CLOUD512",
-"GREY256",
-"GUI",
-"NECROSKY",
-"NIGHTSKY",
-"PAPER",
-"PICKBLOB",
-"PICKBOX",
-"RGMAP",
-"SKY61",
-"SNUFF",
-"SQUARE",
-"CATACOMB",
-"CAVERNS",
-"COMPASS2",
-"CROSS",
-"DRINT",
-"DUSK",
-"GXICONS",
-"INVARROW",
-"INVBACK",
-"INVBORDR",
-"INVMASK",
-"INVSEL",
-"ISLAND1",
-"ISLAND",
-"LOGPAPER",
-"MAPMAP",
-"MINIMENU",
-"MIRROR1",
-"MIRROR2",
-"MIRROR3",
-"MM_CHECK",
-"MM_MOVIE",
-"MM_SCRSZ",
-"MM_SLIDE",
-"NECRISLE",
-"NECRTOWR",
-"OBSERVE",
-"PICKUPS",
-"PICKUPSS",
-"POWERUP",
-"SCROLL",
-"STARTUP2",
-"STMAP01",
-"STMAP02",
-"STMAP03",
-"STMAP04",
-"STMAP05",
-"STMAP06",
-"STMAP07",
-"STMAP08",
-"STMAP09",
-"STMAP10",
-"STMAP11",
-"STMAP12",
-"STMAP13",
-"STMAP14",
-"STMAP15",
-"STMAP16",
-"STMAP17",
-"SUNSET",
-"TAVERN",
-"TEMPLE",
-"VIEWBACK",
-        };
-        curmat = 0;
+//dmpall();
+        curchar = 0;
+
+        RGFNTFile fntFile = new RGFNTFile();
+        fntFile.LoadFile("~/redguard-unity/game_3dfx/fonts/REDGUARD.FNT");
+        textures = Assets.Scripts.RGFileImport.RGGFXImport.GraphicsConverter.RGFNTToTexture2D(fntFile);
+
+        Material mat = new Material(Shader.Find("Universal Render Pipeline/Simple Lit"));
+        mat.mainTexture = textures[0];
+
+        mats = new List<Material>() {mat};
+/*
         Material mat = RGTexStore.GetMaterial_GXA("MAPMAP",0);
-        List<Material> mats = new List<Material>() {mat};
+*/
         MeshRenderer mr = GetComponent<MeshRenderer>();
         mr.SetMaterials(mats);
         
@@ -88,14 +35,69 @@ public class GXATest : MonoBehaviour
     {
         if(Input.GetKeyUp("space"))
         {
-            curmat++;
-            if(curmat >= GXAfiles.Count)
-                curmat = 0;
-            Material mat = RGTexStore.GetMaterial_GXA(GXAfiles[curmat],0);
-            List<Material> mats = new List<Material>() {mat};
+            curchar++;
+            if(curchar >= textures.Count)
+                curchar = 0;
+            mats[0].mainTexture = textures[curchar];
             MeshRenderer mr = GetComponent<MeshRenderer>();
             mr.SetMaterials(mats);
-            Debug.Log($"Loaded GXA {GXAfiles[curmat]}");
+
+            Debug.Log($"Loaded char {curchar}: {(char)curchar}");
         }
+    }
+
+
+    List<string> files = new List<string>(){
+"ARIALBG.FNT",
+"ARIALMD.FNT",
+"ARIALSB.FNT",
+"ARIALSM.FNT",
+"ARIALVB.FNT",
+"ARIALVS.FNT",
+"FONTNORM.FNT",
+"FONTNORS.FNT",
+"FONTPALE.FNT",
+"FONTRED.FNT",
+"FONTSEL.FNT",
+"FONTSELS.FNT",
+"HIDONE.FNT",
+"HINORMAL.FNT",
+"HISELECT.FNT",
+"LODONE.FNT",
+"LONORMAL.FNT",
+"LOSELECT.FNT",
+"LOWFONT.FNT",
+"REDDARK.FNT",
+"REDGUARD.FNT",
+"REDLOW.FNT",
+"REDNORM.FNT",
+"REDONE.FNT",
+"REDRED.FNT",
+"REDSEL.FNT",
+"SREDDARK.FNT",
+"SREDNORM.FNT",
+"SREDSEL.FNT",
+    };
+    void dmpall()
+    {
+
+        for(int i=0;i<files.Count;i++)
+        {
+            RGFileImport.RGFNTFile fntFile = new RGFileImport.RGFNTFile();
+            fntFile.LoadFile($"./game_3dfx/fonts/{files[i]}");
+            textures = Assets.Scripts.RGFileImport.RGGFXImport.GraphicsConverter.RGFNTToTexture2D(fntFile);
+            for(int j=0;j<textures.Count;j++)
+            {
+                dump_to_png(textures[j], files[i], j);
+            }
+        }
+
+    }
+
+    void dump_to_png(Texture2D tex, string f, int c)
+    {
+        byte[] buff = ImageConversion.EncodeToPNG(tex);
+        string f2 = f.Substring(0,f.IndexOf("."));
+        File.WriteAllBytes($"./io_tst/textst/fnt/{f2}/{f2}_{c}.png", buff);
     }
 }

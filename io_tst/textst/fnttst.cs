@@ -46,7 +46,7 @@ namespace xyz
             {
                 RGFileImport.RGFNTFile filefnt = new RGFileImport.RGFNTFile();
                 filefnt.LoadFile($"../../game_3dfx/fonts/{files[i]}");
-                Console.WriteLine($"tit {files[i]}:  {filefnt.FNHD.title}");
+                Console.WriteLine($"tit {files[i]}:  {filefnt.FNHD.description}");
             }
 
 /*
