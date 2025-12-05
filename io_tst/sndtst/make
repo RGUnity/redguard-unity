@@ -1,0 +1,1 @@
+mcs -debug sfxtst.cs RGSFXFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs

@@ -112,6 +112,19 @@ namespace RGFileImport
             }
             return o.ToArray();
         }
+        public sbyte[] ReadSBytes(int cnt)
+        {
+            mark_usage(Position, cnt);
+            if(Position+cnt > Length)
+                throw new Exception($"MemoryReader: read address 0x{Position:X} + {cnt} (0x{cnt:X}) is greater than buffer length 0x{Length:X}");
+            List<sbyte> o = new List<sbyte>();
+            for(int i=0;i<cnt;i++)
+            {
+                o.Add((sbyte)buffer[Position]);
+                Position+=1;
+            }
+            return o.ToArray();
+        }
         public int[] ReadInt32s(int cnt)
         {
             mark_usage(Position, cnt*4);

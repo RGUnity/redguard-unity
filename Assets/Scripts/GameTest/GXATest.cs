@@ -11,6 +11,8 @@ public class GXATest : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // SFX
+        RGSoundStore.LoadSFX("MAIN");
 //dmpall();
         curchar = 0;
 
@@ -27,6 +29,7 @@ public class GXATest : MonoBehaviour
 */
         MeshRenderer mr = GetComponent<MeshRenderer>();
         mr.SetMaterials(mats);
+
         
     }
 
@@ -34,6 +37,12 @@ public class GXATest : MonoBehaviour
     void Update()
     {
         if(Input.GetKeyUp("space"))
+        {
+            AudioSource ar = GetComponent<AudioSource>();
+            ar.clip = RGSoundStore.GetSFX(117);
+            ar.Play();
+        }
+        if(false)
         {
             curchar++;
             if(curchar >= textures.Count)

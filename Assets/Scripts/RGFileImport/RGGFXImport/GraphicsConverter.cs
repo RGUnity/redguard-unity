@@ -137,7 +137,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
 
                 byte[] pixels = new byte[width*height*4];
                 // flip width and height here to rotate image upright
-                Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+                Texture2D texture = new Texture2D(height, width, TextureFormat.RGBA32, false);
                 for (int y=0; y<height;y++)
                 {
                     for (int x=0; x<width;x++)
@@ -146,7 +146,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
                         if(fnt.FBMP.characters[f].data[i] == 0) // assuming 0 is transparent
                         {
                             // flip width and height here
-                            int ti = x+(y*width);
+                            int ti = y+(x*height);
                             pixels[ti*4+0] = 0;
                             pixels[ti*4+1] = 0;
                             pixels[ti*4+2] = 0;
@@ -156,7 +156,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
                         {
                             var bpalColor = fnt.BPAL.colors[fnt.FBMP.characters[f].data[i]];
                             // flip width and height here
-                            int ti = x+(y*width);
+                            int ti = y+(x*height);
                             pixels[ti*4+0] = bpalColor.r;
                             pixels[ti*4+1] = bpalColor.g;
                             pixels[ti*4+2] = bpalColor.b;

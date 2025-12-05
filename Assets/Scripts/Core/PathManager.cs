@@ -60,6 +60,11 @@ public class PathManager : MonoBehaviour
         return Game.Config.redguardPath + "/system/";
     }
 
+    public string GetSoundFolder()
+    {
+        return Game.Config.redguardPath + "/sound/";
+    }
+
     public bool ValidatePath(string rootPath)
     {
         if (Directory.Exists(rootPath))
