@@ -628,9 +628,12 @@ size: {dataLength:X}
             {
                 try
                 {
-                    posX = memoryReader.ReadInt32();
-                    posY = memoryReader.ReadInt32();
-                    posZ = memoryReader.ReadInt32();
+                    posX = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+                    posY = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
+                    posZ = memoryReader.ReadInt24();
+                    memoryReader.ReadByte();
                 }
                 catch(Exception ex)
                 {

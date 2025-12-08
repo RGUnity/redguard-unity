@@ -263,6 +263,31 @@ using(s_load_WDNM.Auto()){
         return data_out;
 }
     }
+    public static List<RGRGMData> LoadMPMK(string filename)
+    {
+        RGFileImport.RGRGMFile filergm = GetRGM(filename);
+
+        List<RGRGMData> data_out = new List<RGRGMData>();
+        for(int i=0;i<filergm.MPMK.items.Count;i++)
+        {
+            try{
+                float posx =  (float)(filergm.MPMK.items[i].posX)*RGM_MPOB_SCALE;
+                float posy = -(float)(filergm.MPMK.items[i].posY)*RGM_MPOB_SCALE;
+                float posz = -(float)(0xFFFFFF-filergm.MPMK.items[i].posZ)*RGM_MPOB_SCALE;
+
+                posx += RGM_X_OFS;
+                posy += RGM_Y_OFS;
+                posz += RGM_Z_OFS;
+
+                data_out.Add(new RGRGMData((uint)i, $"MARKER_{i:D3}", "", new Vector3(posx, posy, posz), Vector3.zero));
+            }
+            catch(Exception ex)
+            {
+                Debug.Log($"Error loading MPMK from {filename}: MARKER_{i:D3}: {ex}");
+            }
+        }
+        return data_out;
+    }
 
 
     static Vector3 eulers_from_MPSO_data(RGFileImport.RGRGMFile.RGMMPSOItem i)

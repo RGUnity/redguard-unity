@@ -84,6 +84,7 @@ public static class ModelLoader
         List<GameObject> areaObjects = new List<GameObject>();
         List<RGRGMStore.RGRGMData> RGM_MPSOs = RGRGMStore.LoadMPSO(RGMname);
         List<RGRGMStore.RGRGMData> RGM_MPSFs = RGRGMStore.LoadMPSF(RGMname);
+        List<RGRGMStore.RGRGMData> RGM_MPMKs = RGRGMStore.LoadMPMK(RGMname);
         List<RGRGMStore.RGRGMRopeData> RGM_MPRPs = RGRGMStore.LoadMPRP(RGMname);
         
         s_load_RGM.Begin();
@@ -165,6 +166,19 @@ public static class ModelLoader
             }
         }
         s_load_MPRP.End();
+        for(int i=0;i<RGM_MPMKs.Count;i++)
+        {
+            try
+            {
+                // Create map markers
+                RGObjectStore.AddMapMarker(RGM_MPMKs[i].position);
+            }
+            catch(Exception ex)
+            {
+                Debug.LogWarning($"ERR: MPMK{i:D3}: {ex.Message}");
+            }
+        }
+
 
         return areaObjects;
     }

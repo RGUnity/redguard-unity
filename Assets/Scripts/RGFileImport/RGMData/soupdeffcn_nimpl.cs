@@ -163,6 +163,10 @@ public class soupdeffcn_nimpl
     /*task*/
     public static int showObj(uint caller, bool multitask, int[] i /*3*/)	
     {
+        // Targets the camera to show the object, settings its position
+        // i[0]: ???
+        // i[1]: camera up-axis offset
+        // i[2]: 
         ThrowNIMPL("showObj",i);
         return 0;
     }
@@ -277,6 +281,10 @@ public class soupdeffcn_nimpl
     /*function*/
     public static int menuAddItem(uint caller, bool multitask, int[] i /*3*/)	
     {
+        // add a menu item to the dialog menu
+        // i[0]: string index into the RTX file
+        // i[1]: 1 grays out the item
+        // i[2]: the item index (? not 100% sequential, might miss some in-between)
         ThrowNIMPL("menuAddItem",i);
         return 0;
     }
@@ -777,6 +785,10 @@ public class soupdeffcn_nimpl
     /*function*/
     public static int LoadWorld(uint caller, bool multitask, int[] i /*3*/)	
     {
+        // loads a world
+        // i[0]: the ID of the world to load
+        // i[1]: the map marker to start the player at
+        // i[2]: the player rotation when he loads in TODO: check this
         ThrowNIMPL("LoadWorld",i);
         return 0;
     }

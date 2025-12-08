@@ -41,6 +41,8 @@ public class RGObjectStore
     }
     // level objects
     public static Dictionary<uint, RGScriptedObject> scriptedObjects;
+    public static List<Vector3> mapMarkerList;
+
     // named objects
     public static Dictionary<string , RGScriptedObject> namedScriptedObjects;
     // special objects
@@ -63,6 +65,8 @@ public class RGObjectStore
             scriptedGroups = new Dictionary<uint, List<RGScriptedObject>>();
         if(scriptedSlaves != null)
             scriptedSlaves = new Dictionary<uint, MasterSlavesStruct>();
+        if(mapMarkerList != null)
+            mapMarkerList = new List<Vector3>();
     }
 
     public static int DoObjectTask(uint objectId, string subjectName, int taskId, bool isMultiTask, int[] parameters)
@@ -109,6 +113,14 @@ public class RGObjectStore
         {
             namedScriptedObjects.Remove(objectName);
         }
+    }
+
+    public static void AddMapMarker(Vector3 position)
+    {
+        if(mapMarkerList == null)
+            mapMarkerList = new List<Vector3>();
+
+        mapMarkerList.Add(position);
     }
 
 

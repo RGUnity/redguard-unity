@@ -87,7 +87,7 @@ size: {dataLength:X}
             public int loopEnd;
             public int dataLength;
             public char unknown2;
-            public sbyte[] PCMData;
+            public byte[] PCMData;
             public SoundEffect(MemoryReader memoryReader)
             {
                 try
@@ -101,7 +101,7 @@ size: {dataLength:X}
                     loopEnd = memoryReader.ReadInt32();
                     dataLength = memoryReader.ReadInt32();
                     unknown2 = memoryReader.ReadChar();
-                    PCMData = memoryReader.ReadSBytes(dataLength*1);
+                    PCMData = memoryReader.ReadBytes(dataLength*1);
                 }
                 catch(Exception ex)
                 {

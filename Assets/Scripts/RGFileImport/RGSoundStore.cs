@@ -1,23 +1,62 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using RGFileImport;
 
 public static class RGSoundStore
 {
-    static List<AudioClip> SFXList;
+    public class RTXEntry
+    {
+        public string subtitle;
+        public AudioClip audio;
+        public RTXEntry(string subtitleIn, AudioClip audioIn)
+        {
+            subtitle = subtitleIn;
+            audio = audioIn;
+        }
+    }
+
+    public static List<AudioClip> SFXList;
+    public static Dictionary<int, RTXEntry> RTXDict;
 
     static RGSoundStore()
     {
         SFXList = new List<AudioClip>();
+        RTXDict = new Dictionary<int, RTXEntry>();
     }
-
+    public static RTXEntry GetRTX(int id)
+    {
+        // we should have already loaded RTX here
+        return RTXDict[id];
+    }
     public static AudioClip GetSFX(int id)
     {
         // we should have already loaded SFX here
         return SFXList[id];
     }
 
+
+    public static void LoadRTX(string rtxname)
+    {
+        try
+        {
+            string path = new string(Game.pathManager.GetRootFolder() + rtxname + ".RTX");
+            RGRTXFile rtxFile = new RGRTXFile();
+            rtxFile.LoadFile(path);
+
+            foreach(KeyValuePair<int, RGRTXFile.RTXItem> entry in rtxFile.rtxItemDict)
+            {
+                // do something with entry.Value or entry.Key
+                RTXEntry newRTX = new RTXEntry(entry.Value.subtitle, null);
+                RTXDict.Add(entry.Key, newRTX);
+            }
+        }
+        catch(Exception ex)
+        {
+            Debug.Log($"Failed to read RTX file with error {ex.Message}");
+        }
+    }
 
     public static void LoadSFX(string sfxname)
     {
@@ -27,11 +66,9 @@ public static class RGSoundStore
             RGSFXFile sfxFile = new RGSFXFile();
             sfxFile.LoadFile(path);
 
-            Debug.Log($"sounds: {sfxFile.FXHD.numSounds}");
             for(int i=0;i<sfxFile.FXHD.numSounds;i++)
             {
                 SFXList.Add(SFXToAudio(sfxFile.FXDT.soundEffectList[i], i));
-            Debug.Log($"Loaded sound {i}");
             }
         }
         catch(Exception ex)
@@ -73,26 +110,24 @@ public static class RGSoundStore
 
         return o;
     }
-    private static float[] PCM8ToFloat(sbyte[] datain, int dataLength)
+    private static float[] PCM8ToFloat(byte[] datain, int dataLength)
     {
         float[] o = new float[dataLength];
         for(int i=0;i<dataLength;i++)
         {
-            o[i] = ((float)datain[i])/128.0f;
+            o[i] = (((float)datain[i])/128.0f)-1.0f;;
         }
         return o;
     }
-    private static float[] PCM16ToFloat(sbyte[] datain, int dataLength)
+    private static float[] PCM16ToFloat(byte[] datain, int dataLength)
     {
-        float[] o = new float[dataLength];
+        float[] o = new float[dataLength/2];
         int j = 0;
-        byte[] datain_u = (byte[])(Array)datain;
         for(int i=0;i<dataLength;i+=2)
         {
-            o[j] = ((float)BitConverter.ToInt16(datain_u, i))/32768.0f;
+            o[j] = ((float)BitConverter.ToInt16(datain, i))/32768.0f;
             j++;
         }
         return o;
     }
-
 }

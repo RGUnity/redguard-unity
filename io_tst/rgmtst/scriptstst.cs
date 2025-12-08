@@ -6,13 +6,13 @@ using RGFileImport;
 
     public class RGObjectStore 
     {
+        public static Func<bool, int[], int>[] funcs;
 
         public static int DoObjectTask(uint objectId, string subjectName, int taskId, bool isMultiTask, int[] parameters)
         {
 //            static Func<bool, int[], int>[] SetupFuncs()
 
-Console.WriteLine($"FUNC: {taskId}");
-            return 1;
+            return funcs[taskId](isMultiTask, parameters);
         }
 
     }
@@ -39,20 +39,22 @@ namespace xyz
             return;
             */
             Func<bool, int[], int>[] funcs = SetupFuncs();
+            RGObjectStore.funcs = SetupFuncs();
 
 			filergm.LoadFile("../../game_3dfx/maps/OBSERVE.RGM");
             RGRGMScriptStore.ReadScript(filergm);
             
             RGRGMScriptStore.flags[201] = 1;
-            ScriptData sd = new ScriptData("OB_PLT07", 0);
+            ScriptData sd = new ScriptData("ERASMO", 0);
             for(int i=0;i<100;i++)
                 Console.WriteLine($"ATTR_{i} = {sd.attributes[i]}");
             int ticks = 20;
             for(int i=0;i<ticks;i++)
             {
-                Console.Write($"{i}:");
+                Console.Write($"{sd.scriptPC:X3}:");
                 sd.tickScript();
             }
+            return;
             /*
             sd = new ScriptData("OB_ENG04", funcs,0);
             for(int i=0;i<ticks;i++)

@@ -157,9 +157,10 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
                             var bpalColor = fnt.BPAL.colors[fnt.FBMP.characters[f].data[i]];
                             // flip width and height here
                             int ti = y+(x*height);
-                            pixels[ti*4+0] = bpalColor.r;
-                            pixels[ti*4+1] = bpalColor.g;
-                            pixels[ti*4+2] = bpalColor.b;
+                            // multiplied by 4 for fonts only (?) since they only use 6 bits
+                            pixels[ti*4+0] = (byte)(bpalColor.r*4);
+                            pixels[ti*4+1] = (byte)(bpalColor.g*4);
+                            pixels[ti*4+2] = (byte)(bpalColor.b*4);
                             pixels[ti*4+3] = 255;
                         }
                     }

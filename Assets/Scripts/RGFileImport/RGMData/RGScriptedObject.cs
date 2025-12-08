@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Collections.Generic;
 using RGFileImport;
 using UnityEngine;
@@ -20,6 +21,8 @@ public class RGScriptedObject : MonoBehaviour
         task_moving,
         task_waiting,
         task_syncing,
+        task_walking,
+        task_pathfinding,
     }
 	// TODO: these are duplicated from RGRGMStore
 	const float RGM_MPOB_SCALE = 1/5120.0f;
@@ -41,6 +44,7 @@ public class RGScriptedObject : MonoBehaviour
 	SkinnedMeshRenderer skinnedMeshRenderer;
     Light light;
     Collider collider;
+    AudioSource audioSource;
 
     public bool playerStanding;
     public RGScriptedObject offsetTarget;
@@ -54,6 +58,7 @@ public class RGScriptedObject : MonoBehaviour
 // scripting
     public bool DEBUGSCRIPTING=true;
 	bool allowScripting;
+	bool debugScripting;
     public ScriptData script;
 
     public List<Vector3> locations;
@@ -73,6 +78,8 @@ public class RGScriptedObject : MonoBehaviour
             // nothing here ;)
         // syncing
         public uint syncPoint;
+        // moving forward
+        public float moveSpeed;
         public TaskData()
         {
             type = TaskType.task_idle;
@@ -215,6 +222,7 @@ public class RGScriptedObject : MonoBehaviour
         allowAnimation = false;
 
         allowScripting = false;
+        debugScripting = false;
         SetupFunctions();
 
         playerStanding = false;
@@ -259,14 +267,19 @@ public class RGScriptedObject : MonoBehaviour
             char[] curc = RANMReader.ReadChars(RAHDData.RANMLength-1);
             objectName = new string(curc);
         }
+
+        // TODO: when to add audio source?
+        audioSource = gameObject.AddComponent<AudioSource>();
         
 
         // DO THIS AFTER SETTING POSITION AND ROTATION
-        EnableScripting();
+        //EnableScripting();
 
 	}
-    public void EnableScripting()
+    public void EnableScripting(bool debug = false)
     {
+        allowScripting = true;
+        debugScripting = debug;
         // administration for RGObjectstore
 
         /*
@@ -406,6 +419,8 @@ public class RGScriptedObject : MonoBehaviour
     void UpdateTask(TaskData taskData)
     {
         float frameTime = Time.deltaTime;
+        Quaternion newRotation;
+        Vector3 newPosition;
         switch(taskData.type)
         {
             case TaskType.task_idle:
@@ -416,7 +431,6 @@ public class RGScriptedObject : MonoBehaviour
                 break;
             case TaskType.task_rotating:
                 taskData.timer += frameTime;
-                Quaternion newRotation;
                 if(taskData.timer < taskData.duration)
                 {
                     newRotation = LerpAbsolute(taskData.rotationStart, taskData.rotationTarget,taskData.timer/taskData.duration);
@@ -430,7 +444,6 @@ public class RGScriptedObject : MonoBehaviour
                 break;
             case TaskType.task_moving:
                 taskData.timer += frameTime;
-                Vector3 newPosition;
                 if(taskData.timer < taskData.duration)
                 {
                     newPosition = Vector3.Lerp(taskData.positionStart, taskData.positionTarget,taskData.timer/taskData.duration);
@@ -456,6 +469,32 @@ public class RGScriptedObject : MonoBehaviour
                     taskData.type = TaskType.task_idle;
                 }
                 break;
+            case TaskType.task_walking:
+                taskData.timer += frameTime;
+                if(taskData.timer < taskData.duration)
+                {
+                    newPosition = transform.localPosition + (transform.forward*(taskData.moveSpeed*frameTime));
+                    transform.localPosition = newPosition;
+                }
+                else
+                {
+                    taskData.type = TaskType.task_idle;
+                }
+                break;
+            case TaskType.task_pathfinding:
+                // TODO: actual pathfinding :D
+                taskData.timer += frameTime;
+                Vector3 twd = Vector3.MoveTowards(transform.localPosition,
+                                                  taskData.positionTarget,
+                                                  taskData.moveSpeed*frameTime);
+                transform.localPosition = twd;
+                if(twd == taskData.positionTarget)
+                {
+                    taskData.type = TaskType.task_idle;
+                }
+                break;
+
+
             default:
                 break;
         }
@@ -464,18 +503,33 @@ public class RGScriptedObject : MonoBehaviour
     {
         functions = new Func<uint, bool, int[], int>[FUNC_CNT];
         functions[17] = WaitOnTasks;
+        functions[21] = showObj;
         functions[44] = RotateByAxis;
         functions[45] = RotateToAxis;
+        functions[46] = WalkForward;
+        functions[47] = WalkBackward;
         functions[53] = MoveByAxis;
         functions[56] = MoveToLocation;
         functions[60] = Wait;
         functions[62] = Light;
+        functions[63] = LightRadius;
         functions[64] = LightIntensity;
         functions[65] = LightOff;
         functions[66] = LightOffset;
+        functions[83] = SetAttribute;
+        functions[84] = GetAttribute;
+        functions[93] = Sound;
+        functions[95] = AmbientSound;
+        functions[100] = HideMe;
+        functions[101] = ShowMe;
+        functions[127] = ACTIVATE;
         functions[156] = Offset;
         functions[224] = PlayerStand;
+        functions[228] = PlayerDistance;
+        functions[233] = PlayerLooking;
+        functions[243] = PlayerFaceObj;
         functions[271] = SyncWithGroup;
+        functions[292] = MoveMarker;
 
         // overwrite all non-implemented functions with a NIMPL error
         for(int i=0;i<FUNC_CNT;i++)
@@ -492,8 +546,16 @@ public class RGScriptedObject : MonoBehaviour
         else
             multiTasks.Add(data);
     }
+
+    void ScriptingDBG(string s)
+    {
+        if(debugScripting)
+        {
+            Debug.Log(s);
+        }
+    }
 // SOUPDEF function implementations
-// ASSUMTIONS:
+// ASSUMPTIONS:
 // time is in seconds/10 < probably about right?
 // axis 0,1,2 are local X,Y,Z < dont quite know
     const float TIME_VAL = 0.1f;
@@ -501,7 +563,7 @@ public class RGScriptedObject : MonoBehaviour
     /*task 17*/
     public int WaitOnTasks(uint caller, bool multitask, int[] i /*0*/)    
     {
-        Debug.Log($"{multitask}_{scriptName}_WaitOnTasks({string.Join(",",i)})");
+        ScriptingDBG($"{multitask}_{scriptName}_WaitOnTasks({string.Join(",",i)})");
         // Wait for all multitasks to be completed
         TaskData newTask = new TaskData();
         newTask.type = TaskType.task_waitingtasks;
@@ -530,10 +592,25 @@ public class RGScriptedObject : MonoBehaviour
         }
         return Vector3.Scale(axis, new Vector3(1.0f, 1.0f,-1.0f));
     }
+    /*function 21*/
+    public int showObj(uint caller, bool multitask, int[] i /*3*/)
+    {
+        // Targets the camera to show the object, settings its position
+        // i[0]: camera XYZ-axis offset (not sure which)
+        // i[1]: camera up-axis offset
+        // i[2]: camera XYZ-axis offset (not sure which)
+        Vector3 offsetPos = new Vector3(((float)i[0])*RGM_MPOB_SCALE,
+                                       -((float)i[1])*RGM_MPOB_SCALE,
+                                        ((float)i[2])*RGM_MPOB_SCALE);
+        ScriptingDBG($"{multitask}_{scriptName}_showObj({string.Join(",",i)}) : {offsetPos}");
+        CameraMain.ShowObj(this, offsetPos, Vector3.zero, true);
+        //return CameraMain.mainCamera;
+        return 0;
+    }
     /*task 44*/
     public int RotateByAxis(uint caller, bool multitask, int[] i /*3*/)    
     {
-        Debug.Log($"{multitask}_{scriptName}_RotateByAxis({string.Join(",",i)})");
+        ScriptingDBG($"{multitask}_{scriptName}_RotateByAxis({string.Join(",",i)})");
         // rotates X degrees around local axis
         // i[0]: axis (0/1/2)
         // i[1]: amount
@@ -549,7 +626,7 @@ public class RGScriptedObject : MonoBehaviour
 
         newTask.rotationTarget = rotationDelta*localRotation;
         newTask.rotationStart = localRotation;
-//        Debug.Log($"lr: {localRotation}\nrt: {rt}\ntar:{newTask.rotationTarget}");
+//        ScriptingDBG($"lr: {localRotation}\nrt: {rt}\ntar:{newTask.rotationTarget}");
         AddTask(multitask, newTask);
 
         return 0;
@@ -557,7 +634,7 @@ public class RGScriptedObject : MonoBehaviour
     /*task 45*/
     public int RotateToAxis(uint caller, bool multitask, int[] i /*3*/)    
     {
-        Debug.Log($"{multitask}_{scriptName}_RotateToAxis({string.Join(",",i)})");
+        ScriptingDBG($"{multitask}_{scriptName}_RotateToAxis({string.Join(",",i)})");
         // Rotate until rotation is X degrees around local axis
         // i[0]: axis (0/1/2)
         // i[1]: amount
@@ -573,15 +650,47 @@ public class RGScriptedObject : MonoBehaviour
 
         newTask.rotationTarget = rotationDelta;
         newTask.rotationStart = localRotation;
-//        Debug.Log($"lr: {localRotation}\nrt: {rt}\ntar:{newTask.rotationTarget}");
+//        ScriptingDBG($"lr: {localRotation}\nrt: {rt}\ntar:{newTask.rotationTarget}");
         AddTask(multitask, newTask);
 
+        return 0;
+    }
+    /*task 46*/
+    public int WalkForward(uint caller, bool multitask, int[] i /*1*/)	
+    {
+        // Moves forward TODO: do we need to play animations?
+        // i[0]: time to complete (TODO: may be something else)
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_walking;
+        newTask.duration = ((float)i[0])*TIME_VAL;;
+        newTask.timer = 0;
+
+        // attribute 12 = forward_walk
+        // TODO: scaling?
+        newTask.moveSpeed = ((float)attributes[12]);
+        AddTask(multitask, newTask);
+        return 0;
+    }
+    /*task 47*/
+    public int WalkBackward(uint caller, bool multitask, int[] i /*1*/)	
+    {
+        // Moves forward TODO: do we need to play animations?
+        // i[0]: time to complete (TODO: may be something else)
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_walking;
+        newTask.duration = ((float)i[0])*TIME_VAL;;
+        newTask.timer = 0;
+
+        // attribute 13 = backward_walk
+        // TODO: scaling?
+        newTask.moveSpeed = -((float)attributes[13]);
+        AddTask(multitask, newTask);
         return 0;
     }
     /*task 53*/
     public int MoveByAxis(uint caller, bool multitask, int[] i /*3*/)    
     {
-        Debug.Log($"{multitask}_{scriptName}_MoveByAxis({string.Join(",",i)})");
+        ScriptingDBG($"{multitask}_{scriptName}_MoveByAxis({string.Join(",",i)})");
         // Moves along global axis
         // i[0]: axis (0/1/2)
         // i[1]: amount
@@ -607,7 +716,7 @@ public class RGScriptedObject : MonoBehaviour
                 mt = new Vector3(0,0,0);
                 break;
         }
-        Debug.Log($"OUT: {mt}");
+        ScriptingDBG($"OUT: {mt}");
         newTask.positionTarget = transform.localPosition + mt;
         newTask.positionStart = transform.localPosition;
         AddTask(multitask, newTask);
@@ -616,7 +725,7 @@ public class RGScriptedObject : MonoBehaviour
     /*task 56*/
     public int MoveToLocation(uint caller, bool multitask, int[] i /*2*/)    
     {
-        Debug.Log($"{multitask}_{scriptName}_MoveToLocation({string.Join(",",i)})");
+        ScriptingDBG($"{multitask}_{scriptName}_MoveToLocation({string.Join(",",i)})");
         // Moves to a location
         // i[0]: location ID
         // i[1]: time to complete
@@ -635,7 +744,7 @@ public class RGScriptedObject : MonoBehaviour
     /*task 60*/
     public int Wait(uint caller, bool multitask, int[] i /*1*/)    
     {
-        Debug.Log($"{multitask}_{scriptName}_Wait({string.Join(",",i)})");
+        ScriptingDBG($"{multitask}_{scriptName}_Wait({string.Join(",",i)})");
         // Wait some time
         // i[0]: time to wait
         TaskData newTask = new TaskData();
@@ -658,6 +767,17 @@ public class RGScriptedObject : MonoBehaviour
         light.enabled = true;
         light.type = LightType.Point;
         light.intensity = (float)(i[1]);
+        light.range = (float)(i[0])/20.0f;
+        return 0;
+    }
+    /*function 63*/
+    public int LightRadius(uint caller, bool multitask, int[] i /*1*/)
+    {
+        // Sets the light's range/radius
+        // i[0]: light radius
+
+        if (light == null)
+            return 0;
         light.range = (float)(i[0])/20.0f;
         return 0;
     }
@@ -690,7 +810,7 @@ public class RGScriptedObject : MonoBehaviour
         // i[1]: offset y
         // i[2]: offset z
          
-        Debug.Log($"{multitask}_{scriptName}_LightOffset({string.Join(",",i)})");
+        ScriptingDBG($"{multitask}_{scriptName}_LightOffset({string.Join(",",i)})");
         if(light != null)
         {
 
@@ -704,10 +824,96 @@ public class RGScriptedObject : MonoBehaviour
         }
         return 0;
     }
+    /*function 93*/
+    public int Sound(uint caller, bool multitask, int[] i /*3*/)	
+    {
+        // plays a sound from SFX store
+        // i[0]: sound id
+        // i[1]: TODO: UNKNOWN, volume?
+        // i[2]: TODO: UNKNOWN, falloff?
+
+        audioSource.clip = RGSoundStore.GetSFX(i[0]);
+        audioSource.Play();
+        return 0;
+    }
+    /*multitask 95*/
+    public int AmbientSound(uint caller, bool multitask, int[] i /*3*/)	
+    {
+        // plays a sound from SFX store (TODO: what is ambience?)
+        // i[0]: sound id
+        // i[1]: TODO: UNKNOWN, volume?
+        // i[2]: TODO: UNKNOWN, falloff?
+        audioSource.clip = RGSoundStore.GetSFX(i[0]);
+        audioSource.Play();
+
+        // wait until playback is done
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_waiting;
+        newTask.duration = audioSource.clip.length;
+        newTask.timer = 0;
+
+        AddTask(multitask, newTask);
+        return 0;
+    }
+    /*function 83*/
+    public int SetAttribute(uint caller, bool multitask, int[] i /*2*/)
+    {
+        // Sets the value of an attribute to something
+        // i[0]: ID of attribute to set
+        // i[1]: Value to set to
+
+        ScriptingDBG($"{multitask}_{scriptName}_SetAttribute({string.Join(",", i)})");
+        attributes[i[0]] = (byte)i[1];
+        return 0;
+    }
+
+    /*function 84*/
+    public int GetAttribute(uint caller, bool multitask, int[] i /*1*/)
+    {
+        // Gets the value of an attribute
+        // i[0]: ID of attribute to get the value of
+
+        ScriptingDBG($"{multitask}_{scriptName}_GetAttribute({string.Join(",", i)})");
+        return attributes[i[0]];
+    }
+
+    /*function 100*/
+    public int HideMe(uint caller, bool multitask, int[] i /*0*/)
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_HideMe({string.Join(",",i)})");
+        // Hides this object
+        if(skinnedMeshRenderer != null)
+            skinnedMeshRenderer.enabled = false;;
+        if(collider != null)
+            collider.enabled = false;;
+        return 0;
+    }
+    /*function 101*/
+    public int ShowMe(uint caller, bool multitask, int[] i /*0*/)
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_ShowMe({string.Join(",",i)})");
+        // Unhides this object
+        if(skinnedMeshRenderer != null)
+            skinnedMeshRenderer.enabled = true;;
+        if(collider != null)
+            collider.enabled = true;
+        return 0;
+    }
+    /*function 127*/
+    public int ACTIVATE(uint caller, bool multitask, int[] i /*1*/)
+    {
+        // True if player activates an item
+        // i[0]: Stringid shown on screen when looking at the item
+        // TODO: get input events in here somehow
+        string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
+        MainUIScript.SetActivateText(displayText);
+
+        return 0;
+    }
     /*task 156*/
     public int Offset(uint caller, bool multitask, int[] i /*3*/)    
     {
-        Debug.Log($"{multitask}_{scriptName}_Offset({string.Join(",",i)})");
+        ScriptingDBG($"{multitask}_{scriptName}_Offset({string.Join(",",i)})");
         // Offsets the caller's location to this object's location
         // continuously until UnOffset is called
         // i[0]: offset x
@@ -734,12 +940,52 @@ public class RGScriptedObject : MonoBehaviour
         else
             return 0;
     }
- 
+    /*function 228*/
+    public int PlayerDistance(uint caller, bool multitask, int[] i /*0*/)
+    {
+        // returns the distance to the player object
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        float distance = Vector3.Distance (player.transform.position, this.transform.position);
+        int rgDistance = (int)(distance*(float)(1.0f/RGM_MPOB_SCALE));
+        // scale back to RG units
+        ScriptingDBG($"PLAYERDIST: {rgDistance}");
+        return rgDistance;
+    }
+    /*function 233*/
+    public int PlayerLooking(uint caller, bool multitask, int[] i /*1*/)
+    {
+        // Returns 1 if the player is looking at the object
+        // i[0]: max degrees (DA angles) to check < ASSUMPTION
+//        Quaternion rotationDelta = Quaternion.AngleAxis(((float)i[1])/DA2DG, axis);
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        Vector3 playerFwd = player.transform.forward;
+        Vector3 relPos = this.transform.position-player.transform.position;
 
+        playerFwd.y = 0.0f;
+        relPos.y = 0.0f;
+
+        float angle = Vector3.Angle(playerFwd, relPos);
+        float maxAngle = -((float)i[0])*DA2DG;
+        ScriptingDBG($"PLAYERLOOKING: {angle}/{maxAngle}");
+        if(angle < maxAngle)
+            return 1;
+        else
+            return 0;
+    }
+    /*task 243*/
+    public int PlayerFaceObj(uint caller, bool multitask, int[] i /*0*/)
+    {
+        // Turns the player horizontally to face the object
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        Vector3 playerPosition = new Vector3(player.transform.position.x, this.transform.position.y, player.transform.position.z);
+        transform.LookAt(playerPosition);
+
+        return 0;
+    }
     /*task 271*/
     public int SyncWithGroup(uint caller, bool multitask, int[] i /*1*/)    
     {
-        Debug.Log($"{multitask}_{scriptName}_SyncWithGroup({string.Join(",",i)})");
+        ScriptingDBG($"{multitask}_{scriptName}_SyncWithGroup({string.Join(",",i)})");
         // Sync with group to a sync point
         // i[0]: sync point to wait for
         mainTask.type = TaskType.task_syncing;
@@ -748,6 +994,26 @@ public class RGScriptedObject : MonoBehaviour
         // unsets the sync point when the whole group is ready
         RGObjectStore.DoGroupSync(attributes[29], mainTask.syncPoint);
         return 0;
+    }
+    /*task 292*/
+    public int MoveMarker(uint caller, bool multitask, int[] i /*2*/)	
+    {
+        // pathfinds toward marker TODO: do we need to play animations?
+        // i[0]: map marker to move towards
+        // i[1]: TODO: UNKNOWN, maybe facing to end up at?
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_pathfinding;
+        newTask.duration = ((float)i[0])*TIME_VAL;;
+        newTask.timer = 0;
+
+        newTask.positionTarget = RGObjectStore.mapMarkerList[i[0]];
+
+        // attribute 12 = forward_walk
+        // TODO: scaling?
+        newTask.moveSpeed = ((float)attributes[12]);
+        AddTask(multitask, newTask);
+        return 0;
+
     }
     public bool IsSyncPointSet(uint i)
     {
