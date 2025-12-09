@@ -48,6 +48,8 @@ public class RGObjectStore
     // special objects
     static RGScriptedObject player;
     static RGScriptedObject camera;
+
+    static GameObject playerRootObject;
     // TODO: camera belongs here
     // groups
     public static Dictionary<uint, List<RGScriptedObject>> scriptedGroups;
@@ -134,11 +136,23 @@ public class RGObjectStore
         player.transform.localPosition = Vector3.zero;
         player.transform.localRotation = Quaternion.identity;
 
+        GameObject[] playerRootObjects = GameObject.FindGameObjectsWithTag("Player");
+        playerRootObject = playerRootObjects[0];
+
     }
     public static RGScriptedObject GetPlayer()
     {
         return player;
     }
+    public static GameObject GetPlayerObject()
+    {
+        return playerRootObject;
+    }
+    public static PlayerMain GetPlayerMain()
+    {
+        return playerRootObject.GetComponent<PlayerMain>();
+    }
+
     public static void SetCamera(RGScriptedObject newCamera)
     {
         camera = newCamera;

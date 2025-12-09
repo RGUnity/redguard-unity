@@ -4,63 +4,13 @@ using System.Collections.Generic;
 public class LoadWorld : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    GameObject playerObject;
-    void AddPlayer()
-    {
-        //RGFileImport.RGRGMFile filergm = RGRGMStore.GetRGM("ISLAND");
-        RGFileImport.RGRGMFile filergm = RGRGMStore.GetRGM("OBSERVE");
-
-    // Create scripted objects
-        RGFileImport.RGRGMFile.RGMMPOBItem cyrus_data = new RGFileImport.RGRGMFile.RGMMPOBItem();
-        cyrus_data.id = 0x1337;
-        cyrus_data.type = RGFileImport.RGRGMFile.ObjectType.object_3d;
-//        cyrus_data.isActive;
-        cyrus_data.scriptName = "CYRUS";
-        /*
-        cyrus_data.modelName;
-        cyrus_data.isStatic;
-        cyrus_data.unknown1;
-        */
-
-        /*
-        // these positions are accurate, but get overwritten by the player gameobject
-        // entrance for observatory
-        cyrus_data.posX = (int)11296768;
-        cyrus_data.posY = (int)-884224;
-        cyrus_data.posZ = (int)6236416;
-        */
-        // entrance for island: in front of warehouse
-        cyrus_data.posX = (int)9490432;
-        cyrus_data.posY = (int)-98304;
-        cyrus_data.posZ = (int)10362880;
-
-        /*
-        cyrus_data.anglex;
-        cyrus_data.angley;
-        cyrus_data.anglez;
-        cyrus_data.textureId;
-        cyrus_data.imageId;
-        cyrus_data.intensity;
-        cyrus_data.radius;
-        cyrus_data.modelId;
-        cyrus_data.worldId;
-        cyrus_data.red; 
-        cyrus_data.green;
-        cyrus_data.blue;
-        */
-
-        RGObjectStore.AddPlayer(filergm, cyrus_data);
-    }
     void Start()
     {
-        //ModelLoader.LoadArea("ISLAND", "ISLAND", "ISLAND");
-        ModelLoader.LoadArea("OBSERVE", "OBSERVAT", "");
-        RGSoundStore.LoadSFX("MAIN");
-        RGSoundStore.LoadRTX("ENGLISH");
-        AddPlayer();
+        WorldLoader.LoadWorld(5,0,0);
+
         RGRGMScriptStore.flags[203] = 1; // OB_Fixed
-    		ModelLoader.scriptedObjects[0x82BD9E40].EnableScripting(); // EXTOBSRV
-//    		ModelLoader.scriptedObjects[0x82BDBD98].EnableScripting(true); // ERASMO
+        ModelLoader.scriptedObjects[0x82BD9E40].EnableScripting(); // EXTOBSRV
+//    	ModelLoader.scriptedObjects[0x82BDBD98].EnableScripting(true); // ERASMO
         if(false)
         {
     //		ModelLoader.scriptedObjects[0x82BD3750].EnableScripting(); // X

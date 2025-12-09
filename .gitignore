@@ -88,3 +88,7 @@ redguard-viewer-win64
 # Unity Editor Dark Mode Plugin
 Assets/Editor/UnityEditorDarkMode
 Assets/Editor/UnityEditorDarkMode.meta
+
+# get the iotst outputs out the damn list
+/io_tst/*/*.txt
+/io_tst/*/*.exe

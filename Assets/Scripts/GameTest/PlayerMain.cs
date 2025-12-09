@@ -53,6 +53,14 @@ public class PlayerMain: MonoBehaviour
         wantAnimState = AnimState.state_init;
     }
 
+    public void SetPositionAndRotation(Vector3 pos, Quaternion rot)
+    {
+        // disable CC, otherwise it will overwrite transform
+        cc.enabled = false;
+        cc.transform.SetPositionAndRotation(pos, rot);
+        cc.enabled = true;
+    }
+
     bool animShouldExitFcn()
     {
         if(wantAnimState != currentAnimState)
