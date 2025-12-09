@@ -21,6 +21,7 @@ public class InputManager : MonoBehaviour
     private InputAction _moveBackwardAction;
     private InputAction _turnLeftAction;
     private InputAction _turnRightAction;
+    private InputAction _activateAction;
     
     private UIWindowManager UiWindowManager;
     
@@ -48,6 +49,7 @@ public class InputManager : MonoBehaviour
         _moveBackwardAction = InputSystem.actions.FindAction("move_backward");
         _turnLeftAction = InputSystem.actions.FindAction("turn_left");
         _turnRightAction = InputSystem.actions.FindAction("turn_right");
+        _activateAction = InputSystem.actions.FindAction("activate");
     }
 
     // Update is called once per frame
@@ -76,6 +78,7 @@ public class InputManager : MonoBehaviour
         Game.Input.moveBackward = _moveBackwardAction.IsPressed();
         Game.Input.turnLeft = _turnLeftAction.IsPressed();
         Game.Input.turnRight = _turnRightAction.IsPressed();
+        Game.Input.activate = _activateAction.IsPressed();
 
         if (Game.Input.quickSave)
         {

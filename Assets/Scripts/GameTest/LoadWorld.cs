@@ -6,7 +6,12 @@ public class LoadWorld : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        WorldLoader.LoadWorld(5,0,0);
+// OBS entry
+//        WorldLoader.LoadWorld(5,0,0);
+// OBS exit
+//        WorldLoader.LoadWorld(1,6,1024);
+// HARB3 entry > goes to smugglers den for some reason?
+//        WorldLoader.LoadWorld(21,1,1024);
 
         RGRGMScriptStore.flags[203] = 1; // OB_Fixed
         ModelLoader.scriptedObjects[0x82BD9E40].EnableScripting(); // EXTOBSRV
@@ -113,6 +118,7 @@ public class LoadWorld : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        WorldLoader.LoadWorldIfRequested();
         if(Input.GetKeyUp("space"))
         {
             Game.uiManager.ShowInteractionText("HEYOO");

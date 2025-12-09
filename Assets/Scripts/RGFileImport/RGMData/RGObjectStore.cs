@@ -56,7 +56,7 @@ public class RGObjectStore
     // master/slaves
     public static Dictionary<uint, MasterSlavesStruct> scriptedSlaves;
 
-    public void Clear()
+    public static void Clear()
     {
         // TODO: clear these decently
         if(scriptedObjects != null)
@@ -69,6 +69,10 @@ public class RGObjectStore
             scriptedSlaves = new Dictionary<uint, MasterSlavesStruct>();
         if(mapMarkerList != null)
             mapMarkerList = new List<Vector3>();
+
+        player = new RGScriptedObject();
+//        UnityEngine.Object.Destroy(playerRootObject);
+ 
     }
 
     public static int DoObjectTask(uint objectId, string subjectName, int taskId, bool isMultiTask, int[] parameters)

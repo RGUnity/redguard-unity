@@ -19,4 +19,6 @@ public struct InputData
     public bool moveBackward;
     public bool turnLeft;
     public bool turnRight;
+
+    public bool activate;
 }

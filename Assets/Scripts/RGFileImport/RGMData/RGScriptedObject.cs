@@ -519,9 +519,11 @@ public class RGScriptedObject : MonoBehaviour
         functions[83] = SetAttribute;
         functions[84] = GetAttribute;
         functions[93] = Sound;
+        functions[94] = FlatSound;
         functions[95] = AmbientSound;
         functions[100] = HideMe;
         functions[101] = ShowMe;
+        functions[107] = LoadWorld;
         functions[127] = ACTIVATE;
         functions[156] = Offset;
         functions[224] = PlayerStand;
@@ -836,6 +838,19 @@ public class RGScriptedObject : MonoBehaviour
         audioSource.Play();
         return 0;
     }
+    /*function 94*/
+    public int FlatSound(uint caller, bool multitask, int[] i /*3*/)	
+    {
+        // plays a sound from SFX store (TODO: why Flatsound?)
+        // i[0]: sound id
+        // i[1]: TODO: UNKNOWN, volume?
+        // i[2]: TODO: UNKNOWN, falloff?
+
+        audioSource.clip = RGSoundStore.GetSFX(i[0]);
+        audioSource.Play();
+        return 0;
+    }
+
     /*multitask 95*/
     public int AmbientSound(uint caller, bool multitask, int[] i /*3*/)	
     {
@@ -899,16 +914,29 @@ public class RGScriptedObject : MonoBehaviour
             collider.enabled = true;
         return 0;
     }
+    /*function 107*/
+    public int LoadWorld(uint caller, bool multitask, int[] i /*3*/)	
+    {
+        // loads a new world
+        // i[0]: the ID of the world to load
+        // i[1]: the map marker to start the player at
+        // i[2]: the player rotation when he loads in
+        WorldLoader.RequestLoadWorld(i[0], i[1], i[2]);
+        return 0;
+    }
+
+
     /*function 127*/
     public int ACTIVATE(uint caller, bool multitask, int[] i /*1*/)
     {
         // True if player activates an item
         // i[0]: Stringid shown on screen when looking at the item
-        // TODO: get input events in here somehow
         string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
         MainUIScript.SetActivateText(displayText);
-
-        return 0;
+        if(Game.Input.activate)
+            return 1;
+        else
+            return 0;
     }
     /*task 156*/
     public int Offset(uint caller, bool multitask, int[] i /*3*/)    

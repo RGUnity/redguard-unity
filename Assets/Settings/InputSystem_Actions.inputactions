@@ -176,6 +176,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "activate",
+                    "type": "Button",
+                    "id": "d5da1237-8abc-404b-b77b-def8b55d2f05",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -660,6 +669,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "turn_right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a779e829-3cc5-4f74-a4ea-5c6a40af1d7c",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "activate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

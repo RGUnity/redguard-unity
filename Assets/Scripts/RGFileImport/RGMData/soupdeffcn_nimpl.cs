@@ -4,16 +4,22 @@
 //where xxx is an ascii name for the function and y is the number of parameters
 //the function takes.
 
-// 100% speculation:
+// NO LONGER speculation:
 // tasks take a while to complete
 // functions return immediately
+// multitasks are tasks that will asynchonously, do not block script execution
 using System;
+using UnityEngine;
 
 public class soupdeffcn_nimpl
 {
     public static void ThrowNIMPL(string s, int[] i)
     {
-        throw new Exception($"NIMPL: {s}({string.Join(",",i)})");
+        // if we throw an exception here it messes up the script readers
+        // probably when in an if statement, the exception will error out and then the
+        // script program counter tries to read the end of the 
+        // if statement bytes as instructions
+        Debug.LogError($"NIMPL: {s}({string.Join(",",i)})");
     }
     public static int PLACEHOLDER_ZERO(uint caller, bool multitask, int[] i /*4*/)
     {
