@@ -7,7 +7,7 @@ public class LoadWorld : MonoBehaviour
     void Start()
     {
 // OBS entry
-//        WorldLoader.LoadWorld(5,0,0);
+        WorldLoader.LoadWorld(5,0,0);
 // OBS exit
 //        WorldLoader.LoadWorld(1,6,1024);
 // HARB3 entry > goes to smugglers den for some reason?
