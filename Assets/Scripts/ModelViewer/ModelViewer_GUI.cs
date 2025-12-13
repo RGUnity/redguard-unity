@@ -217,7 +217,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         // generate the area list, if it is missing
         if (areaList.Count <= 0)
         {
-            areaList = RGINIStore.GetWorldList();
+            areaList = RGINIStore.GetWorldList().Values.ToList();
 
             for(int i=0;i<areaList.Count;i++)
             {

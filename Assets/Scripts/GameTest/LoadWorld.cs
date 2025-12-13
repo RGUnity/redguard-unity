@@ -1,8 +1,42 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 public class LoadWorld : MonoBehaviour
 {
+    void EnableScripting()
+    {
+// for ISLAND:
+        try{
+            
+            ModelLoader.scriptedObjects[0x82BEC400].EnableScripting(); // ENTHARB1
+            ModelLoader.scriptedObjects[0x82BEC3B8].EnableScripting(); // ENTHARB2
+            ModelLoader.scriptedObjects[0x82BE8020].EnableScripting(); // ENTHARB3
+        }
+        catch(Exception ex){}
+// for HARBTOWR:
+        try{
+            
+            ModelLoader.scriptedObjects[0x82BD6408].EnableScripting(); // EXTHTW3
+            ModelLoader.scriptedObjects[0x82BD6E00].EnableScripting(); // EXTHTW2
+            ModelLoader.scriptedObjects[0x82BD6F08].EnableScripting(); // EXTHTW1
+        }
+        catch(Exception ex){}
+// for SILVER1:
+        try{
+            
+            ModelLoader.scriptedObjects[0x82BD6720].EnableScripting(); // KRISANTB
+            ModelLoader.scriptedObjects[0x82BD6860].EnableScripting(); // KRISANTB
+            ModelLoader.scriptedObjects[0x82BD6920].EnableScripting(); // EXTSILVS
+            ModelLoader.scriptedObjects[0x82BD6D08].EnableScripting(); // KRISAND
+            ModelLoader.scriptedObjects[0x82BD72D0].EnableScripting(); // KRISANTB
+            ModelLoader.scriptedObjects[0x82BD7318].EnableScripting(); // KRISANTB
+        }
+        catch(Exception ex){}
+
+
+
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -10,8 +44,9 @@ public class LoadWorld : MonoBehaviour
         WorldLoader.LoadWorld(5,0,0);
 // OBS exit
 //        WorldLoader.LoadWorld(1,6,1024);
-// HARB3 entry > goes to smugglers den for some reason?
-//        WorldLoader.LoadWorld(21,1,1024);
+// HARB3 entry
+//        WorldLoader.LoadWorld(18,0,1024);
+        //EnableScripting();
 
         RGRGMScriptStore.flags[203] = 1; // OB_Fixed
         ModelLoader.scriptedObjects[0x82BD9E40].EnableScripting(); // EXTOBSRV
@@ -116,9 +151,12 @@ public class LoadWorld : MonoBehaviour
         }
      }
     // Update is called once per frame
+    bool worldChanged;
     void Update()
     {
-        WorldLoader.LoadWorldIfRequested();
+        if(worldChanged)
+            EnableScripting();
+        worldChanged = WorldLoader.LoadWorldIfRequested();
         if(Input.GetKeyUp("space"))
         {
             Game.uiManager.ShowInteractionText("HEYOO");

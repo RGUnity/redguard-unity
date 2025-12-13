@@ -27,8 +27,8 @@ public static class WorldLoader
         playerLoaded = false;
         loadedObjects = new List<GameObject>();
     }
-    // TODO: this is a copy from RGScriptedObject
-    const float DA2DG = -(180.0f/1024.0f); // negative angles?
+    // TODO: this is a(n adapted) copy from RGScriptedObject
+    const float DA2DG = (180.0f/1024.0f); // negative angles?
 
     public static void RequestLoadWorld(int worldId, int playerSpawnLocation, int playerSpawnOrientation)
     {
@@ -47,7 +47,7 @@ public static class WorldLoader
         RGObjectStore.Clear();
     }
 
-    public static void LoadWorldIfRequested()
+    public static bool LoadWorldIfRequested()
     {
         if(loadRequest.loadRequested)
         {
@@ -58,7 +58,9 @@ public static class WorldLoader
                       loadRequest.playerSpawnLocation,
                       loadRequest.playerSpawnOrientation);
             Debug.Log($"LOADED WORLD: {loadRequest.worldId},{loadRequest.playerSpawnLocation},{loadRequest.playerSpawnOrientation}");
+            return true;
         }
+        return false;
     }
     public static void LoadWorld(int worldId, int playerSpawnLocation, int playerSpawnOrientation)
     {
@@ -123,7 +125,7 @@ public static class WorldLoader
         }
 
         Vector3 playerSpawnPos = RGObjectStore.mapMarkerList[playerSpawnLocation];
-        Quaternion playerSpawnRot = Quaternion.AngleAxis(((float)playerSpawnOrientation)/DA2DG, Vector3.up);
+        Quaternion playerSpawnRot = Quaternion.AngleAxis(((float)playerSpawnOrientation)*DA2DG, Vector3.up);
 
         RGObjectStore.GetPlayerMain().SetPositionAndRotation(playerSpawnPos, playerSpawnRot);
     }

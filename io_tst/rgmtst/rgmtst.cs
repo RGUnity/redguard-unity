@@ -41,10 +41,10 @@ namespace xyz
 		public static void Main(string[] args)
 		{
 			RGRGMFile filergm = new RGRGMFile();
-			filergm.LoadFile("../../game_3dfx/maps/ISLAND.RGM");
-            print_MPOB(filergm);
+			filergm.LoadFile("../../game_3dfx/maps/SILVER1.RGM");
 
             /*
+            print_MPOB(filergm);
             foreach(var entry in filergm.RAHD.dict)
             {
                 Console.WriteLine($"{entry.Value.scriptName}: {entry.Value.RANMLength}");
@@ -71,7 +71,6 @@ namespace xyz
                 }
             }
             */
-            /*
             for(int i=0;i<filergm.MPOB.num_items;i++)
             {
                 RGRGMFile.RGMMPOBItem it = filergm.MPOB.items[i];
@@ -79,7 +78,6 @@ namespace xyz
                 Console.WriteLine($"{it.id:X}; {it.scriptName}");
  
             }
-            */
             /*
             MemoryReader memoryReader = new MemoryReader(filergm.RAAN.data);
             foreach(var entry in filergm.RAHD.dict)

@@ -23,6 +23,8 @@ public class RGScriptedObject : MonoBehaviour
         task_syncing,
         task_walking,
         task_pathfinding,
+        task_facing,
+        task_animating,
     }
 	// TODO: these are duplicated from RGRGMStore
 	const float RGM_MPOB_SCALE = 1/5120.0f;
@@ -80,6 +82,18 @@ public class RGScriptedObject : MonoBehaviour
         public uint syncPoint;
         // moving forward
         public float moveSpeed;
+        // facing object
+        public RGScriptedObject faceTarget;
+        // animating
+        public bool animationFinished;
+        public bool animAlwaysExitFcn()
+        {
+            return true;
+        }
+        public void animSetFinishedFcn()
+        {
+            animationFinished = true;
+        }
         public TaskData()
         {
             type = TaskType.task_idle;
@@ -300,8 +314,22 @@ public class RGScriptedObject : MonoBehaviour
         animations.running = false;
         allowAnimation = false;
     }
+    int nextAnim;
+    int nextfirstFrame;
+    bool setnextanim;
     public void SetAnim(int animId, int firstFrame)
     {
+        nextAnim = animId;
+        nextfirstFrame = firstFrame;
+        setnextanim = true;
+    }
+    public void SetAnim2()
+    {
+        if(!setnextanim)
+            return;
+        int animId = nextAnim;
+        int firstFrame = nextfirstFrame;
+        setnextanim = false;
         if(type == ScriptedObjectType.scriptedobject_animated)
         {
             if(animations.PushAnimation((RGRGMAnimStore.AnimGroup)animId,firstFrame) == 0)
@@ -321,6 +349,7 @@ public class RGScriptedObject : MonoBehaviour
     void UpdateAnimationsOffset()
     {
         int nextframe = animations.peekNextFrame();
+        animations.offsetKeyFrame = 0;
 
         if(nextframe < 0 || nextframe > meshFrameCount[currentMesh])
         {
@@ -332,7 +361,6 @@ public class RGScriptedObject : MonoBehaviour
                     animations.offsetKeyFrame = cnt_tot;
                     currentMesh = i;
                     skinnedMeshRenderer.sharedMesh = meshes[currentMesh];
-                    Debug.Log($"need model: {i} OFS: {cnt_tot}");
                     animations.runAnimation(Time.deltaTime, true);
                     break;
                 }
@@ -342,6 +370,7 @@ public class RGScriptedObject : MonoBehaviour
     }
     void UpdateAnimations()
 	{
+        SetAnim2();
 		if (allowAnimation)
 		{
             skinnedMeshRenderer.SetBlendShapeWeight(animations.getCurrentFrame(), 0.0f);
@@ -421,6 +450,12 @@ public class RGScriptedObject : MonoBehaviour
         float frameTime = Time.deltaTime;
         Quaternion newRotation;
         Vector3 newPosition;
+
+        float faceSpeed;
+        Vector3 targetDirection;
+        Quaternion targetRotation;
+        float desiredRotation;
+        float currentRotation;
         switch(taskData.type)
         {
             case TaskType.task_idle:
@@ -493,8 +528,34 @@ public class RGScriptedObject : MonoBehaviour
                     taskData.type = TaskType.task_idle;
                 }
                 break;
+            case TaskType.task_facing:
+                taskData.timer += frameTime;
+                // attribute 15 = turn_speed 
+                // TODO: scaling?
+                faceSpeed = frameTime * (-(float)attributes[15]*10)*DA2DG;
+                targetDirection = taskData.faceTarget.transform.position-transform.position;
+                targetRotation = Quaternion.LookRotation(targetDirection, Vector3.up);
+                desiredRotation = Mathf.RoundToInt(targetRotation.eulerAngles.y);
+                currentRotation = Mathf.RoundToInt(transform.localRotation.eulerAngles.y);
 
-
+                if (desiredRotation < currentRotation - faceSpeed ||
+                    desiredRotation > currentRotation + faceSpeed)
+                {
+                    transform.localRotation = Quaternion.RotateTowards(transform.localRotation, targetRotation, faceSpeed);
+                }
+                else
+                {
+                    Debug.Log("DONE FACING");
+                    taskData.type = TaskType.task_idle;
+                }
+                break;
+            case TaskType.task_animating:
+                if(taskData.animationFinished == true)
+                {
+                    Debug.Log("DONE ANIM");
+                    taskData.type = TaskType.task_idle;
+                }
+                break;
             default:
                 break;
         }
@@ -518,6 +579,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[66] = LightOffset;
         functions[83] = SetAttribute;
         functions[84] = GetAttribute;
+        functions[88] = FacePlayer;
         functions[93] = Sound;
         functions[94] = FlatSound;
         functions[95] = AmbientSound;
@@ -525,13 +587,16 @@ public class RGScriptedObject : MonoBehaviour
         functions[101] = ShowMe;
         functions[107] = LoadWorld;
         functions[127] = ACTIVATE;
+        functions[136] = PushAnimation;
         functions[156] = Offset;
+        functions[174] = isFighting;
         functions[224] = PlayerStand;
         functions[228] = PlayerDistance;
         functions[233] = PlayerLooking;
         functions[243] = PlayerFaceObj;
         functions[271] = SyncWithGroup;
         functions[292] = MoveMarker;
+        functions[320] = IsHoldingWeapon;
 
         // overwrite all non-implemented functions with a NIMPL error
         for(int i=0;i<FUNC_CNT;i++)
@@ -891,6 +956,21 @@ public class RGScriptedObject : MonoBehaviour
         ScriptingDBG($"{multitask}_{scriptName}_GetAttribute({string.Join(",", i)})");
         return attributes[i[0]];
     }
+    /*task 88*/
+    public int FacePlayer(uint caller, bool multitask, int[] i /*1*/)	
+    {
+        // Makes the object face the player
+        // i[0]: TODO: UNKNOWN
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_facing;
+//        newTask.duration = 
+        newTask.timer = 0;
+        newTask.faceTarget = RGObjectStore.GetPlayer();
+
+        AddTask(multitask, newTask);
+
+        return 0;
+    }
 
     /*function 100*/
     public int HideMe(uint caller, bool multitask, int[] i /*0*/)
@@ -938,6 +1018,29 @@ public class RGScriptedObject : MonoBehaviour
         else
             return 0;
     }
+    /*task 136*/
+    public int PushAnimation(uint caller, bool multitask, int[] i /*2*/)
+    {
+        // Plays an animation starting at a frame
+        // i[0]: animationId
+        // i[1]: firstFrame
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_animating;
+        newTask.timer = 0;
+        newTask.animationFinished = false;
+
+        animations.shouldExitFcn = newTask.animAlwaysExitFcn;
+        animations.doExitFcn= newTask.animSetFinishedFcn;
+        SetAnim(i[0], i[1]);
+
+        AddTask(multitask, newTask);
+        return 0;
+
+
+        return 0;
+    }
+
+
     /*task 156*/
     public int Offset(uint caller, bool multitask, int[] i /*3*/)    
     {
@@ -956,6 +1059,13 @@ public class RGScriptedObject : MonoBehaviour
 
         offsetObject.offsetTarget = this;
         offsetObject.offsetDelta = offsetPos;
+        return 0;
+    }
+    /*function 174*/
+    public int isFighting(uint caller, bool multitask, int[] i /*0*/)    
+    {
+        // returns 1 if the object is fighting
+        // TODO: implement this
         return 0;
     }
  
@@ -1042,6 +1152,13 @@ public class RGScriptedObject : MonoBehaviour
         AddTask(multitask, newTask);
         return 0;
 
+    }
+    /*function 320*/
+    public int IsHoldingWeapon(uint caller, bool multitask, int[] i /*0*/)	
+    {
+        // Returns 1 if the object is holding a weapon
+        // TODO: implement
+        return 0;
     }
     public bool IsSyncPointSet(uint i)
     {

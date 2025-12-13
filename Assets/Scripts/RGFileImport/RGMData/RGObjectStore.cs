@@ -70,7 +70,7 @@ public class RGObjectStore
         if(mapMarkerList != null)
             mapMarkerList = new List<Vector3>();
 
-        player = new RGScriptedObject();
+//        player = new RGScriptedObject();
 //        UnityEngine.Object.Destroy(playerRootObject);
  
     }

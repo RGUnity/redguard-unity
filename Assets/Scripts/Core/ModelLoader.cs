@@ -173,11 +173,12 @@ public static class ModelLoader
                 // Create map markers
                 RGObjectStore.AddMapMarker(RGM_MPMKs[i].position);
 
-                
+               /* 
                 RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, "LANTERN1", name_col);
                 GameObject obj = Add3DToScene($"MPMK_{i:D3}",  data_3D, RGM_MPMKs[i].position, Vector3.zero);
                 obj.isStatic = true;
                 areaObjects.Add(obj);
+               */ 
 
             }
             catch(Exception ex)

@@ -24,9 +24,9 @@ public static class RGINIStore
         public string sunImage;
         public string loadScreen;
     }
-    public static List<worldData> GetWorldList()
+    public static Dictionary<int, worldData> GetWorldList()
     {
-        List<worldData> o = new List<worldData>();
+        Dictionary<int, worldData> o = new Dictionary<int, worldData>();
         foreach(int key in iniData.worldData.worlds.Keys)
         {
             worldData w = new worldData();
@@ -94,7 +94,7 @@ public static class RGINIStore
             else
                 w.loadScreen = "";
 
-            o.Add(w);
+            o.Add(key, w);
         }
         return o;
     }
