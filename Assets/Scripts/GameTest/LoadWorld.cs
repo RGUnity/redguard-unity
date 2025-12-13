@@ -41,12 +41,13 @@ public class LoadWorld : MonoBehaviour
     void Start()
     {
 // OBS entry
-        WorldLoader.LoadWorld(5,0,0);
+//        WorldLoader.LoadWorld(5,0,0);
 // OBS exit
 //        WorldLoader.LoadWorld(1,6,1024);
 // HARB3 entry
-//        WorldLoader.LoadWorld(18,0,1024);
-        //EnableScripting();
+// SILVER1 entry
+        WorldLoader.LoadWorld(18,0,1024);
+        EnableScripting();
 
         RGRGMScriptStore.flags[203] = 1; // OB_Fixed
         ModelLoader.scriptedObjects[0x82BD9E40].EnableScripting(); // EXTOBSRV

@@ -273,6 +273,8 @@ public class soupdeffcn_nimpl
     /*function*/
     public static int menuNew(uint caller, bool multitask, int[] i /*0*/)	
     {
+        // Clears existing menu, prepares for new content
+        // TODO: check this
         ThrowNIMPL("menuNew",i);
         return 0;
     }
@@ -280,6 +282,7 @@ public class soupdeffcn_nimpl
     /*task*/
     public static int menuProc(uint caller, bool multitask, int[] i /*0*/)	
     {
+        // Display the dialog menu and wait for a selection
         ThrowNIMPL("menuProc",i);
         return 0;
     }
@@ -298,6 +301,7 @@ public class soupdeffcn_nimpl
     /*function*/
     public static int menuSelection(uint caller, bool multitask, int[] i /*0*/)	
     {
+        // Returns the selected item from the dialog menu
         ThrowNIMPL("menuSelection",i);
         return 0;
     }
@@ -305,6 +309,8 @@ public class soupdeffcn_nimpl
     /*task*/
     public static int RTX(uint caller, bool multitask, int[] i /*1*/)	
     {
+        // Play a sound from RTX and display subtitles
+        // i[0]: index of the RTX data
         ThrowNIMPL("RTX",i);
         return 0;
     }
@@ -312,6 +318,12 @@ public class soupdeffcn_nimpl
     /*task*/
     public static int rtxAnim(uint caller, bool multitask, int[] i /*4*/)	
     {
+        // Play a sound from RTX, display subtitles and play animations
+        // i[0]: index of the RTX data
+        // i[1]: 1st animation to play
+        // i[2]: 2nd animation to play
+        // i[3]: 3rd animation to play
+
         ThrowNIMPL("rtxAnim",i);
         return 0;
     }
@@ -319,6 +331,12 @@ public class soupdeffcn_nimpl
     /*task*/
     public static int RTXpAnim(uint caller, bool multitask, int[] i /*4*/)	
     {
+        // Play a sound from RTX, display subtitles and play animations
+        // TODO: what is p?
+        // i[0]: index of the RTX data
+        // i[1]: 1st animation to play
+        // i[2]: 2nd animation to play
+        // i[3]: 3rd animation to play
         ThrowNIMPL("RTXpAnim",i);
         return 0;
     }
@@ -2546,6 +2564,9 @@ public class soupdeffcn_nimpl
     /*function*/
     public static int AddLog(uint caller, bool multitask, int[] i /*1*/)	
     {
+        // Adds text to the logbook
+        // TODO: check this
+        // i[0]: index to RTX item to log
         ThrowNIMPL("AddLog",i);
         return 0;
     }

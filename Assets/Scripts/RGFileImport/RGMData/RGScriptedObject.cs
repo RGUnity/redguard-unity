@@ -565,6 +565,7 @@ public class RGScriptedObject : MonoBehaviour
         functions = new Func<uint, bool, int[], int>[FUNC_CNT];
         functions[17] = WaitOnTasks;
         functions[21] = showObj;
+        functions[39] = RTX;
         functions[44] = RotateByAxis;
         functions[45] = RotateToAxis;
         functions[46] = WalkForward;
@@ -587,7 +588,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[101] = ShowMe;
         functions[107] = LoadWorld;
         functions[127] = ACTIVATE;
-        functions[136] = PushAnimation;
+//        functions[136] = PushAnimation;
         functions[156] = Offset;
         functions[174] = isFighting;
         functions[224] = PlayerStand;
@@ -674,6 +675,26 @@ public class RGScriptedObject : MonoBehaviour
         //return CameraMain.mainCamera;
         return 0;
     }
+    /*task 39*/
+    public int RTX(uint caller, bool multitask, int[] i /*1*/)	
+    {
+        // Play a sound from RTX and display subtitles
+        // i[0]: index of the RTX data
+        string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
+        MainUIScript.SetActivateText(displayText);
+        Debug.Log($"RTX: {displayText}");
+
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_waiting;
+        newTask.duration = 5.0f; // TODO: get play time from RTX audio
+        newTask.timer = 0;
+
+        AddTask(multitask, newTask);
+
+        return 0;
+    }
+
+
     /*task 44*/
     public int RotateByAxis(uint caller, bool multitask, int[] i /*3*/)    
     {
