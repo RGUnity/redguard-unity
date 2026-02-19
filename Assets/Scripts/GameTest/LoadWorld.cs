@@ -6,6 +6,15 @@ public class LoadWorld : MonoBehaviour
 {
     void EnableScripting()
     {
+    // for START:
+        try{
+            
+            ModelLoader.scriptedObjects[0x8384EA48].EnableScripting(); // SCENEST
+            ModelLoader.scriptedObjects[0x8384ECC8].EnableScripting(); // SBRENNAN
+        }
+        catch(Exception ex){}
+
+
 // for ISLAND:
         try{
             
@@ -47,9 +56,38 @@ public class LoadWorld : MonoBehaviour
 // HARB3 entry
 // SILVER1 entry
         WorldLoader.LoadWorld(18,0,1024);
+// START, unknown entry
+//        WorldLoader.LoadWorld(0,0,0);
         EnableScripting();
 
         RGRGMScriptStore.flags[203] = 1; // OB_Fixed
+        RGRGMScriptStore.flags[362] = 2; // DEADPIRATES
+
+
+// I DONT KNOW WHY I DID THIS ANYMORE :(
+GameObject[] tagged = GameObject.FindGameObjectsWithTag("NPC");
+List<Material> materials = new List<Material>();
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 4, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 5, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 6, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 7, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 8, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 9, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 10, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 11, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 12, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 13, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 14, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 15, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 16, "DEFAULT"));
+materials.Add(RGTexStore.GetMaterial("REDGUARD", 289, 17, "DEFAULT"));
+tagged[0].GetComponent<MeshRenderer>().SetMaterials(materials);
+
+
+
+
+
+
         ModelLoader.scriptedObjects[0x82BD9E40].EnableScripting(); // EXTOBSRV
 //    	ModelLoader.scriptedObjects[0x82BDBD98].EnableScripting(true); // ERASMO
         if(false)

@@ -1,1 +1,2 @@
-mcs -debug initst.cs
+#mcs -debug initst.cs
+mcs -debug menuinitst.cs RGINIFile.cs

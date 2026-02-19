@@ -6,14 +6,18 @@ using Assets.Scripts.RGFileImport.RGGFXImport;
 
 public static class RGINIStore
 {
-    static RGINIFile iniData;
+    static RGINIFile iniWorldData;
+    static RGINIFile iniMenuData;
 
     static RGINIStore()
     {
-        iniData = new RGINIFile();
-        iniData.LoadFile($"{Game.pathManager.GetRootFolder()}/WORLD.INI");
+        iniWorldData = new RGINIFile();
+        iniWorldData.LoadFile($"{Game.pathManager.GetRootFolder()}/WORLD.INI");
+        iniMenuData = new RGINIFile();
+        iniMenuData.LoadFile($"{Game.pathManager.GetRootFolder()}/MENU.INI");
     }
 
+    // WORLD.INI
     public struct worldData
     {
         public string RGM; // doubles as name
@@ -27,10 +31,10 @@ public static class RGINIStore
     public static Dictionary<int, worldData> GetWorldList()
     {
         Dictionary<int, worldData> o = new Dictionary<int, worldData>();
-        foreach(int key in iniData.worldData.worlds.Keys)
+        foreach(int key in iniWorldData.worldData.worlds.Keys)
         {
             worldData w = new worldData();
-            RGINIFile.INIWorld world = iniData.worldData.worlds[key];
+            RGINIFile.INIWorld world = iniWorldData.worldData.worlds[key];
             if(!string.IsNullOrEmpty(world.map))
             {
                 // example input: MAPS\start.rgm
@@ -98,4 +102,23 @@ public static class RGINIStore
         }
         return o;
     }
+    // MENU.INI
+    public enum textJustify
+    {
+        textjustify_left,
+        textjustify_right,
+    }
+    public struct menuItemData
+    {
+        public int textX;
+        public int textY;
+        public string text;
+        public textJustify justify;
+
+    }
+    public struct menuData
+    {
+        public List<menuItemData> itemData;
+    }
+
 }

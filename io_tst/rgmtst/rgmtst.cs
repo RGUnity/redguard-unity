@@ -41,7 +41,7 @@ namespace xyz
 		public static void Main(string[] args)
 		{
 			RGRGMFile filergm = new RGRGMFile();
-			filergm.LoadFile("../../game_3dfx/maps/SILVER1.RGM");
+			filergm.LoadFile("../../game_3dfx/maps/START.RGM");
 
             /*
             print_MPOB(filergm);

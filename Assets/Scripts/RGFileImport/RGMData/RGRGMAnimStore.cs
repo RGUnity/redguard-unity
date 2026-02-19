@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using RGFileImport;
+using UnityEngine;
 
 
 public class AnimData
@@ -10,12 +11,11 @@ public class AnimData
     public bool running;
     int currentKeyFrame;
     int nextKeyFrame;
-    public int offsetKeyFrame;
     int currentAnimFrame;
     public float frameTime;
     public RGRGMAnimStore.RGMAnim animationData;
-    public Stack<RGRGMAnimStore.AnimGroup> animationStack;
-    public List<RGRGMAnimStore.AnimGroup> validAnims;
+    public int currentAnimation;
+    public Dictionary<RGRGMAnimStore.AnimGroup, int> validAnims;
     public Func<bool> shouldExitFcn;
     public Action doExitFcn;
 
@@ -25,12 +25,10 @@ public class AnimData
         running = false;
         currentKeyFrame = 0;
         nextKeyFrame = 0;
-        offsetKeyFrame = 0;
         currentAnimFrame = 0;
         frameTime = FRAMETIME_VAL;
         animationData = RGRGMAnimStore.getAnim(scriptname);
-        animationStack = new Stack<RGRGMAnimStore.AnimGroup>();
-        animationStack.Push(RGRGMAnimStore.AnimGroup.anim_panic);
+        currentAnimation = 0;
         validAnims = getValidAnimations();
 
         shouldExitFcn = this.shouldExitFcn_default;
@@ -48,18 +46,18 @@ public class AnimData
 
     public int getCurrentFrame()
     {
-        return currentKeyFrame - offsetKeyFrame;
+        return currentKeyFrame;
     }
     public int getNextFrame()
     {
-        return nextKeyFrame - offsetKeyFrame;
+        return nextKeyFrame;
     }
-    public List<RGRGMAnimStore.AnimGroup> getValidAnimations()
+    public Dictionary<RGRGMAnimStore.AnimGroup, int> getValidAnimations()
     {
-        List<RGRGMAnimStore.AnimGroup> o = new List<RGRGMAnimStore.AnimGroup>();
+        Dictionary<RGRGMAnimStore.AnimGroup, int> o = new Dictionary<RGRGMAnimStore.AnimGroup, int>();
         for(int i=0;i<animationData.RAGRItems.Count;i++)
         {
-            o.Add(animationData.RAGRItems[i].animGroup);
+            o.Add(animationData.RAGRItems[i].animGroup, i);
         }
 
         return o;
@@ -71,27 +69,21 @@ public class AnimData
     public int PushAnimation(RGRGMAnimStore.AnimGroup animId, int firstframe = 0)
     {
         int anim_i = -1;
-        List<RGRGMAnimStore.AnimGroup> va = validAnims;
-        for(int i=0;i<va.Count;i++)
-        {
-            if(va[i] == animId)
-            {
-                anim_i = i;
-                break;
-            }
-        }
-
-        if(anim_i == -1)
-            return 1;
+        Debug.Log($"PRE animId: {animId}; cur:{currentAnimation} anim_i: {anim_i}");
+        if(!validAnims.TryGetValue(animId, out anim_i))
+            return -1;
 
         running = true;
-        animationStack.Push((RGRGMAnimStore.AnimGroup)anim_i);
-        currentKeyFrame = NextFrame();
-        nextKeyFrame = peekNextFrame();
+        currentAnimation = anim_i;
         currentAnimFrame = firstframe;
 
-        nextKeyFrame = NextFrame();
-        currentAnimFrame = firstframe;
+        currentKeyFrame = peekNextFrame();
+        nextKeyFrame = peekNextFrame();
+        /*
+        Debug.Log($"POS animId: {animId}; cur:{validAnims[(RGRGMAnimStore.AnimGroup)currentAnimation]} anim_i: {anim_i}");
+        Debug.Log($"POS2 cur:{currentAnimation} anim_i: {anim_i}");
+        */
+
 
         return 0;
     }
@@ -101,9 +93,6 @@ public class AnimData
             return;
         else
         {
-            if(animationStack.Count == 1)
-                return;
-
             frameTime -= deltatime;
             if(frameTime <= 0.0f || force_tick == true)
             {
@@ -121,21 +110,22 @@ public class AnimData
         int animframe_pre = currentAnimFrame;
         int nextframe3DC = NextFrame();
         currentAnimFrame = animframe_pre;
-        return nextframe3DC - offsetKeyFrame;
+        return nextframe3DC;
     }
     int EndAnimation()
     {
-        // reached the end, pop anim, stop playing and call the exit function
-        animationStack.Pop();
+        // reached the end, revert to panic, stop playing and call the exit function
+        currentAnimation = 0;
         running = false;
         doExitFcn();
-        return -1;
+        return 0;
 
     }
 
     public int NextFrame()
     {
-        if(animationData.RAGRItems[(int)animationStack.Peek()].animType == RGRGMAnimStore.AnimType.animtype_stop || alwaysPanic == true)
+//        if(animationData.RAGRItems[(int)currentAnimation].animType == RGRGMAnimStore.AnimType.animtype_stop || alwaysPanic == true)
+        if(alwaysPanic == true)
         {
             if(shouldExitFcn() == true)
             {
@@ -143,18 +133,22 @@ public class AnimData
             }
         }
 
-        if(currentAnimFrame >= (int)animationData.RAGRItems[(int)animationStack.Peek()].animFrames.Length)
+        if(currentAnimFrame >= (int)animationData.RAGRItems[(int)currentAnimation].animFrames.Length)
+        {
+                Debug.Log("LASTFRAME");
             return EndAnimation();
+        }
 
         currentAnimFrame++;
         int frame3DC = -1;
         
-        switch(animationData.RAGRItems[(int)animationStack.Peek()].animFrames[currentAnimFrame].frameType)
+        switch(animationData.RAGRItems[(int)currentAnimation].animFrames[currentAnimFrame].frameType)
         {
             case RGRGMAnimStore.FrameType.frametype_normal:
-                frame3DC = (int)animationData.RAGRItems[(int)animationStack.Peek()].animFrames[currentAnimFrame].frameValue;
+                frame3DC = (int)animationData.RAGRItems[(int)currentAnimation].animFrames[currentAnimFrame].frameValue;
                 break;
             case RGRGMAnimStore.FrameType.frametype_end:
+                Debug.Log("end");
                 return EndAnimation();
                 break;
             case RGRGMAnimStore.FrameType.frametype_goback:
@@ -162,11 +156,12 @@ public class AnimData
                 // if not, loop back
                 if(shouldExitFcn() == true)
                 {
+                Debug.Log("goback");
                     frame3DC = NextFrame();
                 }
                 else
                 {
-                    currentAnimFrame = (int)animationData.RAGRItems[(int)animationStack.Peek()].animFrames[currentAnimFrame].frameValue;
+                    currentAnimFrame = (int)animationData.RAGRItems[(int)currentAnimation].animFrames[currentAnimFrame].frameValue;
                     frame3DC = NextFrame();
                 }
                 break;
@@ -175,7 +170,8 @@ public class AnimData
                 // if not, continue going
                 if(shouldExitFcn() == true)
                 {
-                    currentAnimFrame = (int)animationData.RAGRItems[(int)animationStack.Peek()].animFrames[currentAnimFrame].frameValue;
+                Debug.Log("gofwd");
+                    currentAnimFrame = (int)animationData.RAGRItems[(int)currentAnimation].animFrames[currentAnimFrame].frameValue;
                 }
                 else
                 {

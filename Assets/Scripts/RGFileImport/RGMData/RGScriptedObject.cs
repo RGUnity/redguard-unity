@@ -56,6 +56,7 @@ public class RGScriptedObject : MonoBehaviour
 
 // animations	
 	public bool allowAnimation;
+	public int animationFrameOffset;
     public AnimData animations;
 // scripting
     public bool DEBUGSCRIPTING=true;
@@ -234,6 +235,7 @@ public class RGScriptedObject : MonoBehaviour
         }
 
         allowAnimation = false;
+        animationFrameOffset = 0;
 
         allowScripting = false;
         debugScripting = false;
@@ -313,23 +315,11 @@ public class RGScriptedObject : MonoBehaviour
     {
         animations.running = false;
         allowAnimation = false;
+        animationFrameOffset = 0;
     }
-    int nextAnim;
-    int nextfirstFrame;
-    bool setnextanim;
     public void SetAnim(int animId, int firstFrame)
     {
-        nextAnim = animId;
-        nextfirstFrame = firstFrame;
-        setnextanim = true;
-    }
-    public void SetAnim2()
-    {
-        if(!setnextanim)
-            return;
-        int animId = nextAnim;
-        int firstFrame = nextfirstFrame;
-        setnextanim = false;
+
         if(type == ScriptedObjectType.scriptedobject_animated)
         {
             if(animations.PushAnimation((RGRGMAnimStore.AnimGroup)animId,firstFrame) == 0)
@@ -341,15 +331,19 @@ public class RGScriptedObject : MonoBehaviour
                     skinnedMeshRenderer.SetBlendShapeWeight(i, 0.0f);
                 allowAnimation = true;
                 UpdateAnimationsOffset();
+                int currentFrame = animations.getCurrentFrame() - animationFrameOffset;
+                skinnedMeshRenderer.SetBlendShapeWeight(currentFrame, 100.0f);
             }
             else
                 Debug.Log($"{scriptName}: animation {(RGRGMAnimStore.AnimGroup)animId} requested but doesnt exist");
         }
+        else
+            Debug.Log($"{scriptName}: tried to set animation but object type is not animated");
     }
     void UpdateAnimationsOffset()
     {
-        int nextframe = animations.peekNextFrame();
-        animations.offsetKeyFrame = 0;
+        int nextframe = animations.peekNextFrame() - animationFrameOffset;
+        animationFrameOffset = 0;
 
         if(nextframe < 0 || nextframe > meshFrameCount[currentMesh])
         {
@@ -358,7 +352,7 @@ public class RGScriptedObject : MonoBehaviour
             {
                 if(nextframe < (cnt_tot + meshFrameCount[i]))
                 {
-                    animations.offsetKeyFrame = cnt_tot;
+                    animationFrameOffset = cnt_tot;
                     currentMesh = i;
                     skinnedMeshRenderer.sharedMesh = meshes[currentMesh];
                     animations.runAnimation(Time.deltaTime, true);
@@ -370,23 +364,28 @@ public class RGScriptedObject : MonoBehaviour
     }
     void UpdateAnimations()
 	{
-        SetAnim2();
 		if (allowAnimation)
 		{
-            skinnedMeshRenderer.SetBlendShapeWeight(animations.getCurrentFrame(), 0.0f);
-            skinnedMeshRenderer.SetBlendShapeWeight(animations.getNextFrame(), 0.0f);
-            animations.runAnimation(Time.deltaTime);
-       
-            /*
-            skinnedMeshRenderer.SetBlendShapeWeight(animations.currentKeyFrame, 0.0f);
-            skinnedMeshRenderer.SetBlendShapeWeight(animations.nextKeyFrame, 100.0f);
-            */
+            int currentFrame = animations.getCurrentFrame() - animationFrameOffset;
+            int nextFrame = animations.getNextFrame() - animationFrameOffset;
 
+            animations.runAnimation(Time.deltaTime);
+
+            int currentFrame2 = animations.getCurrentFrame() - animationFrameOffset;
+            int nextFrame2 = animations.getNextFrame() - animationFrameOffset;
+/*
             // for animation blending, we need to track current and next frame
+            skinnedMeshRenderer.SetBlendShapeWeight(currentFrame, 0.0f);
+            skinnedMeshRenderer.SetBlendShapeWeight(nextFrame, 0.0f);
             float blend1 = (animations.frameTime/AnimData.FRAMETIME_VAL)*100.0f;
             float blend2 = 100.0f-blend1;
-            skinnedMeshRenderer.SetBlendShapeWeight(animations.getCurrentFrame(), blend1);
-            skinnedMeshRenderer.SetBlendShapeWeight(animations.getNextFrame(), blend2);
+            skinnedMeshRenderer.SetBlendShapeWeight(currentFrame2, blend1);
+            skinnedMeshRenderer.SetBlendShapeWeight(nextFrame2, blend2);
+*/
+   
+            skinnedMeshRenderer.SetBlendShapeWeight(currentFrame2, 0.0f);
+            skinnedMeshRenderer.SetBlendShapeWeight(nextFrame2, 100.0f);
+
 		}
 	}
 	void Update()
@@ -588,7 +587,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[101] = ShowMe;
         functions[107] = LoadWorld;
         functions[127] = ACTIVATE;
-//        functions[136] = PushAnimation;
+        functions[136] = PushAnimation;
         functions[156] = Offset;
         functions[174] = isFighting;
         functions[224] = PlayerStand;
@@ -1042,6 +1041,7 @@ public class RGScriptedObject : MonoBehaviour
     /*task 136*/
     public int PushAnimation(uint caller, bool multitask, int[] i /*2*/)
     {
+        Debug.Log($"{multitask}_{scriptName}_PushAnimation({string.Join(",",i)})");
         // Plays an animation starting at a frame
         // i[0]: animationId
         // i[1]: firstFrame
@@ -1050,6 +1050,7 @@ public class RGScriptedObject : MonoBehaviour
         newTask.timer = 0;
         newTask.animationFinished = false;
 
+        animations.alwaysPanic = false;
         animations.shouldExitFcn = newTask.animAlwaysExitFcn;
         animations.doExitFcn= newTask.animSetFinishedFcn;
         SetAnim(i[0], i[1]);

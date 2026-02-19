@@ -13,7 +13,7 @@ namespace xyz
             RGRGMAnimStore.ReadAnim(filergm);
 
             AnimData ad = new AnimData("CYRUS");
-            ad.PushAnimation(RGRGMAnimStore.AnimGroup.anim_idle2,0);
+            ad.PushAnimation((RGRGMAnimStore.AnimGroup)11,2);
             /*
             for(int i=0;i<50;i++)
             {
@@ -21,9 +21,9 @@ namespace xyz
             }
             */
 
-            Console.WriteLine($"type: {ad.animationData.RAGRItems[(int)(ad.animationStack).Peek()].animType}");
+            Console.WriteLine($"type: {ad.animationData.RAGRItems[(int)(ad.currentAnimation)].animType}");
             int i =0;
-            foreach(var animframe in ad.animationData.RAGRItems[(int)(ad.animationStack).Peek()].animFrames)
+            foreach(var animframe in ad.animationData.RAGRItems[(int)(ad.currentAnimation)].animFrames)
             {
                 Console.WriteLine($"### FRAME {i} ###");
                 Console.WriteLine($"type: {animframe.frameType}");
