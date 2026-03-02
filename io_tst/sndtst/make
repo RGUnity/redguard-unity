@@ -1,2 +1,3 @@
 mcs -debug sfxtst.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RGSFXFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs
 mcs -debug rtxtst.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RGRTXFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs
+mcs -debug rtx2int.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/RGRTXFile.cs ../../Assets/Scripts/RGFileImport/RGGFXImport/MemoryReader.cs

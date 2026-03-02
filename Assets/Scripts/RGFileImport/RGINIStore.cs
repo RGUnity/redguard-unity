@@ -6,15 +6,73 @@ using Assets.Scripts.RGFileImport.RGGFXImport;
 
 public static class RGINIStore
 {
+    static RGINIFile iniItemData;
     static RGINIFile iniWorldData;
     static RGINIFile iniMenuData;
 
     static RGINIStore()
     {
+        iniItemData = new RGINIFile();
+        iniItemData.LoadFile($"{Game.pathManager.GetRootFolder()}/ITEM.INI");
         iniWorldData = new RGINIFile();
         iniWorldData.LoadFile($"{Game.pathManager.GetRootFolder()}/WORLD.INI");
         iniMenuData = new RGINIFile();
         iniMenuData.LoadFile($"{Game.pathManager.GetRootFolder()}/MENU.INI");
+    }
+
+    //ITEM.INI
+    public struct itemData
+    {
+        public string name;
+        public string description;
+        public Material material;
+        public Material material_selected;
+        public RGMeshStore.UnityData_3D inventoryModel;
+    }
+    static int stringToRTXId(string s)
+    {
+        byte[] chars = System.Text.Encoding.ASCII.GetBytes(s.ToLower());
+        int o = BitConverter.ToInt32(chars);
+        return o;
+    }
+
+    // We need the RTX, ROB and textures to be loaded at this point
+    public static Dictionary<int, itemData> GetItemList()
+    {
+        // bitmap example input: SYSTEM\PICKUPS.GXA
+        // remove SYSTEM\ and .GXA:
+        string bitmap = iniItemData.itemData.bitmap_file.Substring(7).ToUpper();
+        bitmap = bitmap.Substring(0, bitmap.IndexOf("."));
+
+        string bitmap_selected = iniItemData.itemData.bitmap_selected_file.Substring(7).ToUpper();
+        bitmap_selected = bitmap_selected.Substring(0, bitmap_selected.IndexOf("."));
+
+        Dictionary<int, itemData> o = new Dictionary<int, itemData>();
+        foreach(int key in iniItemData.itemData.items.Keys)
+        {
+            itemData i = new itemData();
+            RGINIFile.INIItem item = iniItemData.itemData.items[key];
+
+            int nameId = stringToRTXId(item.name);
+            int descriptionId = stringToRTXId(item.description);
+
+            i.name = RGSoundStore.GetRTX(nameId).subtitle;
+            i.description = RGSoundStore.GetRTX(descriptionId).subtitle;
+
+            i.material = RGTexStore.GetMaterial_GXA(bitmap, item.bitmap);
+            i.material_selected = RGTexStore.GetMaterial_GXA(bitmap_selected, item.bitmap);
+
+            // model example input: 3DART\Isword.3D
+            // remove 3DART\ and .GXA and make it uppercase
+            string modelname = item.inventory_object_file.Substring(6).ToUpper();
+            modelname = modelname.Substring(0, modelname.IndexOf("."));
+            i.inventoryModel = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d,
+                                                    modelname,
+                                                    "ISLAND"); // TODO: which COL do we want here?
+
+            o.Add(key, i);
+        }
+        return o;
     }
 
     // WORLD.INI

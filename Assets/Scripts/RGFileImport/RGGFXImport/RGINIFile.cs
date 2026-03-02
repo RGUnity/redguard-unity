@@ -20,6 +20,155 @@ namespace RGFileImport
             inisection_menu_page5,
             inisection_menu_page6,
             inisection_menu_page7,
+            inisection_items,
+        }
+        // ITEMS.INI
+        public struct INIItemData
+        {
+            public string bitmap_file;
+            public string bitmap_selected_file;
+            public List<int> start_item_list;
+            public int start_item_select;
+            public int additional_length;
+            public int weapon_sphere_size;
+            public int default_weapon_item;
+            public int torch_time;
+            public Dictionary<int,INIItem> items;
+        }
+        public struct INIItem
+        {
+            public int type;
+            public int flags;
+            public int hide;
+            public int total;
+            public int player_max;
+            public int player_total;
+            public string name;
+            public string description;
+
+            public string use_script;
+            public int script_instances;
+
+            public int bitmap;
+            public string inventory_object_file;
+            public string game_object_file;
+
+            public string hand_object_file;
+            public string hilt_object_file;
+        }
+        public void ParseItemLine(string line)
+        {
+            if(line.Length == 0)
+                return;
+            string[] values;
+            string[] parts = line.Split('=');
+            string member = parts[0].Trim();
+            string val = parts[1].Trim();
+            
+            if(member.Contains("[") && member.Contains("]"))
+            {
+                // item-specific data
+                int itemIndex = int.Parse(member.Substring(member.IndexOf('[')+1,
+                                                            member.IndexOf(']')-member.IndexOf('[')-1)); 
+                string memberName = member.Substring(0, member.IndexOf('['));
+                INIItem tmp = new INIItem();
+                if(!itemData.items.TryGetValue(itemIndex, out tmp))
+                {
+                    itemData.items.Add(itemIndex, tmp);
+                }
+                switch(memberName)
+                {
+                    case "type":
+                        tmp.type = int.Parse(val);
+                        break;
+                    case "flags":
+                        tmp.flags = int.Parse(val);
+                        break;
+                    case "hide":
+                        tmp.hide = int.Parse(val);
+                        break;
+                    case "total":
+                        tmp.total = int.Parse(val);
+                        break;
+                    case "player_max":
+                        tmp.player_max = int.Parse(val);
+                        break;
+                    case "player_total":
+                        tmp.player_total = int.Parse(val);
+                        break;
+                    case "name":
+                        tmp.name= val;
+                        break;
+                    case "description":
+                        tmp.description = val;
+                        break;
+                    case "use_script":
+                        tmp.use_script = val;
+                        break;
+                    case "script_instances":
+                        tmp.script_instances = int.Parse(val);
+                        break;
+                    case "bitmap":
+                        tmp.bitmap = int.Parse(val);
+                        break;
+                    case "inventory_object_file":
+                        tmp.inventory_object_file = val;
+                        break;
+                    case "game_object_file":
+                        tmp.game_object_file = val;
+                        break;
+                    case "hand_object_file":
+                        tmp.hand_object_file = val;
+                        break;
+                    case "hilt_object_file":
+                        tmp.hilt_object_file = val;
+                        break;
+                    default:
+                        Console.WriteLine($"UNKNOWN: {memberName}");
+                        break;
+                }
+                itemData.items[itemIndex] = tmp;
+            }
+            else
+            {
+                // items metadata
+                switch(member)
+                {
+                    case "bitmap_file":
+                        itemData.bitmap_file = val;
+                        break;
+                    case "bitmap_selected_file":
+                        itemData.bitmap_selected_file = val;
+                        break;
+                    case "start_item_list":
+                        values = val.Split(",");
+                        foreach( string v in values)
+                        {
+                            Console.WriteLine($"V: {v}");
+                            itemData.start_item_list.Add(int.Parse(v));
+                        }
+                        break;
+                    case "start_item_select":
+                        itemData.start_item_select = int.Parse(val);
+                        break;
+                    case "additional_length":
+                        itemData.additional_length = int.Parse(val);
+                        break;
+                    case "weapon_sphere_size":
+                        itemData.weapon_sphere_size = int.Parse(val);
+                        break;
+                    case "default_weapon_item":
+                        itemData.default_weapon_item = int.Parse(val);
+                        break;
+                    case "torch_time":
+                        itemData.torch_time = int.Parse(val);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            Console.WriteLine(line);
         }
         // WORLD.INI
         public struct INIWorldData
@@ -70,6 +219,7 @@ namespace RGFileImport
             public Vector3 wave;
 
         }
+
         public void ParseWorldLine(string line)
         {
             if(line.Length == 0)
@@ -473,6 +623,10 @@ namespace RGFileImport
         {
             switch(section)
             {
+
+                case INISection.inisection_items:
+                    ParseItemLine(line);
+                    break;
                 case INISection.inisection_world:
                     ParseWorldLine(line);
                     break;
@@ -509,6 +663,7 @@ namespace RGFileImport
             }
         }
 
+        public INIItemData itemData;
         public INIWorldData worldData;
         public INIMenuData menuData;
 
@@ -526,6 +681,13 @@ namespace RGFileImport
                     string line_nocomment = parts[0];
                     switch(line_nocomment)
                     {
+                        // ITEM.INI
+                        case "[items]":
+                            currentSection = INISection.inisection_items;
+                            itemData = new INIItemData();
+                            itemData.start_item_list = new List<int>();
+                            itemData.items= new Dictionary<int,INIItem>();
+                            break;
                         // WORLD.INI
                         case "[world]":
                             currentSection = INISection.inisection_world;
