@@ -213,7 +213,6 @@ size: {dataLength:X}
             public char[] text;     // its one big string
 			public RGMRASTSection(MemoryReader memoryReader, uint size)
             {
-                Console.WriteLine($"RASBSIZE: {size:X}");
                 try
                 {
                     text = memoryReader.ReadChars((int)size);
@@ -1232,9 +1231,7 @@ size: {dataLength:X}
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RAHD")
                     {
-                        Console.WriteLine($"AT: {memoryReader.Position:X}");
                         RAHD = new RGMRAHDSection(memoryReader, Sections[Sections.Count-1].dataLength);
-                        Console.WriteLine($"END: {memoryReader.Position:X}");
                     }
                     else if(Sections[Sections.Count-1].sectionName == "RAST")
                     {
