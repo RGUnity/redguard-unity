@@ -1033,7 +1033,7 @@ public class RGScriptedObject : MonoBehaviour
         // i[0]: Stringid shown on screen when looking at the item
         string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
         MainUIScript.SetActivateText(displayText);
-        if(Game.Input.activate)
+        if(Game.Input.use)
             return 1;
         else
             return 0;
