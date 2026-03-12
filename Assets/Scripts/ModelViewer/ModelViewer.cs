@@ -232,6 +232,14 @@ public class ModelViewer : MonoBehaviour
                         rgso.ClearAnim();
                 }
             }
+
+            if (obj.TryGetComponent(out BlendShapeAnimator bsa))
+            {
+                if (settings.playAnimations)
+                    bsa.Play();
+                else
+                    bsa.Stop();
+            }
         }
     }
 }
