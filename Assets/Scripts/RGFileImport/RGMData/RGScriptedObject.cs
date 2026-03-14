@@ -680,7 +680,7 @@ public class RGScriptedObject : MonoBehaviour
         // Play a sound from RTX and display subtitles
         // i[0]: index of the RTX data
         string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
-        MainUIScript.SetActivateText(displayText);
+        Game.uiManager.ShowInteractionText(displayText);
         Debug.Log($"RTX: {displayText}");
 
         TaskData newTask = new TaskData();
@@ -1032,7 +1032,7 @@ public class RGScriptedObject : MonoBehaviour
         // True if player activates an item
         // i[0]: Stringid shown on screen when looking at the item
         string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
-        MainUIScript.SetActivateText(displayText);
+        Game.uiManager.ShowInteractionText(displayText);
         if(Game.Input.use)
             return 1;
         else
