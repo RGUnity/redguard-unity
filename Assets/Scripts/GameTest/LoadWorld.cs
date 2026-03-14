@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class LoadWorld : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+Dictionary<int, RGINIStore.itemData> itemdict;
     void Start()
     {
 // OBS entry
@@ -13,20 +14,25 @@ public class LoadWorld : MonoBehaviour
 //        WorldLoader.LoadWorld(1,6,1024);
 // HARB3 entry
 // SILVER1 entry
-        WorldLoader.LoadWorld(18,0,1024);
+        WorldLoader.RequestLoadWorld(18,0,1024);
+        worldChanged = WorldLoader.LoadWorldIfRequested();
 
 RG3DStore.LoadMeshIntermediatesROB("INVENTRY");
-Dictionary<int, RGINIStore.itemData> itemdict = RGINIStore.GetItemList();
+/*
+ itemdict = RGINIStore.GetItemList();
 foreach(KeyValuePair<int, RGINIStore.itemData> entry in itemdict)
 {
     Debug.LogWarning($"item {entry.Key}: {entry.Value.name} | {entry.Value.description}");
 }
+*/
 
 // START, unknown entry
 //        WorldLoader.LoadWorld(0,0,0);
 
+/*
         RGRGMScriptStore.flags[203] = 1; // OB_Fixed
         RGRGMScriptStore.flags[362] = 2; // DEADPIRATES
+*/
 
      }
     // Update is called once per frame
@@ -35,12 +41,11 @@ foreach(KeyValuePair<int, RGINIStore.itemData> entry in itemdict)
     {
         worldChanged = WorldLoader.LoadWorldIfRequested();
         if(Input.GetKeyUp("space"))
+            Game.uiManager.HideLoadingScreen();
+        if(Input.GetKeyDown("space"))
         {
-            Game.uiManager.ShowInteractionText("HEYOO");
-            Game.uiManager.AddDialogueOption("OPT1");
-            Game.uiManager.AddDialogueOption("OPT2");
-            Game.uiManager.AddDialogueOption("OPT3");
-            Game.uiManager.AddDialogueOption("OPT4");
+            Material loadScreenMat = RGTexStore.GetMaterial_GXA("ISLAND", 0);
+            Game.uiManager.ShowLoadingScreen(loadScreenMat.mainTexture);
         }
     }
 }

@@ -87,17 +87,16 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
                 int height = gxa.BBMP.BBMPItems[f].height;
 
                 byte[] pixels = new byte[width*height*4];
-                // flip width and height here to rotate image upright
-                Texture2D texture = new Texture2D(height, width, TextureFormat.RGBA32, false);
-                for (int y=0; y<height;y++)
+                Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+                // The GXA's are upside-down, we need to do some magic with height here to get em flipped
+                for (int y=1; y<=height;y++)
                 {
                     for (int x=0; x<width;x++)
                     {
-                        int i = x+(y*width);
+                        int i = x+((y-1)*width);
                         if(gxa.BBMP.BBMPItems[f].data[i] == 0) // assuming 0 is transparent
                         {
-                            // flip width and height here
-                            int ti = y+(x*height);
+                            int ti = x+((height-y)*width);
                             pixels[ti*4+0] = 0;
                             pixels[ti*4+1] = 0;
                             pixels[ti*4+2] = 0;
@@ -106,8 +105,7 @@ namespace Assets.Scripts.RGFileImport.RGGFXImport
                         else
                         {
                             var bpalColor = gxa.BPAL.colors[gxa.BBMP.BBMPItems[f].data[i]];
-                            // flip width and height here
-                            int ti = y+(x*height);
+                            int ti = x+((height-y)*width);
                             pixels[ti*4+0] = bpalColor.r;
                             pixels[ti*4+1] = bpalColor.g;
                             pixels[ti*4+2] = bpalColor.b;

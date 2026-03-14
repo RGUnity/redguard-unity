@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private DialogueOption optionPrefab;
     [SerializeField] private Transform optionsParent;
     [SerializeField] private TMP_Text interactionTextDisplay;
+    [SerializeField] public UIGraphics uiGraphics;
     
     private List<DialogueOption> options = new();
 
@@ -23,6 +24,7 @@ public class UIManager : MonoBehaviour
         optionPrefab = data.optionPrefab;
         optionsParent =  data.optionsParent;
         interactionTextDisplay = data.interactionTextDisplay;
+        uiGraphics = data.uiGraphics;
     }
     
     // GAMEPLAY UI
@@ -75,4 +77,15 @@ public class UIManager : MonoBehaviour
     {
         Debug.LogWarning("Dialogue actions are not yet implemented");
     }
+
+    // UI GRAPHICS
+    public void ShowLoadingScreen(Texture t)
+    {
+        uiGraphics.ShowLoadingScreen(t);
+    }
+    public void HideLoadingScreen()
+    {
+        uiGraphics.HideLoadingScreen();
+    }
+
 }

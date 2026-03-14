@@ -8,7 +8,7 @@ public static class WorldLoader
     struct WorldLoadRequest
     {
         public bool loadRequested;
-        public int worldId;
+        public RGINIStore.worldData worldData;
         public int playerSpawnLocation;
         public int playerSpawnOrientation;
     }
@@ -33,9 +33,13 @@ public static class WorldLoader
     public static void RequestLoadWorld(int worldId, int playerSpawnLocation, int playerSpawnOrientation)
     {
         loadRequest.loadRequested = true;
-        loadRequest.worldId = worldId;
+        loadRequest.worldData = RGINIStore.GetWorldList()[worldId];
         loadRequest.playerSpawnLocation = playerSpawnLocation;
         loadRequest.playerSpawnOrientation = playerSpawnOrientation;
+
+        Material loadScreenMat = RGTexStore.GetMaterial_GXA(loadRequest.worldData.loadScreen, 0);
+        Game.uiManager.ShowLoadingScreen(loadScreenMat.mainTexture);
+
     }
     static void UnloadLoadedWorld()
     {
@@ -54,24 +58,23 @@ public static class WorldLoader
             loadRequest.loadRequested = false;
 
             UnloadLoadedWorld();
-            LoadWorld(loadRequest.worldId, 
+            LoadWorld(loadRequest.worldData, 
                       loadRequest.playerSpawnLocation,
                       loadRequest.playerSpawnOrientation);
-            Debug.Log($"LOADED WORLD: {loadRequest.worldId},{loadRequest.playerSpawnLocation},{loadRequest.playerSpawnOrientation}");
+
+            Debug.Log($"LOADED WORLD: {loadRequest.worldData.RGM}, {loadRequest.playerSpawnLocation}, {loadRequest.playerSpawnOrientation}");
+        Game.uiManager.HideLoadingScreen();
             return true;
         }
         return false;
     }
-    public static void LoadWorld(int worldId, int playerSpawnLocation, int playerSpawnOrientation)
+    public static void LoadWorld(RGINIStore.worldData worldData, int playerSpawnLocation, int playerSpawnOrientation)
     {
         string RGM;
         string COL;
         string WLD;
         string SFX;
         string RTX;
-
-        // get the INI data for this world
-        RGINIStore.worldData worldData = RGINIStore.GetWorldList()[worldId];
 
         RGM = worldData.RGM;
         COL = worldData.COL;
@@ -104,6 +107,7 @@ public static class WorldLoader
             
             ModelLoader.scriptedObjects[WorldObjects[RGM][i]].EnableScripting();
         }
+
     }
     static void LoadPlayer(string RGM, int playerSpawnLocation, int playerSpawnOrientation)
     {

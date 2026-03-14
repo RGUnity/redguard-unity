@@ -6,4 +6,5 @@ public class LocalUIData : MonoBehaviour
     [SerializeField] public DialogueOption optionPrefab;
     [SerializeField] public Transform optionsParent;
     [SerializeField] public TMP_Text interactionTextDisplay;
+    [SerializeField] public UIGraphics uiGraphics;
 }
