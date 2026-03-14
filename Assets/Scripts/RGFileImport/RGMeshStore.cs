@@ -52,6 +52,11 @@ static readonly ProfilerMarker pm_loadmesh_framedata = new ProfilerMarker("pm_lo
     {
         Mesh3DDict = new Dictionary<string, UnityData_3D>();
     }
+    public static void ClearCache()
+    {
+        Mesh3DDict.Clear();
+    }
+
     public static void DumpDict()
     {
         Debug.Log($"MESHES:");

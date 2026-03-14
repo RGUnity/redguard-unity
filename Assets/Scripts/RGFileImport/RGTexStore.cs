@@ -35,6 +35,11 @@ public static class RGTexStore
 
     }
 
+    public static void ClearCache()
+    {
+        MaterialDict.Clear();
+    }
+
     public static void DumpDict()
     {
         Debug.Log($"MATS:");

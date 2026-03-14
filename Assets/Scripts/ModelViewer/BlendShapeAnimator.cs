@@ -8,24 +8,28 @@ public class BlendShapeAnimator : MonoBehaviour
     float frameTimer;
     bool playing;
 
+    // Frame 0 = T-pose, frame 1 = zero-delta (rebased base pose), skip both
+    int firstFrame;
+
     public void Initialize(SkinnedMeshRenderer smr)
     {
         skinnedMeshRenderer = smr;
         frameCount = smr.sharedMesh.blendShapeCount;
-        currentFrame = 0;
+        firstFrame = frameCount > 2 ? 2 : 0;
+        currentFrame = firstFrame;
         frameTimer = AnimData.FRAMETIME_VAL;
         playing = false;
     }
 
     public void Play()
     {
-        if (frameCount > 0)
+        if (frameCount > firstFrame)
         {
             playing = true;
-            currentFrame = 0;
+            currentFrame = firstFrame;
             frameTimer = AnimData.FRAMETIME_VAL;
             ResetWeights();
-            skinnedMeshRenderer.SetBlendShapeWeight(0, 100.0f);
+            skinnedMeshRenderer.SetBlendShapeWeight(currentFrame, 100.0f);
         }
     }
 
@@ -37,7 +41,7 @@ public class BlendShapeAnimator : MonoBehaviour
 
     void Update()
     {
-        if (!playing || frameCount == 0)
+        if (!playing || frameCount <= firstFrame)
             return;
 
         frameTimer -= Time.deltaTime;
@@ -46,7 +50,9 @@ public class BlendShapeAnimator : MonoBehaviour
             frameTimer += AnimData.FRAMETIME_VAL;
 
             skinnedMeshRenderer.SetBlendShapeWeight(currentFrame, 0.0f);
-            currentFrame = (currentFrame + 1) % frameCount;
+            currentFrame++;
+            if (currentFrame >= frameCount)
+                currentFrame = firstFrame;
             skinnedMeshRenderer.SetBlendShapeWeight(currentFrame, 100.0f);
         }
     }
