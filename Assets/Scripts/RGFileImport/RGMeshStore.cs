@@ -42,8 +42,6 @@ static readonly ProfilerMarker pm_loadmesh_framedata = new ProfilerMarker("pm_lo
         public int framecount;
         public Vector3[] vertices;
         public Vector3[] normals;
-        public Vector3[][] frameDeltaVertices;
-        public Vector3[][] frameDeltaNormals;
     }
 
     static Dictionary<string, UnityData_3D> Mesh3DDict; // key:    
@@ -54,6 +52,11 @@ static readonly ProfilerMarker pm_loadmesh_framedata = new ProfilerMarker("pm_lo
     {
         Mesh3DDict = new Dictionary<string, UnityData_3D>();
     }
+    public static void ClearCache()
+    {
+        Mesh3DDict.Clear();
+    }
+
     public static void DumpDict()
     {
         Debug.Log($"MESHES:");
@@ -197,11 +200,40 @@ using(s_load_FLAT2mesh.Auto()){
         List<Material> materials = new List<Material>();
         Mesh mesh_3d = new Mesh();
         mesh_3d.subMeshCount = mesh_i.subMeshCount;
-        mesh_3d.vertices = mesh_i.vertices.ToArray();
-        mesh_3d.normals = mesh_i.normals.ToArray();
-        for(int j=0;j<mesh_i.framecount;j++)
+
+        Vector3[] baseVerts = mesh_i.vertices.ToArray();
+        Vector3[] baseNorms = mesh_i.normals.ToArray();
+        Vector3[] rebaseDeltaV = null;
+        Vector3[] rebaseDeltaN = null;
+
+        // Rebase to frame 1 so default appearance (all weights 0) is not the T-pose
+        if(mesh_i.framecount > 1)
         {
-            mesh_3d.AddBlendShapeFrame($"FRAME_{j}", 100.0f, mesh_i.frameDeltaVertices[j].ToArray(), mesh_i.frameDeltaNormals[j].ToArray(), null);
+            rebaseDeltaV = mesh_i.frameDeltaVertices[1].ToArray();
+            rebaseDeltaN = mesh_i.frameDeltaNormals[1].ToArray();
+            for(int j = 0; j < baseVerts.Length; j++)
+            {
+                baseVerts[j] += rebaseDeltaV[j];
+                baseNorms[j] += rebaseDeltaN[j];
+            }
+        }
+
+        mesh_3d.vertices = baseVerts;
+        mesh_3d.normals = baseNorms;
+
+        for(int j = 0; j < mesh_i.framecount; j++)
+        {
+            Vector3[] deltaV = mesh_i.frameDeltaVertices[j].ToArray();
+            Vector3[] deltaN = mesh_i.frameDeltaNormals[j].ToArray();
+            if(rebaseDeltaV != null)
+            {
+                for(int k = 0; k < deltaV.Length; k++)
+                {
+                    deltaV[k] -= rebaseDeltaV[k];
+                    deltaN[k] -= rebaseDeltaN[k];
+                }
+            }
+            mesh_3d.AddBlendShapeFrame($"FRAME_{j}", 100.0f, deltaV, deltaN, null);
         }
 
         List<Vector2> nuvs = new List<Vector2>(mesh_i.uv);
@@ -236,16 +268,8 @@ using(s_load_FLAT2mesh.Auto()){
 
         UnityData_3D data = new UnityData_3D();
         data.framecount = mesh_i.framecount;
-        data.vertices = mesh_i.vertices.ToArray();
-        data.normals = mesh_i.normals.ToArray();
-
-        data.frameDeltaVertices = new Vector3[data.framecount][];
-        data.frameDeltaNormals = new Vector3[data.framecount][];
-        for(int j=1;j<data.framecount;j++)
-        {
-            data.frameDeltaVertices[j] = mesh_i.frameDeltaVertices[j].ToArray();
-            data.frameDeltaNormals[j] = mesh_i.frameDeltaNormals[j].ToArray();
-        }
+        data.vertices = baseVerts;
+        data.normals = baseNorms;
         data.mesh = mesh_3d;
         data.materials = materials;
 

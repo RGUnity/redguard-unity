@@ -6,11 +6,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private ModelViewer modelViewer;
-    
+
     [Header("Left Panel")]
     [SerializeField] private Image highlighter_ModeArea;
     [SerializeField] private Image highlighter_ModeObjects;
@@ -23,18 +24,34 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public TMP_Dropdown objectDropDown;
     [SerializeField] public string objectDropdownResetText = "All";
     [SerializeField] public TMP_Text fileNameText;
-    
-    [Header("Right Panel")]
+
+    [Header("Settings Panel")]
     [SerializeField] public Toggle filterToggle;
     [SerializeField] public Toggle animationToggle;
     [SerializeField] public Toggle flyModeToggle;
+    [SerializeField] public Slider fovSlider;
+    [SerializeField] public Slider bgColorR, bgColorG, bgColorB;
+    [SerializeField] public Toggle cameraLightToggle;
+    [SerializeField] public Toggle sceneLightToggle;
+    [SerializeField] public Slider sceneLightIntensitySlider;
+    [SerializeField] public Toggle fogToggle;
+    [SerializeField] public Slider fogDensitySlider;
+    [SerializeField] public Toggle scriptObjectsToggle;
+    [SerializeField] public TMP_Dropdown paletteDropdown;
+
+    [Header("Bottom Panel")]
     [SerializeField] public Button exportButton;
 
     private List<GameObject> areaButtonList = new();
     private List<GameObject> modelButtonList = new();
     private List<RGINIStore.worldData> areaList = new();
     private List<FileInfo> modelList = new();
-    
+
+    private int selectedButtonIndex = -1;
+    private Color defaultButtonColor = new Color(0.2f, 0.2f, 0.2f, 1f);
+    private Color selectedButtonColor = new Color(0.3f, 0.4f, 0.6f, 1f);
+    private ScrollRect fileListScrollRect;
+
     private Dictionary<string, string> modelPaletteDict = new()
     {
         // Necromancer Isle, City Jail
@@ -52,7 +69,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         ["VULTA001.3DC"] = "NECRO",
         ["ZOMBA001.3DC"] = "NECRO",
         ["ZOMBA002.3DC"] = "NECRO",
-        
+
         // Goblin Caves, Mages Guild
         ["CAVERNS.ROB"] = "REDCAVE",
         ["CV_BOOM.3D"] = "REDCAVE",
@@ -60,7 +77,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         ["CV_EXPL1.3DC"] = "REDCAVE",
         ["CV_MUSH2.3DC"] = "REDCAVE",
         ["MGUILD.ROB"] = "REDCAVE",
-        
+
         // Observatory, Dwemer Caves
         ["DGOLA001.3DC"] = "OBSERVAT",
         ["DRINT.ROB"] = "OBSERVAT",
@@ -68,16 +85,16 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         ["GOLMA001.3DC"] = "OBSERVAT",
         ["GOLMA002.3DC"] = "OBSERVAT",
         ["OBSERVE.ROB"] = "OBSERVAT",
-        
+
         // Restless League Hideout
         ["FLAG_RL.3DC"] = "HIDEOUT",
         ["HIDEINT.ROB"] = "HIDEOUT",
         ["HIDEOUT.ROB"] = "HIDEOUT",
-        
+
         // Imperial Palace
         ["PALACE.ROB"] = "PALACE00",
         ["PALATEST.ROB"] = "PALACE00",
-        
+
         // Catacombs
         ["CATACOMB.ROB"] = "CATACOMB"
     };
@@ -112,15 +129,78 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         ["TEMPLE"] = "Temple of Arkay",
         ["VILE"] = "Realm of Clavicus Vile"
     };
-        
+
     public void Initialize()
     {
+        fileListScrollRect = root_ButtonList.GetComponentInParent<ScrollRect>();
+        WireSettingsCallbacks();
         SwitchMode(ViewerModes.Areas);
         UpdateModelDependentUI();
     }
-    
+
+    private void WireSettingsCallbacks()
+    {
+        var settings = modelViewer.settings;
+
+        // Sync all UI controls to code defaults before wiring callbacks
+        if (flyModeToggle != null)
+            flyModeToggle.SetIsOnWithoutNotify(settings.useFlyMode);
+        if (filterToggle != null)
+            filterToggle.SetIsOnWithoutNotify(settings.useTextureFiltering);
+        if (animationToggle != null)
+            animationToggle.SetIsOnWithoutNotify(settings.playAnimations);
+        if (fovSlider != null)
+            fovSlider.SetValueWithoutNotify(settings.fieldOfView);
+        if (bgColorR != null)
+            bgColorR.SetValueWithoutNotify(settings.backgroundColor.r);
+        if (bgColorG != null)
+            bgColorG.SetValueWithoutNotify(settings.backgroundColor.g);
+        if (bgColorB != null)
+            bgColorB.SetValueWithoutNotify(settings.backgroundColor.b);
+        if (cameraLightToggle != null)
+            cameraLightToggle.SetIsOnWithoutNotify(settings.useCameraLight);
+        if (sceneLightToggle != null)
+            sceneLightToggle.SetIsOnWithoutNotify(settings.useSceneLight);
+        if (sceneLightIntensitySlider != null)
+            sceneLightIntensitySlider.SetValueWithoutNotify(settings.sceneLightIntensity);
+        if (fogToggle != null)
+            fogToggle.SetIsOnWithoutNotify(settings.useFog);
+        if (fogDensitySlider != null)
+            fogDensitySlider.SetValueWithoutNotify(settings.fogDensity);
+        if (scriptObjectsToggle != null)
+            scriptObjectsToggle.SetIsOnWithoutNotify(settings.showScriptObjects);
+
+        // Now wire callbacks
+        if (flyModeToggle != null)
+            flyModeToggle.onValueChanged.AddListener(val => settings.ToggleFlyMode(val));
+        if (filterToggle != null)
+            filterToggle.onValueChanged.AddListener(val => settings.ToggleTextureFiltering(val));
+        if (animationToggle != null)
+            animationToggle.onValueChanged.AddListener(val => settings.ToggleAnimations(val));
+        if (fovSlider != null)
+            fovSlider.onValueChanged.AddListener(val => settings.SetFieldOfView(val));
+        if (bgColorR != null)
+            bgColorR.onValueChanged.AddListener(val => settings.SetBackgroundColor(new Color(val, settings.backgroundColor.g, settings.backgroundColor.b)));
+        if (bgColorG != null)
+            bgColorG.onValueChanged.AddListener(val => settings.SetBackgroundColor(new Color(settings.backgroundColor.r, val, settings.backgroundColor.b)));
+        if (bgColorB != null)
+            bgColorB.onValueChanged.AddListener(val => settings.SetBackgroundColor(new Color(settings.backgroundColor.r, settings.backgroundColor.g, val)));
+        if (cameraLightToggle != null)
+            cameraLightToggle.onValueChanged.AddListener(val => settings.ToggleCameraLight(val));
+        if (sceneLightToggle != null)
+            sceneLightToggle.onValueChanged.AddListener(val => settings.ToggleSceneLight(val));
+        if (sceneLightIntensitySlider != null)
+            sceneLightIntensitySlider.onValueChanged.AddListener(val => settings.SetSceneLightIntensity(val));
+        if (fogToggle != null)
+            fogToggle.onValueChanged.AddListener(val => settings.ToggleFog(val));
+        if (fogDensitySlider != null)
+            fogDensitySlider.onValueChanged.AddListener(val => settings.SetFogDensity(val));
+        if (scriptObjectsToggle != null)
+            scriptObjectsToggle.onValueChanged.AddListener(val => settings.ToggleScriptObjects(val));
+    }
+
     public bool IsMouseOverUI { get; private set; }
-    
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         IsMouseOverUI = true;
@@ -131,8 +211,36 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         IsMouseOverUI = false;
     }
 
+    private void Update()
+    {
+        if (!modelViewer.settings.showUI) return;
+
+        var kb = Keyboard.current;
+        if (kb == null) return;
+
+        List<GameObject> activeButtons = GetActiveButtonList();
+        if (activeButtons == null || activeButtons.Count == 0) return;
+
+        if (kb.downArrowKey.wasPressedThisFrame)
+        {
+            SelectButton(Mathf.Min(selectedButtonIndex + 1, activeButtons.Count - 1), activeButtons);
+        }
+        else if (kb.upArrowKey.wasPressedThisFrame)
+        {
+            SelectButton(Mathf.Max(selectedButtonIndex - 1, 0), activeButtons);
+        }
+        else if (kb.enterKey.wasPressedThisFrame || kb.numpadEnterKey.wasPressedThisFrame)
+        {
+            if (selectedButtonIndex >= 0 && selectedButtonIndex < activeButtons.Count)
+            {
+                LoadSelectedButton(activeButtons[selectedButtonIndex]);
+            }
+        }
+    }
+
     private void SwitchMode(ViewerModes mode)
     {
+        ResetButtonSelection();
         switch (mode)
         {
             case ViewerModes.Areas:
@@ -157,15 +265,34 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         highlighter_ModeArea.enabled = false;
         highlighter_ModeObjects.enabled = false;
         highlighter_ModeTexture.enabled = false;
-        
-        selectedImage.enabled = true;;
+
+        selectedImage.enabled = true;
     }
-    
+
     public void UpdateModelDependentUI()
     {
         UpdateFileNameDisplay();
         UpdateIsolationDropdown();
         UpdateExportButton();
+
+        // Determine current palette for loaded model
+        string currentPal = "ISLAND";
+        if (!string.IsNullOrEmpty(modelViewer.minimalLoadedFileName))
+        {
+            string[] extensions = { ".3DC", ".3D", ".ROB" };
+            foreach (var ext in extensions)
+            {
+                string key = modelViewer.minimalLoadedFileName + ext;
+                if (modelPaletteDict.TryGetValue(key, out string pal))
+                {
+                    currentPal = pal;
+                    break;
+                }
+            }
+            if (modelViewer.minimalLoadedFileName.Contains("CRAK"))
+                currentPal = "REDCAVE";
+        }
+        UpdatePaletteDropdown(currentPal);
     }
 
     private void UpdateFileNameDisplay()
@@ -181,11 +308,11 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             fileNameText.text = modelViewer.loadedFileName;
         }
     }
-    
+
     private void UpdateIsolationDropdown()
     {
         objectDropDown.ClearOptions();
-        
+
         List<TMP_Dropdown.OptionData>  optionsList = new List<TMP_Dropdown.OptionData>();
         optionsList.Add(new TMP_Dropdown.OptionData(objectDropdownResetText));
 
@@ -211,9 +338,9 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         exportButton.interactable = modelViewer.loadedObjects.Count > 0;
     }
-    
+
     private void BuildButtonList_Areas()
-    { 
+    {
         // generate the area list, if it is missing
         if (areaList.Count <= 0)
         {
@@ -222,26 +349,22 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             for(int i=0;i<areaList.Count;i++)
             {
                 Debug.Log($"area {i}: {areaList[i].RGM}, {areaList[i].WLD}, {areaList[i].COL}, {areaList[i].skyBoxGXA}, {areaList[i].skyBoxBSI}, {areaList[i].sunImage}, {areaList[i].loadScreen}");
-                // to get materials for GXA/BSI:
-                // GXA: RGTexStore.GetMaterial_GXA(GXA, 0);
-                // BSI: RGTexStore.GetMaterial_BSI(COL, BSI);
-
             }
-        
+
             // Delete Island duplicates from list
             areaList.RemoveAll(area =>
-                (area.RGM == "ISLAND" && area.COL == "NIGHTSKY") 
+                (area.RGM == "ISLAND" && area.COL == "NIGHTSKY")
                 || (area.RGM == "ISLAND" && area.COL == "SUNSET")
             );
-            
+
             // Add the missing HIDEOUT area that is missing from WORLD.INI
             if (File.Exists(Game.pathManager.GetMapsFolder() + "HIDEOUT.RGM"))
             {
                 areaList.Add(new RGINIStore.worldData
                 {
-                    RGM = "HIDEOUT", 
-                    COL = "HIDEOUT", 
-                    WLD = "HIDEOUT" 
+                    RGM = "HIDEOUT",
+                    COL = "HIDEOUT",
+                    WLD = "HIDEOUT"
                 });
                 print("HIDEOUT.RGM found, adding button");
             }
@@ -249,8 +372,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             {
                 print("HIDEOUT.RGM not found, button will not be added");
             }
-            
-            
+
+
             // Remove the second "BRENNANS" entry because it has no noteworthy differences
             int brennansCount = 0;
             for (int i = 0; i < areaList.Count; i++)
@@ -264,10 +387,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
                     brennansCount++;
                 }
             }
-            
+
             // Sort areaList alphabetically
-            areaList = areaList.OrderBy(item => 
-                    areaNameDict.GetValueOrDefault(item.RGM, item.RGM), 
+            areaList = areaList.OrderBy(item =>
+                    areaNameDict.GetValueOrDefault(item.RGM, item.RGM),
                 StringComparer.OrdinalIgnoreCase).ToList();
         }
 
@@ -279,7 +402,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 button.SetActive(false);
             }
         }
-        
+
         // generate the area buttons, if they are missing
         if (areaButtonList.Count <= 0)
         {
@@ -301,14 +424,14 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         var newButton = Instantiate(buttonROB_Prefab, root_ButtonList);
         newButton.name = "Button_" + RGM;
         areaButtonList.Add(newButton);
-        
+
         if (newButton.TryGetComponent(out ModelViewer_AreaButton component))
         {
             component.mv_GUI = this;
             component.RGM = RGM;
             component.WLD = WLD;
             component.COL = COL;
-            
+
             // Look for a pretty name in areaNameDict, or use the RGM string as text
             var prettyAreaName = areaNameDict.GetValueOrDefault(RGM, RGM);
             component.prettyAreaName = prettyAreaName;
@@ -327,7 +450,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
             var List3Dand3DC = fileList3D.Concat(fileList3DC);
             List3Dand3DC = List3Dand3DC.OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase);
-            
+
             var fileListROB = dirInfo.GetFiles("*.ROB");
             modelList = List3Dand3DC.Concat(fileListROB).ToList();
         }
@@ -340,7 +463,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 button.SetActive(false);
             }
         }
-        
+
         // generate the model buttons, if they are missing
         if (modelButtonList.Count <= 0)
         {
@@ -348,7 +471,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             foreach (var file in modelList)
             {
                 string palette = "ISLAND"; // Default
-    
+
                 if (modelPaletteDict.TryGetValue(file.Name, out string customPalette))
                 {
                     palette = customPalette;
@@ -357,7 +480,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 {
                     palette = "REDCAVE";
                 }
-    
+
                 SpawnButton_Object(file.Name, palette);
             }
         }
@@ -373,7 +496,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         var newButton = Instantiate(button3DC_Prefab, root_ButtonList);
         newButton.name = "Button_" + fileName;
         modelButtonList.Add(newButton);
-        
+
         if (newButton.TryGetComponent(out ModelViewer_ModelButton component))
         {
             component.mv_GUI = this;
@@ -398,36 +521,94 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             }
         }
     }
-    
+
+    private List<GameObject> GetActiveButtonList()
+    {
+        if (areaButtonList.Count > 0 && areaButtonList[0].activeSelf)
+            return areaButtonList;
+        if (modelButtonList.Count > 0 && modelButtonList[0].activeSelf)
+            return modelButtonList;
+        return null;
+    }
+
+    private void SelectButton(int index, List<GameObject> buttons)
+    {
+        // Deselect previous
+        if (selectedButtonIndex >= 0 && selectedButtonIndex < buttons.Count)
+        {
+            var prevImg = buttons[selectedButtonIndex].GetComponent<Image>();
+            if (prevImg != null) prevImg.color = defaultButtonColor;
+        }
+
+        selectedButtonIndex = index;
+
+        // Highlight new
+        if (selectedButtonIndex >= 0 && selectedButtonIndex < buttons.Count)
+        {
+            var img = buttons[selectedButtonIndex].GetComponent<Image>();
+            if (img != null) img.color = selectedButtonColor;
+
+            // Scroll to keep visible
+            if (fileListScrollRect != null)
+            {
+                float normalizedPos = 1f - ((float)selectedButtonIndex / Mathf.Max(1, buttons.Count - 1));
+                fileListScrollRect.verticalNormalizedPosition = normalizedPos;
+            }
+        }
+    }
+
+    private void LoadSelectedButton(GameObject button)
+    {
+        if (button.TryGetComponent(out ModelViewer_AreaButton areaBtn))
+        {
+            RequestArea(areaBtn.RGM, areaBtn.WLD, areaBtn.COL, areaBtn.prettyAreaName);
+        }
+        else if (button.TryGetComponent(out ModelViewer_ModelButton modelBtn))
+        {
+            RequestModel(modelBtn.meshName, modelBtn.fileType, modelBtn.COL);
+        }
+    }
+
+    private void ResetButtonSelection()
+    {
+        var buttons = GetActiveButtonList();
+        if (buttons != null && selectedButtonIndex >= 0 && selectedButtonIndex < buttons.Count)
+        {
+            var img = buttons[selectedButtonIndex].GetComponent<Image>();
+            if (img != null) img.color = defaultButtonColor;
+        }
+        selectedButtonIndex = -1;
+    }
+
     // Button Signals
     public void ModeButton_Areas()
     {
         SwitchMode(ViewerModes.Areas);
     }
-    
+
     public void ModeButton_Objects()
     {
         SwitchMode(ViewerModes.Models);
     }
-    
+
     public void ModeButton_Textures()
     {
         SwitchMode(ViewerModes.Textures);
     }
-    
+
     // Redirected Button Signals
     public void RequestModel(string fileName, ModelFileType fileType, string col)
     {
         print("Requesting 3D file: " + fileName + ", fileType=" + fileType  + ", color palette=" + col);
         modelViewer.SpawnModel(fileName, fileType, col);
     }
-    
+
     public void RequestArea(string RGM, string WLD, string COL, string prettyAreaName)
     {
         print("Requesting area: " + RGM);
         modelViewer.SpawnArea(RGM, WLD, COL, prettyAreaName);
     }
-    
+
     public void RequestExportGLTF()
     {
         modelViewer.glTFExporter.ExportGLTF(modelViewer._objectRootGenerated, modelViewer.minimalLoadedFileName);
@@ -436,7 +617,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void RequestObjectIsolation()
     {
         string selectedButtonText = objectDropDown.options[objectDropDown.value].text;
-        
+
         if (selectedButtonText == objectDropdownResetText)
         {
             modelViewer.ResetIsolation();
@@ -445,5 +626,60 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             modelViewer.IsolateObject(selectedButtonText);
         }
+    }
+
+    public void SelectObjectInDropdown(string objectName)
+    {
+        for (int i = 0; i < objectDropDown.options.Count; i++)
+        {
+            if (objectDropDown.options[i].text == objectName)
+            {
+                objectDropDown.value = i;
+                RequestObjectIsolation();
+                return;
+            }
+        }
+    }
+
+    public void UpdatePaletteDropdown(string currentPalette)
+    {
+        if (paletteDropdown == null) return;
+
+        paletteDropdown.ClearOptions();
+        paletteDropdown.onValueChanged.RemoveAllListeners();
+
+        string artFolder = Game.pathManager.GetArtFolder();
+        if (!Directory.Exists(artFolder))
+        {
+            paletteDropdown.gameObject.SetActive(false);
+            return;
+        }
+
+        var colFiles = new DirectoryInfo(artFolder).GetFiles("*.COL");
+        if (colFiles.Length == 0)
+        {
+            paletteDropdown.gameObject.SetActive(false);
+            return;
+        }
+
+        var options = new List<string>();
+        int currentIndex = 0;
+        foreach (var col in colFiles.OrderBy(f => f.Name))
+        {
+            string name = Path.GetFileNameWithoutExtension(col.Name);
+            if (name.Equals(currentPalette, StringComparison.OrdinalIgnoreCase))
+                currentIndex = options.Count;
+            options.Add(name);
+        }
+
+        paletteDropdown.AddOptions(options);
+        paletteDropdown.value = currentIndex;
+        paletteDropdown.gameObject.SetActive(true);
+
+        paletteDropdown.onValueChanged.AddListener(index =>
+        {
+            string selected = paletteDropdown.options[index].text;
+            modelViewer.ReloadWithPalette(selected);
+        });
     }
 }

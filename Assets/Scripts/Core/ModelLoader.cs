@@ -43,20 +43,33 @@ public static class ModelLoader
     {
         // Create new GameObject
         GameObject obj = new GameObject(name);
-        
-        // Add Mesh Components
-        MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
-        MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
-        MeshCollider meshCollider = obj.AddComponent<MeshCollider>();
 
-        meshFilter.sharedMesh = data_3D.mesh;
-        meshRenderer.SetMaterials(data_3D.materials);
+        if (data_3D.framecount > 0)
+        {
+            // Animated mesh: use SkinnedMeshRenderer for blendshape animation
+            SkinnedMeshRenderer smr = obj.AddComponent<SkinnedMeshRenderer>();
+            smr.sharedMesh = data_3D.mesh;
+            smr.SetMaterials(data_3D.materials);
+
+            BlendShapeAnimator animator = obj.AddComponent<BlendShapeAnimator>();
+            animator.Initialize(smr);
+        }
+        else
+        {
+            // Static mesh: use regular MeshRenderer
+            MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
+            MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
+            meshFilter.sharedMesh = data_3D.mesh;
+            meshRenderer.SetMaterials(data_3D.materials);
+        }
+
+        MeshCollider meshCollider = obj.AddComponent<MeshCollider>();
         meshCollider.sharedMesh = data_3D.mesh;
 
         // Set Position & Rotation
         obj.transform.position = position;
         obj.transform.Rotate(eulers);
-        
+
         return obj;
     }
     
