@@ -1840,7 +1840,7 @@ public static class WorldLoader
             // 0x82BD6860, // KRISANTB
             0x82BD6920, // EXTSILVS
             // 0x82BD6AC8, // TORCH
-            // 0x82BD6D08, // KRISAND
+            0x82BD6D08, // KRISAND
             // 0x82BD72D0, // KRISANTB
             // 0x82BD7318, // KRISANTB
             // 0x0, // KRISANTB

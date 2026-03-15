@@ -144,7 +144,8 @@ public class AnimData
         if(!isPeeking && shouldExitFcn())
             SkipToExitSequence();
 
-        if(currentAnimFrame >= (int)animationData.RAGRItems[(int)currentAnimation].animFrames.Length)
+        // need to look at next frame here since we would increase it if false
+        if((currentAnimFrame+1) >= (int)animationData.RAGRItems[(int)currentAnimation].animFrames.Length)
         {
             if(isPeeking) return currentKeyFrame;
             return EndAnimation();
@@ -171,7 +172,10 @@ public class AnimData
                 }
                 else
                 {
-                    currentAnimFrame = (int)animationData.RAGRItems[(int)currentAnimation].animFrames[currentAnimFrame].frameValue;
+                    // decrement frameValue by 1; the NextFrame call will increment it
+                    // TODO: bit of a hack, find a neat way to do this
+                    int targetFrame = (int)animationData.RAGRItems[(int)currentAnimation].animFrames[currentAnimFrame].frameValue;
+                    currentAnimFrame = targetFrame-1;
                     frame3DC = NextFrame();
                 }
                 break;

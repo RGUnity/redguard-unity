@@ -9,11 +9,11 @@ namespace xyz
 		public static void Main(string[] args)
 		{
 			RGRGMFile filergm = new RGRGMFile();
-			filergm.LoadFile("../../game_3dfx/maps/ISLAND.RGM");
+			filergm.LoadFile("../../game_3dfx/maps/SMDEN.RGM");
             RGRGMAnimStore.ReadAnim(filergm);
 
-            AnimData ad = new AnimData("CYRUS");
-            ad.PushAnimation((RGRGMAnimStore.AnimGroup)11,2);
+            AnimData ad = new AnimData("URIK");
+            ad.PushAnimation((RGRGMAnimStore.AnimGroup)0,0);
             /*
             for(int i=0;i<50;i++)
             {
