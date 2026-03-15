@@ -2828,7 +2828,7 @@ public static class WorldLoader
             // 0x82BDA340, // TORCH
             // 0x82BDA550, // TORCH
             // 0x82BDA6F8, // FIRESND
-            // 0x82BDAA48, // NIDAL
+             0x82BDAA48, // NIDAL
             // 0x82BDAAC0, // TORCH
             // 0x82BDAC00, // TORCH
             // 0x82BDAE10, // T_ALTAR
@@ -2851,7 +2851,7 @@ public static class WorldLoader
             // 0x829B0C78, // XBOOKS
             // 0x829B0DB8, // XBOOKR
             // 0x829B1910, // XBOOKF
-            // 0x829B1C68, // JFFER
+             0x829B1C68, // JFFER
             // 0x829B1EA0, // JFFERTB
             // 0x829B2220, // TORCH
             0x829B27B0, // EXTJFFR2
@@ -3273,7 +3273,7 @@ public static class WorldLoader
             // 0x82BDB7D0, // OB_CON01
             // 0x82BDB9F0, // OB_PLT06
             // 0x82BDBC58, // OB_PLT07
-            // 0x82BDBD98, // ERASMO
+             0x82BDBD98, // ERASMO
             // 0x82BDBF70, // OB_GEAR
             // 0x82BDC140, // OB_ENG03
             // 0x82BDC378, // OB_PIPE

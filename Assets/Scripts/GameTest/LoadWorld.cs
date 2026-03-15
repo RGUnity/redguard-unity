@@ -11,6 +11,8 @@ public class LoadWorld : MonoBehaviour
 //        WorldLoader.RequestLoadWorld(5,0,0);
 // OBS exit
 //        WorldLoader.RequestLoadWorld(1,6,1024);
+// TEMPLE entry
+//        WorldLoader.RequestLoadWorld(12,0,0);
 // SILVER1 entry
         WorldLoader.RequestLoadWorld(18,0,1024);
         WorldLoader.LoadWorldIfRequested();

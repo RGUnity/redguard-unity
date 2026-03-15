@@ -8,9 +8,12 @@ public class ScriptData
     int[] vars;
     // attributes never used?
     public byte[] attributes;
-    public int scriptPC;
+
+    // TODO: currently unknown if we need a callstack for every thread, if you're here for weird errors in thread 1 probably yes
     Stack<int> callstack;
-    MemoryReader memoryReader;
+
+    int currentThread;
+    List<MemoryReader> memoryReaders;
 
     uint objectId;
 
@@ -23,9 +26,18 @@ public class ScriptData
         vars = scriptData.scriptVariables.ToArray();
         attributes = scriptData.scriptAttributes.ToArray();
 
-        scriptPC = scriptData.scriptPC;
         callstack = new Stack<int>();
-        memoryReader = new MemoryReader(scriptData.scriptBytes);
+
+        currentThread = 0;
+        memoryReaders = new List<MemoryReader>();
+        memoryReaders.Add(new MemoryReader(scriptData.scriptBytes));
+        memoryReaders[0].Position = scriptData.threadStart;
+
+        if(scriptData.threadStart != 0)
+        {
+            memoryReaders.Add(new MemoryReader(scriptData.scriptBytes));
+            memoryReaders[1].Position = 0;
+        }
 
         objectId = meId;
     }
@@ -148,7 +160,7 @@ string DBG_con_2_str(byte con)
 
 void logDBG(string i)
 {
-    Console.WriteLine($"0x{memoryReader.Position:X4}: DBG_{i}");
+    Console.WriteLine($"0x{memoryReaders[currentThread].Position:X4}: DBG_{i}");
 }
 // END DEBUG FUNCS
 // START DO* FUNCS
@@ -248,7 +260,7 @@ void logDBG(string i)
     }
     int doFlagAssign(ushort flag_id, List<int> vals, List<byte> ops)
     {
-        string o = new string($"0x{memoryReader.Position:X4}: FLAG_{flag_id} = ");
+        string o = new string($"0x{memoryReaders[currentThread].Position:X4}: FLAG_{flag_id} = ");
         for(int i=0;i<ops.Count;i++)
         {
             o+= $"{vals[i]} {DBG_op_2_str(ops[i])}";
@@ -259,13 +271,13 @@ void logDBG(string i)
     }
     int doGetFlag(ushort flag_id)
     {
-        string o = new string($"0x{memoryReader.Position:X4}: FLAG_GET_{flag_id}({RGRGMScriptStore.flags[flag_id]})");
+        string o = new string($"0x{memoryReaders[currentThread].Position:X4}: FLAG_GET_{flag_id}({RGRGMScriptStore.flags[flag_id]})");
         Console.WriteLine(o);
         return RGRGMScriptStore.flags[flag_id];
     }
     int doVarAssign(ushort var_id, List<int> vals, List<byte> ops)
     {
-        string o = new string($"0x{memoryReader.Position:X4}: VAR_{var_id} = ");
+        string o = new string($"0x{memoryReaders[currentThread].Position:X4}: VAR_{var_id} = ");
         for(int i=0;i<ops.Count;i++)
         {
             o+= $"{vals[i]} {DBG_op_2_str(ops[i])}";
@@ -276,28 +288,27 @@ void logDBG(string i)
     }
     int doGetVar(ushort var_id)
     {
-        string o = new string($"0x{memoryReader.Position:X4}: VAR_GET_{var_id}({vars[var_id]})");
+        string o = new string($"0x{memoryReaders[currentThread].Position:X4}: VAR_GET_{var_id}({vars[var_id]})");
         Console.WriteLine(o);
         return vars[var_id];
     }
 
     int doEnd(int IP)
     {
-        string o = new string($"0x{memoryReader.Position:X4}: END: {IP:X4}");
+        string o = new string($"0x{memoryReaders[currentThread].Position:X4}: END: {IP:X4}");
         Console.WriteLine(o);
-        scriptPC = IP;;
         return 0xDEAD;
     }
     int doGoto(int IP)
     {
-        string o = new string($"0x{memoryReader.Position:X4}: GOTO: {IP:X4}");
+        string o = new string($"0x{memoryReaders[currentThread].Position:X4}: GOTO: {IP:X4}");
         Console.WriteLine(o);
         return IP;
     }
     bool doIf(List<int> LHS, List<int> RHS, List<byte> cmp, List<byte> con)
     {
         bool ret = true;
-        string o = new string($"0x{memoryReader.Position:X4}: IF(");
+        string o = new string($"0x{memoryReaders[currentThread].Position:X4}: IF(");
 
         List<bool> evals = new List<bool>();
         for(int i=0;i<con.Count;i++)
@@ -348,7 +359,7 @@ void logDBG(string i)
     int doSetObjectReference(string obj, int reference, List<int> vals, List<byte> ops)
     {
         // TODO: do :)
-        string o = new string($"0x{memoryReader.Position:X4}: OBJ_{obj}.REF_{reference} =");
+        string o = new string($"0x{memoryReaders[currentThread].Position:X4}: OBJ_{obj}.REF_{reference} =");
         for(int i=0;i<ops.Count;i++)
         {
             o+= $"{vals[i]} {DBG_op_2_str(ops[i])}";
@@ -359,17 +370,23 @@ void logDBG(string i)
     int doGetObjectReference(string obj, int reference)
     {
         // TODO: do :)
-        string o = new string($"0x{memoryReader.Position:X4}: OBJ_{obj}.GETREF_{reference}");
+        string o = new string($"0x{memoryReaders[currentThread].Position:X4}: OBJ_{obj}.GETREF_{reference}");
         Console.WriteLine(o);
         return reference;
+    }
+    int doEndint()
+    {
+        string o = new string($"0x{memoryReaders[currentThread].Position:X4}: ENDINT");
+        Console.WriteLine(o);
+        return 0xDEAD;
     }
 
 // END DO* FUNCS
 // START READ* FUNCS
     int readTask(string obj, taskType type)
     {
-        ushort task_id = memoryReader.ReadUInt16();
-        byte param_cnt = memoryReader.ReadByte();
+        ushort task_id = memoryReaders[currentThread].ReadUInt16();
+        byte param_cnt = memoryReaders[currentThread].ReadByte();
         int[] parameters = new int[param_cnt];
         for(int i=0;i<param_cnt;i++)
         {
@@ -379,7 +396,7 @@ void logDBG(string i)
     }
     int readFlag(readerState state)
     {
-        ushort flag_id = memoryReader.ReadUInt16();
+        ushort flag_id = memoryReaders[currentThread].ReadUInt16();
         List<int> vals = new List<int>();
         List<byte> ops = new List<byte>();
         switch(state)
@@ -389,16 +406,16 @@ void logDBG(string i)
                 do
                 {
                     vals.Add(readInstruction(readerState.formula));
-                    op = memoryReader.ReadByte();
+                    op = memoryReaders[currentThread].ReadByte();
                     ops.Add(op);
                 } while(op>0 && op <10);
                 return doFlagAssign(flag_id, vals, ops);
             case readerState.LHS:
             case readerState.RHS:
-                memoryReader.ReadByte(); // TODO: does this operator do anything?
+                memoryReaders[currentThread].ReadByte(); // TODO: does this operator do anything?
                 break;
             case readerState.param:
-                memoryReader.ReadUInt16();
+                memoryReaders[currentThread].ReadUInt16();
                 break;
             case readerState.formula:
                 break;
@@ -409,7 +426,7 @@ void logDBG(string i)
     }
     int readVar(readerState state)
     {
-        byte var_id = memoryReader.ReadByte();
+        byte var_id = memoryReaders[currentThread].ReadByte();
         List<int> vals = new List<int>();
         List<byte> ops = new List<byte>();
         switch(state)
@@ -419,16 +436,16 @@ void logDBG(string i)
                 do
                 {
                     vals.Add(readInstruction(readerState.formula));
-                    op = memoryReader.ReadByte();
+                    op = memoryReaders[currentThread].ReadByte();
                     ops.Add(op);
                 } while(op>0 && op <10);
                 return doVarAssign(var_id, vals, ops);
             case readerState.LHS:
             case readerState.RHS:
-                memoryReader.ReadByte(); // TODO: does this operator do anything?
+                memoryReaders[currentThread].ReadByte(); // TODO: does this operator do anything?
                 break;
             case readerState.param:
-                memoryReader.ReadBytes(3);
+                memoryReaders[currentThread].ReadBytes(3);
                 break;
             case readerState.formula:
                 break;
@@ -439,17 +456,17 @@ void logDBG(string i)
     }
     int readEnd()
     {
-        memoryReader.Position = memoryReader.ReadInt32();
-        return doEnd(memoryReader.Position);
+        memoryReaders[currentThread].Position = memoryReaders[currentThread].ReadInt32();
+        return doEnd(memoryReaders[currentThread].Position);
     }
     int readGoto()
     {
-        memoryReader.Position = memoryReader.ReadInt32();
-        return doGoto(memoryReader.Position);
+        memoryReaders[currentThread].Position = memoryReaders[currentThread].ReadInt32();
+        return doGoto(memoryReaders[currentThread].Position);
     }
     int readImm()
     {
-        int imm = memoryReader.ReadInt32();
+        int imm = memoryReaders[currentThread].ReadInt32();
         return imm;
     }
     int readIf()
@@ -461,19 +478,19 @@ void logDBG(string i)
         do
         {
             LHS.Add(readInstruction(readerState.LHS));
-            cmp.Add(memoryReader.ReadByte());
+            cmp.Add(memoryReaders[currentThread].ReadByte());
             RHS.Add(readInstruction(readerState.RHS));
-            con.Add(memoryReader.ReadByte());
+            con.Add(memoryReaders[currentThread].ReadByte());
         } while(con[con.Count-1] != 0x00);
-        int jmp = memoryReader.ReadInt32();
+        int jmp = memoryReaders[currentThread].ReadInt32();
         if(doIf(LHS, RHS, cmp, con))
-            return memoryReader.Position;
+            return memoryReaders[currentThread].Position;
         else
             return jmp;
     }
     string readObject()
     {
-        byte val = memoryReader.ReadByte();
+        byte val = memoryReaders[currentThread].ReadByte();
         string obj = "";
         switch(val)
         {
@@ -481,10 +498,10 @@ void logDBG(string i)
             case 0x01:
             case 0x02:
                 obj = doGetObject(val, objectLoc.general);
-                memoryReader.ReadByte();
+                memoryReaders[currentThread].ReadByte();
                 break;
             case 0x04:
-                obj = doGetObject(memoryReader.ReadByte(), objectLoc.str);
+                obj = doGetObject(memoryReaders[currentThread].ReadByte(), objectLoc.str);
                 break;
             default:
                 throw new Exception($"NIMPL: 0x{val:X2}");
@@ -500,7 +517,7 @@ void logDBG(string i)
         }
         else
         {
-            byte nxt = memoryReader.ReadByte();
+            byte nxt = memoryReaders[currentThread].ReadByte();
             switch(nxt)
             {
                 case 0x00:
@@ -517,7 +534,7 @@ void logDBG(string i)
     int readObjectRef(readerState state)
     {
         string obj = readObject();
-        int reference = memoryReader.ReadUInt16()&0xFF;
+        int reference = memoryReaders[currentThread].ReadUInt16()&0xFF;
         List<int> vals = new List<int>();
         List<byte> ops = new List<byte>();
         switch(state)
@@ -527,12 +544,12 @@ void logDBG(string i)
                 do
                 {
                     vals.Add(readInstruction(readerState.formula));
-                    op = memoryReader.ReadByte();
+                    op = memoryReaders[currentThread].ReadByte();
                     ops.Add(op);
                 } while(op>0 && op <10);
                 return doSetObjectReference(obj, reference, vals, ops);
             case readerState.LHS:
-                op = memoryReader.ReadByte(); // TODO: operator
+                op = memoryReaders[currentThread].ReadByte(); // TODO: operator
                 return doGetObjectReference(obj, reference);
             default:
                 return doGetObjectReference(obj, reference);
@@ -540,42 +557,42 @@ void logDBG(string i)
     }
     int readString()
     {
-        int str = memoryReader.ReadInt32();
+        int str = memoryReaders[currentThread].ReadInt32();
         return str;
     }
     int readReturn()
     {
-        memoryReader.Position = callstack.Pop();
+        memoryReaders[currentThread].Position = callstack.Pop();
         return 0;
     }
     int readEndint()
     {
-        logDBG($"ENDINT"); // TODO: figure out what this does
-        return 0;
+        memoryReaders[currentThread].Position = 0;
+        return doEndint();
     }
     int readGoSub()
     {
-        int adr = memoryReader.ReadInt32();
-        callstack.Push(memoryReader.Position);
-        memoryReader.Position = adr;
+        int adr = memoryReaders[currentThread].ReadInt32();
+        callstack.Push(memoryReaders[currentThread].Position);
+        memoryReaders[currentThread].Position = adr;
         return 0;
     }
 
     int readTaskPause()
     {
-        int taskval = memoryReader.ReadInt32();
+        int taskval = memoryReaders[currentThread].ReadInt32();
         logDBG($"TASKPAUSE: {taskval}"); // TODO: do the pause somehow; also whats the taskval?
         return 0;
     }
     int readScriptRV()
     {
-        byte retval = memoryReader.ReadByte();
+        byte retval = memoryReaders[currentThread].ReadByte();
         logDBG($"SCRIPTRV: {retval}"); // TODO: where does the return val come from?
         return 0;
     }
     int readInstruction(readerState state)
     {
-        byte instruction = memoryReader.ReadByte();
+        byte instruction = memoryReaders[currentThread].ReadByte();
         switch(instruction)
         {
             case 0x00: // task
@@ -585,7 +602,7 @@ void logDBG(string i)
             case 0x02: // function
                 return readTask("object_me", taskType.function); // TODO: object name
             case 0x03:
-                memoryReader.Position = readIf();
+                memoryReaders[currentThread].Position = readIf();
                 return 0xBEEF;
             case 0x04:
                 return readGoto();
@@ -636,7 +653,7 @@ void logDBG(string i)
         }
         Console.WriteLine(o);
 
-        memoryReader.Position = scriptPC;
+        memoryReaders[currentThread].Position = 0;
         bool end = false;
 int INF_LOOP_DET = 0;
         while(!end)
@@ -652,7 +669,11 @@ int INF_LOOP_DET = 0;
     }
     public void tickScript()
     {
-        readInstruction(readerState.main);
+        for(currentThread=0;currentThread<memoryReaders.Count;currentThread++)
+        {
+            Console.WriteLine($"THREAD {currentThread}");
+            readInstruction(readerState.main);
+        }
     }
 }
 
@@ -668,8 +689,14 @@ public static class RGRGMScriptStore
         public List<int> scriptVariables;
         public List<byte> scriptAttributes;
 
-        // need entry point and callstack
-        public int scriptPC;
+        // We always have 1 thread of the script starting from RASCThreadStart
+        // If this is not zero, we have a 2nd thread starting from position 0x00
+        // See Endint calls in the scripts, they end the 2nd thread.
+        // This is used for example to always be able to activate the NPCs 
+        // even if they are doing something else
+        public int threadStart;
+
+        // callstack for return calls
         public Stack<int> callstack;
 
         public RGMScript(int script_i, RGRGMFile.RGMRAHDItem RAHD, RGRGMFile.RGMRASTSection RAST, RGRGMFile.RGMRASBSection RASB, RGRGMFile.RGMRAVASection RAVA, RGRGMFile.RGMRASCSection RASC, RGRGMFile.RGMRAATSection RAAT, RGRGMFile.RGMRANMSection RANM)
@@ -719,7 +746,8 @@ public static class RGRGMScriptStore
             Array.Copy(RAAT.attributes, script_i*256, tmp_arr, 0, 256);
             scriptAttributes = new List<byte>(tmp_arr);
 
-            scriptPC = RAHD.RASCStartAt;
+            threadStart = RAHD.RASCThreadStart;
+
             callstack = new Stack<int>();
         }
         int rasbcnt;

@@ -45,13 +45,13 @@ namespace xyz
             RGRGMScriptStore.ReadScript(filergm);
             
             RGRGMScriptStore.flags[201] = 1;
-            ScriptData sd = new ScriptData("ERASMO", 0);
+            ScriptData sd = new ScriptData("FIREBALL", 0);
             for(int i=0;i<100;i++)
                 Console.WriteLine($"ATTR_{i} = {sd.attributes[i]}");
             int ticks = 20;
             for(int i=0;i<ticks;i++)
             {
-                Console.Write($"{sd.scriptPC:X3}:");
+//                Console.Write($"{sd.scriptPC:X3}:");
                 sd.tickScript();
             }
             return;

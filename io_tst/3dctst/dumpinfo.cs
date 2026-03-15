@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using RGFileImport;
+using RGFileImport2;
 
 namespace xyz
 {
@@ -287,10 +288,12 @@ namespace xyz
             for(int i=0;i<files.Count;i++)
             {
                 file3d2.LoadFile($"../../game_3dfx/fxart/{files[i]}");
+                    /*
                 if(file3d2.frameDataList.frameData[0].u2==4)
                     Console.WriteLine($"{file3d2.header.numVertices:D3}, {file3d2.frameDataList.frameData[0].u1}, {file3d2.frameDataList.frameData[0].u2} \t {files[i]} MARK");
                 else
                     Console.WriteLine($"NOPE");
+                    */
 
             /*
             Console.WriteLine($"framevertices:\n{file3d2.frameVertexData}");

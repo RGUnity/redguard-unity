@@ -108,7 +108,7 @@ size: {dataLength:X}
 
             public int RASCLength;
             public int RASCOffset;
-            public int RASCStartAt;
+            public int RASCThreadStart;
 
             public int RAHKLength;
             public int RAHKOffset;
@@ -173,7 +173,7 @@ size: {dataLength:X}
 
                     RASCLength = memoryReader.ReadInt32();
                     RASCOffset = memoryReader.ReadInt32();
-                    RASCStartAt = memoryReader.ReadInt32();
+                    RASCThreadStart= memoryReader.ReadInt32();
 
                     RAHKLength = memoryReader.ReadInt32();
                     RAHKOffset = memoryReader.ReadInt32();

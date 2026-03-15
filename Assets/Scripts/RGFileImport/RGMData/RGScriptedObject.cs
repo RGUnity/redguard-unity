@@ -3,6 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using RGFileImport;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class RGScriptedObject : MonoBehaviour
 {
@@ -546,7 +547,6 @@ public class RGScriptedObject : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("DONE FACING");
                     taskData.type = TaskType.task_idle;
                 }
                 break;
@@ -587,6 +587,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[95] = AmbientSound;
         functions[100] = HideMe;
         functions[101] = ShowMe;
+        functions[103] = QuickRnd;
         functions[107] = LoadWorld;
         functions[127] = ACTIVATE;
         functions[136] = PushAnimation;
@@ -1016,6 +1017,16 @@ public class RGScriptedObject : MonoBehaviour
             collider.enabled = true;
         return 0;
     }
+    /*function 103*/
+    public int QuickRnd(uint caller, bool multitask, int[] i /*1*/)	
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_QuickRnd({string.Join(",",i)})");
+        // returns a random number, including 0 and the max.
+        // i[0]: the max value of the random number
+        return Random.Range(0, i[0]+1);
+    }
+
+
     /*function 107*/
     public int LoadWorld(uint caller, bool multitask, int[] i /*3*/)	
     {

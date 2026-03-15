@@ -778,7 +778,7 @@ public class soupdeffcn_nimpl
         return 0;
     }
 
-    /*function*/
+    /*function 103*/
     public static int QuickRnd(uint caller, bool multitask, int[] i /*1*/)	
     {
         ThrowNIMPL("QuickRnd",i);
