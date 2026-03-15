@@ -6,7 +6,7 @@ namespace RGFileImport
 {
     public class RG3DFile
     {
-        public struct Coord3DInt 
+        public struct Coord3DInt
         {
             public int x;
             public int y;
@@ -20,23 +20,37 @@ namespace RGFileImport
             }
         }
 
+        public struct Coord3DFloat
+        {
+            public float x;
+            public float y;
+            public float z;
+
+            public Coord3DFloat(float X, float Y, float Z)
+            {
+                x = X;
+                y = Y;
+                z = Z;
+            }
+        }
+
         public struct RG3DHeader
         {
             public uint version;            //
             public uint numVertices;        //
             public uint numFaces;           //
-            public uint radius;             // unused
+            public uint radius;             //
             public uint numFrames;          //
             public uint offsetFrameData;    //
-            public uint numUVOffsets;       // unused
-            public uint offsetSection4;     // unused
-            public uint Section4Count;      // unused
-            public uint unknown1;           // unused
-            public uint offsetUVOffsets;    // unused
-            public uint offsetUVData;       // unused; points to numVertices*12 bytes size block
+            public uint numUVOffsets;       //
+            public uint offsetSection4;     //
+            public uint Section4Count;      //
+            public uint unknown1;           //
+            public uint offsetUVOffsets;    //
+            public uint offsetUVData;       //
             public uint offsetVertexCoords; //
             public uint offsetFaceNormals;  //
-            public uint numUVOffsets2;      // unused
+            public uint numUVOffsets2;      //
             public uint offsetFaceData;     //
 
             public RG3DHeader(MemoryReader memoryReader)
@@ -423,26 +437,38 @@ NormalDataList
         public struct FrameVertexData
         {
             public List<List<Coord3DInt>> coords;
-//            public List<List<Coord3DInt>> norms;
             public FrameVertexData(MemoryReader memoryReader, RG3DHeader header, FrameDataList frameDataList)
             {
                 try
                 {
                     coords = new List<List<Coord3DInt>>();
+                    bool useInt32 = header.numFrames > 0 && frameDataList.frameData[0].u2 == 4;
+
                     for(int i=0;i<header.numFrames;i++)
                     {
                         coords.Add(new List<Coord3DInt>());
 
                         memoryReader.Seek(frameDataList.frameData[i].frameVertexOffset,0);
-                        for(int j=0;j<header.numVertices;j++)
+                        if(i == 0 || useInt32)
                         {
-                            int x = (int)memoryReader.ReadInt16();
-                            int y = (int)memoryReader.ReadInt16();
-                            int z = (int)memoryReader.ReadInt16();
-                            Coord3DInt cur = new Coord3DInt(x, y, z);
-                            coords[i].Add(cur);
+                            for(int j=0;j<header.numVertices;j++)
+                            {
+                                int x = memoryReader.ReadInt32();
+                                int y = memoryReader.ReadInt32();
+                                int z = memoryReader.ReadInt32();
+                                coords[i].Add(new Coord3DInt(x, y, z));
+                            }
                         }
-
+                        else
+                        {
+                            for(int j=0;j<header.numVertices;j++)
+                            {
+                                int x = (int)memoryReader.ReadInt16();
+                                int y = (int)memoryReader.ReadInt16();
+                                int z = (int)memoryReader.ReadInt16();
+                                coords[i].Add(new Coord3DInt(x, y, z));
+                            }
+                        }
                     }
                 }
                 catch(Exception ex)
@@ -459,7 +485,7 @@ FrameVertexDataList
                 for(int f=0;f<coords.Count;f++)
                 {
                     o += $"FRAME {f}:\n";
-                    for(int i=0;i<coords.Count;i++)
+                    for(int i=0;i<coords[f].Count;i++)
                     {
                         o += $"{coords[f][i].x},";
                         o += $"{coords[f][i].y},";
@@ -468,13 +494,162 @@ FrameVertexDataList
                 }
                 o += "###################################";
                 return o;
-                
+
             }
 
         }
 
+        public struct FrameNormalData
+        {
+            public List<List<Coord3DFloat>> faceNormals; // [frame][face]
+
+            public static Coord3DFloat Decode101010_2(uint packed)
+            {
+                int nx = (int)(packed & 0x3FF); if(nx >= 512) nx -= 1024;
+                int ny = (int)((packed >> 10) & 0x3FF); if(ny >= 512) ny -= 1024;
+                int nz = (int)((packed >> 20) & 0x3FF); if(nz >= 512) nz -= 1024;
+                return new Coord3DFloat(nx / 256.0f, ny / 256.0f, nz / 256.0f);
+            }
+
+            public FrameNormalData(MemoryReader memoryReader, RG3DHeader header, FrameDataList frameDataList)
+            {
+                try
+                {
+                    faceNormals = new List<List<Coord3DFloat>>();
+
+                    for(int i=0;i<header.numFrames;i++)
+                    {
+                        faceNormals.Add(new List<Coord3DFloat>());
+
+                        if(frameDataList.frameData[i].frameNormalOffset == 0)
+                            continue;
+
+                        memoryReader.Seek(frameDataList.frameData[i].frameNormalOffset,0);
+
+                        if(i == 0)
+                            continue;
+                        for(int j=0;j<header.numFaces;j++)
+                        {
+                            faceNormals[i].Add(Decode101010_2(memoryReader.ReadUInt32()));
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load 3D(C) FrameNormalData with error:\n{ex.Message}");
+                }
+            }
+        }
 
 
+
+
+        public struct VertexNormalData
+        {
+            public List<Coord3DFloat> normals;
+
+            public VertexNormalData(MemoryReader memoryReader, RG3DHeader header)
+            {
+                try
+                {
+                    normals = new List<Coord3DFloat>();
+
+                    if(header.offsetUVData == 0)
+                        return;
+
+                    if(header.offsetUVOffsets == 0)
+                    {
+                        memoryReader.Seek(header.offsetUVData,0);
+                        for(int i=0;i<header.numVertices;i++)
+                        {
+                            float x = memoryReader.ReadSingle();
+                            float y = memoryReader.ReadSingle();
+                            float z = memoryReader.ReadSingle();
+                            normals.Add(new Coord3DFloat(x, y, z));
+                        }
+                    }
+                    else
+                    {
+                        List<uint> offsets = new List<uint>();
+                        memoryReader.Seek(header.offsetUVOffsets,0);
+                        for(int i=0;i<header.numUVOffsets;i++)
+                        {
+                            offsets.Add(memoryReader.ReadUInt32());
+                        }
+                        for(int i=0;i<offsets.Count;i++)
+                        {
+                            memoryReader.Seek(offsets[i],0);
+                            float x = memoryReader.ReadSingle();
+                            float y = memoryReader.ReadSingle();
+                            float z = memoryReader.ReadSingle();
+                            normals.Add(new Coord3DFloat(x, y, z));
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load 3D(C) VertexNormalData with error:\n{ex.Message}");
+                }
+            }
+        }
+
+        public struct SubObjectFaceRef
+        {
+            public uint faceDataOffset;
+            public int faceIndex;
+
+            public SubObjectFaceRef(MemoryReader memoryReader)
+            {
+                faceDataOffset = memoryReader.ReadUInt32();
+                faceIndex = (int)(memoryReader.ReadUInt16() / 4);
+            }
+        }
+
+        public struct SubObjectEntry
+        {
+            public int centerX, centerY, centerZ;
+            public uint radius;
+            public Coord3DFloat extents;
+            public List<SubObjectFaceRef> faceRefs;
+
+            public SubObjectEntry(MemoryReader memoryReader)
+            {
+                centerX = memoryReader.ReadInt32();
+                centerY = memoryReader.ReadInt32();
+                centerZ = memoryReader.ReadInt32();
+                radius = memoryReader.ReadUInt32();
+                ushort faceCount = memoryReader.ReadUInt16();
+                float ex = memoryReader.ReadSingle();
+                float ey = memoryReader.ReadSingle();
+                float ez = memoryReader.ReadSingle();
+                extents = new Coord3DFloat(ex, ey, ez);
+                faceRefs = new List<SubObjectFaceRef>();
+                for(int i = 0; i < faceCount; i++)
+                    faceRefs.Add(new SubObjectFaceRef(memoryReader));
+            }
+        }
+
+        public struct SubObjectData
+        {
+            public List<SubObjectEntry> entries;
+
+            public SubObjectData(MemoryReader memoryReader, RG3DHeader header)
+            {
+                entries = new List<SubObjectEntry>();
+                if(header.offsetSection4 == 0 || header.Section4Count == 0)
+                    return;
+                try
+                {
+                    memoryReader.Seek(header.offsetSection4, 0);
+                    for(int i = 0; i < header.Section4Count; i++)
+                        entries.Add(new SubObjectEntry(memoryReader));
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception($"Failed to load 3D(C) SubObjectData with error:\n{ex.Message}");
+                }
+            }
+        }
 
         public long fileSize;
         public RG3DHeader header;
@@ -483,6 +658,9 @@ FrameVertexDataList
         public VertexData vertexData;
         public NormalData normalData;
         public FrameVertexData frameVertexData;
+        public FrameNormalData frameNormalData;
+        public VertexNormalData vertexNormalData;
+        public SubObjectData subObjectData;
 
         public void LoadFile(string filename)
         {
@@ -508,9 +686,12 @@ FrameVertexDataList
                 header = new RG3DHeader(memoryReader);
                 frameDataList = new FrameDataList(memoryReader, header);
                 frameVertexData = new FrameVertexData(memoryReader, header, frameDataList);
+                frameNormalData = new FrameNormalData(memoryReader, header, frameDataList);
                 faceDataList = new FaceDataList(memoryReader, header);
                 vertexData = new VertexData(memoryReader, header);
                 normalData = new NormalData(memoryReader, header);
+                vertexNormalData = new VertexNormalData(memoryReader, header);
+                subObjectData = new SubObjectData(memoryReader, header);
             }
             catch(Exception ex)
             {

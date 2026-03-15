@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class ModelViewer_Camera : MonoBehaviour
 {
@@ -13,69 +14,88 @@ public class ModelViewer_Camera : MonoBehaviour
     [SerializeField] private float zoomSpeed = 5;
     [SerializeField] public bool useFlyMode;
 
-    private bool leftDrag;
-    private bool rightDrag;
     private bool leftDragStartedInViewport;
     private bool rightDragStartedInViewport;
     private float currentRotX = 160;
     private float currentRotY = 15;
 
     // Fly Camera settings
-    private float sensitivity = 8;
-    private float speed_slow = 25;
-    private float speed_reg = 50;
-    private float speed_fast = 100;
+    private float speed_slow = 5;
+    private float speed_reg = 15;
+    private float speed_fast = 50;
     private float speed_cur;
-    
-    // Did you know? Update is called once per frame!
+    private float flyPitch;
+    private float flyYaw;
+    private int flyRotationSkip;
+
     private void Update()
     {
-        // Booleans to check if the mouse click started on UI. This avoids acciential 3D interaciton.
-        if (Input.GetMouseButtonDown(0) && !gui.IsMouseOverUI)
-        {
+        var mouse = Mouse.current;
+        var kb = Keyboard.current;
+        if (mouse == null || kb == null) return;
+
+        // Normalize scroll: New Input System gives ~120 per notch, legacy gave ~1
+        float scrollInput = mouse.scroll.ReadValue().y / 120f;
+
+        // Track if mouse click started on viewport (not UI)
+        if (mouse.leftButton.wasPressedThisFrame && !gui.IsMouseOverUI)
             leftDragStartedInViewport = true;
-        }
-        
-        if (Input.GetMouseButtonUp(0))
-        {
+        if (mouse.leftButton.wasReleasedThisFrame)
             leftDragStartedInViewport = false;
-        }
-        
-        if (Input.GetMouseButtonDown(1) && !gui.IsMouseOverUI)
-        {
+        if (mouse.rightButton.wasPressedThisFrame && !gui.IsMouseOverUI)
             rightDragStartedInViewport = true;
-        }
-        
-        if (Input.GetMouseButtonUp(1))
-        {
+        if (mouse.rightButton.wasReleasedThisFrame)
             rightDragStartedInViewport = false;
-        }
 
         if (useFlyMode && !gui.IsMouseOverUI)
         {
             // movement
-            Vector3 input = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Mouse ScrollWheel")*100, Input.GetAxis("Vertical"));
+            float h = 0f;
+            if (kb.aKey.isPressed) h -= 1f;
+            if (kb.dKey.isPressed) h += 1f;
+            float v = 0f;
+            if (kb.wKey.isPressed) v += 1f;
+            if (kb.sKey.isPressed) v -= 1f;
+            Vector3 input = new Vector3(h, 0f, v);
+            if(kb.leftShiftKey.isPressed)
+                speed_cur = speed_fast;
+            else if(kb.leftCtrlKey.isPressed)
+                speed_cur = speed_slow;
+            else
+                speed_cur = speed_reg;
             if (input != Vector3.zero)
-            {
-                if(Input.GetKey(KeyCode.LeftShift))
-                    speed_cur = speed_fast;
-                else if(Input.GetKey(KeyCode.LeftControl))
-                    speed_cur = speed_slow;
-                else
-                    speed_cur = speed_reg;
                 _camera.Translate(input * (speed_cur * Time.deltaTime));
+            if (scrollInput != 0f)
+                _camera.Translate(Vector3.up * scrollInput * speed_cur * 2f);
+
+            // rotation — only while dragging
+            // On fresh click, sync flyPitch/flyYaw from current camera rotation
+            if ((mouse.leftButton.wasPressedThisFrame && !gui.IsMouseOverUI) || (mouse.rightButton.wasPressedThisFrame && !gui.IsMouseOverUI))
+            {
+                Vector3 currentEuler = _camera.rotation.eulerAngles;
+                flyYaw = currentEuler.y;
+                flyPitch = currentEuler.x;
+                if (flyPitch > 180f) flyPitch -= 360f;
+                flyRotationSkip = 3;
             }
-            
-            // rotation
-            if((Input.GetMouseButton(0) && leftDragStartedInViewport) || (Input.GetMouseButton(1) && rightDragStartedInViewport))
+
+            bool isDragging = (mouse.leftButton.isPressed && leftDragStartedInViewport) || (mouse.rightButton.isPressed && rightDragStartedInViewport);
+            if (isDragging)
             {
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
 
-                Vector3 mouseInput = new Vector3(-Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"), 0f);
-                _camera.Rotate(mouseInput * (sensitivity * 0.2f));
-                Vector3 euler = _camera.rotation.eulerAngles;
-                _camera.rotation = Quaternion.Euler(euler.x, euler.y, 0);
+                if (flyRotationSkip > 0)
+                {
+                    flyRotationSkip--;
+                }
+                else
+                {
+                    Vector2 mouseDelta = mouse.delta.ReadValue();
+                    flyYaw += mouseDelta.x * 0.1f;
+                    flyPitch -= mouseDelta.y * 0.1f;
+                }
+                _camera.rotation = Quaternion.Euler(flyPitch, flyYaw, 0f);
             }
             else
             {
@@ -86,18 +106,16 @@ public class ModelViewer_Camera : MonoBehaviour
         else if (!useFlyMode)
         {
             ResetFlyModeTransforms();
-            
+
             // Mouse Rotation
-            if (Input.GetMouseButton(0) && leftDragStartedInViewport)
+            if (mouse.leftButton.isPressed && leftDragStartedInViewport)
             {
-                // Calcuclate X axis
-                currentRotX += Input.GetAxis("Mouse Y") * rotationSpeed;
+                Vector2 mouseDelta = mouse.delta.ReadValue();
+                currentRotX += mouseDelta.y * rotationSpeed * 0.1f;
                 currentRotX = Mathf.Clamp(currentRotX, 90f, 270f);
-            
-                // Calculate Y axis
-                currentRotY += Input.GetAxis("Mouse X") * rotationSpeed;
+                currentRotY += mouseDelta.x * rotationSpeed * 0.1f;
             }
-            
+
             // Apply values to both objects
             rotationRootX.localRotation = Quaternion.Euler(currentRotX, 0, 0);
             transform.rotation = Quaternion.Euler(0, currentRotY, 0);
@@ -105,15 +123,10 @@ public class ModelViewer_Camera : MonoBehaviour
             // Mouse Wheel Zoom
             if (!gui.IsMouseOverUI)
             {
-                // Calculate Zoom value
                 Vector3 pos = cameraRootZ.localPosition;
-                float multiplier = cameraRootZ.localPosition.z/100 * zoomSpeed *-1;
-                pos.z += Input.mouseScrollDelta.y * multiplier;
-        
-                // Clamp the zoom range
+                float multiplier = cameraRootZ.localPosition.z/100 * zoomSpeed * -50;
+                pos.z += scrollInput * multiplier;
                 pos.z = Mathf.Clamp(pos.z, -100000, -1);
-        
-                // Move the camera by the new position
                 cameraRootZ.localPosition = pos;
             }
         }
@@ -121,18 +134,14 @@ public class ModelViewer_Camera : MonoBehaviour
 
     private void ResetFlyModeTransforms()
     {
-        // When exiting Fly Mode, reset Position & Rotation
         if (_camera.localPosition != Vector3.zero)
-        {
             _camera.localPosition = Vector3.zero;
-        }
-
         if (_camera.localRotation != Quaternion.identity)
-        {
-            _camera.localRotation =  Quaternion.identity;
-        }
+            _camera.localRotation = Quaternion.identity;
+        flyPitch = 0f;
+        flyYaw = 0f;
     }
-    
+
     public void FrameObject(GameObject target)
     {
         if (!target)
@@ -140,26 +149,30 @@ public class ModelViewer_Camera : MonoBehaviour
             Debug.LogWarning("FrameObject target is null, cancelling FrameObject()");
             return;
         }
-        
+
         ResetFlyModeTransforms();
-        
+
         var bounds = GetMaxBounds(target);
-
-        // Move camera root to the center
         transform.position = bounds.center;
-
-        // Set camera distance
         float distance = bounds.size.magnitude;
         cameraRootZ.localPosition = new Vector3(0, 0, distance) * -1;
     }
-    
-    // Get bounding box of all spawned objects combined
+
+    public Transform GetCameraTransform()
+    {
+        return _camera;
+    }
+
+    public float GetCameraDistance()
+    {
+        return -cameraRootZ.localPosition.z;
+    }
+
     Bounds GetMaxBounds(GameObject g) {
         var renderers = g.GetComponentsInChildren<Renderer>();
         if (renderers.Length == 0) return new Bounds(g.transform.position, Vector3.zero);
         var b = renderers[0].bounds;
         foreach (Renderer r in renderers) {
-            // Ignore objects at the scene origin
             if (r.transform.position != Vector3.zero)
             {
                 b.Encapsulate(r.bounds);

@@ -54,9 +54,10 @@ public class RGScriptedObject : MonoBehaviour
 
     public byte[] attributes;
 
-// animations	
+// animations
 	public bool allowAnimation;
 	public int animationFrameOffset;
+    bool animSetDuringUpdate;
     public AnimData animations;
 // scripting
     public bool DEBUGSCRIPTING=true;
@@ -319,20 +320,18 @@ public class RGScriptedObject : MonoBehaviour
     }
     public void SetAnim(int animId, int firstFrame)
     {
-
         if(type == ScriptedObjectType.scriptedobject_animated)
         {
             if(animations.PushAnimation((RGRGMAnimStore.AnimGroup)animId,firstFrame) == 0)
             {
-                // this resets the blend frames
-                // TODO: smooth reset to frame 0 and then go from there
-                // TODO 2: is there a reset frame defined?
                 for(int i=0;i<skinnedMeshRenderer.sharedMesh.blendShapeCount;i++)
                     skinnedMeshRenderer.SetBlendShapeWeight(i, 0.0f);
                 allowAnimation = true;
-                UpdateAnimationsOffset();
-                int currentFrame = animations.getCurrentFrame() - animationFrameOffset;
-                skinnedMeshRenderer.SetBlendShapeWeight(currentFrame, 100.0f);
+                animSetDuringUpdate = true;
+                int globalFrame = animations.getCurrentFrame();
+                int localFrame = GlobalToLocalFrame(globalFrame);
+                if(localFrame >= 0 && localFrame < skinnedMeshRenderer.sharedMesh.blendShapeCount)
+                    skinnedMeshRenderer.SetBlendShapeWeight(localFrame, 100.0f);
             }
             else
                 Debug.Log($"{scriptName}: animation {(RGRGMAnimStore.AnimGroup)animId} requested but doesnt exist");
@@ -340,52 +339,55 @@ public class RGScriptedObject : MonoBehaviour
         else
             Debug.Log($"{scriptName}: tried to set animation but object type is not animated");
     }
-    void UpdateAnimationsOffset()
+    int GlobalToLocalFrame(int globalFrame)
     {
-        int nextframe = animations.peekNextFrame() - animationFrameOffset;
-        animationFrameOffset = 0;
-
-        if(nextframe < 0 || nextframe > meshFrameCount[currentMesh])
+        int cnt_tot = 0;
+        for(int i = 0; i < meshFrameCount.Length; i++)
         {
-            int cnt_tot = 0;
-            for(int i=0;i<meshFrameCount.Length;i++)
+            if(globalFrame < cnt_tot + meshFrameCount[i])
             {
-                if(nextframe < (cnt_tot + meshFrameCount[i]))
+                if(i != currentMesh)
                 {
-                    animationFrameOffset = cnt_tot;
+                    for(int j = 0; j < skinnedMeshRenderer.sharedMesh.blendShapeCount; j++)
+                        skinnedMeshRenderer.SetBlendShapeWeight(j, 0.0f);
                     currentMesh = i;
                     skinnedMeshRenderer.sharedMesh = meshes[currentMesh];
-                    animations.runAnimation(Time.deltaTime, true);
-                    break;
                 }
-                cnt_tot += meshFrameCount[i];
+                animationFrameOffset = cnt_tot;
+                return globalFrame - cnt_tot;
             }
+            cnt_tot += meshFrameCount[i];
         }
+        Debug.LogWarning($"{scriptName}: global frame {globalFrame} out of range (total: {cnt_tot})");
+        return 0;
     }
     void UpdateAnimations()
 	{
 		if (allowAnimation)
 		{
-            int currentFrame = animations.getCurrentFrame() - animationFrameOffset;
-            int nextFrame = animations.getNextFrame() - animationFrameOffset;
+            int oldGlobal = animations.getCurrentFrame();
+            int oldMesh = currentMesh;
 
+            animSetDuringUpdate = false;
             animations.runAnimation(Time.deltaTime);
 
-            int currentFrame2 = animations.getCurrentFrame() - animationFrameOffset;
-            int nextFrame2 = animations.getNextFrame() - animationFrameOffset;
-/*
-            // for animation blending, we need to track current and next frame
-            skinnedMeshRenderer.SetBlendShapeWeight(currentFrame, 0.0f);
-            skinnedMeshRenderer.SetBlendShapeWeight(nextFrame, 0.0f);
-            float blend1 = (animations.frameTime/AnimData.FRAMETIME_VAL)*100.0f;
-            float blend2 = 100.0f-blend1;
-            skinnedMeshRenderer.SetBlendShapeWeight(currentFrame2, blend1);
-            skinnedMeshRenderer.SetBlendShapeWeight(nextFrame2, blend2);
-*/
-   
-            skinnedMeshRenderer.SetBlendShapeWeight(currentFrame2, 0.0f);
-            skinnedMeshRenderer.SetBlendShapeWeight(nextFrame2, 100.0f);
+            if(animSetDuringUpdate)
+                return;
 
+            if(!allowAnimation)
+                return;
+
+            int newGlobal = animations.getCurrentFrame();
+            if(newGlobal == oldGlobal)
+                return;
+
+            int oldLocal = oldGlobal - animationFrameOffset;
+            if(oldMesh == currentMesh && oldLocal >= 0 && oldLocal < skinnedMeshRenderer.sharedMesh.blendShapeCount)
+                skinnedMeshRenderer.SetBlendShapeWeight(oldLocal, 0.0f);
+
+            int newLocal = GlobalToLocalFrame(newGlobal);
+            if(newLocal >= 0 && newLocal < skinnedMeshRenderer.sharedMesh.blendShapeCount)
+                skinnedMeshRenderer.SetBlendShapeWeight(newLocal, 100.0f);
 		}
 	}
 	void Update()
@@ -1050,7 +1052,6 @@ public class RGScriptedObject : MonoBehaviour
         newTask.timer = 0;
         newTask.animationFinished = false;
 
-        animations.alwaysPanic = false;
         animations.shouldExitFcn = newTask.animAlwaysExitFcn;
         animations.doExitFcn= newTask.animSetFinishedFcn;
         SetAnim(i[0], i[1]);
