@@ -168,6 +168,7 @@ public static class RG3DStore
         public Vector3 norm;
         public List<Vector3>[] frameverts;
         public List<Vector3>[] framenorms;
+        public List<Vector3> vertNorms;
         public string texid; // key for intermediate mesh submesh dict
     }
 
@@ -182,7 +183,6 @@ public static class RG3DStore
 
         mesh.framecount = (int)file_3d.header.numFrames;
         List<Vector3>[] frame_vec_tmp_lst = new List<Vector3>[mesh.framecount];
-        List<Vector3>[] frame_norm_tmp_lst = new List<Vector3>[mesh.framecount];
 
         for(int i=0;i<file_3d.vertexData.coords.Count;i++)
         {
@@ -193,22 +193,30 @@ public static class RG3DStore
             vec_tmp_lst.Add(vec);
         }
 
+        bool framesUseInt32 = file_3d.header.numFrames > 0
+            && file_3d.frameDataList.frameData[0].u2 == 4;
+
         for(int f=0;f<mesh.framecount;f++)
         {
             frame_vec_tmp_lst[f] = new List<Vector3>();
-            frame_norm_tmp_lst[f] = new List<Vector3>();
             for(int i=0;i<file_3d.vertexData.coords.Count;i++)
             {
-                // big scale down so it fits
-                Vector3 vec = new Vector3(-file_3d.frameVertexData.coords[f][i].x*MESH_SCALE_FACTOR,
-                                          -file_3d.frameVertexData.coords[f][i].y*MESH_SCALE_FACTOR,
-                                          -file_3d.frameVertexData.coords[f][i].z*MESH_SCALE_FACTOR);
+                Vector3 vec;
+                if(f == 0 || framesUseInt32)
+                {
+                    vec = new Vector3(
+                        (file_3d.frameVertexData.coords[f][i].x - file_3d.vertexData.coords[i].x)*MESH_SCALE_FACTOR,
+                        (file_3d.frameVertexData.coords[f][i].y - file_3d.vertexData.coords[i].y)*MESH_SCALE_FACTOR,
+                        (file_3d.frameVertexData.coords[f][i].z - file_3d.vertexData.coords[i].z)*MESH_SCALE_FACTOR);
+                }
+                else
+                {
+                    vec = new Vector3(
+                        -file_3d.frameVertexData.coords[f][i].x*MESH_SCALE_FACTOR,
+                        -file_3d.frameVertexData.coords[f][i].y*MESH_SCALE_FACTOR,
+                        -file_3d.frameVertexData.coords[f][i].z*MESH_SCALE_FACTOR);
+                }
                 frame_vec_tmp_lst[f].Add(vec);
-                Vector3 norm = new Vector3(0.0f,
-                                           0.0f,
-                                           0.0f);
-                frame_norm_tmp_lst[f].Add(norm);
-
             }
         }
 
@@ -220,6 +228,22 @@ public static class RG3DStore
             normal.Normalize();
             norm_tmp_lst.Add(normal);
         }
+
+        bool hasVertexNormals = file_3d.vertexNormalData.normals != null
+            && file_3d.vertexNormalData.normals.Count == file_3d.header.numVertices;
+        List<Vector3> vertNorm_tmp_lst = new List<Vector3>();
+        if(hasVertexNormals)
+        {
+            for(int i=0;i<file_3d.vertexNormalData.normals.Count;i++)
+            {
+                Vector3 n = new Vector3(file_3d.vertexNormalData.normals[i].x,
+                                        file_3d.vertexNormalData.normals[i].y,
+                                        file_3d.vertexNormalData.normals[i].z);
+                n.Normalize();
+                vertNorm_tmp_lst.Add(n);
+            }
+        }
+
         List<Face_3DC> face_lst = new List<Face_3DC>();
         for(int i=0;i<file_3d.faceDataList.faceData.Count;i++)
         {
@@ -246,7 +270,20 @@ public static class RG3DStore
                 vec = Vector3.Scale(vec, MESH_VERT_FLIP);
                 cur_face.verts.Add(vec);
             }
-            // frame verts (offsets)
+            cur_face.vertNorms = new List<Vector3>();
+            for(int j=0;j<file_3d.faceDataList.faceData[i].vertexData.Count;j++)
+            {
+                if(hasVertexNormals)
+                {
+                    Vector3 vn = vertNorm_tmp_lst[(int)file_3d.faceDataList.faceData[i].vertexData[j].vertexIndex];
+                    vn = Vector3.Scale(vn, MESH_VERT_FLIP);
+                    cur_face.vertNorms.Add(vn);
+                }
+                else
+                {
+                    cur_face.vertNorms.Add(cur_face.norm);
+                }
+            }
             for(int f=0;f<mesh.framecount;f++)
             {
                 cur_face.frameverts[f] = new List<Vector3>();
@@ -256,9 +293,20 @@ public static class RG3DStore
                     Vector3 vec = frame_vec_tmp_lst[f][(int)file_3d.faceDataList.faceData[i].vertexData[j].vertexIndex];
                     vec = Vector3.Scale(vec, MESH_VERT_FLIP);
                     cur_face.frameverts[f].Add(vec);
-                    Vector3 norm = frame_norm_tmp_lst[f][(int)file_3d.faceDataList.faceData[i].vertexData[j].vertexIndex];
-                    norm = Vector3.Scale(vec, MESH_VERT_FLIP);
-                    cur_face.framenorms[f].Add(norm);
+                    Vector3 normDelta;
+                    if(f > 0 && i < file_3d.frameNormalData.faceNormals[f].Count)
+                    {
+                        var fn = file_3d.frameNormalData.faceNormals[f][i];
+                        Vector3 frameNorm = new Vector3(fn.x, fn.y, fn.z);
+                        frameNorm.Normalize();
+                        frameNorm = Vector3.Scale(frameNorm, MESH_VERT_FLIP);
+                        normDelta = frameNorm - cur_face.norm;
+                    }
+                    else
+                    {
+                        normDelta = Vector3.zero;
+                    }
+                    cur_face.framenorms[f].Add(normDelta);
                 }
             }
 
@@ -296,9 +344,9 @@ public static class RG3DStore
                 vec_lst.Add(face_lst[i].verts[vert_ofs+j]);
                 vec_lst.Add(face_lst[i].verts[vert_ofs+j+1]);
 
-                norm_lst.Add(face_lst[i].norm);
-                norm_lst.Add(face_lst[i].norm);
-                norm_lst.Add(face_lst[i].norm);
+                norm_lst.Add(face_lst[i].vertNorms[0]);
+                norm_lst.Add(face_lst[i].vertNorms[vert_ofs+j]);
+                norm_lst.Add(face_lst[i].vertNorms[vert_ofs+j+1]);
 
                 for(int f=0;f<mesh.framecount;f++)
                 {

@@ -9,6 +9,7 @@ public class AnimData
     public static float FRAMETIME_VAL = 0.1f;
 
     public bool running;
+    bool animPushedDuringUpdate;
     int currentKeyFrame;
     int nextKeyFrame;
     int currentAnimFrame;
@@ -19,7 +20,6 @@ public class AnimData
     public Func<bool> shouldExitFcn;
     public Action doExitFcn;
 
-    public bool alwaysPanic;
     public AnimData(string scriptname)
     {
         running = false;
@@ -33,7 +33,6 @@ public class AnimData
 
         shouldExitFcn = this.shouldExitFcn_default;
         doExitFcn = this.doExitFcn_default;
-        alwaysPanic = false;
 
     }
 
@@ -69,21 +68,18 @@ public class AnimData
     public int PushAnimation(RGRGMAnimStore.AnimGroup animId, int firstframe = 0)
     {
         int anim_i = -1;
-        Debug.Log($"PRE animId: {animId}; cur:{currentAnimation} anim_i: {anim_i}");
         if(!validAnims.TryGetValue(animId, out anim_i))
             return -1;
 
         running = true;
+        animPushedDuringUpdate = true;
         currentAnimation = anim_i;
         currentAnimFrame = firstframe;
 
-        currentKeyFrame = peekNextFrame();
-        nextKeyFrame = peekNextFrame();
-        /*
-        Debug.Log($"POS animId: {animId}; cur:{validAnims[(RGRGMAnimStore.AnimGroup)currentAnimation]} anim_i: {anim_i}");
-        Debug.Log($"POS2 cur:{currentAnimation} anim_i: {anim_i}");
-        */
-
+        isPeeking = true;
+        currentKeyFrame = NextFrame();
+        nextKeyFrame = NextFrame();
+        isPeeking = false;
 
         return 0;
     }
@@ -91,24 +87,32 @@ public class AnimData
     {
         if(!running)
             return;
-        else
+
+        frameTime -= deltatime;
+        if(frameTime <= 0.0f || force_tick == true)
         {
-            frameTime -= deltatime;
-            if(frameTime <= 0.0f || force_tick == true)
+            currentKeyFrame = nextKeyFrame;
+            animPushedDuringUpdate = false;
+            int nextFrame = NextFrame();
+            if(animPushedDuringUpdate)
             {
-                currentKeyFrame = nextKeyFrame;
-                nextKeyFrame = NextFrame();
-                frameTime = FRAMETIME_VAL;
+                frameTime = FRAMETIME_VAL * animationData.RAGRItems[currentAnimation].frameSpeed;
+                return;
             }
+            nextKeyFrame = nextFrame;
+            frameTime = FRAMETIME_VAL * animationData.RAGRItems[currentAnimation].frameSpeed;
         }
     }
 
+    bool isPeeking;
     public int peekNextFrame()
     {
         if(!running)
             return 0;
         int animframe_pre = currentAnimFrame;
+        isPeeking = true;
         int nextframe3DC = NextFrame();
+        isPeeking = false;
         currentAnimFrame = animframe_pre;
         return nextframe3DC;
     }
@@ -122,41 +126,47 @@ public class AnimData
 
     }
 
-    public int NextFrame()
+    void SkipToExitSequence()
     {
-//        if(animationData.RAGRItems[(int)currentAnimation].animType == RGRGMAnimStore.AnimType.animtype_stop || alwaysPanic == true)
-        if(alwaysPanic == true)
+        var frames = animationData.RAGRItems[(int)currentAnimation].animFrames;
+        for(int i = currentAnimFrame + 1; i < frames.Length; i++)
         {
-            if(shouldExitFcn() == true)
+            if(frames[i].frameType == RGRGMAnimStore.FrameType.frametype_goback)
             {
-                return EndAnimation();
+                currentAnimFrame = i - 1;
+                return;
             }
         }
+    }
+
+    public int NextFrame()
+    {
+        if(!isPeeking && shouldExitFcn())
+            SkipToExitSequence();
 
         if(currentAnimFrame >= (int)animationData.RAGRItems[(int)currentAnimation].animFrames.Length)
         {
-                Debug.Log("LASTFRAME");
+            if(isPeeking) return currentKeyFrame;
             return EndAnimation();
         }
 
         currentAnimFrame++;
         int frame3DC = -1;
-        
+
         switch(animationData.RAGRItems[(int)currentAnimation].animFrames[currentAnimFrame].frameType)
         {
             case RGRGMAnimStore.FrameType.frametype_normal:
                 frame3DC = (int)animationData.RAGRItems[(int)currentAnimation].animFrames[currentAnimFrame].frameValue;
                 break;
             case RGRGMAnimStore.FrameType.frametype_end:
-                Debug.Log("end");
+                if(isPeeking) return currentKeyFrame;
                 return EndAnimation();
                 break;
             case RGRGMAnimStore.FrameType.frametype_goback:
                 // if we want to exit, keep going forward
                 // if not, loop back
-                if(shouldExitFcn() == true)
+                if(!isPeeking && shouldExitFcn() == true)
                 {
-                Debug.Log("goback");
                     frame3DC = NextFrame();
                 }
                 else
@@ -168,9 +178,8 @@ public class AnimData
             case RGRGMAnimStore.FrameType.frametype_gofwd:
                 // if we want to exit, skip forward to frame
                 // if not, continue going
-                if(shouldExitFcn() == true)
+                if(!isPeeking && shouldExitFcn() == true)
                 {
-                Debug.Log("gofwd");
                     currentAnimFrame = (int)animationData.RAGRItems[(int)currentAnimation].animFrames[currentAnimFrame].frameValue;
                 }
                 else
@@ -548,6 +557,7 @@ public static class RGRGMAnimStore
         {
             RGMAnim Anim = new RGMAnim(entry.Value, filergm.RAAN, filergm.RAGR);
             Anims.Add(entry.Value.scriptName, Anim);
+
         }
     }
     static public RGMAnim getAnim(string scriptname)
