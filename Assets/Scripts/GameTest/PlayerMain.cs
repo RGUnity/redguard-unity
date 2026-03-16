@@ -75,6 +75,10 @@ public class PlayerMain: MonoBehaviour
     
     private void doAnimStateMachine()
     {
+        // TODO: clean lockout
+        if(player)
+            if(player.locked)
+                return;
         if(Game.Input.moveForward)
         {
             if (Game.Input.moveModifier)

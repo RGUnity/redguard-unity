@@ -21,6 +21,7 @@ public class RGScriptedObject : MonoBehaviour
         task_rotating,
         task_moving,
         task_waiting,
+        task_waiting_on_player,
         task_syncing,
         task_walking,
         task_pathfinding,
@@ -55,6 +56,9 @@ public class RGScriptedObject : MonoBehaviour
     public RGScriptedObject offsetTarget;
     Vector3 offsetDelta;
 
+    // TODO: clean player lockout
+    public bool locked;
+
     public byte[] attributes;
 
 // animations
@@ -70,7 +74,7 @@ public class RGScriptedObject : MonoBehaviour
 
     public List<Vector3> locations;
 // tasks
-    class TaskData
+    public class TaskData
     {
         public TaskType type;
         public float timer;
@@ -83,6 +87,8 @@ public class RGScriptedObject : MonoBehaviour
         public Vector3 positionStart;
         // waiting
             // nothing here ;)
+        // waiting_on_player
+            // nothing here ;) II - electric boogaloo
         // syncing
         public uint syncPoint;
         // moving forward
@@ -106,7 +112,7 @@ public class RGScriptedObject : MonoBehaviour
         }
     }
 
-    TaskData mainTask = new TaskData();
+    public TaskData mainTask = new TaskData();
     List<TaskData> multiTasks = new List<TaskData>();
     static int FUNC_CNT = 367;
     public Func<uint, bool, int[], int>[] functions;
@@ -312,7 +318,7 @@ public class RGScriptedObject : MonoBehaviour
             RGObjectStore.AddMaster(attributes[25], this);
         if(attributes[26] != 0) // attr_slave
             RGObjectStore.AddSlave(attributes[26], this);
-        if(attributes[29] != 0) // att_group
+        if(attributes[29] != 0) // attr_group
             RGObjectStore.AddToGroup(attributes[29], this);
 
          RGObjectStore.AddObject(objectId, objectName, this);
@@ -323,7 +329,7 @@ public class RGScriptedObject : MonoBehaviour
         allowAnimation = false;
         animationFrameOffset = 0;
     }
-    public void SetAnim(int animId, int firstFrame)
+    public int SetAnim(int animId, int firstFrame)
     {
         if(type == ScriptedObjectType.scriptedobject_animated)
         {
@@ -337,12 +343,14 @@ public class RGScriptedObject : MonoBehaviour
                 int localFrame = GlobalToLocalFrame(globalFrame);
                 if(localFrame >= 0 && localFrame < skinnedMeshRenderer.sharedMesh.blendShapeCount)
                     skinnedMeshRenderer.SetBlendShapeWeight(localFrame, 100.0f);
+                return 1;
             }
             else
                 Debug.Log($"{scriptName}: animation {(RGRGMAnimStore.AnimGroup)animId} requested but doesnt exist");
         }
         else
             Debug.Log($"{scriptName}: tried to set animation but object type is not animated");
+        return 0;
     }
     int GlobalToLocalFrame(int globalFrame)
     {
@@ -503,6 +511,10 @@ public class RGScriptedObject : MonoBehaviour
                     taskData.type = TaskType.task_idle;
                 }
                 break;
+            case TaskType.task_waiting_on_player:
+                if(RGObjectStore.GetPlayer().mainTask.type == TaskType.task_idle)
+                    taskData.type = TaskType.task_idle;
+                break;
             case TaskType.task_syncing:
                 // RGObjectStore sets this to 0 when all members are done
                 if(taskData.syncPoint == 0)
@@ -564,7 +576,9 @@ public class RGScriptedObject : MonoBehaviour
                         taskData.animationFinished = false;
 
                         (int animId, int startFrame) nextAnim = taskData.animationQueue.Dequeue();
-                        SetAnim(nextAnim.animId, nextAnim.startFrame);
+                        if(SetAnim(nextAnim.animId, nextAnim.startFrame) == 0)
+                            taskData.animationFinished = true;
+                            
                     }
                 }
                 break;
@@ -578,7 +592,13 @@ public class RGScriptedObject : MonoBehaviour
         functions = new Func<uint, bool, int[], int>[FUNC_CNT];
         functions[17] = WaitOnTasks;
         functions[21] = showObj;
+        functions[22] = showObjLoc;
+        functions[30] = showCyrusLoc;
+        functions[34] = lockoutPlayer;
         functions[39] = RTX;
+        functions[40] = rtxAnim;
+        functions[41] = RTXpAnim;
+        functions[42] = RTXp;
         functions[44] = RotateByAxis;
         functions[45] = RotateToAxis;
         functions[46] = WalkForward;
@@ -675,7 +695,7 @@ public class RGScriptedObject : MonoBehaviour
         }
         return Vector3.Scale(axis, new Vector3(1.0f, 1.0f,-1.0f));
     }
-    /*function 21*/
+    /*task 21*/
     public int showObj(uint caller, bool multitask, int[] i /*3*/)
     {
         // Targets the camera to show the object, settings its position
@@ -690,6 +710,77 @@ public class RGScriptedObject : MonoBehaviour
         //return CameraMain.mainCamera;
         return 0;
     }
+
+    /*task 22*/
+    public int showObjLoc(uint caller, bool multitask, int[] i /*3*/)	
+    {
+        // Targets the camera to show the object, settings its position
+        // TODO: is this correct?
+        // i[0]: camera XYZ-axis offset (not sure which)
+        // i[1]: camera up-axis offset
+        // i[2]: camera XYZ-axis offset (not sure which)
+        // TODO: find a system in this tangle of magic numbers
+        Vector3 offsetPos = new Vector3(((float)i[0])*RGM_MPOB_SCALE*256,
+                                       ((float)i[1])*RGM_MPOB_SCALE*25.6f,
+                                        ((float)i[2])*RGM_MPOB_SCALE*256);
+        ScriptingDBG($"{multitask}_{scriptName}_showObjLoc({string.Join(",",i)}) : {offsetPos}");
+
+        Vector3 camOffset = new Vector3(((float)attributes[50])*RGM_MPOB_SCALE*256,
+                                       ((float)attributes[51])*RGM_MPOB_SCALE*25.6f,
+                                        ((float)attributes[52])*RGM_MPOB_SCALE*256);
+        Vector3 camTargetOffset = new Vector3(((float)attributes[47])*RGM_MPOB_SCALE*100,
+                                             ((float)attributes[48])*RGM_MPOB_SCALE*100,
+                                              ((float)attributes[49])*RGM_MPOB_SCALE*0);
+
+        Vector3 campos = transform.localPosition;
+        Vector3 target = transform.localPosition;
+        CameraMain.ShowLocation(campos, offsetPos+camOffset, target, camTargetOffset);
+        //CameraMain.ShowLocation(locations[0], offsetPos);
+//        CameraMain.ShowObj(this, offsetPos, Vector3.zero, true);
+        return 0;
+    }
+
+    /*task 30*/
+    public int showCyrusLoc(uint caller, bool multitask, int[] i /*3*/)	
+    {
+        // Targets the camera to show Cyrus, settings its position
+        // TODO: is this correct?
+        // i[0]: camera XYZ-axis offset (not sure which)
+        // i[1]: camera up-axis offset
+        // i[2]: camera XYZ-axis offset (not sure which)
+        // TODO: find a system in this tangle of magic numbers
+        Vector3 offsetPos = new Vector3(((float)i[0])*RGM_MPOB_SCALE*256,
+                                       ((float)i[1])*RGM_MPOB_SCALE*25.6f,
+                                        ((float)i[2])*RGM_MPOB_SCALE*256);
+        ScriptingDBG($"{multitask}_{scriptName}_showObjLoc({string.Join(",",i)}) : {offsetPos}");
+
+        Vector3 camOffset = new Vector3(((float)attributes[50])*RGM_MPOB_SCALE*256,
+                                       ((float)attributes[51])*RGM_MPOB_SCALE*25.6f,
+                                        ((float)attributes[52])*RGM_MPOB_SCALE*256);
+        Vector3 camTargetOffset = new Vector3(((float)attributes[47])*RGM_MPOB_SCALE*100,
+                                             ((float)attributes[48])*RGM_MPOB_SCALE*100,
+                                              ((float)attributes[49])*RGM_MPOB_SCALE*0);
+
+        Vector3 campos = transform.localPosition;
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        Vector3 target = player.transform.localPosition;
+        CameraMain.ShowLocation(campos, offsetPos+camOffset, target, camTargetOffset);
+        //CameraMain.ShowLocation(locations[0], offsetPos);
+//        CameraMain.ShowObj(this, offsetPos, Vector3.zero, true);
+        return 0;
+    }
+
+    /*function 34*/
+    public int lockoutPlayer(uint caller, bool multitask, int[] i /*1*/)	
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_lockoutPlayer({string.Join(",",i)})");
+        // Locks the player control
+        // i[0]: 1 = lock the player, 0 = unlock
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        player.locked = (i[0] == 1);
+        return 0;
+    }
+
     /*task 39*/
     public int RTX(uint caller, bool multitask, int[] i /*1*/)	
     {
@@ -697,7 +788,6 @@ public class RGScriptedObject : MonoBehaviour
         // i[0]: index of the RTX data
         string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
         Game.uiManager.ShowInteractionText(displayText, 5.0f);
-        Debug.Log($"RTX: {displayText}");
 
         TaskData newTask = new TaskData();
         newTask.type = TaskType.task_waiting;
@@ -708,6 +798,70 @@ public class RGScriptedObject : MonoBehaviour
 
         return 0;
     }
+
+    /*task 40*/
+    public int rtxAnim(uint caller, bool multitask, int[] i /*4*/)
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_rtxAnim({string.Join(",",i)})");
+        // Play a sound from RTX, display subtitles and play animations
+        // i[0]: index of the RTX data
+        // i[1]: 1st animation to play
+        // i[2]: 2nd animation to play
+        // i[3]: 3rd animation to play // TODO: this sometimes is a non-existing animation
+
+        string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
+        Game.uiManager.ShowInteractionText(displayText, 5.0f);
+        // TODO: play sound
+
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_animating;
+        newTask.timer = 0;
+        newTask.animationFinished = true;
+        newTask.animationQueue = new Queue<(int animId, int startFrame)>();
+
+        animations.shouldExitFcn = newTask.animAlwaysExitFcn;
+        animations.doExitFcn= newTask.animSetFinishedFcn;
+
+        for(int j=1;j<4;j++)
+        {
+            (int animId, int startFrame) nextAnim = (i[j], 0);
+            newTask.animationQueue.Enqueue(nextAnim);
+        }
+
+        AddTask(multitask, newTask);
+
+        return 0;
+    }
+
+    /*task 41*/
+    public int RTXpAnim(uint caller, bool multitask, int[] i /*4*/)
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_RTXpAnim({string.Join(",",i)})");
+        // Play a sound from RTX, display subtitles and play animations on the player
+        // i[0]: index of the RTX data
+        // i[1]: 1st animation to play
+        // i[2]: 2nd animation to play
+        // i[3]: 3rd animation to play
+        // TODO: player animations get overwritten by player controller
+
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_waiting_on_player;
+        AddTask(false, newTask);
+
+        return player.rtxAnim(caller, multitask, i);
+    }
+
+    /*task 42*/
+    public int RTXp(uint caller, bool multitask, int[] i /*1*/)
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_RTXp({string.Join(",",i)})");
+        // Play a sound from RTX and display subtitles from the player object
+        // i[0]: index of the RTX data
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        return player.RTX(caller, multitask, i);
+    }
+
 
 
     /*task 44*/
@@ -819,7 +973,6 @@ public class RGScriptedObject : MonoBehaviour
                 mt = new Vector3(0,0,0);
                 break;
         }
-        ScriptingDBG($"OUT: {mt}");
         newTask.positionTarget = transform.localPosition + mt;
         newTask.positionStart = transform.localPosition;
         AddTask(multitask, newTask);
@@ -1084,9 +1237,6 @@ public class RGScriptedObject : MonoBehaviour
         newTask.animationQueue.Enqueue(nextAnim);
 
         AddTask(multitask, newTask);
-        return 0;
-
-
         return 0;
     }
 

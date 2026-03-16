@@ -28,6 +28,8 @@ foreach(KeyValuePair<int, RGINIStore.itemData> entry in itemdict)
     Debug.LogWarning($"item {entry.Key}: {entry.Value.name} | {entry.Value.description}");
 }
 */
+            Debug.LogWarning($"KRIS LOCS: {ModelLoader.scriptedObjects[0x82BD6D08].locations.Count}");
+            Debug.LogWarning($"CYRUS LOCS: {RGObjectStore.GetPlayer().locations.Count}");
 
      }
     // Update is called once per frame

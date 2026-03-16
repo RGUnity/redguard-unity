@@ -130,6 +130,7 @@ public static class WorldLoader
     */
 
             RGObjectStore.AddPlayer(filergm, cyrus_data);
+            RGObjectStore.GetPlayer().EnableScripting();
             playerLoaded = true;
         }
 
