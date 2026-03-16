@@ -13,6 +13,8 @@ public class LoadWorld : MonoBehaviour
 //        WorldLoader.RequestLoadWorld(1,6,1024);
 // TEMPLE entry
 //        WorldLoader.RequestLoadWorld(12,0,0);
+// JFFER entry
+//        WorldLoader.RequestLoadWorld(26,1,1724);
 // SILVER1 entry
         WorldLoader.RequestLoadWorld(18,0,1024);
         WorldLoader.LoadWorldIfRequested();

@@ -9,8 +9,7 @@ public class ScriptData
     // attributes never used?
     public byte[] attributes;
 
-    // TODO: currently unknown if we need a callstack for every thread, if you're here for weird errors in thread 1 probably yes
-    Stack<int> callstack;
+    List<Stack<int>> callstacks;
 
     int currentThread;
     List<MemoryReader> memoryReaders;
@@ -26,17 +25,19 @@ public class ScriptData
         vars = scriptData.scriptVariables.ToArray();
         attributes = scriptData.scriptAttributes.ToArray();
 
-        callstack = new Stack<int>();
+        callstacks = new List<Stack<int>>();
 
         currentThread = 0;
         memoryReaders = new List<MemoryReader>();
         memoryReaders.Add(new MemoryReader(scriptData.scriptBytes));
         memoryReaders[0].Position = scriptData.threadStart;
+        callstacks.Add(new Stack<int>());
 
         if(scriptData.threadStart != 0)
         {
             memoryReaders.Add(new MemoryReader(scriptData.scriptBytes));
             memoryReaders[1].Position = 0;
+            callstacks.Add(new Stack<int>());
         }
 
         objectId = meId;
@@ -562,7 +563,7 @@ void logDBG(string i)
     }
     int readReturn()
     {
-        memoryReaders[currentThread].Position = callstack.Pop();
+        memoryReaders[currentThread].Position = callstacks[currentThread].Pop();
         return 0;
     }
     int readEndint()
@@ -573,7 +574,7 @@ void logDBG(string i)
     int readGoSub()
     {
         int adr = memoryReaders[currentThread].ReadInt32();
-        callstack.Push(memoryReaders[currentThread].Position);
+        callstacks[currentThread].Push(memoryReaders[currentThread].Position);
         memoryReaders[currentThread].Position = adr;
         return 0;
     }
@@ -696,9 +697,6 @@ public static class RGRGMScriptStore
         // even if they are doing something else
         public int threadStart;
 
-        // callstack for return calls
-        public Stack<int> callstack;
-
         public RGMScript(int script_i, RGRGMFile.RGMRAHDItem RAHD, RGRGMFile.RGMRASTSection RAST, RGRGMFile.RGMRASBSection RASB, RGRGMFile.RGMRAVASection RAVA, RGRGMFile.RGMRASCSection RASC, RGRGMFile.RGMRAATSection RAAT, RGRGMFile.RGMRANMSection RANM)
         {
 
@@ -747,8 +745,6 @@ public static class RGRGMScriptStore
             scriptAttributes = new List<byte>(tmp_arr);
 
             threadStart = RAHD.RASCThreadStart;
-
-            callstack = new Stack<int>();
         }
         int rasbcnt;
         int []rasbofs;

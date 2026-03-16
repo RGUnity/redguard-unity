@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private DialogueOption optionPrefab;
     [SerializeField] private Transform optionsParent;
     [SerializeField] private TMP_Text interactionTextDisplay;
+    private float interactionTextTimer;
     [SerializeField] public UIGraphics uiGraphics;
     
     private List<DialogueOption> options = new();
@@ -17,6 +18,15 @@ public class UIManager : MonoBehaviour
     {
         ClearDialogueOption();
         HideInteractionText();
+    }
+    public void Update()
+    {
+        if(interactionTextTimer > 0.0f)
+        {
+            interactionTextTimer -= Time.deltaTime;
+        }
+        else
+            HideInteractionText();
     }
 
     public void LinkData(LocalUIData data)
@@ -29,9 +39,10 @@ public class UIManager : MonoBehaviour
     
     // GAMEPLAY UI
 
-    public void ShowInteractionText(string text)
+    public void ShowInteractionText(string text, float time = 0.5f)
     {
         interactionTextDisplay.text = text;
+        interactionTextTimer = time;
     }
 
     public void HideInteractionText()

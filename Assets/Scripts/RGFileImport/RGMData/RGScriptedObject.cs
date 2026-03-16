@@ -27,12 +27,14 @@ public class RGScriptedObject : MonoBehaviour
         task_facing,
         task_animating,
     }
-	// TODO: these are duplicated from RGRGMStore
+	// TODO: this is duplicated from RGRGMStore
 	const float RGM_MPOB_SCALE = 1/5120.0f;
 	
 	public string objectName;
 	public uint objectId;
 	public string scriptName;
+
+    Vector3 originalRotation;
 
     // used for animations: 3DC files might not have the same vertex count
     // so we're stuck with this
@@ -89,6 +91,7 @@ public class RGScriptedObject : MonoBehaviour
         public RGScriptedObject faceTarget;
         // animating
         public bool animationFinished;
+        public Queue<(int animId, int startFrame)> animationQueue;
         public bool animAlwaysExitFcn()
         {
             return true;
@@ -221,6 +224,7 @@ public class RGScriptedObject : MonoBehaviour
         Vector3 rotation = RGRGMStore.eulers_from_MPOB_data(MPOB);
 		transform.position = position;
 		transform.Rotate(rotation);
+        originalRotation = rotation;
 
 
         locations = new List<Vector3>();
@@ -553,10 +557,18 @@ public class RGScriptedObject : MonoBehaviour
             case TaskType.task_animating:
                 if(taskData.animationFinished == true)
                 {
-                    Debug.Log("DONE ANIM");
-                    taskData.type = TaskType.task_idle;
+                    if(taskData.animationQueue.Count == 0)
+                        taskData.type = TaskType.task_idle;
+                    else
+                    {
+                        taskData.animationFinished = false;
+
+                        (int animId, int startFrame) nextAnim = taskData.animationQueue.Dequeue();
+                        SetAnim(nextAnim.animId, nextAnim.startFrame);
+                    }
                 }
                 break;
+
             default:
                 break;
         }
@@ -593,6 +605,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[136] = PushAnimation;
         functions[156] = Offset;
         functions[174] = isFighting;
+        functions[200] = ResetRotation;
         functions[224] = PlayerStand;
         functions[228] = PlayerDistance;
         functions[233] = PlayerLooking;
@@ -683,7 +696,7 @@ public class RGScriptedObject : MonoBehaviour
         // Play a sound from RTX and display subtitles
         // i[0]: index of the RTX data
         string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
-        Game.uiManager.ShowInteractionText(displayText);
+        Game.uiManager.ShowInteractionText(displayText, 5.0f);
         Debug.Log($"RTX: {displayText}");
 
         TaskData newTask = new TaskData();
@@ -1061,11 +1074,14 @@ public class RGScriptedObject : MonoBehaviour
         TaskData newTask = new TaskData();
         newTask.type = TaskType.task_animating;
         newTask.timer = 0;
-        newTask.animationFinished = false;
+        newTask.animationFinished = true;
+        newTask.animationQueue = new Queue<(int animId, int startFrame)>();
 
         animations.shouldExitFcn = newTask.animAlwaysExitFcn;
         animations.doExitFcn= newTask.animSetFinishedFcn;
-        SetAnim(i[0], i[1]);
+
+        (int animId, int startFrame) nextAnim = (i[0], i[1]);
+        newTask.animationQueue.Enqueue(nextAnim);
 
         AddTask(multitask, newTask);
         return 0;
@@ -1102,7 +1118,24 @@ public class RGScriptedObject : MonoBehaviour
         // TODO: implement this
         return 0;
     }
- 
+
+     /*function 200*/
+    public int ResetRotation(uint caller, bool multitask, int[] i /*3*/)	
+    {
+        // resets the rotation to the original value
+        // i[0]: reset X value
+        // i[1]: reset Y value
+        // i[2]: reset Z value
+        // TODO: are the parameters correct?
+        Vector3 targetRot = new Vector3(
+                                        i[0]*originalRotation.x,
+                                        i[1]*originalRotation.y,
+                                        i[2]*originalRotation.z);
+		transform.Rotate(targetRot);
+        return 0;
+    }
+
+
     /*task 224*/
     public int PlayerStand(uint caller, bool multitask, int[] i /*0*/)    
     {
