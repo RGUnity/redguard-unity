@@ -78,7 +78,7 @@ public class InputManager : MonoBehaviour
         Game.Input.moveBackward = _moveBackwardAction.IsPressed();
         Game.Input.turnLeft = _turnLeftAction.IsPressed();
         Game.Input.turnRight = _turnRightAction.IsPressed();
-        Game.Input.activate = _activateAction.WasPressedThisFrame();
+        Game.Input.activate = _activateAction.IsPressed();
 
         if (Game.Input.quickSave)
         {

@@ -6,15 +6,18 @@ public class DialogueOption : MonoBehaviour
     [SerializeField] private TMP_Text buttonText;
     
     [SerializeField] public UIManager uiManager;
+    [SerializeField] public int index;
     
 
     public void OnClick()
     {
-        uiManager.PickDialogueOption();
+        Debug.Log($"CLICKED {index}");
+        uiManager.PickDialogueOption(index);
     }
     
-    public void SetDisplayText(string text)
+    public void SetData(string text, int index)
     {
         buttonText.text = text;
+        this.index = index;
     }
 }

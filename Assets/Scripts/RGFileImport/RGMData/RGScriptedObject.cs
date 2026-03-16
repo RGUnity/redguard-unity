@@ -22,6 +22,7 @@ public class RGScriptedObject : MonoBehaviour
         task_moving,
         task_waiting,
         task_waiting_on_player,
+        task_waiting_for_menu,
         task_syncing,
         task_walking,
         task_pathfinding,
@@ -86,9 +87,9 @@ public class RGScriptedObject : MonoBehaviour
         public Vector3 positionTarget;
         public Vector3 positionStart;
         // waiting
-            // nothing here ;)
         // waiting_on_player
-            // nothing here ;) II - electric boogaloo
+        // waiting_for_menu,
+            // nothing here ;)
         // syncing
         public uint syncPoint;
         // moving forward
@@ -515,6 +516,10 @@ public class RGScriptedObject : MonoBehaviour
                 if(RGObjectStore.GetPlayer().mainTask.type == TaskType.task_idle)
                     taskData.type = TaskType.task_idle;
                 break;
+            case TaskType.task_waiting_for_menu:
+                if(Game.uiManager.DialogPicked())
+                    taskData.type = TaskType.task_idle;
+                break;
             case TaskType.task_syncing:
                 // RGObjectStore sets this to 0 when all members are done
                 if(taskData.syncPoint == 0)
@@ -595,6 +600,10 @@ public class RGScriptedObject : MonoBehaviour
         functions[22] = showObjLoc;
         functions[30] = showCyrusLoc;
         functions[34] = lockoutPlayer;
+        functions[35] = menuNew;
+        functions[36] = menuProc;
+        functions[37] = menuAddItem;
+        functions[38] = menuSelection;
         functions[39] = RTX;
         functions[40] = rtxAnim;
         functions[41] = RTXpAnim;
@@ -714,35 +723,36 @@ public class RGScriptedObject : MonoBehaviour
     /*task 22*/
     public int showObjLoc(uint caller, bool multitask, int[] i /*3*/)	
     {
+        ScriptingDBG($"{multitask}_{scriptName}_showObjLoc({string.Join(",",i)})");
         // Targets the camera to show the object, settings its position
         // TODO: is this correct?
         // i[0]: camera XYZ-axis offset (not sure which)
         // i[1]: camera up-axis offset
         // i[2]: camera XYZ-axis offset (not sure which)
         // TODO: find a system in this tangle of magic numbers
-        Vector3 offsetPos = new Vector3(((float)i[0])*RGM_MPOB_SCALE*256,
-                                       ((float)i[1])*RGM_MPOB_SCALE*25.6f,
+        Vector3 offsetPos = new Vector3(-((float)i[0])*RGM_MPOB_SCALE*256,
+                                       -((float)i[1])*RGM_MPOB_SCALE*256f,
                                         ((float)i[2])*RGM_MPOB_SCALE*256);
-        ScriptingDBG($"{multitask}_{scriptName}_showObjLoc({string.Join(",",i)}) : {offsetPos}");
 
-        Vector3 camOffset = new Vector3(((float)attributes[50])*RGM_MPOB_SCALE*256,
-                                       ((float)attributes[51])*RGM_MPOB_SCALE*25.6f,
+        Vector3 camOffset = new Vector3(-((float)attributes[50])*RGM_MPOB_SCALE*256,
+                                       -((float)attributes[51])*RGM_MPOB_SCALE*256f,
                                         ((float)attributes[52])*RGM_MPOB_SCALE*256);
-        Vector3 camTargetOffset = new Vector3(((float)attributes[47])*RGM_MPOB_SCALE*100,
-                                             ((float)attributes[48])*RGM_MPOB_SCALE*100,
-                                              ((float)attributes[49])*RGM_MPOB_SCALE*0);
+        Vector3 camTargetOffset = new Vector3(-((float)attributes[47])*RGM_MPOB_SCALE*256,
+                                             -((float)attributes[48])*RGM_MPOB_SCALE*256f,
+                                              ((float)attributes[49])*RGM_MPOB_SCALE*256);
 
-        Vector3 campos = transform.localPosition;
-        Vector3 target = transform.localPosition;
-        CameraMain.ShowLocation(campos, offsetPos+camOffset, target, camTargetOffset);
-        //CameraMain.ShowLocation(locations[0], offsetPos);
-//        CameraMain.ShowObj(this, offsetPos, Vector3.zero, true);
+        Vector3 totalCamOffset = offsetPos+camOffset;
+
+        Debug.Log($"{offsetPos} + {camOffset} = {offsetPos+camOffset}/ {totalCamOffset}");
+
+        CameraMain.ShowLocation(this.transform.position, totalCamOffset, camTargetOffset);
         return 0;
     }
 
     /*task 30*/
     public int showCyrusLoc(uint caller, bool multitask, int[] i /*3*/)	
     {
+        ScriptingDBG($"{multitask}_{scriptName}_showCyrusLoc({string.Join(",",i)})");
         // Targets the camera to show Cyrus, settings its position
         // TODO: is this correct?
         // i[0]: camera XYZ-axis offset (not sure which)
@@ -752,7 +762,6 @@ public class RGScriptedObject : MonoBehaviour
         Vector3 offsetPos = new Vector3(((float)i[0])*RGM_MPOB_SCALE*256,
                                        ((float)i[1])*RGM_MPOB_SCALE*25.6f,
                                         ((float)i[2])*RGM_MPOB_SCALE*256);
-        ScriptingDBG($"{multitask}_{scriptName}_showObjLoc({string.Join(",",i)}) : {offsetPos}");
 
         Vector3 camOffset = new Vector3(((float)attributes[50])*RGM_MPOB_SCALE*256,
                                        ((float)attributes[51])*RGM_MPOB_SCALE*25.6f,
@@ -761,12 +770,10 @@ public class RGScriptedObject : MonoBehaviour
                                              ((float)attributes[48])*RGM_MPOB_SCALE*100,
                                               ((float)attributes[49])*RGM_MPOB_SCALE*0);
 
-        Vector3 campos = transform.localPosition;
-        RGScriptedObject player = RGObjectStore.GetPlayer();
-        Vector3 target = player.transform.localPosition;
-        CameraMain.ShowLocation(campos, offsetPos+camOffset, target, camTargetOffset);
-        //CameraMain.ShowLocation(locations[0], offsetPos);
-//        CameraMain.ShowObj(this, offsetPos, Vector3.zero, true);
+        Vector3 totalCamOffset = offsetPos+camOffset;
+
+        CameraMain.ShowLocation(this.transform.position, totalCamOffset, camTargetOffset);
+ 
         return 0;
     }
 
@@ -779,6 +786,46 @@ public class RGScriptedObject : MonoBehaviour
         RGScriptedObject player = RGObjectStore.GetPlayer();
         player.locked = (i[0] == 1);
         return 0;
+    }
+
+    /*function 35*/
+    public int menuNew(uint caller, bool multitask, int[] i /*0*/)	
+    {
+        // Clears existing menu, prepares for new content
+        Game.uiManager.ClearDialogueOption();
+        return 0;
+    }
+
+    /*task 36*/
+    public int menuProc(uint caller, bool multitask, int[] i /*0*/)	
+    {
+        // Display the dialog menu and wait for a selection
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_waiting_for_menu;
+
+        AddTask(multitask, newTask);
+        return 0;
+    }
+
+    /*function 37*/
+    public int menuAddItem(uint caller, bool multitask, int[] i /*3*/)	
+    {
+        // add a menu item to the dialog menu
+        // i[0]: string index into the RTX file
+        // i[1]: 1 grays out the item
+        // i[2]: the item index (? not 100% sequential, might miss some in-between)
+
+        string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
+        Game.uiManager.AddDialogueOption(displayText, (i[1] == 1), i[2]);
+        return 0;
+    }
+
+    /*function 38*/
+    public int menuSelection(uint caller, bool multitask, int[] i /*0*/)	
+    {
+        int selection = Game.uiManager.getSelectedItem();
+        Game.uiManager.ClearDialogueOption();
+        return selection;
     }
 
     /*task 39*/
@@ -1212,7 +1259,7 @@ public class RGScriptedObject : MonoBehaviour
         // i[0]: Stringid shown on screen when looking at the item
         string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
         Game.uiManager.ShowInteractionText(displayText);
-        if(Game.Input.use)
+        if(Game.Input.activate)
             return 1;
         else
             return 0;

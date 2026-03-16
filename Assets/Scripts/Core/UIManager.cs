@@ -14,6 +14,9 @@ public class UIManager : MonoBehaviour
     
     private List<DialogueOption> options = new();
 
+    [SerializeField] bool itemIsSelected;
+    [SerializeField] int pickedOption;
+
     public void Start()
     {
         ClearDialogueOption();
@@ -67,15 +70,17 @@ public class UIManager : MonoBehaviour
         
         // Hide the dialogue options panel
         optionsParent.gameObject.SetActive(false);
+
+        itemIsSelected = false;
     }
     
-    public void AddDialogueOption(string displayText)
+    public void AddDialogueOption(string displayText, bool greyedOut, int index)
     {
         // Spawn a new dialogue option
         var newOption = Instantiate(optionPrefab, optionsParent).GetComponent<DialogueOption>();
         newOption.uiManager = this;
         newOption.gameObject.name = displayText;
-        newOption.SetDisplayText(displayText);
+        newOption.SetData(displayText, index);
         options.Add(newOption);
         
         // Show the dialogue options panel
@@ -84,9 +89,20 @@ public class UIManager : MonoBehaviour
         print("Created DialogueOption " + displayText);
     }
     
-    public void PickDialogueOption()
+    public void PickDialogueOption(int index)
     {
         Debug.LogWarning("Dialogue actions are not yet implemented");
+        itemIsSelected = true;
+        pickedOption = index;
+    }
+
+    public bool DialogPicked()
+    {
+        return itemIsSelected;
+    }
+    public int getSelectedItem()
+    {
+        return pickedOption;
     }
 
     // UI GRAPHICS
