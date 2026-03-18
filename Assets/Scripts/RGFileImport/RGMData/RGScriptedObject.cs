@@ -18,6 +18,7 @@ public class RGScriptedObject : MonoBehaviour
     {
         task_idle,
         task_waitingtasks,
+        task_waitingdialog,
         task_rotating,
         task_moving,
         task_waiting,
@@ -111,6 +112,8 @@ public class RGScriptedObject : MonoBehaviour
         {
             type = TaskType.task_idle;
         }
+        // if we are animating in a dialog, we want to wait for dialog too
+        public bool dialog;
     }
 
     public TaskData mainTask = new TaskData();
@@ -479,6 +482,10 @@ public class RGScriptedObject : MonoBehaviour
                 if(multiTasks.Count == 0)
                     taskData.type = TaskType.task_idle;
                 break;
+            case TaskType.task_waitingdialog:
+                if(RGObjectStore.IsDialogDone())
+                    taskData.type = TaskType.task_idle;
+                break;
             case TaskType.task_rotating:
                 taskData.timer += frameTime;
                 if(taskData.timer < taskData.duration)
@@ -572,10 +579,21 @@ public class RGScriptedObject : MonoBehaviour
                 }
                 break;
             case TaskType.task_animating:
+                taskData.timer += frameTime;
                 if(taskData.animationFinished == true)
                 {
                     if(taskData.animationQueue.Count == 0)
-                        taskData.type = TaskType.task_idle;
+                    {
+                        if(taskData.dialog)
+                        {
+                            if(taskData.timer > taskData.duration)
+                            {
+                                taskData.type = TaskType.task_idle;
+                            }
+                        }
+                        else
+                            taskData.type = TaskType.task_idle;
+                    }
                     else
                     {
                         taskData.animationFinished = false;
@@ -626,6 +644,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[93] = Sound;
         functions[94] = FlatSound;
         functions[95] = AmbientSound;
+        functions[99] = WaitOnDialog;
         functions[100] = HideMe;
         functions[101] = ShowMe;
         functions[103] = QuickRnd;
@@ -637,6 +656,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[200] = ResetRotation;
         functions[224] = PlayerStand;
         functions[228] = PlayerDistance;
+        functions[232] = PlayerArc;
         functions[233] = PlayerLooking;
         functions[243] = PlayerFaceObj;
         functions[271] = SyncWithGroup;
@@ -723,7 +743,7 @@ public class RGScriptedObject : MonoBehaviour
 Vector3 ofsmulVec(Vector3 i)
 {
     return new Vector3(i.x*256f,
-                       i.z*256f,
+                       i.z*256f*-1.0f,
                        i.y*256f);
 }
     /*task 22*/
@@ -866,11 +886,18 @@ Vector3 ofsmulVec(Vector3 i)
         // i[3]: 3rd animation to play // TODO: this sometimes is a non-existing animation
 
         RGSoundStore.RTXEntry rtx = RGSoundStore.GetRTX(i[0]);
-        string displayText = rtx.subtitle;
-        Game.uiManager.ShowInteractionText(displayText, 5.0f);
-        // TODO: play sound
-
         TaskData newTask = new TaskData();
+ 
+        if(rtx.audio)
+        {
+            audioSource.clip = rtx.audio;
+            audioSource.Play();
+            newTask.duration = audioSource.clip.length;
+            newTask.dialog = true;
+        }
+        string displayText = rtx.subtitle;
+        Game.uiManager.ShowInteractionText(displayText, audioSource.clip.length);
+
         newTask.type = TaskType.task_animating;
         newTask.timer = 0;
         newTask.animationFinished = true;
@@ -885,13 +912,9 @@ Vector3 ofsmulVec(Vector3 i)
             newTask.animationQueue.Enqueue(nextAnim);
         }
 
-        if(rtx.audio)
-        {
-            audioSource.clip = rtx.audio;
-            audioSource.Play();
-        }
-
         AddTask(multitask, newTask);
+
+        RGObjectStore.SetDialogTimer(newTask.duration);
 
         return 0;
     }
@@ -1223,6 +1246,17 @@ Vector3 ofsmulVec(Vector3 i)
 
         return 0;
     }
+    /*task 99*/
+    public int WaitOnDialog(uint caller, bool multitask, int[] i /*0*/)
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_WaitOnDialog({string.Join(",",i)})");
+        // waits for dialog playback to end
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_waitingdialog;
+
+        AddTask(multitask, newTask);
+        return 0;
+    }
 
     /*function 100*/
     public int HideMe(uint caller, bool multitask, int[] i /*0*/)
@@ -1290,6 +1324,7 @@ Vector3 ofsmulVec(Vector3 i)
         TaskData newTask = new TaskData();
         newTask.type = TaskType.task_animating;
         newTask.timer = 0;
+        newTask.dialog = false;
         newTask.animationFinished = true;
         newTask.animationQueue = new Queue<(int animId, int startFrame)>();
 
@@ -1369,6 +1404,31 @@ Vector3 ofsmulVec(Vector3 i)
         ScriptingDBG($"PLAYERDIST: {rgDistance}");
         return rgDistance;
     }
+    /*function 232*/
+    public int PlayerArc(uint caller, bool multitask, int[] i /*2*/)
+    {
+        // returns 1 if the player rotation is in the defined arc
+        // i[0]: degrees negative
+        // i[1]: degrees positive
+        // TODO: this is definately broken, check with parrot
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        float angleNeg = -((float)i[0])*DA2DG;
+        float anglePos = ((float)i[1])*DA2DG;
+
+        Vector3 fwd = this.transform.forward;
+        Vector3 relPos = player.transform.position-this.transform.position;
+
+        fwd.y = 0.0f;
+        relPos.y = 0.0f;
+        float angle = Vector3.Angle(fwd, relPos);
+        if(angle <= 0.0f && angle>angleNeg)
+            return 1;
+        if(angle >= 0.0f && angle<anglePos)
+            return 1;
+
+        return 0;
+    }
+ 
     /*function 233*/
     public int PlayerLooking(uint caller, bool multitask, int[] i /*1*/)
     {

@@ -55,6 +55,8 @@ public class RGObjectStore
     public static Dictionary<uint, List<RGScriptedObject>> scriptedGroups;
     // master/slaves
     public static Dictionary<uint, MasterSlavesStruct> scriptedSlaves;
+    // dialog timer
+    static long dialogEndTime;
 
     public static void Clear()
     {
@@ -247,5 +249,13 @@ public class RGObjectStore
                 Debug.Log($"added slave {o.scriptName} to new master {slaveId}");
             }
         }
+    }
+    public static void SetDialogTimer(float duration)
+    {
+        dialogEndTime = DateTimeOffset.Now.ToUnixTimeSeconds()+(long)(duration);
+    }
+    public static bool IsDialogDone()
+    {
+        return DateTimeOffset.Now.ToUnixTimeSeconds()>dialogEndTime;
     }
 }

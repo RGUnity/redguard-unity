@@ -2789,8 +2789,8 @@ public static class WorldLoader
             // 0x82BD38A0, // X
             // 0x82BD62D0, // X
             // 0x82BD66C0, // XCOMPASS
-            // 0x82BD6800, // PARROT
-            // 0x82BD6940, // GERRICK
+            0x82BD6800, // PARROT
+            0x82BD6940, // GERRICK
             // 0x82BD6D30, // XCHEST
             // 0x82BD6FA8, // G_GETOFF
             0x82BD72E0, // EXTGERR

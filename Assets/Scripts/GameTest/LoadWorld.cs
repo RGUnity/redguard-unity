@@ -15,8 +15,10 @@ public class LoadWorld : MonoBehaviour
 //        WorldLoader.RequestLoadWorld(12,0,0);
 // JFFER entry
 //        WorldLoader.RequestLoadWorld(26,1,1724);
+// GERRICKS entry
+        WorldLoader.RequestLoadWorld(22,0,1024);
 // SILVER1 entry
-        WorldLoader.RequestLoadWorld(18,0,1024);
+//        WorldLoader.RequestLoadWorld(18,0,1024);
         WorldLoader.LoadWorldIfRequested();
 
 RG3DStore.LoadMeshIntermediatesROB("INVENTRY");
@@ -28,9 +30,6 @@ foreach(KeyValuePair<int, RGINIStore.itemData> entry in itemdict)
     Debug.LogWarning($"item {entry.Key}: {entry.Value.name} | {entry.Value.description}");
 }
 */
-            Debug.LogWarning($"KRIS LOCS: {ModelLoader.scriptedObjects[0x82BD6D08].locations.Count}");
-            Debug.LogWarning($"CYRUS LOCS: {RGObjectStore.GetPlayer().locations.Count}");
-
      }
     // Update is called once per frame
     void Update()
