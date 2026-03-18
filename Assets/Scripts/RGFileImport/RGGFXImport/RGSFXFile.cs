@@ -63,65 +63,18 @@ size: {dataLength:X}
                 }
             }
 		}
-        public enum AudioType
-        {
-            audiotype_mono8       = 0,
-            audiotype_mono16      = 1,
-            audiotype_stereo8     = 2,
-            audiotype_stereo16    = 3,
-        }
-        public enum AudioBitDepth
-        {
-            audiodepth_8    = 0,
-            audiodepth_16   = 1,
-        }
-
-        public struct SoundEffect
-        {
-            public AudioType typeId;
-            public AudioBitDepth bitDepth;
-            public int sampleRate;
-            public char unknown1;
-            public char loopFlag;
-            public int loopOffset;
-            public int loopEnd;
-            public int dataLength;
-            public char unknown2;
-            public byte[] PCMData;
-            public SoundEffect(MemoryReader memoryReader)
-            {
-                try
-                {
-                    typeId = (AudioType)memoryReader.ReadInt32();
-                    bitDepth = (AudioBitDepth)memoryReader.ReadInt32();
-                    sampleRate = memoryReader.ReadInt32();
-                    unknown1 = memoryReader.ReadChar();
-                    loopFlag = memoryReader.ReadChar();
-                    loopOffset = memoryReader.ReadInt32();
-                    loopEnd = memoryReader.ReadInt32();
-                    dataLength = memoryReader.ReadInt32();
-                    unknown2 = memoryReader.ReadChar();
-                    PCMData = memoryReader.ReadBytes(dataLength*1);
-                }
-                catch(Exception ex)
-                {
-                    throw new Exception($"Failed to load SFX sound effect with error:\n{ex.Message}");
-                }
-            }
-
-        }
 		public struct FXDTSection
 		{
-            public List<SoundEffect> soundEffectList;
+            public List<RGSoundEffect> soundEffectList;
 
 			public FXDTSection(MemoryReader memoryReader, FXHDSection FXHD)
             {
                 try
                 {
-                    soundEffectList = new List<SoundEffect>();
+                    soundEffectList = new List<RGSoundEffect>();
                     for(int i=0;i<FXHD.numSounds;i++)
                     {
-                        soundEffectList.Add(new SoundEffect(memoryReader));
+                        soundEffectList.Add(new RGSoundEffect(memoryReader));
                     }
 
                 }

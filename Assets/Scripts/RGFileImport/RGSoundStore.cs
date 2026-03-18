@@ -47,8 +47,13 @@ public static class RGSoundStore
 
             foreach(KeyValuePair<int, RGRTXFile.RTXItem> entry in rtxFile.rtxItemDict)
             {
-                // do something with entry.Value or entry.Key
-                RTXEntry newRTX = new RTXEntry(entry.Value.subtitle, null);
+                
+                AudioClip audio = null;
+                if(entry.Value.hasAudioData())
+                {
+                    audio = SFXToAudio(entry.Value.audioData, entry.Key);
+                }
+                RTXEntry newRTX = new RTXEntry(entry.Value.subtitle, audio);
                 RTXDict.Add(entry.Key, newRTX);
             }
         }
@@ -76,28 +81,28 @@ public static class RGSoundStore
             Debug.Log($"Failed to read SFX file with error {ex.Message}");
         }
     }
-    private static AudioClip SFXToAudio(RGSFXFile.SoundEffect sfx, int id)
+    private static AudioClip SFXToAudio(RGSoundEffect sfx, int id)
     {
         AudioClip o;
         int channels = 0;
         switch(sfx.typeId)
         {
-            case RGSFXFile.AudioType.audiotype_mono8:
-            case RGSFXFile.AudioType.audiotype_mono16:
+            case RGAudioType.audiotype_mono8:
+            case RGAudioType.audiotype_mono16:
                 channels = 1;
                 break;
-            case RGSFXFile.AudioType.audiotype_stereo8:
-            case RGSFXFile.AudioType.audiotype_stereo16:
+            case RGAudioType.audiotype_stereo8:
+            case RGAudioType.audiotype_stereo16:
                 channels = 2;
                 break;
         }
         float[] PCM2Float;
         switch(sfx.bitDepth)
         {
-            case RGSFXFile.AudioBitDepth.audiodepth_8:
+            case RGAudioBitDepth.audiodepth_8:
                 PCM2Float = PCM8ToFloat(sfx.PCMData, sfx.dataLength);
                 break;
-            case RGSFXFile.AudioBitDepth.audiodepth_16:
+            case RGAudioBitDepth.audiodepth_16:
                 PCM2Float = PCM16ToFloat(sfx.PCMData, sfx.dataLength);
                 break;
             default:

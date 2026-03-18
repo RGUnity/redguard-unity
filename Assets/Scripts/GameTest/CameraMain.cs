@@ -27,11 +27,11 @@ public static class CameraMain
             mainCamera.transform.SetParent(o.transform);
         }
     }
-    static public void ShowLocation(Vector3 location, Vector3 camOffset, Vector3 camTargetOffset)
+    static public void ShowLocation(Transform transform, Vector3 camOffset, Vector3 camTargetOffset)
     {
-        mainCamera.transform.SetParent(null);
-        mainCamera.transform.localPosition = location+camOffset;
-        mainCamera.transform.LookAt(location+camTargetOffset);
+        mainCamera.transform.SetParent(transform);
+        mainCamera.transform.localPosition = camOffset;
+        mainCamera.transform.LookAt(transform.position-camTargetOffset);
 
         Debug.Log($"ShowObjLoc CO: {camOffset}, CTO: {camTargetOffset}");
     }

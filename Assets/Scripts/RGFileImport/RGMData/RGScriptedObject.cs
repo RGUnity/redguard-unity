@@ -720,6 +720,12 @@ public class RGScriptedObject : MonoBehaviour
         return 0;
     }
 
+Vector3 ofsmulVec(Vector3 i)
+{
+    return new Vector3(i.x*256f,
+                       i.z*256f,
+                       i.y*256f);
+}
     /*task 22*/
     public int showObjLoc(uint caller, bool multitask, int[] i /*3*/)	
     {
@@ -730,22 +736,30 @@ public class RGScriptedObject : MonoBehaviour
         // i[1]: camera up-axis offset
         // i[2]: camera XYZ-axis offset (not sure which)
         // TODO: find a system in this tangle of magic numbers
-        Vector3 offsetPos = new Vector3(-((float)i[0])*RGM_MPOB_SCALE*256,
-                                       -((float)i[1])*RGM_MPOB_SCALE*256f,
-                                        ((float)i[2])*RGM_MPOB_SCALE*256);
+        Vector3 offsetPos = new Vector3(((float)i[0])*RGM_MPOB_SCALE,
+                                        ((float)i[1])*RGM_MPOB_SCALE,
+                                        ((float)i[2])*RGM_MPOB_SCALE);
 
-        Vector3 camOffset = new Vector3(-((float)attributes[50])*RGM_MPOB_SCALE*256,
-                                       -((float)attributes[51])*RGM_MPOB_SCALE*256f,
-                                        ((float)attributes[52])*RGM_MPOB_SCALE*256);
-        Vector3 camTargetOffset = new Vector3(-((float)attributes[47])*RGM_MPOB_SCALE*256,
-                                             -((float)attributes[48])*RGM_MPOB_SCALE*256f,
-                                              ((float)attributes[49])*RGM_MPOB_SCALE*256);
+        Vector3 camOffset = new Vector3(((float)attributes[50])*RGM_MPOB_SCALE,
+                                        ((float)attributes[51])*RGM_MPOB_SCALE,
+                                        ((float)attributes[52])*RGM_MPOB_SCALE);
+        Vector3 camTargetOffset = new Vector3(((float)attributes[47])*RGM_MPOB_SCALE,
+                                              ((float)attributes[48])*RGM_MPOB_SCALE,
+                                              ((float)attributes[49])*RGM_MPOB_SCALE);
+
+// GUD:
+// CO1: -1.20, 5.50, 3.0
+// GU1: 
+
+        offsetPos = ofsmulVec(offsetPos);
+        camOffset = ofsmulVec(camOffset);
+        camTargetOffset = ofsmulVec(camTargetOffset);
 
         Vector3 totalCamOffset = offsetPos+camOffset;
 
-        Debug.Log($"{offsetPos} + {camOffset} = {offsetPos+camOffset}/ {totalCamOffset}");
+        Debug.Log($"OBJ {offsetPos} + {camOffset} = {offsetPos+camOffset}/ {totalCamOffset}");
 
-        CameraMain.ShowLocation(this.transform.position, totalCamOffset, camTargetOffset);
+        CameraMain.ShowLocation(this.transform, totalCamOffset, camTargetOffset);
         return 0;
     }
 
@@ -758,21 +772,9 @@ public class RGScriptedObject : MonoBehaviour
         // i[0]: camera XYZ-axis offset (not sure which)
         // i[1]: camera up-axis offset
         // i[2]: camera XYZ-axis offset (not sure which)
-        // TODO: find a system in this tangle of magic numbers
-        Vector3 offsetPos = new Vector3(((float)i[0])*RGM_MPOB_SCALE*256,
-                                       ((float)i[1])*RGM_MPOB_SCALE*25.6f,
-                                        ((float)i[2])*RGM_MPOB_SCALE*256);
-
-        Vector3 camOffset = new Vector3(((float)attributes[50])*RGM_MPOB_SCALE*256,
-                                       ((float)attributes[51])*RGM_MPOB_SCALE*25.6f,
-                                        ((float)attributes[52])*RGM_MPOB_SCALE*256);
-        Vector3 camTargetOffset = new Vector3(((float)attributes[47])*RGM_MPOB_SCALE*100,
-                                             ((float)attributes[48])*RGM_MPOB_SCALE*100,
-                                              ((float)attributes[49])*RGM_MPOB_SCALE*0);
-
-        Vector3 totalCamOffset = offsetPos+camOffset;
-
-        CameraMain.ShowLocation(this.transform.position, totalCamOffset, camTargetOffset);
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        Debug.Log($"OBJCYR");
+        player.showObjLoc(caller, multitask, i);
  
         return 0;
     }
@@ -833,12 +835,19 @@ public class RGScriptedObject : MonoBehaviour
     {
         // Play a sound from RTX and display subtitles
         // i[0]: index of the RTX data
-        string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
+        RGSoundStore.RTXEntry rtx = RGSoundStore.GetRTX(i[0]);
+        string displayText = rtx.subtitle;
         Game.uiManager.ShowInteractionText(displayText, 5.0f);
+
+        if(rtx.audio)
+        {
+            audioSource.clip = rtx.audio;
+            audioSource.Play();
+        }
 
         TaskData newTask = new TaskData();
         newTask.type = TaskType.task_waiting;
-        newTask.duration = 5.0f; // TODO: get play time from RTX audio
+        newTask.duration = audioSource.clip.length;
         newTask.timer = 0;
 
         AddTask(multitask, newTask);
@@ -856,7 +865,8 @@ public class RGScriptedObject : MonoBehaviour
         // i[2]: 2nd animation to play
         // i[3]: 3rd animation to play // TODO: this sometimes is a non-existing animation
 
-        string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
+        RGSoundStore.RTXEntry rtx = RGSoundStore.GetRTX(i[0]);
+        string displayText = rtx.subtitle;
         Game.uiManager.ShowInteractionText(displayText, 5.0f);
         // TODO: play sound
 
@@ -873,6 +883,12 @@ public class RGScriptedObject : MonoBehaviour
         {
             (int animId, int startFrame) nextAnim = (i[j], 0);
             newTask.animationQueue.Enqueue(nextAnim);
+        }
+
+        if(rtx.audio)
+        {
+            audioSource.clip = rtx.audio;
+            audioSource.Play();
         }
 
         AddTask(multitask, newTask);
