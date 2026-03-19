@@ -73,9 +73,11 @@ public class PlayerMain: MonoBehaviour
         player.SetAnim((int)currentAnimState, 0);
     }
     
+    [SerializeField] private bool locked;
     private void doAnimStateMachine()
     {
         // TODO: clean lockout
+        // TODO: unlock should set anim exit fcns
         if(player)
             if(player.locked)
                 return;

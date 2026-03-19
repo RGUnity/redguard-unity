@@ -746,6 +746,16 @@ Vector3 ofsmulVec(Vector3 i)
                        i.z*256f*-1.0f,
                        i.y*256f);
 }
+Vector3 ofsvec_tst(int ix, int iy, int iz)
+{
+    ix = ix*256;
+    iy = iy*256;
+    iz = iz*256;
+    Vector3 o = new Vector3(-((float)ix)*RGM_MPOB_SCALE,
+                             (float)((float)iz*RGM_MPOB_SCALE),
+                             (float)((float)(iy)*RGM_MPOB_SCALE));
+    return o;
+}
     /*task 22*/
     public int showObjLoc(uint caller, bool multitask, int[] i /*3*/)	
     {
@@ -756,30 +766,26 @@ Vector3 ofsmulVec(Vector3 i)
         // i[1]: camera up-axis offset
         // i[2]: camera XYZ-axis offset (not sure which)
         // TODO: find a system in this tangle of magic numbers
-        Vector3 offsetPos = new Vector3(((float)i[0])*RGM_MPOB_SCALE,
-                                        ((float)i[1])*RGM_MPOB_SCALE,
-                                        ((float)i[2])*RGM_MPOB_SCALE);
+        int x = i[0];
+        int y = i[1];
+        int z = i[2];
 
-        Vector3 camOffset = new Vector3(((float)attributes[50])*RGM_MPOB_SCALE,
-                                        ((float)attributes[51])*RGM_MPOB_SCALE,
-                                        ((float)attributes[52])*RGM_MPOB_SCALE);
-        Vector3 camTargetOffset = new Vector3(((float)attributes[47])*RGM_MPOB_SCALE,
-                                              ((float)attributes[48])*RGM_MPOB_SCALE,
-                                              ((float)attributes[49])*RGM_MPOB_SCALE);
+        int at_cox = attributes[50];
+        int at_coy = attributes[51];
+        int at_coz = attributes[52];
 
-// GUD:
-// CO1: -1.20, 5.50, 3.0
-// GU1: 
+        int at_ctox = attributes[47];
+        int at_ctoy = attributes[48];
+        int at_ctoz = attributes[49];
 
-        offsetPos = ofsmulVec(offsetPos);
-        camOffset = ofsmulVec(camOffset);
-        camTargetOffset = ofsmulVec(camTargetOffset);
+        Vector3 ofs =  ofsvec_tst(x,y,z);
+        Vector3 co =  ofsvec_tst(at_cox,at_coy,at_coz);
+        Vector3 cto =  ofsvec_tst(at_ctox,at_ctoy,at_ctoz);
+        Vector3 tco =  ofs+co;
 
-        Vector3 totalCamOffset = offsetPos+camOffset;
+        Debug.Log($"OBJ {ofs} + {co} = {tco} /{cto}");
 
-        Debug.Log($"OBJ {offsetPos} + {camOffset} = {offsetPos+camOffset}/ {totalCamOffset}");
-
-        CameraMain.ShowLocation(this.transform, totalCamOffset, camTargetOffset);
+        CameraMain.ShowLocation(this.transform, tco, cto);
         return 0;
     }
 
@@ -856,8 +862,6 @@ Vector3 ofsmulVec(Vector3 i)
         // Play a sound from RTX and display subtitles
         // i[0]: index of the RTX data
         RGSoundStore.RTXEntry rtx = RGSoundStore.GetRTX(i[0]);
-        string displayText = rtx.subtitle;
-        Game.uiManager.ShowInteractionText(displayText, 5.0f);
 
         if(rtx.audio)
         {
@@ -869,6 +873,9 @@ Vector3 ofsmulVec(Vector3 i)
         newTask.type = TaskType.task_waiting;
         newTask.duration = audioSource.clip.length;
         newTask.timer = 0;
+
+        string displayText = rtx.subtitle;
+        Game.uiManager.ShowSubtitleText(displayText, audioSource.clip.length);
 
         AddTask(multitask, newTask);
 
@@ -896,7 +903,7 @@ Vector3 ofsmulVec(Vector3 i)
             newTask.dialog = true;
         }
         string displayText = rtx.subtitle;
-        Game.uiManager.ShowInteractionText(displayText, audioSource.clip.length);
+        Game.uiManager.ShowSubtitleText(displayText, audioSource.clip.length);
 
         newTask.type = TaskType.task_animating;
         newTask.timer = 0;

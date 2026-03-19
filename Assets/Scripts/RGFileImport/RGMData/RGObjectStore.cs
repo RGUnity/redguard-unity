@@ -141,6 +141,7 @@ public class RGObjectStore
         player.Instanciate(cyrus_data, filergm, "ISLAND");
         player.transform.localPosition = Vector3.zero;
         player.transform.localRotation = Quaternion.identity;
+        player.locked = false;
 
         GameObject[] playerRootObjects = GameObject.FindGameObjectsWithTag("Player");
         playerRootObject = playerRootObjects[0];

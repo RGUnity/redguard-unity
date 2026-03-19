@@ -9,7 +9,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private DialogueOption optionPrefab;
     [SerializeField] private Transform optionsParent;
     [SerializeField] private TMP_Text interactionTextDisplay;
+    [SerializeField] private TMP_Text subtitleTextDisplay;
     private float interactionTextTimer;
+    private float subtitleTextTimer;
     [SerializeField] public UIGraphics uiGraphics;
     
     private List<DialogueOption> options = new();
@@ -30,6 +32,13 @@ public class UIManager : MonoBehaviour
         }
         else
             HideInteractionText();
+        if(subtitleTextTimer > 0.0f)
+        {
+            subtitleTextTimer -= Time.deltaTime;
+        }
+        else
+            HideSubtitleText();
+
     }
 
     public void LinkData(LocalUIData data)
@@ -37,6 +46,7 @@ public class UIManager : MonoBehaviour
         optionPrefab = data.optionPrefab;
         optionsParent =  data.optionsParent;
         interactionTextDisplay = data.interactionTextDisplay;
+        subtitleTextDisplay = data.subtitleTextDisplay;
         uiGraphics = data.uiGraphics;
     }
     
@@ -52,7 +62,19 @@ public class UIManager : MonoBehaviour
     {
         interactionTextDisplay.text = "";
     }
-    
+ 
+    public void ShowSubtitleText(string text, float time = 0.5f)
+    {
+        // text wrapping is handled by TextMeshPro; should just work
+        subtitleTextDisplay.text = text;
+        subtitleTextTimer = time;
+    }
+
+    public void HideSubtitleText()
+    {
+        subtitleTextDisplay.text = "";
+    }
+       
     // DIALOGUE UI
     
     public void ClearDialogueOption()

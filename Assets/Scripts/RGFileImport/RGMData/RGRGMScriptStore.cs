@@ -330,7 +330,6 @@ void logDBG(string i)
     }
     string doGetObject(byte ofs, objectLoc loc)
     {
-        // TODO: do :)
         string obj = new string("");
         switch(loc)
         {
@@ -597,11 +596,11 @@ void logDBG(string i)
         switch(instruction)
         {
             case 0x00: // task
-                return readTask("object_me", taskType.task); // TODO: object name
+                return readTask("object_me", taskType.task);
             case 0x01: // multitask (?)
-                return readTask("object_me", taskType.multitask); // TODO: object name
+                return readTask("object_me", taskType.multitask);
             case 0x02: // function
-                return readTask("object_me", taskType.function); // TODO: object name
+                return readTask("object_me", taskType.function);
             case 0x03:
                 memoryReaders[currentThread].Position = readIf();
                 return 0xBEEF;

@@ -16,9 +16,9 @@ public class LoadWorld : MonoBehaviour
 // JFFER entry
 //        WorldLoader.RequestLoadWorld(26,1,1724);
 // GERRICKS entry
-        WorldLoader.RequestLoadWorld(22,0,1024);
+//        WorldLoader.RequestLoadWorld(22,0,1024);
 // SILVER1 entry
-//        WorldLoader.RequestLoadWorld(18,0,1024);
+        WorldLoader.RequestLoadWorld(18,0,1024);
         WorldLoader.LoadWorldIfRequested();
 
 RG3DStore.LoadMeshIntermediatesROB("INVENTRY");
