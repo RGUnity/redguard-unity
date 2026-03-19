@@ -5,7 +5,7 @@ public class PathManager : MonoBehaviour
 {
     public string GetRootFolder()
     {
-        return Game.Config.redguardPath;
+        return Game.Config.redguardPath+"/";
     }
 
     public bool SetPath(string rootPath)
