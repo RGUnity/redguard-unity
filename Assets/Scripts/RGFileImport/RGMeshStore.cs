@@ -285,12 +285,14 @@ using(s_load_FLAT2mesh.Auto()){
         mesh.subMeshCount = WLD_TEXID_CNT;
 
         List<Vector3> vec_lst = new List<Vector3>();
+        List<Vector3> norm_lst = new List<Vector3>();
         List<Vector2> uv_lst  = new List<Vector2>();
         List<int[]>   tri_lst = new List<int[]>();
         int tri_ofs = 0;
         for(int i=0;i<mesh.subMeshCount;i++)
         {
             vec_lst.AddRange(file_wld.meshes[i].vertices);
+            norm_lst.AddRange(file_wld.meshes[i].normals);
             uv_lst.AddRange(file_wld.meshes[i].uv);
 
             int[] tri_tmp = file_wld.meshes[i].triangles.ToArray();
@@ -304,10 +306,10 @@ using(s_load_FLAT2mesh.Auto()){
         }
 
         mesh.vertices = vec_lst.ToArray();
+        mesh.normals = norm_lst.ToArray();
         mesh.uv = uv_lst.ToArray();
         for(int i=0;i<mesh.subMeshCount;i++)
             mesh.SetTriangles(tri_lst[i],i);
-        mesh.RecalculateNormals();
         return mesh;
     }
 }
