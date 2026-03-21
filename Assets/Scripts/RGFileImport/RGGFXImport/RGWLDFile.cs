@@ -14,14 +14,6 @@ namespace RGFileImport
         // Previous empirical value was 12.9; the exact ratio is 256/20 = 12.8.
         const float WLD_SIZE_SCALE = 256.0f / 20.0f;
 
-        // Engine terrain vertex builder (FUN_000e24e8) computes
-        // world_pos = grid_index * 256 with NO origin offset.
-        // The half-cell offsets (-0.5, +0.5) found at 0x00198dfc/0x00198e04
-        // are only used for world→grid reverse lookup (camera cell detection),
-        // not for geometry. Previous values (-12, 0, 11) were empirical.
-        const float WLD_OFFSET_X = 0.0f;
-        const float WLD_OFFSET_Y = 0.0f;
-        const float WLD_OFFSET_Z = 0.0f;
 
         // Engine height lookup table (128 entries, indexed by 7-bit heightmap
         // byte). Values are in engine units; divided by 20 at lookup time to
@@ -361,24 +353,24 @@ IO_WLD_data_t
 					a1 = new Vector3((float)(x+1)*WLD_SIZE_SCALE,
                                      WLD_HEIGHT_FUN(maps_data.heightmap[(x+1)+(y+1)*map_size]),
 							    	 -(float)(y+1)*WLD_SIZE_SCALE);
-					a1 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
+
 
 					b1 = new Vector3((float)(x+1)*WLD_SIZE_SCALE,
                                      WLD_HEIGHT_FUN(maps_data.heightmap[(x+1)+(y+0)*map_size]),
 							    	 -(float)(y+0)*WLD_SIZE_SCALE);
-					b1 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
+
 
 					c1 = new Vector3((float)(x+0)*WLD_SIZE_SCALE,
                                      WLD_HEIGHT_FUN(maps_data.heightmap[(x+0)+(y+0)*map_size]),
 							    	 -(float)(y+0)*WLD_SIZE_SCALE);
-					c1 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
+
 
 					// tri 2
 					a2 = c1;
 					b2 = new Vector3((float)(x+0)*WLD_SIZE_SCALE,
                                      WLD_HEIGHT_FUN(maps_data.heightmap[(x+0)+(y+1)*map_size]),
 							    	 -(float)(y+1)*WLD_SIZE_SCALE);
-					b2 += new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
+
 
 					c2 = a1;
 
