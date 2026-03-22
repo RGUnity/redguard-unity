@@ -10,7 +10,7 @@ public class LoadWorld : MonoBehaviour
 // OBS entry
 //        WorldLoader.RequestLoadWorld(5,0,0);
 // OBS exit
-//        WorldLoader.RequestLoadWorld(1,6,1024);
+        WorldLoader.RequestLoadWorld(1,6,1024);
 // TEMPLE entry
 //        WorldLoader.RequestLoadWorld(12,0,0);
 // JFFER entry
@@ -18,7 +18,7 @@ public class LoadWorld : MonoBehaviour
 // GERRICKS entry
 //        WorldLoader.RequestLoadWorld(22,0,1024);
 // SILVER1 entry
-        WorldLoader.RequestLoadWorld(18,0,1024);
+//        WorldLoader.RequestLoadWorld(18,0,1024);
         WorldLoader.LoadWorldIfRequested();
 
 RG3DStore.LoadMeshIntermediatesROB("INVENTRY");

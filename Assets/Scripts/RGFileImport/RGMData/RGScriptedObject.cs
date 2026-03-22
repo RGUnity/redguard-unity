@@ -74,7 +74,7 @@ public class RGScriptedObject : MonoBehaviour
 	bool debugScripting;
     public ScriptData script;
 
-    public List<Vector3> locations;
+    [SerializeField] public List<Vector3> locations;
 // tasks
     public class TaskData
     {
@@ -246,7 +246,7 @@ public class RGScriptedObject : MonoBehaviour
             Vector3 loc = position;
             loc.x += (float)(RALCData.offsetX)*RGM_MPOB_SCALE;
             loc.y += -(float)(RALCData.offsetY)*RGM_MPOB_SCALE;
-            loc.z += -(float)(0xFFFFFF-RALCData.offsetZ)*RGM_MPOB_SCALE;
+            loc.z += -(float)(RALCData.offsetZ)*RGM_MPOB_SCALE;
             locations.Add(loc);
         }
 
@@ -630,6 +630,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[46] = WalkForward;
         functions[47] = WalkBackward;
         functions[53] = MoveByAxis;
+        functions[55] = MoveObjectAxis;
         functions[56] = MoveToLocation;
         functions[60] = Wait;
         functions[62] = Light;
@@ -1076,6 +1077,42 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         AddTask(multitask, newTask);
         return 0;
     }
+    /*task 55*/
+    public int MoveObjectAxis(uint caller, bool multitask, int[] i /*3*/)    
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_MoveObjectAxis({string.Join(",",i)})");
+        // Moves along local axis
+        // i[0]: axis (0/1/2)
+        // i[1]: amount
+        // i[2]: time to complete
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_moving;
+        newTask.duration = ((float)i[2])*TIME_VAL;;
+        newTask.timer = 0;
+
+        Vector3 mt;
+        switch(i[0])
+        {
+            case 0:
+                mt = new Vector3(((float)i[1])*RGM_MPOB_SCALE, 0.0f, 0.0f);
+                break;
+            case 1:
+                mt = new Vector3(0,-(float)((float)i[1]*RGM_MPOB_SCALE),0);
+                break;
+            case 2:
+                mt = new Vector3(0,0,(float)(i[1])*RGM_MPOB_SCALE);
+                break;
+            default:
+                mt = new Vector3(0,0,0);
+                break;
+        }
+        mt = transform.TransformDirection(mt);
+        newTask.positionTarget = transform.localPosition + mt;
+        newTask.positionStart = transform.localPosition;
+        AddTask(multitask, newTask);
+        return 0;
+    }
+
     /*task 56*/
     public int MoveToLocation(uint caller, bool multitask, int[] i /*2*/)    
     {

@@ -702,16 +702,16 @@ public static class WorldLoader
             // 0x828B7210, // A
             // 0x828B7258, // SHARK
             // 0x828B7398, // SHARK
-            // 0x828B74D0, // DOLPHIN
-            // 0x828B7518, // DOLPHIN
+            0x828B74D0, // DOLPHIN
+            0x828B7518, // DOLPHIN
             // 0x828B7658, // SHARK
             // 0x828B7798, // WATERSND
             0x828B7978, // XGOLD05
-            // 0x828B79C0, // SEAGULL3
+            0x828B79C0, // SEAGULL3
             // 0x828B7BB8, // A
-            // 0x828B7CF8, // DOLPHIN
-            // 0x828B7E38, // SEAGULL
-            // 0x82BD2DA0, // SEAGULL2
+            0x828B7CF8, // DOLPHIN
+            0x828B7E38, // SEAGULL
+            0x82BD2DA0, // SEAGULL2
             // 0x82BD2DE8, // SHARK
             // 0x82BD2F10, // WATERSND
             // 0x82BD3050, // THUGIS1
@@ -737,7 +737,7 @@ public static class WorldLoader
             // 0x82BD35F0, // WATERSND
             // 0x82BD3C20, // SHARK
             // 0x82BD3C68, // WATERSND
-            // 0x82BD3CB0, // SEAGULL2
+            0x82BD3CB0, // SEAGULL2
             // 0x82BD3CF8, // WATERSND
             // 0x82BD3D40, // SHARK
             // 0x82BD3D88, // WATERSND
@@ -746,11 +746,11 @@ public static class WorldLoader
             // 0x82BD3E60, // SHARK
             // 0x82BD3EA8, // SHARK
             // 0x82BD3EF0, // WATERSND
-            // 0x82BD4010, // SEAGULL
+            0x82BD4010, // SEAGULL
             0x82BD4058, // XGOLD05
             // 0x82BD40A0, // RNDGOLD5
-            // 0x82BD40E8, // SEAGULL
-            // 0x82BD4930, // SEAGULL3
+            0x82BD40E8, // SEAGULL
+            0x82BD4930, // SEAGULL3
             0x82BD4AF8, // XFLASK
             // 0x82BD4D30, // FLASKCH
             // 0x82BD5298, // FLASKCH2
@@ -761,7 +761,7 @@ public static class WorldLoader
             0x82BD56F0, // XSTRENTH
             0x82BD5930, // XHEALTH
             // 0x82BD60C0, // LOCKDOOR
-            // 0x82BD6200, // SEAGULL2
+            0x82BD6200, // SEAGULL2
             // 0x82BD6248, // YAELIISL
             // 0x82BD6388, // WATERSND
             // 0x82BD64C8, // YAELBOAT
@@ -772,10 +772,10 @@ public static class WorldLoader
             // 0x82BD6728, // WATERSND
             // 0x82BD6770, // SHARK
             // 0x82BD67B8, // WATERSND
-            // 0x82BD6800, // SEAGULL3
+            0x82BD6800, // SEAGULL3
             0x82BD6848, // XGOLD05
-            // 0x82BD6890, // SEAGULL2
-            // 0x82BD6C38, // SEAGULL
+            0x82BD6890, // SEAGULL2
+            0x82BD6C38, // SEAGULL
             // 0x82BD6DA0, // LOCKDOOR
             0x82BD7080, // XGOLD05
             // 0x82BD73A8, // LOCKDOOR
@@ -787,26 +787,26 @@ public static class WorldLoader
             // 0x82BD7650, // WATERSND
             // 0x82BD7698, // WATERSND
             // 0x82BD76E0, // WATERSND
-            // 0x82BD7D70, // SEAGULL
+            0x82BD7D70, // SEAGULL
             // 0x82BD7F90, // SHRINE06
             // 0x82BD80D0, // YAELCAM1
             // 0x82BD8208, // LH_FIRE
             // 0x82BD8348, // BEAM
             // 0x82BD84A0, // LH_LEVER
-            // 0x82BD84E8, // SEAGULL
-            // 0x82BD8610, // SEAGULL2
+            0x82BD84E8, // SEAGULL
+            0x82BD8610, // SEAGULL2
             // 0x82BD8840, // LH_SHUT2
             // 0x82BD8B30, // LH_SHUT1
             // 0x82BD8D68, // LH_DOOR
             // 0x82BD9058, // LH_PYRE
-            // 0x82BD93B8, // SEAGULL3
+            0x82BD93B8, // SEAGULL3
             // 0x82BD9400, // WATERSND
             // 0x82BD9540, // WINDSND
             // 0x82BD9780, // DR_ARRO4
             // 0x829AC1A0, // DR_WALK4
             // 0x829AC6B0, // WINDSND
             // 0x829AC8C8, // WATERSND
-            // 0x829AC910, // SEAGULL
+            0x829AC910, // SEAGULL
             // 0x829AC9E8, // WATERSND
             // 0x829ACA30, // SHARK
             // 0x829ACA78, // SHARK
@@ -857,14 +857,14 @@ public static class WorldLoader
             // 0x829B1AD0, // WINDSND
             // 0x829B1D00, // OB_EXT06
             // 0x829B1E40, // OB_EXT07
-            // 0x829B1F80, // SEAGULL3
+            0x829B1F80, // SEAGULL3
             0x829B20C0, // ENTOBSRV
             // 0x829B2108, // GEARSND
             // 0x829B2150, // WATERSND
             // 0x829B2198, // WATERSND
-            // 0x829B21E0, // SEAGULL3
-            // 0x829B2228, // SEAGULL2
-            // 0x829B2270, // SEAGULL
+            0x829B21E0, // SEAGULL3
+            0x829B2228, // SEAGULL2
+            0x829B2270, // SEAGULL
             // 0x829B22B8, // WATERSND
             // 0x829B2300, // SHARK
             // 0x829B2348, // WATERSND
@@ -873,7 +873,7 @@ public static class WorldLoader
             // 0x829B2518, // WINDSND
             // 0x829B2730, // DRBOT01
             // 0x829B2778, // WATERSND
-            // 0x829B28B8, // SEAGULL3
+            0x829B28B8, // SEAGULL3
             // 0x829B2AF0, // OB_EXT09
             // 0x829B2D30, // OB_EXT05
             // 0x829B2E78, // OB_EXT04
@@ -884,7 +884,7 @@ public static class WorldLoader
             // 0x829B3918, // OB_EXT00
             // 0x829B3A70, // OB_EXT12
             // 0x829B3AB8, // WATERSND
-            // 0x829B3B00, // SEAGULL
+            0x829B3B00, // SEAGULL
             // 0x829B3B48, // SHARK
             // 0x829B3EC0, // SHARK
             // 0x829B3F08, // WINDSND
@@ -901,7 +901,7 @@ public static class WorldLoader
             // 0x82BDA9E0, // GUARD02
             // 0x82BDAA28, // WATERSND
             // 0x82BDAA70, // SHARK
-            // 0x82BDAAB8, // SEAGULL
+            0x82BDAAB8, // SEAGULL
             // 0x82BDAB00, // SHARK
             // 0x82BDAB48, // SHARK
             // 0x82BDAB90, // SHARK
@@ -915,7 +915,7 @@ public static class WorldLoader
             // 0x82BDBEE8, // DR_FIT_B
             // 0x82BDC070, // DR_SLID2
             // 0x82BDC580, // DR_PIPE6
-            // 0x82BDC5C8, // SEAGULL3
+            0x82BDC5C8, // SEAGULL3
             // 0x82BDC610, // WATERSND
             // 0x82BDC658, // WATERSND
             // 0x82BDC6A0, // WATERSND
@@ -940,13 +940,13 @@ public static class WorldLoader
             // 0x82BDE030, // DR_FIT06
             // 0x82BDE738, // DR_PIPE4
             // 0x82BDE780, // RNDGOLD5
-            // 0x82BDE7C8, // SEAGULL
-            // 0x82BDE810, // SEAGULL2
-            // 0x82BDE858, // SEAGULL3
+            0x82BDE7C8, // SEAGULL
+            0x82BDE810, // SEAGULL2
+            0x82BDE858, // SEAGULL3
             // 0x82BDE998, // WATERSND
             // 0x82BDEAD8, // BRENNAN
             // 0x82BDDE98, // BOATSTAR
-            // 0x82BDEC60, // SEAGULL
+            0x82BDEC60, // SEAGULL
             // 0x82BDECA8, // WATERSND
             // 0x82BDECF0, // WATERSND
             // 0x82BDED80, // WATERSND
@@ -987,12 +987,12 @@ public static class WorldLoader
             // 0x82BE2580, // WATERSND
             // 0x82BE27B0, // AL_HIDE
             // 0x82BE2AA0, // TOBYDOOR
-            // 0x82BE2D70, // SEAGULL3
+            0x82BE2D70, // SEAGULL3
             // 0x82BE2DB8, // WATERSND
             // 0x82BE3450, // WATERSND
             0x82BE35B8, // ENTMAGE3
-            // 0x82BE3600, // SEAGULL
-            // 0x82BE36D8, // SEAGULL2
+            0x82BE3600, // SEAGULL
+            0x82BE36D8, // SEAGULL2
             // 0x82BE3720, // LOCKDOOR
             // 0x82BE39A8, // LOCKDOOR
             // 0x82BE39F0, // WATERSND
@@ -1003,13 +1003,13 @@ public static class WorldLoader
             // 0x82BE3E30, // LAVABUB1
             // 0x82BE4490, // LAVABUB1
             // 0x82BE44D8, // WATERSND
-            // 0x82BE4520, // DOLPHIN
-            // 0x82BE4568, // DOLPHIN
+            0x82BE4520, // DOLPHIN
+            0x82BE4568, // DOLPHIN
             // 0x82BE4778, // WATERSND
             // 0x82BE49F8, // BOAT2
             // 0x82BE4A40, // BRENDOOR
-            // 0x82BE4C38, // SEAGULL
-            // 0x82BE4D78, // SEAGULL2
+            0x82BE4C38, // SEAGULL
+            0x82BE4D78, // SEAGULL2
             // 0x82BE5238, // TOBYBOAT
             // 0x82BE5428, // DOCKSND
             // 0x82BE5628, // LOCKDOOR
@@ -1026,9 +1026,9 @@ public static class WorldLoader
             0x82BE6BA0, // ENTSMUG1
             0x82BE6C18, // ENTCART1
             // 0x82BE6D80, // SIGNZ
-            // 0x82BE6DC8, // SEAGULL
-            // 0x82BE6E58, // SEAGULL3
-            // 0x82BE6EA0, // SEAGULL
+            0x82BE6DC8, // SEAGULL
+            0x82BE6E58, // SEAGULL3
+            0x82BE6EA0, // SEAGULL
             // 0x82BE6EE8, // WATERSND
             // 0x82BE6F30, // SHARK
             // 0x82BE6F78, // WATERSND
@@ -1039,7 +1039,7 @@ public static class WorldLoader
             // 0x82BE73B0, // WATERSND
             // 0x82BE7698, // WATERSND
             // 0x82BE7968, // FLAG2
-            // 0x82BE7AA8, // SEAGULL
+            0x82BE7AA8, // SEAGULL
             // 0x82BE7D78, // GUARD01
             // 0x82BE7FD8, // DOCKSND
             0x82BE8020, // ENTHARB3
@@ -1052,16 +1052,16 @@ public static class WorldLoader
             // 0x82BE8BF8, // LOCKDOOR
             // 0x82BE8FA0, // NTLIGHT
             // 0x82BE8FE8, // GUARD01
-            // 0x82BE9030, // SEAGULL2
-            // 0x82BE93F8, // SEAGULL
+            0x82BE9030, // SEAGULL2
+            0x82BE93F8, // SEAGULL
             0x82BE9538, // ENTJFFE1
             // 0x82BE9678, // THUGTN6
             // 0x82BE96C0, // MARIAH
             // 0x82BE9880, // SIGNX
             // 0x82BE98C8, // NTLIGHT
             // 0x82BE9A40, // NTLIGHT
-            // 0x82BE9AD0, // SEAGULL
-            // 0x82BE9B18, // SEAGULL2
+            0x82BE9AD0, // SEAGULL
+            0x82BE9B18, // SEAGULL2
             // 0x82BE9C38, // WATERSND
             // 0x82BE9C80, // WATERSND
             // 0x82BE9CC8, // SHARK
@@ -1109,8 +1109,8 @@ public static class WorldLoader
             // 0x82BEE938, // LOCKDOOR
             // 0x82BEE980, // WATERSND
             // 0x82BEE9C8, // WATERSND
-            // 0x82BEEA10, // SEAGULL2
-            // 0x82BEEAE8, // SEAGULL2
+            0x82BEEA10, // SEAGULL2
+            0x82BEEAE8, // SEAGULL2
             // 0x82BEEB30, // SHARK
             // 0x82BEEC08, // WATERSND
             // 0x82BEED70, // GUARDTS2
@@ -1138,7 +1138,7 @@ public static class WorldLoader
             // 0x82BF2308, // NTLIGHT
             // 0x82BF2808, // SIGNX
             0x82BF2850, // ENTBELL1
-            // 0x82BF2988, // SEAGULL
+            0x82BF2988, // SEAGULL
             // 0x82BF30F8, // SNAKE
             // 0x82BF3290, // THUGTN5
             // 0x82BF3320, // LOCKDOOR
@@ -1342,11 +1342,11 @@ public static class WorldLoader
             // 0x82C08638, // NCBOAT
             // 0x82C08818, // BOATMAN
             // 0x82C088A8, // SHARK
-            // 0x82C088F0, // DOLPHIN
-            // 0x82C08938, // SEAGULL
-            // 0x82C08980, // SEAGULL2
+            0x82C088F0, // DOLPHIN
+            0x82C08938, // SEAGULL
+            0x82C08980, // SEAGULL2
             // 0x82C089C8, // WATERSND
-            // 0x82C08FC8, // SEAGULL3
+            0x82C08FC8, // SEAGULL3
             // 0x82C09108, // THUGIS4
             // 0x82C09248, // CHESTGLD
             // 0x82C09290, // CHESTTOP
@@ -1587,9 +1587,9 @@ public static class WorldLoader
             // 0x82C19638, // NCROPEH1
             // 0x82C19758, // WATERSND
             // 0x82C198C0, // SHARK
-            // 0x82C19908, // SEAGULL
-            // 0x82C19950, // SEAGULL2
-            // 0x82C19998, // SEAGULL3
+            0x82C19908, // SEAGULL
+            0x82C19950, // SEAGULL2
+            0x82C19998, // SEAGULL3
             // 0x82C1A040, // WATERSND
             // 0x82C1A280, // GC_ROCK1
             // 0x82C1A3A0, // GC_ROCK2
@@ -1609,42 +1609,42 @@ public static class WorldLoader
             // 0x82C1E010, // WATERSND
             // 0x82C1E1C0, // WATERSND
             // 0x82C1E208, // WATERSND
-            // 0x82C1E250, // SEAGULL
-            // 0x82C1E298, // SEAGULL2
+            0x82C1E250, // SEAGULL
+            0x82C1E298, // SEAGULL2
             // 0x82C1E2E0, // RNDGOLD5
-            // 0x82C1E328, // SEAGULL3
-            // 0x82C1E370, // SEAGULL2
-            // 0x82C1E810, // SEAGULL
+            0x82C1E328, // SEAGULL3
+            0x82C1E370, // SEAGULL2
+            0x82C1E810, // SEAGULL
             // 0x82C1E858, // SHARK
-            // 0x82C1E8A0, // DOLPHIN
-            // 0x82C1E978, // SEAGULL2
+            0x82C1E8A0, // DOLPHIN
+            0x82C1E978, // SEAGULL2
             // 0x82C1E9C0, // WATERSND
             // 0x82C1EA08, // WATERSND
             // 0x82C1EA50, // WATERSND
             // 0x82C1EA98, // WATERSND
-            // 0x82C1EAE0, // SEAGULL3
+            0x82C1EAE0, // SEAGULL3
             // 0x82C1EB28, // RNDGOLD5
-            // 0x82C1EB70, // SEAGULL2
-            // 0x82C1EBB8, // SEAGULL
-            // 0x82C1ED68, // SEAGULL3
+            0x82C1EB70, // SEAGULL2
+            0x82C1EBB8, // SEAGULL
+            0x82C1ED68, // SEAGULL3
             // 0x82C1EDB0, // WATERSND
             // 0x82C1EDF8, // WATERSND
             // 0x82C1EE40, // SHARK
-            // 0x82C1EE88, // SEAGULL
-            // 0x82C1EF18, // SEAGULL3
-            // 0x82C1EF60, // DOLPHIN
+            0x82C1EE88, // SEAGULL
+            0x82C1EF18, // SEAGULL3
+            0x82C1EF60, // DOLPHIN
             // 0x82C1EFA8, // WATERSND
             // 0x82C1F038, // WATERSND
             // 0x82C1F080, // WATERSND
             // 0x82C1F0C8, // WATERSND
             // 0x82C1F110, // WATERSND
-            // 0x82C1F158, // SEAGULL2
-            // 0x82C1F1A0, // SEAGULL
-            // 0x82C1F1E8, // SEAGULL3
+            0x82C1F158, // SEAGULL2
+            0x82C1F1A0, // SEAGULL
+             0x82C1F1E8, // SEAGULL3
             // 0x82C1F230, // WATERSND
-            // 0x82C1F278, // DOLPHIN
-            // 0x82C1F2C0, // DOLPHIN
-            // 0x82C1F308, // DOLPHIN
+            0x82C1F278, // DOLPHIN
+            0x82C1F2C0, // DOLPHIN
+            0x82C1F308, // DOLPHIN
             // 0x82C1F350, // SHARK
             // 0x82C1F398, // SHARK
             // 0x82C1F3E0, // SHARK
