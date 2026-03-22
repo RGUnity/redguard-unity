@@ -186,20 +186,20 @@ public static class WorldLoader
             // 0x8384FBC0, // DR_FLR1
             // 0x838502A8, // A
             0x838504F0, // EXTDR01
-            // 0x838506B8, // XGOLD05
-            // 0x838507F8, // XHEALTH
-            // 0x83850840, // XGOLD05
-            // 0x83850980, // XHEALTH
+            0x838506B8, // XGOLD05
+            0x838507F8, // XHEALTH
+            0x83850840, // XGOLD05
+            0x83850980, // XHEALTH
             // 0x83850AC0, // LAVABUB1
             // 0x83850D08, // DR_TRAK3
-            // 0x83850D50, // XGOLD05
+            0x83850D50, // XGOLD05
             // 0x83850D98, // LAVABUB1
             // 0x83850DE0, // LAVABUB1
             // 0x83850E28, // LAVABUB1
             // 0x83850E70, // LAVABUB1
             // 0x83851268, // LAVABUB1
             0x838512B0, // EXTDR03
-            // 0x83851328, // XHEALTH
+            0x83851328, // XHEALTH
             // 0x83851370, // TORCH
             // 0x838516B8, // DRLIGHT1
             // 0x83851700, // LAVABUB1
@@ -211,26 +211,26 @@ public static class WorldLoader
             // 0x838527E8, // DR_DORD2
             // 0x83852830, // DRLIGHT1
             // 0x838528A8, // TORCH
-            // 0x838529E8, // XHEALTH
-            // 0x83852C08, // XIRONSK
-            // 0x83852D60, // XSTRENTH
-            // 0x83852DA8, // XSTRENTH
-            // 0x83852DF0, // XGOLD05
-            // 0x83852E38, // XGOLD05
-            // 0x83852E80, // XGOLD05
-            // 0x83852EC8, // XGOLD05
-            // 0x83852F10, // XHEALTH
+            0x838529E8, // XHEALTH
+            0x83852C08, // XIRONSK
+            0x83852D60, // XSTRENTH
+            0x83852DA8, // XSTRENTH
+            0x83852DF0, // XGOLD05
+            0x83852E38, // XGOLD05
+            0x83852E80, // XGOLD05
+            0x83852EC8, // XGOLD05
+            0x83852F10, // XHEALTH
             // 0x83852F78, // LAVABUB1
             // 0x83853008, // FIRESND
             // 0x83853598, // TORCH
             // 0x838537C8, // DR_DORF1
             // 0x83853908, // DR_BLC
-            // 0x83853950, // XHEALTH
-            // 0x83853998, // XHEALTH
-            // 0x838539E0, // XSTRENTH
-            // 0x83853A28, // XHEALTH
-            // 0x83853A70, // XHEALTH
-            // 0x83853BB0, // XHEALTH
+            0x83853950, // XHEALTH
+            0x83853998, // XHEALTH
+            0x838539E0, // XSTRENTH
+            0x83853A28, // XHEALTH
+            0x83853A70, // XHEALTH
+            0x83853BB0, // XHEALTH
             // 0x83853CF0, // DRBOT03
             // 0x83853D38, // GUARDTS2
             // 0x84352090, // GUARDTST
@@ -238,8 +238,8 @@ public static class WorldLoader
             // 0x84352150, // TORCH
             // 0x843523E0, // DRLIGHT1
             // 0x84352568, // DR_DORE
-            // 0x843525B0, // XGOLD05
-            // 0x84352878, // XHEALTH
+            0x843525B0, // XGOLD05
+            0x84352878, // XHEALTH
             // 0x843528C0, // LAVABUB1
             // 0x84352908, // LAVABUB1
             // 0x84352950, // LAVABUB1
@@ -255,7 +255,7 @@ public static class WorldLoader
             // 0x84353030, // LAVABUB1
             // 0x84353078, // LAVABUB1
             // 0x843530C0, // LAVABUB1
-            // 0x84353458, // XHEALTH
+            0x84353458, // XHEALTH
             // 0x843535E8, // DR_ARM2
             // 0x84353630, // TORCH
             // 0x843536C0, // DRLIGHT1
@@ -274,19 +274,19 @@ public static class WorldLoader
             // 0x84354B50, // DR_DORB2
             // 0x84354C98, // DR_DORB1
             // 0x843550E8, // TORCH
-            // 0x84355130, // XHEALTH
-            // 0x84355340, // XHEALTH
-            // 0x84355388, // XGOLD05
-            // 0x843553D0, // XGOLD05
-            // 0x84355418, // XHEALTH
-            // 0x843556A8, // XHEALTH
+            0x84355130, // XHEALTH
+            0x84355340, // XHEALTH
+            0x84355388, // XGOLD05
+            0x843553D0, // XGOLD05
+            0x84355418, // XHEALTH
+            0x843556A8, // XHEALTH
             // 0x843558E8, // GOLMDEAD
             // 0x84355AC0, // XDRGEAR
             // 0x84355CB8, // GOLEM
             // 0x84355DF8, // DR_BLC
             // 0x84356018, // DR_BLC
-            // 0x84356060, // XMONEY
-            // 0x843560A8, // XHEALTH
+            0x84356060, // XMONEY
+            0x843560A8, // XHEALTH
             // 0x84356158, // TORCH
             // 0x84356620, // FIRESND
             // 0x84356788, // DR_LVRDC
@@ -311,7 +311,7 @@ public static class WorldLoader
             // 0x84356DE8, // LAVABUB1
             // 0x84356E30, // LAVABUB1
             // 0x843570B8, // LAVABUB1
-            // 0x84357100, // XGOLD05
+            0x84357100, // XGOLD05
             // 0x84357148, // LAVABUB1
             // 0x84357190, // LAVABUB1
             // 0x843571D8, // LAVABUB1
@@ -324,9 +324,9 @@ public static class WorldLoader
             // 0x84357650, // LAVABUB1
             // 0x843576F8, // LAVABUB1
             // 0x84357830, // DR_BLC
-            // 0x84357878, // XHEALTH
-            // 0x843578C0, // XHEALTH
-            // 0x84357908, // XGOLD05
+            0x84357878, // XHEALTH
+            0x843578C0, // XHEALTH
+            0x84357908, // XGOLD05
             // 0x84357A48, // DR_BLC
             // 0x84357DE0, // DR_BLC
             // 0x84357E58, // LAVABUB1
@@ -339,25 +339,25 @@ public static class WorldLoader
             // 0x84358098, // LAVABUB1
             // 0x84358148, // TORCH
             // 0x843581D8, // FIRESND
-            // 0x84358220, // XIRONSK
+            0x84358220, // XIRONSK
             // 0x84358268, // LAVABUB1
             // 0x843582B0, // LAVABUB1
             // 0x843584F8, // LAVABUB1
             // 0x84358540, // DRBOT02
-            // 0x84358588, // XGOLD05
-            // 0x843585D0, // XGOLD05
-            // 0x84358618, // XGOLD05
+            0x84358588, // XGOLD05
+            0x843585D0, // XGOLD05
+            0x84358618, // XGOLD05
             // 0x84358660, // TORCH
             // 0x843589F0, // DRLIGHT1
-            // 0x84358C08, // XHEALTH
+            0x84358C08, // XHEALTH
             // 0x84358FD8, // DR_DORB
             // 0x84359020, // LAVABUB1
             // 0x84359330, // LAVABUB1
-            // 0x84359378, // XHEALTH
+            0x84359378, // XHEALTH
             // 0x84359500, // GUARDTS2
             // 0x84359590, // TORCH
             // 0x84359CB0, // FIRESND
-            // 0x8435A018, // XHEALTH
+            0x8435A018, // XHEALTH
             // 0x8435A258, // DR_CLOK5
             // 0x8435A490, // DR_CLOK4
             // 0x8435A788, // DR_CLOK6
@@ -373,8 +373,8 @@ public static class WorldLoader
             // 0x8435B080, // LAVABUB1
             // 0x8435B0F8, // LAVABUB1
             // 0x8435B188, // DRLIGHT1
-            // 0x8435B1D0, // XHEALTH
-            // 0x8435B278, // XHEALTH
+            0x8435B1D0, // XHEALTH
+            0x8435B278, // XHEALTH
             // 0x8435B3B8, // GUARDTS2
             // 0x8435B6A8, // DR_STSND
             // 0x8435B8E8, // DR_FLWR2
@@ -385,7 +385,7 @@ public static class WorldLoader
             // 0x835E2550, // DR_FLWR1
             // 0x835E2690, // DR_FLWRB
             // 0x835E2720, // DR_FLWRD
-            // 0x835E28B8, // XSTRENTH
+            0x835E28B8, // XSTRENTH
             // 0x835E2900, // LAVABUB1
             // 0x835E2948, // LAVABUB1
             // 0x835E2990, // LAVABUB1
@@ -403,11 +403,11 @@ public static class WorldLoader
             // 0x835E30D8, // DR_FLWR1
             // 0x835E3218, // DR_FLWR3
             // 0x835E34D0, // DR_FLWR6
-            // 0x835E3518, // XMONEY
-            // 0x835E3560, // XHEALTH
+            0x835E3518, // XMONEY
+            0x835E3560, // XHEALTH
             // 0x835E35A8, // LAVABUB1
-            // 0x835E3638, // XHEALTH
-            // 0x835E37F0, // XMONEY
+            0x835E3638, // XHEALTH
+            0x835E37F0, // XMONEY
             // 0x835E3B10, // DR_LOAD4
             // 0x835E3C50, // DR_LOAD1
             // 0x835E3EB8, // DR_WALK3
@@ -427,7 +427,7 @@ public static class WorldLoader
             // 0x835E4DD8, // DR_WALK1
             // 0x835E4E20, // GUARDTS2
             // 0x835E52A0, // GUARDTST
-            // 0x835E53E0, // XHEALTH
+            0x835E53E0, // XHEALTH
             // 0x835E5458, // DR_ARRO1
             // 0x835E54A0, // LAVABUB1
             // 0x835E54E8, // LAVABUB1
@@ -441,7 +441,7 @@ public static class WorldLoader
             // 0x835E6330, // DR_BRG02
             // 0x835E63A8, // DRBOT02
             // 0x835E6558, // DRLIGHT1
-            // 0x835E6738, // XHEALTH
+            0x835E6738, // XHEALTH
             // 0x835E6780, // LAVABUB1
             // 0x835E67C8, // LAVABUB1
             // 0x835E6810, // LAVABUB1
@@ -455,8 +455,8 @@ public static class WorldLoader
             // 0x835E6D98, // LAVABUB1
             // 0x835E6DE0, // LAVABUB1
             // 0x835E6E28, // LAVABUB1
-            // 0x835E6E70, // XMONEY
-            // 0x835E6EB8, // XSTRENTH
+            0x835E6E70, // XMONEY
+            0x835E6EB8, // XSTRENTH
             // 0x835E6F00, // LAVABUB1
             // 0x835E6F48, // LAVABUB1
             // 0x835E6F90, // LAVABUB1
@@ -467,12 +467,12 @@ public static class WorldLoader
             // 0x835E74E8, // TORCH
             // 0x835E7628, // DRLIGHT1
             // 0x835E7A60, // DRLIGHT1
-            // 0x835E7B68, // XHEALTH
+            0x835E7B68, // XHEALTH
             // 0x835E7BB0, // LAVABUB1
-            // 0x835E7BF8, // XHEALTH
-            // 0x835E7C40, // XHEALTH
-            // 0x835E8420, // XHEALTH
-            // 0x835E86E0, // XHEALTH
+            0x835E7BF8, // XHEALTH
+            0x835E7C40, // XHEALTH
+            0x835E8420, // XHEALTH
+            0x835E86E0, // XHEALTH
             // 0x835E8820, // SCB_DOOR
             // 0x835E8968, // SCB_DOOR
             // 0x835E8AB0, // SCB_DOOR
@@ -521,7 +521,7 @@ public static class WorldLoader
             // 0x8435E7F0, // SCB_HEAD
             // 0x8435EA28, // SCB_LEGS
             // 0x8435ED98, // SCB_PNCR
-            // 0x8435EDE0, // XHEALTH
+            0x8435EDE0, // XHEALTH
             // 0x0, // XHEALTH
             }
         },
@@ -548,7 +548,7 @@ public static class WorldLoader
             // 0x83851CA0, // PI_TAP
             // 0x83851DE0, // PI_TAP
             // 0x83851F20, // GUARDTSP
-            // 0x838520E8, // XBUCKET
+            0x838520E8, // XBUCKET
             // 0x83852228, // PI_PIG00
             // 0x83852290, // TORCH
             // 0x838523D0, // FIRESND
@@ -568,7 +568,7 @@ public static class WorldLoader
             // 0x84352148, // PI_DOR2A
             // 0x843521B0, // TORCH
             // 0x843524E8, // FIRESND
-            // 0x84352688, // XHEALTH
+            0x84352688, // XHEALTH
             // 0x843526D0, // TORCH
             // 0x84352780, // FIRESND
             // 0x84352830, // TORCH
@@ -593,7 +593,7 @@ public static class WorldLoader
             // 0x84354CF0, // FIRESND
             // 0x84355098, // FIRESND
             // 0x843550E0, // GUARDTSP
-            // 0x84355250, // XHEALTH
+            0x84355250, // XHEALTH
             0x84355448, // EXTPAL3
             // 0x843556A8, // GUARDTSP
             // 0x84355838, // PI_LVRA
@@ -604,8 +604,8 @@ public static class WorldLoader
             // 0x84355D10, // FIRESND
             // 0x84356288, // TORCH
             // 0x843563D0, // PI_FLR
-            // 0x84356418, // XHEALTH
-            // 0x84356460, // XHEALTH
+            0x84356418, // XHEALTH
+            0x84356460, // XHEALTH
             // 0x843564A8, // GUARDTSP
             // 0x84356640, // GUARDTSP
             // 0x84356688, // FIRESND
@@ -634,17 +634,17 @@ public static class WorldLoader
             // 0x835E2838, // PI_CHNDC
             // 0x835E2978, // PI_CHNDC
             // 0x835E2E88, // PI_CHND3
-            // 0x835E2ED0, // XHEALTH
+            0x835E2ED0, // XHEALTH
             // 0x835E3308, // GUARDTSP
             // 0x835E3350, // GUARDTSP
             // 0x835E3490, // GUARDTSP
             // 0x835E3740, // PI_DOR4B
             // 0x835E3938, // PI_DOR4A
             // 0x835E3AC0, // PI_DOR4B
-            // 0x835E3CF0, // XIRONSK
-            // 0x835E3F08, // XSTRENTH
-            // 0x835E4310, // XHEALTH
-            // 0x835E43E8, // XHEALTH
+            0x835E3CF0, // XIRONSK
+            0x835E3F08, // XSTRENTH
+            0x835E4310, // XHEALTH
+            0x835E43E8, // XHEALTH
             // 0x835E4570, // GUARDTS3
             // 0x835E46B0, // PI_DORL4
             // 0x835E46F8, // TORCH
@@ -706,7 +706,7 @@ public static class WorldLoader
             // 0x828B7518, // DOLPHIN
             // 0x828B7658, // SHARK
             // 0x828B7798, // WATERSND
-            // 0x828B7978, // XGOLD05
+            0x828B7978, // XGOLD05
             // 0x828B79C0, // SEAGULL3
             // 0x828B7BB8, // A
             // 0x828B7CF8, // DOLPHIN
@@ -747,19 +747,19 @@ public static class WorldLoader
             // 0x82BD3EA8, // SHARK
             // 0x82BD3EF0, // WATERSND
             // 0x82BD4010, // SEAGULL
-            // 0x82BD4058, // XGOLD05
+            0x82BD4058, // XGOLD05
             // 0x82BD40A0, // RNDGOLD5
             // 0x82BD40E8, // SEAGULL
             // 0x82BD4930, // SEAGULL3
-            // 0x82BD4AF8, // XFLASK
+            0x82BD4AF8, // XFLASK
             // 0x82BD4D30, // FLASKCH
             // 0x82BD5298, // FLASKCH2
             // 0x82BD52E0, // THUGIS2
-            // 0x82BD5328, // XGOLD05
-            // 0x82BD5370, // XGOLD05
-            // 0x82BD54B0, // XGOLD05
-            // 0x82BD56F0, // XSTRENTH
-            // 0x82BD5930, // XHEALTH
+            0x82BD5328, // XGOLD05
+            0x82BD5370, // XGOLD05
+            0x82BD54B0, // XGOLD05
+            0x82BD56F0, // XSTRENTH
+            0x82BD5930, // XHEALTH
             // 0x82BD60C0, // LOCKDOOR
             // 0x82BD6200, // SEAGULL2
             // 0x82BD6248, // YAELIISL
@@ -773,11 +773,11 @@ public static class WorldLoader
             // 0x82BD6770, // SHARK
             // 0x82BD67B8, // WATERSND
             // 0x82BD6800, // SEAGULL3
-            // 0x82BD6848, // XGOLD05
+            0x82BD6848, // XGOLD05
             // 0x82BD6890, // SEAGULL2
             // 0x82BD6C38, // SEAGULL
             // 0x82BD6DA0, // LOCKDOOR
-            // 0x82BD7080, // XGOLD05
+            0x82BD7080, // XGOLD05
             // 0x82BD73A8, // LOCKDOOR
             // 0x82BD73F0, // SHARK
             // 0x82BD7438, // SHARK
@@ -822,12 +822,12 @@ public static class WorldLoader
             // 0x829AE358, // GUARDTS3
             // 0x829AE3A0, // GUARDTS2
             // 0x829AE5F8, // WATERSND
-            // 0x829AE988, // XGOLD05
+            0x829AE988, // XGOLD05
             // 0x829AE9D0, // WATERSND
             // 0x829AEA18, // WATERSND
             // 0x829AEA60, // WINDSND
-            // 0x829AEAA8, // XGOLD05
-            // 0x829AEB38, // XGOLD05
+            0x829AEAA8, // XGOLD05
+            0x829AEB38, // XGOLD05
             // 0x829AEC80, // DRSTUFF
             // 0x829AEED8, // WINDSND
             // 0x829AF018, // GUARDTS2
@@ -842,7 +842,7 @@ public static class WorldLoader
             // 0x829AFB58, // SHARK
             // 0x829AFE28, // SHARK
             // 0x829B01D0, // GUARDTS2
-            // 0x829B03A0, // XGOLD05
+            0x829B03A0, // XGOLD05
             // 0x829B03E8, // WATERSND
             // 0x829B0528, // WATERSND
             0x829B0818, // ENTDR02
@@ -1116,13 +1116,13 @@ public static class WorldLoader
             // 0x82BEED70, // GUARDTS2
             // 0x82BEF160, // DRSTUFF
             // 0x82BEEEA8, // CAMPDIRG
-            // 0x82BEF410, // XGOLD05
-            // 0x82BEF548, // XGOLD05
-            // 0x82BEF790, // XSAP
-            // 0x82BF02E0, // XBOTTLE
-            // 0x82BF0540, // XECTO
-            // 0x82BF0778, // XMILK
-            // 0x82BF13C0, // XBLOOD
+            0x82BEF410, // XGOLD05
+            0x82BEF548, // XGOLD05
+            0x82BEF790, // XSAP
+            0x82BF02E0, // XBOTTLE
+            0x82BF0540, // XECTO
+            0x82BF0778, // XMILK
+            0x82BF13C0, // XBLOOD
             // 0x82BF1720, // GUARD02
             // 0x82BF0888, // CLOTH02
             // 0x82BF18E0, // CLOTH03
@@ -1161,19 +1161,19 @@ public static class WorldLoader
             // 0x82BF4280, // WATERSND
             // 0x82BF42C8, // WATERSND
             // 0x82BF4310, // WATERSND
-            // 0x82BF4358, // XGOLD05
-            // 0x82BF43E8, // XGOLD05
-            // 0x82BF4430, // XGOLD05
-            // 0x82BF4478, // XGOLD05
-            // 0x82BF44C0, // XGOLD05
+            0x82BF4358, // XGOLD05
+            0x82BF43E8, // XGOLD05
+            0x82BF4430, // XGOLD05
+            0x82BF4478, // XGOLD05
+            0x82BF44C0, // XGOLD05
             // 0x82BF48F8, // GUARDTS2
             // 0x82BF3B58, // DRSTUFF
             // 0x82BF4B58, // DRSTUFF
-            // 0x82BF4BA0, // XGOLD05
+            0x82BF4BA0, // XGOLD05
             // 0x82BF4BE8, // GUARDTS2
             // 0x82BF4D08, // FLAG2
             // 0x82BF5490, // GUARD02
-            // 0x82BF5C48, // XPOUCH
+            0x82BF5C48, // XPOUCH
             // 0x82BF5ED0, // FIRESND
             // 0x82BF5F18, // LOCKDOOR
             // 0x82BF64C0, // NTTORCH
@@ -1190,7 +1190,7 @@ public static class WorldLoader
             // 0x82BF78B8, // WATERSND
             // 0x82BF7948, // WATERSND
             // 0x82BF7B88, // DRSTUFF
-            // 0x82BF7FD8, // XGOLD05
+            0x82BF7FD8, // XGOLD05
             // 0x82BF8020, // HEADGOLD
             // 0x82BF8428, // GUARD01
             0x82BF8470, // ENTGERR1
@@ -1214,8 +1214,8 @@ public static class WorldLoader
             // 0x82BF9CD8, // LOCKDOOR
             // 0x82BF9FA8, // LOCKDOOR
             0x82BFA5B0, // ENTJAIL
-            // 0x82BFA5F8, // XMONEY
-            // 0x82BFA958, // XMONEY
+            0x82BFA5F8, // XMONEY
+            0x82BFA958, // XMONEY
             // 0x82BFA9A0, // WATERSND
             // 0x82BFA9E8, // WATERSND
             // 0x82BFAA30, // SHARK
@@ -1223,8 +1223,8 @@ public static class WorldLoader
             // 0x82BFAAC0, // SHARK
             // 0x82BFAB08, // SHARK
             // 0x82BFAED8, // WATERSND
-            // 0x82BFAF20, // XGOLD05
-            // 0x82BFB278, // XGOLD05
+            0x82BFAF20, // XGOLD05
+            0x82BFB278, // XGOLD05
             // 0x82BFB2C0, // WATERSND
             // 0x82BFB308, // WATERSND
             // 0x82BFB4D8, // WATERSND
@@ -1236,8 +1236,8 @@ public static class WorldLoader
             // 0x82BFBFD8, // GUARDTN1
             // 0x82BFC250, // A
             0x82BFC370, // ENTJAIL
-            // 0x82BFC5F8, // XMONEY
-            // 0x82BFC6D0, // XMONEY
+            0x82BFC5F8, // XMONEY
+            0x82BFC6D0, // XMONEY
             // 0x82BFC870, // GUARDTS2
             // 0x82BFC8B8, // TORCH
             // 0x82BFC100, // FIRESND
@@ -1253,7 +1253,7 @@ public static class WorldLoader
             // 0x82BFD9C0, // WATERSND
             // 0x82BFDAE0, // GUARDTS2
             // 0x82BFDC00, // GUARDTS2
-            // 0x82BFDD68, // XHEALTH
+            0x82BFDD68, // XHEALTH
             // 0x82BFDDD0, // GUARDTS2
             // 0x82BFDE18, // TORCH
             // 0x82BFE030, // FIRESND
@@ -1277,9 +1277,9 @@ public static class WorldLoader
             // 0x82BFF8F8, // WATERSND
             // 0x82BFFDD8, // WATERSND
             // 0x82C005E8, // GUARD01
-            // 0x82C00630, // XHEALTH
-            // 0x82C00678, // XMONEY
-            // 0x82C006C0, // XHEALTH
+            0x82C00630, // XHEALTH
+            0x82C00678, // XMONEY
+            0x82C006C0, // XHEALTH
             // 0x82C00708, // GUARDTS2
             // 0x82C007B8, // GUARDTS2
             // 0x82C00800, // TORCH
@@ -1297,11 +1297,11 @@ public static class WorldLoader
             // 0x82C025E8, // GUARD01
             // 0x82C02768, // WATERSND
             // 0x82C033C0, // WATERSND
-            // 0x82C03408, // XMONEY
-            // 0x82C03450, // XHEALTH
-            // 0x82C035B8, // XHEALTH
+            0x82C03408, // XMONEY
+            0x82C03450, // XHEALTH
+            0x82C035B8, // XHEALTH
             // 0x82C03648, // GUARDTST
-            // 0x82C03690, // XMONEY
+            0x82C03690, // XMONEY
             // 0x82C036D8, // J_CANOPY
             // 0x82C03720, // GUARDTS3
             // 0x82C03840, // GUARDTST
@@ -1312,7 +1312,7 @@ public static class WorldLoader
             // 0x82C05038, // WATERSND
             // 0x82C05080, // LOCKDOOR
             // 0x82C050C8, // LOCKDOOR
-            // 0x82C05110, // XHEALTH
+            0x82C05110, // XHEALTH
             // 0x82C05158, // LOCKDOOR
             // 0x82C051A0, // GUARDTS3
             // 0x82C051E8, // GUARDTST
@@ -1320,16 +1320,16 @@ public static class WorldLoader
             // 0x82C05298, // TORCH
             // 0x82C054D8, // FIRESND
             // 0x82C05640, // J_CANOPY
-            // 0x82C05688, // XHEALTH
+            0x82C05688, // XHEALTH
             // 0x82C056D0, // SHARK
             // 0x82C05760, // SHARK
             // 0x82C057A8, // WATERSND
             // 0x82C06788, // WATERSND
-            // 0x82C067D0, // XHEALTH
+            0x82C067D0, // XHEALTH
             // 0x82C06818, // LOCKDOOR
             // 0x82C06938, // GUARDTST
-            // 0x82C06AA0, // XHEALTH
-            // 0x82C06AE8, // XMONEY
+            0x82C06AA0, // XHEALTH
+            0x82C06AE8, // XMONEY
             // 0x82C06B30, // GUARDTS2
             // 0x82C06BC0, // WATERSND
             // 0x82C06C08, // WATERSND
@@ -1351,9 +1351,9 @@ public static class WorldLoader
             // 0x82C09248, // CHESTGLD
             // 0x82C09290, // CHESTTOP
             // 0x82C092D8, // A
-            // 0x82C09320, // XSTRENTH
-            // 0x82C096A0, // XHEALTH
-            // 0x82C0AA80, // XGOLD05
+            0x82C09320, // XSTRENTH
+            0x82C096A0, // XHEALTH
+            0x82C0AA80, // XGOLD05
             // 0x82C0AC78, // PALCDIRG
             // 0x82C0ACC0, // WATERSND
             // 0x82C0AD08, // WATERSND
@@ -1366,15 +1366,15 @@ public static class WorldLoader
             // 0x82C0D8A8, // WATERSND
             // 0x82C0DA10, // SHARK
             // 0x82C0DA58, // SHARK
-            // 0x82C0DAA0, // XSTRENTH
-            // 0x82C0DAE8, // XHEALTH
-            // 0x82C0DB30, // XSTRENTH
-            // 0x82C0DB78, // XGOLD05
-            // 0x82C0DBC0, // XGOLD05
-            // 0x82C0DC08, // XGOLD05
-            // 0x82C0DC50, // XHEALTH
-            // 0x82C0DC98, // XHEALTH
-            // 0x82C0DD70, // XGOLD05
+            0x82C0DAA0, // XSTRENTH
+            0x82C0DAE8, // XHEALTH
+            0x82C0DB30, // XSTRENTH
+            0x82C0DB78, // XGOLD05
+            0x82C0DBC0, // XGOLD05
+            0x82C0DC08, // XGOLD05
+            0x82C0DC50, // XHEALTH
+            0x82C0DC98, // XHEALTH
+            0x82C0DD70, // XGOLD05
             // 0x82C0DDB8, // SHARK
             // 0x82C0DE90, // SHARK
             // 0x82C0EF78, // WATERSND
@@ -1487,7 +1487,7 @@ public static class WorldLoader
             // 0x82C13628, // FIRESND
             // 0x82C13670, // NCROPEA1
             // 0x82C14928, // WATERSND
-            // 0x82C14970, // XGOLD05
+            0x82C14970, // XGOLD05
             // 0x82C149B8, // GUARDTS2
             // 0x82C14A00, // GUARDTS2
             // 0x82C14A48, // WATERSND
@@ -1759,19 +1759,19 @@ public static class WorldLoader
             // 0x83850578, // CANDLE
             // 0x838505C0, // NCEXPLA
             // 0x83850B30, // NCEXPLA
-            // 0x83850D68, // XECTO
-            // 0x83851030, // XBLOOD
+            0x83850D68, // XECTO
+            0x83851030, // XBLOOD
             // 0x838510D8, // NCDOORTX
             // 0x83851218, // VERMAI01
             // 0x83851358, // NC_VILED
             // 0x83851498, // NGASDEAD
-            // 0x83851680, // XSPREAR
-            // 0x838518C0, // XSTHAIR
-            // 0x83851AF8, // XAMBER
-            // 0x83851D18, // XSALLY
-            // 0x83851F48, // XDHEART
-            // 0x83852178, // XHORN
-            // 0x838523B0, // XPIGSAC
+            0x83851680, // XSPREAR
+            0x838518C0, // XSTHAIR
+            0x83851AF8, // XAMBER
+            0x83851D18, // XSALLY
+            0x83851F48, // XDHEART
+            0x83852178, // XHORN
+            0x838523B0, // XPIGSAC
             // 0x838523F8, // NC_BOUNC
             // 0x83852440, // NCPITE1
             // 0x83852488, // NCPITE1
@@ -1795,12 +1795,12 @@ public static class WorldLoader
             // 0x83853B68, // NCEXPLA
             // 0x83853C90, // NCEXPLA
             // 0x83853EC0, // NCCALD01
-            // 0x84352138, // XLICH
-            // 0x84352370, // XMILK
-            // 0x843525A8, // XSAP
-            // 0x84352A98, // XNECBOOK
-            // 0x84352BF0, // XHEALTH
-            // 0x84352D48, // XHEALTH
+            0x84352138, // XLICH
+            0x84352370, // XMILK
+            0x843525A8, // XSAP
+            0x84352A98, // XNECBOOK
+            0x84352BF0, // XHEALTH
+            0x84352D48, // XHEALTH
             // 0x84352F00, // NCELIX01
             // 0x0, // CANDLE
             }
@@ -1874,20 +1874,20 @@ public static class WorldLoader
             // 0x82BD9EB0, // X
             // 0x82BDA0C8, // MG_BARBK
             // 0x82BDA3D8, // CANDLE
-            // 0x82BDA618, // XLICH
+            0x82BDA618, // XLICH
             // 0x82BDABA8, // MGBOOKS
             // 0x82BDACE0, // FALICIA
-            // 0x82BDAFE8, // XBALL
-            // 0x82BDB370, // XHORN
+            0x82BDAFE8, // XBALL
+            0x82BDB370, // XHORN
             // 0x82BDB4B0, // JAGANVIR
             // 0x82BDB6E0, // CAMTARG1
             // 0x82BDB728, // TORCH
             // 0x82BDB960, // MGBOOKS
             // 0x82BDBBA0, // MG_BOOK
-            // 0x82BDBDE0, // XPIGSAC
-            // 0x82BDC018, // XSALLY
-            // 0x82BDC3E8, // XAMBER
-            // 0x82BDC948, // XBLOODM
+            0x82BDBDE0, // XPIGSAC
+            0x82BDC018, // XSALLY
+            0x82BDC3E8, // XAMBER
+            0x82BDC948, // XBLOODM
             // 0x82BDCC80, // MGBOOKS
             // 0x82BDCEB0, // MG_MIRR
             // 0x82BDCFF0, // SCENE4
@@ -1912,7 +1912,7 @@ public static class WorldLoader
             // 0x82BD39C0, // X
             // 0x82BD5ED0, // X
             // 0x82BD60E0, // TORCH
-            // 0x82BD62C8, // XFLAG
+            0x82BD62C8, // XFLAG
             0x82BD6408, // EXTHTW3
             // 0x82BD67D0, // PRNELL
             // 0x82BD6A90, // CHESTGLD
@@ -1957,10 +1957,10 @@ public static class WorldLoader
             // 0x84356EA0, // GUARDTS3
             // 0x84356FE0, // TORCH
             // 0x843572F0, // CTBLOCK1
-            // 0x843574D8, // XMONEY
-            // 0x84357718, // XSTRENTH
-            // 0x84357858, // XHEALTH
-            // 0x84357AB0, // XHEALTH
+            0x843574D8, // XMONEY
+            0x84357718, // XSTRENTH
+            0x84357858, // XHEALTH
+            0x84357AB0, // XHEALTH
             // 0x84357AF8, // GUARDTS3
             // 0x84357B40, // GUARDTS3
             // 0x84357B88, // RAT
@@ -2013,7 +2013,7 @@ public static class WorldLoader
             // 0x8435B4F0, // TORCH
             // 0x8435B558, // TORCH
             // 0x8435B740, // FIRESND
-            // 0x8435B830, // XTORCHP
+            0x8435B830, // XTORCHP
             // 0x8435B8E0, // TORCH
             // 0x8435B928, // GUARDTS3
             // 0x8435BCA0, // GUARDTS3
@@ -2049,7 +2049,7 @@ public static class WorldLoader
             // 0x8435DEA0, // RAT
             // 0x8435DEE8, // FIRESND
             // 0x8435DF30, // TORCH
-            // 0x8435DFE0, // XTORCHP
+            0x8435DFE0, // XTORCHP
             // 0x8435E120, // TORCH
             // 0x8435E300, // CTVRUN58
             // 0x8435E460, // CT_FIRE
@@ -2067,7 +2067,7 @@ public static class WorldLoader
             // 0x8435F988, // TORCH
             // 0x8435FAC8, // LAVABUB1
             // 0x8435FC18, // CTLOCK03
-            // 0x8435FC60, // XHEALTH
+            0x8435FC60, // XHEALTH
             // 0x8435FCA8, // LAVABUB1
             // 0x8435FDE8, // LAVABUB1
             // 0x8435FE30, // CTSKDOOR
@@ -2093,9 +2093,9 @@ public static class WorldLoader
             // 0x84360C68, // TORCH
             // 0x84360CB0, // GUARDTS3
             // 0x843610F8, // TORCH
-            // 0x843612C0, // XWEIGHT1
-            // 0x84361400, // XWEIGHT3
-            // 0x84361540, // XWEIGHT2
+            0x843612C0, // XWEIGHT1
+            0x84361400, // XWEIGHT3
+            0x84361540, // XWEIGHT2
             // 0x84361680, // CT_WEIT1
             // 0x843616C8, // CT_WEIT2
             // 0x843619A0, // CT_WEIT2
@@ -2176,16 +2176,16 @@ public static class WorldLoader
             // 0x843680B0, // CTLEVR86
             // 0x843681C0, // TORCH
             // 0x84368440, // FIRESND
-            // 0x84368620, // XSKEY
+            0x84368620, // XSKEY
             // 0x84368860, // CTWTDOOR
             // 0x84368B98, // CTPADW8
             // 0x84368D90, // CTRUNE17
             // 0x84368ED0, // GUARDTS2
-            // 0x84369110, // XIRONSK
-            // 0x84369158, // XGOLD05
-            // 0x843691A0, // XGOLD05
-            // 0x843691E8, // XHEALTH
-            // 0x84369328, // XHEALTH
+            0x84369110, // XIRONSK
+            0x84369158, // XGOLD05
+            0x843691A0, // XGOLD05
+            0x843691E8, // XHEALTH
+            0x84369328, // XHEALTH
             // 0x84369540, // CHESTGLD
             // 0x843696B0, // CHESTTOP
             // 0x843696F8, // TORCH
@@ -2205,7 +2205,7 @@ public static class WorldLoader
             // 0x84369DC0, // GUARDTS2
             // 0x84369E50, // A
             // 0x84369EE0, // A
-            // 0x84369F80, // XTORCHP
+            0x84369F80, // XTORCHP
             // 0x84369FC8, // RAT
             // 0x8436A0F0, // A
             // 0x843695D8, // FIRESND
@@ -2221,14 +2221,14 @@ public static class WorldLoader
             // 0x8436B0F0, // FIRESND
             // 0x8436B1C8, // TORCH
             // 0x8436B210, // FIRESND
-            // 0x8436B258, // XTORCHP
-            // 0x8436B428, // XHEALTH
+            0x8436B258, // XTORCHP
+            0x8436B428, // XHEALTH
             // 0x8436B470, // TORCH
             // 0x8436B4D8, // GUARDTST
             // 0x8436A938, // FIRESND
             // 0x8436B7B8, // TORCH
             // 0x8436B9B8, // CTDOOR04
-            // 0x8436BA00, // XTORCHP
+            0x8436BA00, // XTORCHP
             // 0x8436BA48, // RAT
             // 0x8436BA90, // A
             // 0x8436BAD8, // A
@@ -2236,17 +2236,17 @@ public static class WorldLoader
             // 0x8436BDC0, // TORCH
             // 0x8436BFF8, // CTDOOR03
             // 0x8436C118, // CTPADA1
-            // 0x8436C160, // XTORCHP
-            // 0x8436C1A8, // XHEALTH
+            0x8436C160, // XTORCHP
+            0x8436C1A8, // XHEALTH
             // 0x8436C1F0, // GUARDTST
             // 0x8436C3A8, // TORCH
             // 0x8436C410, // TORCH
             // 0x8436BE68, // FIRESND
             // 0x8436BEB0, // TORCH
-            // 0x8436C550, // XMONEY
-            // 0x8436C598, // XHEALTH
-            // 0x8436C5E0, // XHEALTH
-            // 0x8436C628, // XHEALTH
+            0x8436C550, // XMONEY
+            0x8436C598, // XHEALTH
+            0x8436C5E0, // XHEALTH
+            0x8436C628, // XHEALTH
             // 0x8436C670, // A
             // 0x8436C6B8, // A
             // 0x8436CAD8, // A
@@ -2271,10 +2271,10 @@ public static class WorldLoader
             // 0x8436E098, // TORCH
             // 0x8436E1B8, // FIRESND
             // 0x8436E3E0, // FIRESND
-            // 0x8436E428, // XSTRENTH
-            // 0x8436E470, // XIRONSK
-            // 0x8436E4B8, // XMONEY
-            // 0x8436E500, // XMONEY
+            0x8436E428, // XSTRENTH
+            0x8436E470, // XIRONSK
+            0x8436E4B8, // XMONEY
+            0x8436E500, // XMONEY
             // 0x8436E548, // TORCH
             // 0x8436E590, // TORCH
             // 0x8436E730, // TORCH
@@ -2332,9 +2332,9 @@ public static class WorldLoader
             // 0x835E3E78, // TORCH
             // 0x835E3A98, // FIRESND
             // 0x835E3AE0, // RAT
-            // 0x835E3FD0, // XHEALTH
-            // 0x835E4018, // XHEALTH
-            // 0x835E4618, // XHEALTH
+            0x835E3FD0, // XHEALTH
+            0x835E4018, // XHEALTH
+            0x835E4618, // XHEALTH
             // 0x835E4680, // TORCH
             // 0x835E4778, // FIRESND
             // 0x835E4850, // FIRESND
@@ -2353,8 +2353,8 @@ public static class WorldLoader
             // 0x835E5178, // CTDOOR73
             // 0x835E51C0, // CTRSLV04
             // 0x835E5208, // CTRSLV04
-            // 0x835E5250, // XSTRENTH
-            // 0x835E5298, // XTORCHP
+            0x835E5250, // XSTRENTH
+            0x835E5298, // XTORCHP
             // 0x835E53A8, // RAT
             // 0x835E5A80, // CT_STUFF
             // 0x835E5B10, // FIRESND
@@ -2400,9 +2400,9 @@ public static class WorldLoader
             // 0x835E8678, // CV_EXPL
             // 0x835E86C0, // CV_EXPL
             // 0x835E8800, // CV_EXPL
-            // 0x835E8948, // XHEALTH
-            // 0x835E8C38, // XHEALTH
-            // 0x835E8E20, // XTORCHP
+            0x835E8948, // XHEALTH
+            0x835E8C38, // XHEALTH
+            0x835E8E20, // XTORCHP
             // 0x835E9048, // CV_FFLY1
             // 0x835E91A8, // TORCH
             // 0x835E9500, // FIRESND
@@ -2417,8 +2417,8 @@ public static class WorldLoader
             // 0x838492C0, // FIRESND
             // 0x83849408, // CV_DOR06
             // 0x83849640, // CV_RIVR2
-            // 0x83849728, // XMONEY
-            // 0x838497A0, // XHEALTH
+            0x83849728, // XMONEY
+            0x838497A0, // XHEALTH
             // 0x83849808, // TORCH
             // 0x83849958, // FIRESND
             // 0x83849D68, // WATERSND
@@ -2428,10 +2428,10 @@ public static class WorldLoader
             // 0x8384A6A0, // CV_FFLY1
             // 0x8384AA08, // CV_FFLY2
             // 0x8384ABC0, // WATERSND
-            // 0x8384AD00, // XIRONSK
-            // 0x8384AD48, // XMONEY
-            // 0x8384AD90, // XHEALTH
-            // 0x8384ADD8, // XHEALTH
+            0x8384AD00, // XIRONSK
+            0x8384AD48, // XMONEY
+            0x8384AD90, // XHEALTH
+            0x8384ADD8, // XHEALTH
             // 0x8384AE20, // FIRESND
             // 0x8384AE68, // FIRESND
             // 0x8384AF68, // TORCH
@@ -2458,7 +2458,7 @@ public static class WorldLoader
             // 0x8384C798, // CV_EXPL
             // 0x8384C7E0, // CV_EXPL
             // 0x8384C968, // CV_EXPL
-            // 0x8384CAB0, // XSTRENTH
+            0x8384CAB0, // XSTRENTH
             // 0x8384CAF8, // TROLL01
             // 0x8384CC38, // CV_RIVR2
             // 0x8384CC80, // CV_EXPL
@@ -2467,7 +2467,7 @@ public static class WorldLoader
             // 0x8384CD58, // CV_EXPL
             // 0x8384CDA0, // CV_EXPL
             // 0x8384D010, // CV_EXPL
-            // 0x8384D198, // XMONEY
+            0x8384D198, // XMONEY
             // 0x8384D210, // CV_MUSH
             // 0x8384D258, // GOBLIN03
             // 0x8384D488, // GOBLIN03
@@ -2533,7 +2533,7 @@ public static class WorldLoader
             // 0x83853240, // CV_EXPL
             // 0x83853288, // CV_EXPL
             // 0x83853370, // CV_EXPL
-            // 0x838533B8, // XTORCHP
+            0x838533B8, // XTORCHP
             // 0x838535B8, // TROLL01
             // 0x83853600, // CV_TRAP
             // 0x838537B0, // CV_RIVR3
@@ -2550,13 +2550,13 @@ public static class WorldLoader
             // 0x84352308, // CV_VOA
             // 0x84352410, // CV_TILT
             // 0x843524B8, // TORCH
-            // 0x84352520, // XMONEY
+            0x84352520, // XMONEY
             // 0x843525B0, // TORCH
             // 0x843527E0, // FIRESND
             // 0x84352828, // GOBLIN01
-            // 0x84352870, // XMONEY
-            // 0x843528B8, // XHEALTH
-            // 0x84352BD8, // XHEALTH
+            0x84352870, // XMONEY
+            0x843528B8, // XHEALTH
+            0x84352BD8, // XHEALTH
             // 0x84352EE8, // CV_SHIP3
             // 0x84353120, // CV_SHIP2
             // 0x84353268, // CV_SHIP4
@@ -2568,7 +2568,7 @@ public static class WorldLoader
             // 0x843539B0, // CV_TILT
             // 0x843539F8, // TORCH
             // 0x84353B60, // CV_MUSH2
-            // 0x84353C80, // XTORCHP
+            0x84353C80, // XTORCHP
             // 0x84353CC8, // WATERSND
             // 0x84353D30, // TORCH
             // 0x84353ED0, // FIRESND
@@ -2580,17 +2580,17 @@ public static class WorldLoader
             // 0x843542A0, // CV_EXPL
             // 0x84354318, // CV_EXPL
             // 0x843543C8, // TORCH
-            // 0x84354410, // XHEALTH
-            // 0x84354488, // XMONEY
+            0x84354410, // XHEALTH
+            0x84354488, // XMONEY
             // 0x84354520, // FIRESND
             // 0x84354660, // TORCH
             // 0x843547B8, // CV_DOR02
-            // 0x84354800, // XMONEY
-            // 0x84354848, // XMONEY
-            // 0x84354890, // XMONEY
-            // 0x843548D8, // XHEALTH
-            // 0x84354920, // XHEALTH
-            // 0x84354968, // XHEALTH
+            0x84354800, // XMONEY
+            0x84354848, // XMONEY
+            0x84354890, // XMONEY
+            0x843548D8, // XHEALTH
+            0x84354920, // XHEALTH
+            0x84354968, // XHEALTH
             // 0x843549D0, // CV_MUSH
             // 0x84354A60, // FIRESND
             // 0x84354D20, // TORCH
@@ -2630,8 +2630,8 @@ public static class WorldLoader
             // 0x84356570, // FIRESND
             // 0x843566F0, // CV_MUSH2
             // 0x84356738, // CV_MUSH
-            // 0x84356780, // XTORCHP
-            // 0x843567C8, // XMONEY
+            0x84356780, // XTORCHP
+            0x843567C8, // XMONEY
             // 0x84356908, // TROLL01
             // 0x84356950, // CV_GEAR2
             // 0x84356B78, // CV_SHIP2
@@ -2652,7 +2652,7 @@ public static class WorldLoader
             // 0x84357288, // CV_MUSH
             // 0x843572D0, // CV_MUSH
             // 0x843573F0, // CV_MUSH
-            // 0x84357438, // XHEALTH
+            0x84357438, // XHEALTH
             // 0x843574C8, // CV_FFLY1
             // 0x84357530, // FIRESND
             // 0x84357670, // TORCH
@@ -2668,15 +2668,15 @@ public static class WorldLoader
             // 0x84358338, // CV_MUSH
             // 0x84358640, // CV_BRDG1
             // 0x84358460, // CV_SHCAM
-            // 0x843587C0, // XHEALTH
-            // 0x84358900, // XHEALTH
+            0x843587C0, // XHEALTH
+            0x84358900, // XHEALTH
             // 0x84358978, // CV_BARRL
             // 0x843589F0, // CV_TILT
             // 0x84358BA8, // CV_TRAP
             // 0x84358BF0, // CV_SHCM2
             // 0x84358D10, // WATERSND
             // 0x84358F08, // CV_FFLY1
-            // 0x84358F50, // XHEALTH
+            0x84358F50, // XHEALTH
             // 0x84358F98, // CV_MUSH2
             // 0x84359080, // CV_MUSH2
             // 0x843590C8, // TORCH
@@ -2690,30 +2690,30 @@ public static class WorldLoader
             // 0x8435A1E0, // CV_TELE2
             // 0x8435A578, // CV_GATE1
             // 0x8435A5C0, // GOBLIN01
-            // 0x8435A698, // XHEALTH
+            0x8435A698, // XHEALTH
             // 0x8435A730, // FIRESND
             // 0x8435A798, // TORCH
             // 0x8435A858, // TORCH
-            // 0x8435A998, // XTORCHP
+            0x8435A998, // XTORCHP
             // 0x8435A9E0, // CV_CRACX
-            // 0x8435AA28, // XMONEY
-            // 0x8435AA70, // XMONEY
-            // 0x8435AAE8, // XHEALTH
+            0x8435AA28, // XMONEY
+            0x8435AA70, // XMONEY
+            0x8435AAE8, // XHEALTH
             // 0x8435AC48, // TORCH
             // 0x8435AE90, // CV_BRAZR
             // 0x8435AED8, // CV_FFLY1
             // 0x8435AF20, // TORCH
             // 0x8435AD58, // FIRESND
             // 0x8435B0C8, // GOBLIN01
-            // 0x8435B110, // XHEALTH
+            0x8435B110, // XHEALTH
             // 0x8435B1E8, // CV_FFLY1
-            // 0x8435B230, // XHEALTH
+            0x8435B230, // XHEALTH
             // 0x8435B2A8, // CV_FFLY1
             // 0x8435B410, // CV_TRAP
             // 0x8435B458, // GOBLIN01
-            // 0x8435B4A0, // XIRONSK
-            // 0x8435B4E8, // XHEALTH
-            // 0x8435B530, // XMONEY
+            0x8435B4A0, // XIRONSK
+            0x8435B4E8, // XHEALTH
+            0x8435B530, // XMONEY
             // 0x8435B748, // CV_TRAP
             // 0x8435B790, // GOBLIN02
             // 0x8435B7D8, // GOBLIN02
@@ -2736,12 +2736,12 @@ public static class WorldLoader
             // 0x8435C3C0, // CV_EXPL
             // 0x8435C408, // CV_EXPL
             // 0x8435C6E0, // CV_EXPL
-            // 0x8435C728, // XTORCHP
-            // 0x8435C770, // XSTRENTH
-            // 0x8435C7B8, // XHEALTH
-            // 0x8435C800, // XHEALTH
-            // 0x8435C848, // XMONEY
-            // 0x8435C890, // XHEALTH
+            0x8435C728, // XTORCHP
+            0x8435C770, // XSTRENTH
+            0x8435C7B8, // XHEALTH
+            0x8435C800, // XHEALTH
+            0x8435C848, // XMONEY
+            0x8435C890, // XHEALTH
             // 0x8435C938, // CV_FFLY1
             // 0x8435C9E8, // TORCH
             // 0x8435CB50, // FIRESND
@@ -2763,13 +2763,13 @@ public static class WorldLoader
             // 0x8435D290, // FIRESND
             // 0x8435D2D8, // GOBLIN02
             // 0x8435D320, // GOBLIN02
-            // 0x8435D368, // XMONEY
-            // 0x8435D3B0, // XHEALTH
-            // 0x8435D3F8, // XHEALTH
+            0x8435D368, // XMONEY
+            0x8435D3B0, // XHEALTH
+            0x8435D3F8, // XHEALTH
             // 0x8435D5E0, // CV_TRAP
             // 0x8435D628, // GOBLIN04
-            // 0x8435D670, // XTORCHP
-            // 0x8435D7B0, // XMONEY
+            0x8435D670, // XTORCHP
+            0x8435D7B0, // XMONEY
             // 0x8435DA10, // CV_KITH
             // 0x8435DC60, // CV_PASS
             // 0x8435DF80, // GOBLIN01
@@ -2777,8 +2777,8 @@ public static class WorldLoader
             // 0x8435E278, // CV_TRAP
             // 0x8435E2E0, // TORCH
             // 0x8435E3A0, // FIRESND
-            // 0x8435E3E8, // XIRONSK
-            // 0x0, // XMONEY
+            0x8435E3E8, // XIRONSK
+            0x0, // XMONEY
             }
         },
         {"GERRICKS" , new List<uint>{
@@ -2815,7 +2815,7 @@ public static class WorldLoader
             // 0x82BD63E8, // BELLROPE
             0x82BD6520, // EXTBELL2
             // 0x82BD6660, // FAVIS
-            // 0x82BD6970, // XEYEPIEC
+            0x82BD6970, // XEYEPIEC
             // 0x82BD7028, // BELLROP2
             // 0x0, // BELL
             }
@@ -2873,7 +2873,7 @@ public static class WorldLoader
             // 0x82877CE8, // HI_BUOY2
             // 0x82877E10, // BOAT3
             // 0x82878048, // BOAT3
-            // 0x828786A0, // XHEALTH
+            0x828786A0, // XHEALTH
             // 0x828793F8, // PIRATE3
             // 0x82879BD0, // PIRATE4
             // 0x82879EF0, // BOAT3
@@ -2883,12 +2883,12 @@ public static class WorldLoader
             // 0x8287A3A8, // HI_DOOR3
             // 0x8287A4E0, // HI_DOOR3
             // 0x8287ABD8, // TORCH
-            // 0x8287AD18, // XHEALTH
+            0x8287AD18, // XHEALTH
             // 0x8287AF60, // HI_DOOR4
             // 0x8287B0A8, // HI_HOOK
             // 0x8287B138, // HI_HOOK
             // 0x8287BB58, // HI_HOOK
-            // 0x8287BC98, // XHEALTH
+            0x8287BC98, // XHEALTH
             // 0x8287BCE0, // HI_DOOR2
             // 0x8287BD28, // HI_DOOR2
             // 0x8287BE68, // HI_DOOR2
@@ -2900,11 +2900,11 @@ public static class WorldLoader
             // 0x8287D1A0, // HI_DOOR1
             // 0x8287D7B8, // TORCH
             // 0x8287DD38, // HI_DOORX
-            // 0x8287ED10, // XHEALTH
-            // 0x8287EE38, // XIRONSK
+            0x8287ED10, // XHEALTH
+            0x8287EE38, // XIRONSK
             // 0x8287EF78, // TORCH
             // 0x8287F420, // CANDLE
-            // 0x0, // XJOURNAL
+            0x0, // XJOURNAL
             }
         },
         {"JAILINT" , new List<uint>{
@@ -2922,9 +2922,9 @@ public static class WorldLoader
             // 0x835E4BD8, // X
             // 0x835E4CB0, // X
             // 0x835E71C8, // X
-            // 0x835E7310, // XHEALTH
-            // 0x835E7358, // XHEALTH
-            // 0x835E7490, // XHEALTH
+            0x835E7310, // XHEALTH
+            0x835E7358, // XHEALTH
+            0x835E7490, // XHEALTH
             // 0x835E7800, // TORCH
             // 0x835E7848, // JAILDOOR
             // 0x835E7890, // JAILDOOR
@@ -2941,9 +2941,9 @@ public static class WorldLoader
             // 0x835E9470, // TORCH
             // 0x835E94E8, // TORCH
             // 0x835E95F8, // TORCH
-            // 0x835E9640, // XHEALTH
-            // 0x835E9688, // XHEALTH
-            // 0x835E97C0, // XHEALTH
+            0x835E9640, // XHEALTH
+            0x835E9688, // XHEALTH
+            0x835E97C0, // XHEALTH
             // 0x835E98F8, // JOTO
             // 0x835E9A38, // DRAM
             // 0x835E9C00, // GUARDJL2
@@ -3053,15 +3053,15 @@ public static class WorldLoader
             // 0x83851430, // ZOMBIE02
             // 0x83851478, // BAT
             // 0x83851798, // BAT
-            // 0x838519D0, // XSTRENTH
-            // 0x83851B18, // XHEALTH
-            // 0x83851B60, // XHEALTH
+            0x838519D0, // XSTRENTH
+            0x83851B18, // XHEALTH
+            0x83851B60, // XHEALTH
             // 0x83851BA8, // SKEL02
             // 0x83851BF0, // BAT
             // 0x83851C38, // BAT
             // 0x83851D40, // BAT
             // 0x83851D88, // WATERSND
-            // 0x83851EC8, // XHEALTH
+            0x83851EC8, // XHEALTH
             // 0x83852008, // ZOMBIE01
             // 0x838522A8, // NCWHEEL
             // 0x83852748, // NCEYE01
@@ -3078,7 +3078,7 @@ public static class WorldLoader
             // 0x83852D30, // BAT
             // 0x83852F60, // BAT
             // 0x83853428, // ZOMBIE03
-            // 0x83853470, // XHEALTH
+            0x83853470, // XHEALTH
             // 0x838534B8, // BATC
             // 0x83853500, // BATC
             // 0x83853548, // BAT
@@ -3099,7 +3099,7 @@ public static class WorldLoader
             // 0x84353208, // BAT
             // 0x84353250, // BAT
             // 0x843537A8, // BAT
-            // 0x843539E8, // XHEALTH
+            0x843539E8, // XHEALTH
             // 0x84353BE0, // SKEL01
             // 0x84353C28, // BAT
             // 0x84353C70, // BAT
@@ -3124,7 +3124,7 @@ public static class WorldLoader
             // 0x84355480, // TORCH
             // 0x843554C8, // BAT
             // 0x84355660, // BAT
-            // 0x843556A8, // XHEALTH
+            0x843556A8, // XHEALTH
             // 0x843556F0, // BAT
             // 0x84355738, // BAT
             // 0x843557D0, // BAT
@@ -3132,8 +3132,8 @@ public static class WorldLoader
             // 0x843558F0, // WATERSND
             // 0x84355938, // TENTACLE
             // 0x84355980, // TENTACLE
-            // 0x843559C8, // XSTRENTH
-            // 0x84355A10, // XHEALTH
+            0x843559C8, // XSTRENTH
+            0x84355A10, // XHEALTH
             // 0x84355A58, // TORCH
             // 0x84355C90, // FIRESND
             // 0x84356260, // NCBAR1
@@ -3188,11 +3188,11 @@ public static class WorldLoader
             // 0x84358438, // SKEL01
             // 0x84358990, // SKEL01
             // 0x84358C60, // TENTACLE
-            // 0x84358CA8, // XHEALTH
+            0x84358CA8, // XHEALTH
             // 0x84359200, // SKEL01
-            // 0x84359248, // XSTRENTH
-            // 0x84359290, // XHEALTH
-            // 0x843592D8, // XHEALTH
+            0x84359248, // XSTRENTH
+            0x84359290, // XHEALTH
+            0x843592D8, // XHEALTH
             // 0x84359320, // BATC
             // 0x84359368, // SKEL02
             // 0x843593B0, // BAT

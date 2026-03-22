@@ -48,6 +48,7 @@ public class RGObjectStore
     // special objects
     static RGScriptedObject player;
     static RGScriptedObject camera;
+    static PlayerInventory playerInventory;
 
     static GameObject playerRootObject;
     // TODO: camera belongs here
@@ -145,6 +146,7 @@ public class RGObjectStore
 
         GameObject[] playerRootObjects = GameObject.FindGameObjectsWithTag("Player");
         playerRootObject = playerRootObjects[0];
+        playerInventory = new PlayerInventory();
 
     }
     public static RGScriptedObject GetPlayer()
@@ -158,6 +160,10 @@ public class RGObjectStore
     public static PlayerMain GetPlayerMain()
     {
         return playerRootObject.GetComponent<PlayerMain>();
+    }
+    public static PlayerInventory GetInventory()
+    {
+        return playerInventory;
     }
 
     public static void SetCamera(RGScriptedObject newCamera)
@@ -258,5 +264,50 @@ public class RGObjectStore
     public static bool IsDialogDone()
     {
         return DateTimeOffset.Now.ToUnixTimeSeconds()>dialogEndTime;
+    }
+}
+
+// player inventory
+public class PlayerInventory
+{
+    int activeItem;
+    int[] items;
+
+    public PlayerInventory(int itemCount=86)
+    {
+        activeItem = -1;
+        items = new int[itemCount];
+        // TODO: set starting items here, should come from RGINIStore
+    }
+    public int HaveItem(int id)
+    {
+        if(items[id] > 0)
+            return 1;
+        return 0;
+    }
+    public void AddItem(int id, int amount)
+    {
+        items[id] += amount;
+    }
+    public int ActiveItem()
+    {
+        return activeItem;
+    }
+    public void SelectItem(int id)
+    {
+        activeItem = id;
+    }
+    public void DropItem(int id, int amount)
+    {
+        items[id] -= amount;
+    }
+    public void DropAllItems()
+    {
+        for(int i=0;i<items.Length;i++)
+            items[i] = 0;
+    }
+    public void UseItem(int id)
+    {
+        // TODO: this
     }
 }

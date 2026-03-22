@@ -160,8 +160,8 @@ public class AnimData
                 break;
             case RGRGMAnimStore.FrameType.frametype_end:
                 if(isPeeking) return currentKeyFrame;
+                // else
                 return EndAnimation();
-                break;
             case RGRGMAnimStore.FrameType.frametype_goback:
                 // if we want to exit, keep going forward
                 // if not, loop back

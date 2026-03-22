@@ -318,12 +318,12 @@ public class RGScriptedObject : MonoBehaviour
         if(attributes[24] != 0) // attr_player_align
             gameObject.tag = "PLAYER_ALIGN";
         */
-        if(attributes[25] != 0) // attr_master
-            RGObjectStore.AddMaster(attributes[25], this);
-        if(attributes[26] != 0) // attr_slave
-            RGObjectStore.AddSlave(attributes[26], this);
-        if(attributes[29] != 0) // attr_group
-            RGObjectStore.AddToGroup(attributes[29], this);
+        if(attributes[attr.master] != 0)
+            RGObjectStore.AddMaster(attributes[attr.master], this);
+        if(attributes[attr.slave] != 0)
+            RGObjectStore.AddSlave(attributes[attr.slave], this);
+        if(attributes[attr.group] != 0)
+            RGObjectStore.AddToGroup(attributes[attr.group], this);
 
          RGObjectStore.AddObject(objectId, objectName, this);
     }
@@ -560,9 +560,8 @@ public class RGScriptedObject : MonoBehaviour
                 break;
             case TaskType.task_facing:
                 taskData.timer += frameTime;
-                // attribute 15 = turn_speed 
                 // TODO: scaling?
-                faceSpeed = frameTime * (-(float)attributes[15]*10)*DA2DG;
+                faceSpeed = frameTime * (-(float)attributes[attr.turn_speed]*10)*DA2DG;
                 targetDirection = taskData.faceTarget.transform.position-transform.position;
                 targetRotation = Quaternion.LookRotation(targetDirection, Vector3.up);
                 desiredRotation = Mathf.RoundToInt(targetRotation.eulerAngles.y);
@@ -655,12 +654,19 @@ public class RGScriptedObject : MonoBehaviour
         functions[174] = isFighting;
         functions[200] = ResetRotation;
         functions[224] = PlayerStand;
+        functions[227] = PlayerInSight;
         functions[228] = PlayerDistance;
         functions[232] = PlayerArc;
         functions[233] = PlayerLooking;
         functions[243] = PlayerFaceObj;
         functions[271] = SyncWithGroup;
         functions[292] = MoveMarker;
+        functions[303] = HaveItem;
+        functions[308] = AddItem;
+        functions[310] = DropItem;
+        functions[314] = ActiveItem;
+        functions[317] = DropAllItems;
+        functions[318] = SelectItem;
         functions[320] = IsHoldingWeapon;
 
         // overwrite all non-implemented functions with a NIMPL error
@@ -770,18 +776,19 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         int y = i[1];
         int z = i[2];
 
-        int at_cox = attributes[50];
-        int at_coy = attributes[51];
-        int at_coz = attributes[52];
+        int at_cox = attributes[attr.camera_offset_x];
+        int at_coy = attributes[attr.camera_offset_y];
+        int at_coz = attributes[attr.camera_offset_z];
 
-        int at_ctox = attributes[47];
-        int at_ctoy = attributes[48];
-        int at_ctoz = attributes[49];
+        int at_ctox = attributes[attr.camera_target_offset_x];
+        int at_ctoy = attributes[attr.camera_target_offset_y];
+        int at_ctoz = attributes[attr.camera_target_offset_z];
 
         Vector3 ofs =  ofsvec_tst(x,y,z);
         Vector3 co =  ofsvec_tst(at_cox,at_coy,at_coz);
         Vector3 cto =  ofsvec_tst(at_ctox,at_ctoy,at_ctoz);
-        Vector3 tco =  ofs+co;
+//        Vector3 tco =  ofs+co;
+        Vector3 tco =  co;
 
         Debug.Log($"OBJ {ofs} + {co} = {tco} /{cto}");
 
@@ -1015,9 +1022,8 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         newTask.duration = ((float)i[0])*TIME_VAL;;
         newTask.timer = 0;
 
-        // attribute 12 = forward_walk
         // TODO: scaling?
-        newTask.moveSpeed = ((float)attributes[12]);
+        newTask.moveSpeed = ((float)attributes[attr.forward_walk]);
         AddTask(multitask, newTask);
         return 0;
     }
@@ -1031,9 +1037,8 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         newTask.duration = ((float)i[0])*TIME_VAL;;
         newTask.timer = 0;
 
-        // attribute 13 = backward_walk
         // TODO: scaling?
-        newTask.moveSpeed = -((float)attributes[13]);
+        newTask.moveSpeed = -((float)attributes[attr.backward_walk]);
         AddTask(multitask, newTask);
         return 0;
     }
@@ -1226,6 +1231,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
 
         ScriptingDBG($"{multitask}_{scriptName}_SetAttribute({string.Join(",", i)})");
         attributes[i[0]] = (byte)i[1];
+        // TODO: for some attributes we need to do stuff, eg health, collide etc
         return 0;
     }
 
@@ -1314,6 +1320,8 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
     {
         // True if player activates an item
         // i[0]: Stringid shown on screen when looking at the item
+        // TODO: we only want a single activatable item to return 1 on this
+        // testable by walking to the cave in the jungle and picking up all the potions in 1 go
         string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
         Game.uiManager.ShowInteractionText(displayText);
         if(Game.Input.activate)
@@ -1394,12 +1402,20 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
     /*task 224*/
     public int PlayerStand(uint caller, bool multitask, int[] i /*0*/)    
     {
-        // returns true if the player is standing on the object
+        // returns 1 if the player is standing on the object
         if(playerStanding)
             return 1;
         else
             return 0;
     }
+    /*task 227*/
+    public int PlayerInSight(uint caller, bool multitask, int[] i /*0*/)    
+    {
+        // returns 1 if the player is in LOS from the object
+        // TODO: do the LOS calculation
+        return 1;
+    }
+
     /*function 228*/
     public int PlayerDistance(uint caller, bool multitask, int[] i /*0*/)
     {
@@ -1477,7 +1493,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         mainTask.syncPoint = (uint)i[0];
 
         // unsets the sync point when the whole group is ready
-        RGObjectStore.DoGroupSync(attributes[29], mainTask.syncPoint);
+        RGObjectStore.DoGroupSync(attributes[attr.group], mainTask.syncPoint);
         return 0;
     }
     /*task 292*/
@@ -1493,13 +1509,73 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
 
         newTask.positionTarget = RGObjectStore.mapMarkerList[i[0]];
 
-        // attribute 12 = forward_walk
         // TODO: scaling?
-        newTask.moveSpeed = ((float)attributes[12]);
+        newTask.moveSpeed = ((float)attributes[attr.forward_walk]);
         AddTask(multitask, newTask);
         return 0;
 
     }
+    /*function 303*/
+    public int HaveItem(uint caller, bool multitask, int[] i /*1*/)	
+    {
+        // Returns 1 if the player has the item
+        // i[0]: the item Id
+        PlayerInventory inventory = RGObjectStore.GetInventory();
+        return inventory.HaveItem(i[0]);
+    }
+
+    /*function 308*/
+    public int AddItem(uint caller, bool multitask, int[] i /*2*/)	
+    {
+        // Adds items to the player inventory
+        // i[0]: the item Id
+        // i[1]: the amount to add
+        PlayerInventory inventory = RGObjectStore.GetInventory();
+        inventory.AddItem(i[0], i[1]);
+        return 1;
+    }
+
+    /*function 310*/
+    public int DropItem(uint caller, bool multitask, int[] i /*2*/)	
+    {
+        // Removes items from the player inventory
+        // i[0]: the item Id
+        // i[1]: the amount to add
+        PlayerInventory inventory = RGObjectStore.GetInventory();
+        inventory.DropItem(i[0], i[1]);
+        return 1;
+    }
+
+
+    /*function 314*/
+    public int ActiveItem(uint caller, bool multitask, int[] i /*0*/)	
+    {
+        // Returns the id of the player's active item
+        PlayerInventory inventory = RGObjectStore.GetInventory();
+        return inventory.ActiveItem();
+    }
+
+    /*function 317*/
+    public int DropAllItems(uint caller, bool multitask, int[] i /*0*/)	
+    {
+        // Removes all items from the player's inventory
+        PlayerInventory inventory = RGObjectStore.GetInventory();
+        inventory.DropAllItems();
+        return 1;
+    }
+
+    /*function 318*/
+    public int SelectItem(uint caller, bool multitask, int[] i /*1*/)	
+    {
+        // Sets the player's active item
+        // i[0]: the item id
+        PlayerInventory inventory = RGObjectStore.GetInventory();
+        inventory.SelectItem(i[0]);
+        return 1;
+    }
+
+
+
     /*function 320*/
     public int IsHoldingWeapon(uint caller, bool multitask, int[] i /*0*/)	
     {

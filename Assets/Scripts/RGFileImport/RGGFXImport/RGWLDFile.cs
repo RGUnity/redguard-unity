@@ -291,8 +291,10 @@ IO_WLD_data_t
 
 		public void BuildMeshes()
 		{
+			// assuming always 64 textures; safe bet?
 			const int texid_cnt = 64;
 
+            // hardcoded to avoid rounding errors in UVs
             Vector2[,] uv_rotations = 
             {	
                 { // 00
@@ -336,8 +338,7 @@ IO_WLD_data_t
 			System.Func<int,int,Vector3> pos = (px,py) =>
 				new Vector3((float)px*WLD_SIZE_SCALE,
 					WLD_HEIGHT_FUN(maps_data.heightmap[px+py*map_size]),
-					-(float)py*WLD_SIZE_SCALE)
-				+ new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
+					-(float)py*WLD_SIZE_SCALE);
 
 			// Pass 1: face normals per cell (two triangles each)
 			// Cell (x,y) corners: TL=(x,y) TR=(x+1,y) BL=(x,y+1) BR=(x+1,y+1)
@@ -401,11 +402,11 @@ IO_WLD_data_t
 					int tex_id = (int)maps_data.texturemap[x+y*map_size];
 
 					// Tri1: TL->BR->TR
-					meshes[tex_id].AppendTri(tl, br, tr, n_tl, n_br, n_tr,
-						uv_rotations[tex_rot,2], uv_rotations[tex_rot,0], uv_rotations[tex_rot,1]);
+					meshes[tex_id].AppendTri(tr, br, tl, n_tr, n_br, n_tl,
+						uv_rotations[tex_rot,1], uv_rotations[tex_rot,0], uv_rotations[tex_rot,2]);
 					// Tri2: BR->TL->BL
-					meshes[tex_id].AppendTri(br, tl, bl, n_br, n_tl, n_bl,
-						uv_rotations[tex_rot,5], uv_rotations[tex_rot,3], uv_rotations[tex_rot,4]);
+					meshes[tex_id].AppendTri(bl, tl, br, n_bl, n_tl, n_br,
+						uv_rotations[tex_rot,4], uv_rotations[tex_rot,3], uv_rotations[tex_rot,5]);
 				}
 			}
 		}
