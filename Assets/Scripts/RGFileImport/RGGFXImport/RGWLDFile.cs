@@ -342,7 +342,7 @@ IO_WLD_data_t
 
 			// Pass 1: face normals per cell (two triangles each)
 			// Cell (x,y) corners: TL=(x,y) TR=(x+1,y) BL=(x,y+1) BR=(x+1,y+1)
-			// Tri1: TL->BR->TR    Tri2: BR->TL->BL
+			// Tri1: TR->BR->TL    Tri2: BL->TL->BR
 			Vector3[] faceNormals1 = new Vector3[cells * cells];
 			Vector3[] faceNormals2 = new Vector3[cells * cells];
 			for(int y=0;y<cells;y++)
@@ -353,8 +353,8 @@ IO_WLD_data_t
 					Vector3 tr = pos(x+1,y);
 					Vector3 bl = pos(x,y+1);
 					Vector3 br = pos(x+1,y+1);
-					faceNormals1[x + y*cells] = TriNormal(tl, br, tr);
-					faceNormals2[x + y*cells] = TriNormal(br, tl, bl);
+					faceNormals1[x + y*cells] = TriNormal(tr, br, tl);
+					faceNormals2[x + y*cells] = TriNormal(bl, tl, br);
 				}
 			}
 
@@ -401,10 +401,10 @@ IO_WLD_data_t
 					int tex_rot = maps_data.texturemap_flag[x+y*map_size];
 					int tex_id = (int)maps_data.texturemap[x+y*map_size];
 
-					// Tri1: TL->BR->TR
+					// Tri1: TR->BR->TL
 					meshes[tex_id].AppendTri(tr, br, tl, n_tr, n_br, n_tl,
 						uv_rotations[tex_rot,1], uv_rotations[tex_rot,0], uv_rotations[tex_rot,2]);
-					// Tri2: BR->TL->BL
+					// Tri2: BL->TL->BR
 					meshes[tex_id].AppendTri(bl, tl, br, n_bl, n_tl, n_br,
 						uv_rotations[tex_rot,4], uv_rotations[tex_rot,3], uv_rotations[tex_rot,5]);
 				}
