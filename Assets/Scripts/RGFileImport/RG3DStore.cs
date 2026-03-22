@@ -229,8 +229,15 @@ public static class RG3DStore
             norm_tmp_lst.Add(normal);
         }
 
+        // Vertex normals come in two modes:
+        // - Direct (offsetUVOffsets == 0): one normal per vertex, indexed by vertexIndex
+        // - Indirect (offsetUVOffsets != 0): one normal per face-vertex via indirection
+        //   table, indexed by cumulative face-vertex position
+        // See: https://michidk.github.io/redguard-preservation/formats/models/3d.html#vertex-normal-indirection-table
         bool hasVertexNormals = file_3d.vertexNormalData.normals != null
-            && file_3d.vertexNormalData.normals.Count == file_3d.header.numVertices;
+            && file_3d.vertexNormalData.normals.Count > 0;
+        bool indirectNormals = hasVertexNormals
+            && file_3d.vertexNormalData.normals.Count != (int)file_3d.header.numVertices;
         List<Vector3> vertNorm_tmp_lst = new List<Vector3>();
         if(hasVertexNormals)
         {
@@ -245,6 +252,7 @@ public static class RG3DStore
         }
 
         List<Face_3DC> face_lst = new List<Face_3DC>();
+        int cumulativeFaceVertex = 0;
         for(int i=0;i<file_3d.faceDataList.faceData.Count;i++)
         {
             Face_3DC cur_face = new Face_3DC();
@@ -273,17 +281,22 @@ public static class RG3DStore
             cur_face.vertNorms = new List<Vector3>();
             for(int j=0;j<file_3d.faceDataList.faceData[i].vertexData.Count;j++)
             {
+                Vector3 vn = cur_face.norm;
                 if(hasVertexNormals)
                 {
-                    Vector3 vn = vertNorm_tmp_lst[(int)file_3d.faceDataList.faceData[i].vertexData[j].vertexIndex];
-                    vn = Vector3.Scale(vn, MESH_VERT_FLIP);
-                    cur_face.vertNorms.Add(vn);
+                    int vnIdx = indirectNormals
+                        ? cumulativeFaceVertex + j
+                        : (int)file_3d.faceDataList.faceData[i].vertexData[j].vertexIndex;
+                    if(vnIdx >= 0 && vnIdx < vertNorm_tmp_lst.Count)
+                    {
+                        Vector3 candidate = vertNorm_tmp_lst[vnIdx];
+                        if(!float.IsNaN(candidate.x) && !float.IsNaN(candidate.y) && !float.IsNaN(candidate.z))
+                            vn = Vector3.Scale(candidate, MESH_VERT_FLIP);
+                    }
                 }
-                else
-                {
-                    cur_face.vertNorms.Add(cur_face.norm);
-                }
+                cur_face.vertNorms.Add(vn);
             }
+            cumulativeFaceVertex += file_3d.faceDataList.faceData[i].vertexData.Count;
             for(int f=0;f<mesh.framecount;f++)
             {
                 cur_face.frameverts[f] = new List<Vector3>();
