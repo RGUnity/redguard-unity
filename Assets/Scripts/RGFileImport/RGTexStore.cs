@@ -31,6 +31,7 @@ public static class RGTexStore
         GXADict = new Dictionary<string, Material>();
 
         ShaderDict.Add("DEFAULT", Shader.Find("Universal Render Pipeline/Simple Lit"));
+        ShaderDict.Add("TERRAIN", Shader.Find("Universal Render Pipeline/Simple Lit"));
         ShaderDict.Add("FLATS", Shader.Find("Universal Render Pipeline/Unlit"));
 
     }

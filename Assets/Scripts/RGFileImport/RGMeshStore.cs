@@ -159,7 +159,8 @@ using(s_load_WLD2mesh.Auto()){
         List<Material> materials = new List<Material>();
         for(int i=0;i<WLD_TEXID_CNT;i++)
         {
-            materials.Add(RGTexStore.GetMaterial(name_col,file_wld.sec[0].texbsi_file,i,"DEFAULT"));
+            materials.Add(RGTexStore.GetMaterial(name_col,file_wld.sec[0].texbsi_file,i,"TERRAIN"));
+            materials[i].mainTexture.wrapMode = TextureWrapMode.Mirror;
         }
 
         UnityData_WLD data = new UnityData_WLD();
