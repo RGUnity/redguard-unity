@@ -8,17 +8,45 @@ namespace RGFileImport
 {
 	public class RGWLDFile
 	{
-        // map scale; needs a look in-game to see what fits
-        const float WLD_SIZE_SCALE = 12.9f;
-        const float WLD_SIZE_SCALE_HEIGHT = 1.0f;
-        const float WLD_OFFSET_X = -12.0f;
-        const float WLD_OFFSET_Y = 0.0f;
-        const float WLD_OFFSET_Z = 11.0f;
+        // Engine uses 256 units per grid cell (grid→world scale stored as
+        // double at 0x00198dc4 in RGFX.EXE). Divided by the model vertex
+        // export scale to get the Unity-space cell size.
+        // Previous empirical value was 12.9; the exact ratio is 256/20 = 12.8.
+        const float WLD_SIZE_SCALE = 256.0f / 20.0f;
+
+
+        // Engine height lookup table (128 entries, indexed by 7-bit heightmap
+        // byte). Values are in engine units; divided by 20 at lookup time to
+        // match the model vertex export scale. The engine negates these at
+        // load time (-ABS(value)) so terrain sits below a water-level
+        // reference plane. For Unity (Y-up) we keep them positive.
+        //
+        // Replaces the previous quartic polynomial approximation which had a
+        // +1.93 base offset at index 0 (should be 0) and diverged at high
+        // indices (239 vs 388 at index 127).
+        //
+        // Full table documentation:
+        // https://michidk.github.io/redguard-preservation/formats/WLD.html#height-lookup-table
+        private static readonly float[] WLD_HEIGHT_TABLE = new float[128]
+        {
+               0,   40,   40,   40,   80,   80,   80,  120,  120,  120,
+             160,  160,  160,  200,  200,  200,  240,  240,  240,  280,
+             280,  320,  320,  320,  360,  360,  400,  400,  400,  440,
+             440,  480,  480,  480,  520,  520,  560,  560,  600,  600,
+             600,  640,  640,  680,  680,  720,  720,  760,  760,  800,
+             800,  840,  840,  880,  880,  920,  920,  960, 1000, 1000,
+            1040, 1040, 1080, 1120, 1120, 1160, 1160, 1200, 1240, 1240,
+            1280, 1320, 1320, 1360, 1400, 1440, 1440, 1480, 1520, 1560,
+            1600, 1600, 1640, 1680, 1720, 1760, 1800, 1840, 1880, 1920,
+            1960, 2000, 2040, 2080, 2120, 2200, 2240, 2280, 2320, 2400,
+            2440, 2520, 2560, 2640, 2680, 2760, 2840, 2920, 3000, 3080,
+            3160, 3240, 3360, 3440, 3560, 3680, 3800, 3960, 4080, 4280,
+            4440, 4680, 4920, 5200, 5560, 6040, 6680, 7760,
+        };
+
         private float WLD_HEIGHT_FUN(int y)
         {
-            float fy= (float)y;
-            return 0.00000138917f*(fy*fy*fy*fy)-0.000185238f*(fy*fy*fy)+0.0122758f*(fy*fy)+0.450595f*fy+1.92776f;
-
+            return WLD_HEIGHT_TABLE[y & 0x7F] / 20.0f;
         }
 
 		public struct WLDHeader
