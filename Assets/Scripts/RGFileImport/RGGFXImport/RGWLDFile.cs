@@ -195,6 +195,7 @@ IO_WLD_data_t
 		public struct WLDMesh
 		{
 			public List<Vector3> vertices;
+			public List<Vector3> normals;
 			public List<Vector2> uv;
 			public List<int> triangles;
 			public int TextureId;
@@ -203,15 +204,21 @@ IO_WLD_data_t
 			{
 				TextureId = texid;
 				vertices = new List<Vector3>();
+				normals = new List<Vector3>();
 				uv = new List<Vector2>();
 				triangles = new List<int>();
 			}
 
-			public void AppendTri(Vector3 a, Vector3 b, Vector3 c, Vector2 uva, Vector2 uvb, Vector2 uvc)
+			public void AppendTri(Vector3 a, Vector3 b, Vector3 c,
+				Vector3 na, Vector3 nb, Vector3 nc,
+				Vector2 uva, Vector2 uvb, Vector2 uvc)
 			{
 				vertices.Add(a);
 				vertices.Add(b);
 				vertices.Add(c);
+				normals.Add(na);
+				normals.Add(nb);
+				normals.Add(nc);
 				uv.Add(uva);
 				uv.Add(uvb);
 				uv.Add(uvc);
@@ -277,12 +284,15 @@ IO_WLD_data_t
                 throw new Exception($"Failed to load WLD file from memory with error:\n{ex.Message}");
             }
         }
+		static Vector3 TriNormal(Vector3 a, Vector3 b, Vector3 c)
+		{
+			return Vector3.Cross(b - a, c - a);
+		}
+
 		public void BuildMeshes()
 		{
-			// assuming always 64 textures; safe bet?
 			const int texid_cnt = 64;
 
-            // hardcoded to avoid rounding errors in UVs
             Vector2[,] uv_rotations = 
             {	
                 { // 00
@@ -317,82 +327,87 @@ IO_WLD_data_t
 				new Vector2(1.0f, 1.0f),
 				new Vector2(1.0f, 0.0f)
                 },
-
-
             };
 
-			int map_size =  maps_data.map_size;
+			int map_size = maps_data.map_size;
+			int cells = map_size - 1;
 
-			meshes = new WLDMesh[texid_cnt];
-			for(int i=0;i<texid_cnt;i++)
+			// Vertex position lookup
+			System.Func<int,int,Vector3> pos = (px,py) =>
+				new Vector3((float)px*WLD_SIZE_SCALE,
+					WLD_HEIGHT_FUN(maps_data.heightmap[px+py*map_size]),
+					-(float)py*WLD_SIZE_SCALE)
+				+ new Vector3(WLD_OFFSET_X,WLD_OFFSET_Y,WLD_OFFSET_Z);
+
+			// Pass 1: face normals per cell (two triangles each)
+			// Cell (x,y) corners: TL=(x,y) TR=(x+1,y) BL=(x,y+1) BR=(x+1,y+1)
+			// Tri1: TL->BR->TR    Tri2: BR->TL->BL
+			Vector3[] faceNormals1 = new Vector3[cells * cells];
+			Vector3[] faceNormals2 = new Vector3[cells * cells];
+			for(int y=0;y<cells;y++)
 			{
-				meshes[i] = new WLDMesh(i);
-			}
-			for(int y=0;y<map_size-1;y++)
-			{
-				for(int x=0;x<map_size-1;x++)
+				for(int x=0;x<cells;x++)
 				{
-					Vector3 a1;
-					Vector3 b1;
-					Vector3 c1;
-					Vector2 uva1;
-					Vector2 uvb1;
-					Vector2 uvc1;
-
-					Vector3 a2;
-					Vector3 b2;
-					Vector3 c2;
-					Vector2 uva2;
-					Vector2 uvb2;
-					Vector2 uvc2;
-					int tex_id;
-					int tex_rot;
-
-				// vertices
-					// tri 1;
-					a1 = new Vector3((float)(x+1)*WLD_SIZE_SCALE,
-                                     WLD_HEIGHT_FUN(maps_data.heightmap[(x+1)+(y+1)*map_size]),
-							    	 -(float)(y+1)*WLD_SIZE_SCALE);
-
-
-					b1 = new Vector3((float)(x+1)*WLD_SIZE_SCALE,
-                                     WLD_HEIGHT_FUN(maps_data.heightmap[(x+1)+(y+0)*map_size]),
-							    	 -(float)(y+0)*WLD_SIZE_SCALE);
-
-
-					c1 = new Vector3((float)(x+0)*WLD_SIZE_SCALE,
-                                     WLD_HEIGHT_FUN(maps_data.heightmap[(x+0)+(y+0)*map_size]),
-							    	 -(float)(y+0)*WLD_SIZE_SCALE);
-
-
-					// tri 2
-					a2 = c1;
-					b2 = new Vector3((float)(x+0)*WLD_SIZE_SCALE,
-                                     WLD_HEIGHT_FUN(maps_data.heightmap[(x+0)+(y+1)*map_size]),
-							    	 -(float)(y+1)*WLD_SIZE_SCALE);
-
-
-					c2 = a1;
-
-				// uvs
-					tex_rot = maps_data.texturemap_flag[x+y*map_size];
-
-					// tri 1;
-					uva1 = uv_rotations[tex_rot,0];
-					uvb1 = uv_rotations[tex_rot,1];
-					uvc1 = uv_rotations[tex_rot,2];
-
-					// tri 2;
-					uva2 = uv_rotations[tex_rot,3];
-					uvb2 = uv_rotations[tex_rot,4];
-					uvc2 = uv_rotations[tex_rot,5];
-
-					tex_id = (int)maps_data.texturemap[x+y*map_size];
-					meshes[tex_id].AppendTri(c1, b1, a1, uvc1, uvb1, uva1);
-					meshes[tex_id].AppendTri(c2, b2, a2, uvc2, uvb2, uva2);
+					Vector3 tl = pos(x,y);
+					Vector3 tr = pos(x+1,y);
+					Vector3 bl = pos(x,y+1);
+					Vector3 br = pos(x+1,y+1);
+					faceNormals1[x + y*cells] = TriNormal(tl, br, tr);
+					faceNormals2[x + y*cells] = TriNormal(br, tl, bl);
 				}
 			}
 
+			// Pass 2: average adjacent face normals per vertex
+			// Each interior vertex (gx,gy) touches 6 triangles from 4 cells:
+			//   cell(gx-1,gy-1): tri1+tri2   cell(gx,gy-1): tri2
+			//   cell(gx-1,gy):   tri1        cell(gx,gy):   tri1+tri2
+			Vector3[] vertexNormals = new Vector3[map_size * map_size];
+			for(int gy=0;gy<map_size;gy++)
+			{
+				for(int gx=0;gx<map_size;gx++)
+				{
+					Vector3 acc = Vector3.zero;
+					if(gx>0 && gy>0)
+						acc += faceNormals1[(gx-1)+(gy-1)*cells] + faceNormals2[(gx-1)+(gy-1)*cells];
+					if(gx<cells && gy>0)
+						acc += faceNormals2[gx+(gy-1)*cells];
+					if(gx>0 && gy<cells)
+						acc += faceNormals1[(gx-1)+gy*cells];
+					if(gx<cells && gy<cells)
+						acc += faceNormals1[gx+gy*cells] + faceNormals2[gx+gy*cells];
+					vertexNormals[gx+gy*map_size] = acc.normalized;
+				}
+			}
+
+			// Pass 3: emit triangles with smooth vertex normals
+			meshes = new WLDMesh[texid_cnt];
+			for(int i=0;i<texid_cnt;i++)
+				meshes[i] = new WLDMesh(i);
+
+			for(int y=0;y<cells;y++)
+			{
+				for(int x=0;x<cells;x++)
+				{
+					Vector3 tl = pos(x,y);
+					Vector3 tr = pos(x+1,y);
+					Vector3 bl = pos(x,y+1);
+					Vector3 br = pos(x+1,y+1);
+					Vector3 n_tl = vertexNormals[x + y*map_size];
+					Vector3 n_tr = vertexNormals[(x+1) + y*map_size];
+					Vector3 n_bl = vertexNormals[x + (y+1)*map_size];
+					Vector3 n_br = vertexNormals[(x+1) + (y+1)*map_size];
+
+					int tex_rot = maps_data.texturemap_flag[x+y*map_size];
+					int tex_id = (int)maps_data.texturemap[x+y*map_size];
+
+					// Tri1: TL->BR->TR
+					meshes[tex_id].AppendTri(tl, br, tr, n_tl, n_br, n_tr,
+						uv_rotations[tex_rot,2], uv_rotations[tex_rot,0], uv_rotations[tex_rot,1]);
+					// Tri2: BR->TL->BL
+					meshes[tex_id].AppendTri(br, tl, bl, n_br, n_tl, n_bl,
+						uv_rotations[tex_rot,5], uv_rotations[tex_rot,3], uv_rotations[tex_rot,4]);
+				}
+			}
 		}
 
 		public void PrintWLD()
