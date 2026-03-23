@@ -18,6 +18,12 @@ public static class RgpreBindings
     [DllImport("rgpre", EntryPoint = "rg_parse_rob_data", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr ParseRobDataNative(IntPtr data, int len);
 
+    [DllImport("rgpre", EntryPoint = "rg_parse_wld_terrain_data", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ParseWldTerrainDataNative(IntPtr data, int len);
+
+    [DllImport("rgpre", EntryPoint = "rg_parse_rgm_placements", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ParseRgmPlacementsNative(IntPtr data, int len);
+
     [DllImport("rgpre", EntryPoint = "rg_free_buffer", CallingConvention = CallingConvention.Cdecl)]
     private static extern void FreeBufferNative(IntPtr buffer);
 
@@ -122,6 +128,16 @@ public static class RgpreBindings
     public static IntPtr ParseRobData(IntPtr data, int len)
     {
         return ParseRobDataNative(data, len);
+    }
+
+    public static IntPtr ParseWldTerrainData(IntPtr data, int len)
+    {
+        return ParseWldTerrainDataNative(data, len);
+    }
+
+    public static IntPtr ParseRgmPlacements(IntPtr data, int len)
+    {
+        return ParseRgmPlacementsNative(data, len);
     }
 
     public static IntPtr CreateTextureCache(

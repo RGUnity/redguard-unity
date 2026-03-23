@@ -18,7 +18,7 @@ public class PlayerMeshLoader : MonoBehaviour
     public void Spawn3DC(string f3Dname, string colname)
     {
         // Create the object and parent it under the root
-        playerMesh = ModelLoader.Load3DC(f3Dname, colname);
+        playerMesh = FFIModelLoader.Load3DC(f3Dname, colname);
        
         playerMesh.transform.SetParent(meshParent.transform);
         playerMesh.transform.localPosition = Vector3.zero;
@@ -32,9 +32,20 @@ public class PlayerMeshLoader : MonoBehaviour
     
     public void SwitchTextureFilterMode(FilterMode mode)
     {
-        foreach (var mat in RGTexStore.MaterialDict)
+        if (playerMesh == null)
         {
-            mat.Value.mainTexture.filterMode = mode;
+            return;
+        }
+
+        foreach (var renderer in playerMesh.GetComponentsInChildren<Renderer>())
+        {
+            foreach (var mat in renderer.materials)
+            {
+                if (mat.mainTexture != null)
+                {
+                    mat.mainTexture.filterMode = mode;
+                }
+            }
         }
     }
     

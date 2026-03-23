@@ -7,39 +7,7 @@ public static class ModelLoader
 {
     public static Dictionary<uint, RGScriptedObject> scriptedObjects;
     
-    public static GameObject Load3D(string f3Dname, string colname)
-    {
-        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh3D(RGMeshStore.mesh_type.mesh_3d, f3Dname, colname);
-        GameObject obj = Add3DToScene($"3D_{f3Dname}",  data_3D, Vector3.zero, Vector3.zero);
-        return obj;
-    }
-    
-    public static GameObject Load3DC(string f3Dname, string colname)
-    {
-        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, f3Dname, colname);
-        GameObject obj = Add3DToScene($"3DC_{f3Dname}",  data_3D, Vector3.zero, Vector3.zero);
-        return obj;
-    }
-    
-    public static List<GameObject> LoadROB(string ROBname, string name_col)
-    {
-        List<GameObject> ROBObjects = new List<GameObject>();
-        
-        RG3DStore.MeshIntermediateDict.Clear();
-        RG3DStore.LoadMeshIntermediatesROB(ROBname);
-        
-        foreach (var mesh in RG3DStore.MeshIntermediateDict)
-        {
-            Debug.Log(mesh.Key);
-            
-            RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, mesh.Key, name_col);
-            GameObject obj = Add3DToScene(mesh.Key,  data_3D, Vector3.zero, Vector3.zero);
-            ROBObjects.Add(obj);
-        }
-        return ROBObjects;
-    }
-
-    private static GameObject Add3DToScene(string name, RGMeshStore.UnityData_3D data_3D, Vector3 position, Vector3 eulers)
+    private static GameObject CreateAreaObject(string name, RGMeshStore.UnityData_3D data_3D, Vector3 position, Vector3 eulers)
     {
         // Create new GameObject
         GameObject obj = new GameObject(name);
@@ -132,7 +100,7 @@ public static class ModelLoader
             {
                 // Create static objects
                 RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, RGM_MPSOs[i].name, name_col);
-                GameObject obj = Add3DToScene($"S{i:D3}_{RGM_MPSOs[i].name}",  data_3D, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
+                GameObject obj = CreateAreaObject($"S{i:D3}_{RGM_MPSOs[i].name}",  data_3D, RGM_MPSOs[i].position, RGM_MPSOs[i].rotation);
                 obj.isStatic = true;
                 areaObjects.Add(obj);
             }
@@ -147,7 +115,7 @@ public static class ModelLoader
         {
             // Create flats
             RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_flat, RGM_MPSFs[i].name, name_col);
-            GameObject obj = Add3DToScene($"F{i:D3}_{RGM_MPSFs[i].name}",  data_3D, RGM_MPSFs[i].position, RGM_MPSFs[i].rotation);
+            GameObject obj = CreateAreaObject($"F{i:D3}_{RGM_MPSFs[i].name}",  data_3D, RGM_MPSFs[i].position, RGM_MPSFs[i].rotation);
             areaObjects.Add(obj);
         }
         s_load_MPSF.End();
@@ -163,13 +131,13 @@ public static class ModelLoader
                 for(j=0;j<RGM_MPRPs[i].count;j++)
                 {
                     pos.y -= 0.8f; // TODO: is this always correct?
-                    GameObject obj = Add3DToScene($"R{i:D3}_{j:D3}_{RGM_MPRPs[i].ropeModel}",  data_3D, pos, new Vector3(0.0f,0.0f,0.0f));
+                    GameObject obj = CreateAreaObject($"R{i:D3}_{j:D3}_{RGM_MPRPs[i].ropeModel}",  data_3D, pos, new Vector3(0.0f,0.0f,0.0f));
                     areaObjects.Add(obj);
                 }
                 if(RGM_MPRPs[i].staticModel != null)
                 {
                     pos.y -= 0.8f; // TODO: is this always correct?
-                    GameObject obj = Add3DToScene($"R{i:D3}_{j:D3}_{RGM_MPRPs[i].staticModel}",  data_3D, pos, new Vector3(0.0f,0.0f,0.0f));
+                    GameObject obj = CreateAreaObject($"R{i:D3}_{j:D3}_{RGM_MPRPs[i].staticModel}",  data_3D, pos, new Vector3(0.0f,0.0f,0.0f));
                     areaObjects.Add(obj);
                 }
             }
@@ -188,7 +156,7 @@ public static class ModelLoader
 
                /* 
                 RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d, "LANTERN1", name_col);
-                GameObject obj = Add3DToScene($"MPMK_{i:D3}",  data_3D, RGM_MPMKs[i].position, Vector3.zero);
+                 GameObject obj = CreateAreaObject($"MPMK_{i:D3}",  data_3D, RGM_MPMKs[i].position, Vector3.zero);
                 obj.isStatic = true;
                 areaObjects.Add(obj);
                */ 

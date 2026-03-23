@@ -211,9 +211,10 @@ public class ModelViewer : MonoBehaviour
         }
         
         PrepareLoad();
+        FFITextureLoader.ClearCache();
         
         // Load Area objects
-        loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
+        loadedObjects = FFIModelLoader.LoadArea(RGM, COL, WLD);
         minimalLoadedFileName = RGM;
         loadedWLD = WLD;
         loadedCOL = COL;
@@ -411,8 +412,7 @@ public class ModelViewer : MonoBehaviour
         string fileName = minimalLoadedFileName;
 
         // Clear caches so it rebuilds with the new palette
-        RGMeshStore.ClearCache();
-        RGTexStore.ClearCache();
+        FFITextureLoader.ClearCache();
 
         // Force reload by clearing the name check
         string savedLoadedFileName = loadedFileName;
