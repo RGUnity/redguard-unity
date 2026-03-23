@@ -89,6 +89,10 @@ redguard-viewer-win64
 Assets/Editor/UnityEditorDarkMode
 Assets/Editor/UnityEditorDarkMode.meta
 
+# Roslyn plugin (MCP dependency)
+Assets/Plugins/Roslyn/
+Assets/Plugins/Roslyn.meta
+
 # get the iotst outputs out the damn list
 /io_tst/*/*.txt
 /io_tst/*/*.exe
