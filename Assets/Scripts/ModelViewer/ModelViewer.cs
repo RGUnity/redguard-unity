@@ -169,20 +169,21 @@ public class ModelViewer : MonoBehaviour
         }
         
         PrepareLoad();
+        FFITextureLoader.ClearCache();
         
         loadedObjects = new List<GameObject>();
         switch (fileType)
         {
             case ModelFileType.file3D:
-                loadedObjects.Add(ModelLoader.Load3D(f3Dname, colname));
+                loadedObjects.Add(FFIModelLoader.Load3D(f3Dname, colname));
                 loadedFileName = "/Redguard/fxart/" + f3Dname + ".3D";
                 break;
             case ModelFileType.file3DC:
-                loadedObjects.Add(ModelLoader.Load3DC(f3Dname, colname));
+                loadedObjects.Add(FFIModelLoader.Load3DC(f3Dname, colname));
                 loadedFileName = "/Redguard/fxart/" + f3Dname + ".3DC";
                 break;
             case ModelFileType.fileROB:
-                loadedObjects = ModelLoader.LoadROB(f3Dname, colname);
+                loadedObjects = FFIModelLoader.LoadROB(f3Dname, colname);
                 loadedFileName = "/Redguard/fxart/" + f3Dname + ".ROB";
                 break;
         }

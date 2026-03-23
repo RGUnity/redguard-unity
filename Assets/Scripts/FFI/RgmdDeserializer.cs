@@ -7,9 +7,29 @@ using UnityEngine.Rendering;
 
 public static class RgmdDeserializer
 {
+    public struct SubmeshMaterialInfo
+    {
+        public bool isSolidColor;
+        public byte colorIndex;
+        public ushort textureId;
+        public byte imageId;
+    }
+
     public static List<(string name, Mesh mesh)> DeserializeRob(byte[] robData, out int segmentCount, out int segmentsWithModel)
     {
-        var result = new List<(string name, Mesh mesh)>();
+        var data = DeserializeRobWithMaterials(robData, out segmentCount, out segmentsWithModel);
+        var result = new List<(string name, Mesh mesh)>(data.Count);
+        for (int i = 0; i < data.Count; i++)
+        {
+            result.Add((data[i].name, data[i].mesh));
+        }
+
+        return result;
+    }
+
+    public static List<(string name, Mesh mesh, SubmeshMaterialInfo[] materials)> DeserializeRobWithMaterials(byte[] robData, out int segmentCount, out int segmentsWithModel)
+    {
+        var result = new List<(string name, Mesh mesh, SubmeshMaterialInfo[] materials)>();
         segmentCount = 0;
         segmentsWithModel = 0;
 
@@ -39,10 +59,10 @@ public static class RgmdDeserializer
                     throw new EndOfStreamException($"ROB segment '{name}' expected {modelSize} bytes but got {rgmdData.Length}.");
                 }
 
-                Mesh mesh = ParseRgmdMesh(rgmdData, name);
+                var (mesh, materials, _) = ParseRgmdMesh(rgmdData, name);
                 if (mesh != null)
                 {
-                    result.Add((name, mesh));
+                    result.Add((name, mesh, materials));
                 }
             }
         }
@@ -50,7 +70,12 @@ public static class RgmdDeserializer
         return result;
     }
 
-    private static Mesh ParseRgmdMesh(byte[] rgmdData, string segmentName)
+    public static (Mesh mesh, SubmeshMaterialInfo[] materials, int frameCount) DeserializeModel(byte[] rgmdData, string name)
+    {
+        return ParseRgmdMesh(rgmdData, name);
+    }
+
+    private static (Mesh mesh, SubmeshMaterialInfo[] materials, int frameCount) ParseRgmdMesh(byte[] rgmdData, string segmentName)
     {
         using (var stream = new MemoryStream(rgmdData))
         using (var reader = new BinaryReader(stream))
@@ -63,14 +88,14 @@ public static class RgmdDeserializer
 
             reader.ReadBytes(4); // version
             int submeshCount = reader.ReadInt32();
-            reader.ReadInt32(); // frame_count
+            int frameCount = reader.ReadInt32();
             int totalVertexCount = reader.ReadInt32();
             int totalIndexCount = reader.ReadInt32();
             reader.ReadSingle(); // radius
 
             if (submeshCount <= 0 || totalVertexCount <= 0 || totalIndexCount <= 0)
             {
-                return null;
+                return (null, Array.Empty<SubmeshMaterialInfo>(), frameCount);
             }
 
             var vertices = new List<Vector3>(Math.Max(totalVertexCount, 0));
@@ -78,20 +103,34 @@ public static class RgmdDeserializer
             var uvs = new List<Vector2>(Math.Max(totalVertexCount, 0));
             var allIndices = new List<int>(Math.Max(totalIndexCount, 0));
             var subMeshes = new List<SubMeshDescriptor>(Math.Max(submeshCount, 0));
+            var submeshMaterials = new SubmeshMaterialInfo[submeshCount];
 
             for (int submeshIndex = 0; submeshIndex < submeshCount; submeshIndex++)
             {
                 byte typeTag = reader.ReadByte();
                 if (typeTag == 0)
                 {
-                    reader.ReadByte();
-                    reader.ReadUInt16();
-                    reader.ReadByte();
+                    byte colorIndex = reader.ReadByte();
+                    reader.ReadBytes(3);
+                    submeshMaterials[submeshIndex] = new SubmeshMaterialInfo
+                    {
+                        isSolidColor = true,
+                        colorIndex = colorIndex,
+                        textureId = 0,
+                        imageId = 0
+                    };
                 }
                 else if (typeTag == 1)
                 {
-                    reader.ReadUInt16();
-                    reader.ReadByte();
+                    ushort textureId = reader.ReadUInt16();
+                    byte imageId = reader.ReadByte();
+                    submeshMaterials[submeshIndex] = new SubmeshMaterialInfo
+                    {
+                        isSolidColor = false,
+                        colorIndex = 0,
+                        textureId = textureId,
+                        imageId = imageId
+                    };
                 }
                 else
                 {
@@ -175,7 +214,7 @@ public static class RgmdDeserializer
             }
 
             mesh.RecalculateBounds();
-            return mesh;
+            return (mesh, submeshMaterials, frameCount);
         }
     }
 
