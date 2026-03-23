@@ -20,36 +20,40 @@ public class GLTFExporter : MonoBehaviour
             return;
         }
 
-        // Define objects to export
-        var objectsToExport = new GameObject[] {obj};
+        await ExportToPath(obj, filePath);
+    }
+
+    /// <summary>
+    /// Export a GameObject hierarchy to a GLB/GLTF file at the given path (no file dialog).
+    /// </summary>
+    public async Task<bool> ExportToPath(GameObject obj, string filePath)
+    {
+        var objectsToExport = new GameObject[] { obj };
 
         var settings = new ExportSettings()
         {
             Format = GltfFormat.Json,
         };
-        
-        if (filePath.EndsWith("gltf"))
-        {
-            settings.Format = GltfFormat.Json;
-        }
-        else if (filePath.EndsWith("glb"))
+
+        if (filePath.EndsWith("glb"))
         {
             settings.Format = GltfFormat.Binary;
         }
-        
+
         var export = new GameObjectExport(settings);
         export.AddScene(objectsToExport);
-    
-        // Async glTF export
+
         var success = await export.SaveToFileAndDispose(filePath);
-    
+
         if (success)
         {
-            print("Exported " + filePath);
+            Debug.Log("Exported " + filePath);
         }
         else
         {
             Debug.LogError("Something went wrong trying to export the model." + filePath);
         }
+
+        return success;
     }
 }
