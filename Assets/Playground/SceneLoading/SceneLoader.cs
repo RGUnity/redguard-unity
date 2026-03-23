@@ -35,7 +35,7 @@ public class SceneLoader : MonoBehaviour
         _sceneSubRoot.name = RGM;
 
         // Create all objects of that area and parent them under the root
-        loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
+        loadedObjects = FFIModelLoader.LoadArea(RGM, COL, WLD);
         
         foreach (var obj in loadedObjects)
         {
