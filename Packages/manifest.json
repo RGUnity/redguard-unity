@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "com.bgtools.playerprefseditor": "1.2.4",
-    "com.coplaydev.unity-mcp": "https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#main",
     "com.kelvip.quick-scene-switcher": "1.0.1",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.9",
