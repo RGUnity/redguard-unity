@@ -77,13 +77,13 @@ public static class RgpreBindings
     // --- scene.rs: texture decoding ---
 
     [DllImport("rgpre", EntryPoint = "rg_decode_texture", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DecodeTextureNative(IntPtr texbsi_data, int texbsi_len, IntPtr palette_data, int palette_len, int image_index);
+    private static extern IntPtr DecodeTextureNative(IntPtr texture_cache, ushort texture_id, byte image_id);
 
     [DllImport("rgpre", EntryPoint = "rg_decode_texture_all_frames", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DecodeTextureAllFramesNative(IntPtr texbsi_data, int texbsi_len, IntPtr palette_data, int palette_len, int image_index);
+    private static extern IntPtr DecodeTextureAllFramesNative(IntPtr texture_cache, ushort texture_id, byte image_id);
 
     [DllImport("rgpre", EntryPoint = "rg_texbsi_image_count", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int TexbsiImageCountNative(IntPtr data, int len);
+    private static extern int TexbsiImageCountNative(IntPtr texture_cache, ushort texture_id);
 
     // --- scene.rs: audio ---
 
@@ -198,19 +198,19 @@ public static class RgpreBindings
 
     // --- Texture decoding ---
 
-    public static IntPtr DecodeTexture(IntPtr texbsiData, int texbsiLen, IntPtr paletteData, int paletteLen, int imageIndex)
+    public static IntPtr DecodeTexture(IntPtr textureCache, ushort textureId, byte imageId)
     {
-        return DecodeTextureNative(texbsiData, texbsiLen, paletteData, paletteLen, imageIndex);
+        return DecodeTextureNative(textureCache, textureId, imageId);
     }
 
-    public static IntPtr DecodeTextureAllFrames(IntPtr texbsiData, int texbsiLen, IntPtr paletteData, int paletteLen, int imageIndex)
+    public static IntPtr DecodeTextureAllFrames(IntPtr textureCache, ushort textureId, byte imageId)
     {
-        return DecodeTextureAllFramesNative(texbsiData, texbsiLen, paletteData, paletteLen, imageIndex);
+        return DecodeTextureAllFramesNative(textureCache, textureId, imageId);
     }
 
-    public static int TexbsiImageCount(IntPtr data, int len)
+    public static int TexbsiImageCount(IntPtr textureCache, ushort textureId)
     {
-        return TexbsiImageCountNative(data, len);
+        return TexbsiImageCountNative(textureCache, textureId);
     }
 
     // --- Audio: SFX ---

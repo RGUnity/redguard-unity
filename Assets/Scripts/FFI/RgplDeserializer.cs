@@ -12,6 +12,8 @@ public static class RgplDeserializer
         public string sourceId;
         public Matrix4x4 transform;
         public byte type;
+        public ushort textureId;
+        public byte imageId;
     }
 
     public struct LightData
@@ -63,7 +65,8 @@ public static class RgplDeserializer
 
                 p.transform = m;
                 p.type = reader.ReadByte();
-                reader.ReadBytes(3);
+                p.textureId = reader.ReadUInt16();
+                p.imageId = reader.ReadByte();
 
                 result.placements.Add(p);
             }

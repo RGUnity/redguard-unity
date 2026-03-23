@@ -110,11 +110,34 @@ public static class FFIModelLoader
                     byte[] rgplBytes = RgpreBindings.ExtractBytesAndFree(resultPtr);
                     var rgpl = RgplDeserializer.Deserialize(rgplBytes);
 
+                    int skippedEmpty = 0;
+                    int skippedNoMesh = 0;
+                    int placed = 0;
+                    var missingModels = new HashSet<string>();
+
                     foreach (var placement in rgpl.placements)
                     {
                         string modelName = placement.modelName;
+
+                        // Flat sprite — create a textured quad
+                        if (placement.textureId > 0 && string.IsNullOrEmpty(modelName))
+                        {
+                            GameObject quad = CreateFlatSprite(placement, paletteName);
+                            if (quad != null)
+                            {
+                                objects.Add(quad);
+                                placed++;
+                            }
+                            else
+                            {
+                                skippedNoMesh++;
+                            }
+                            continue;
+                        }
+
                         if (string.IsNullOrEmpty(modelName))
                         {
+                            skippedEmpty++;
                             continue;
                         }
 
@@ -122,9 +145,7 @@ public static class FFIModelLoader
                         RgmdDeserializer.SubmeshMaterialInfo[] matInfos = null;
                         int frameCount = 0;
 
-                        string lookupKey = !string.IsNullOrEmpty(placement.sourceId) ? placement.sourceId : modelName;
-
-                        if (meshDict.TryGetValue(lookupKey, out var cached))
+                        if (meshDict.TryGetValue(modelName, out var cached))
                         {
                             mesh = cached.mesh;
                             matInfos = cached.materials;
@@ -144,6 +165,8 @@ public static class FFIModelLoader
 
                         if (mesh == null)
                         {
+                            skippedNoMesh++;
+                            missingModels.Add(modelName);
                             continue;
                         }
 
@@ -151,7 +174,12 @@ public static class FFIModelLoader
                         GameObject obj = CreateGameObject(modelName, mesh, materials, frameCount);
                         ApplyMatrix(obj.transform, placement.transform);
                         objects.Add(obj);
+                        placed++;
                     }
+
+                    Debug.Log($"[FFI LoadArea] RGPL: {rgpl.placements.Count} placements, {rgpl.lights.Count} lights. Placed: {placed}, Skipped (empty name): {skippedEmpty}, Skipped (no mesh): {skippedNoMesh}");
+                    if (missingModels.Count > 0)
+                        Debug.Log($"[FFI LoadArea] Missing models: {string.Join(", ", missingModels)}");
 
                     foreach (var light in rgpl.lights)
                     {
@@ -274,6 +302,62 @@ public static class FFIModelLoader
             rotMatrix.SetColumn(2, matrix.GetColumn(2) / scale.z);
             transform.rotation = rotMatrix.rotation;
         }
+    }
+
+    private static Mesh flatQuadMesh;
+
+    private static GameObject CreateFlatSprite(RgplDeserializer.Placement placement, string paletteName)
+    {
+        Texture2D tex = FFITextureLoader.DecodeTexture(placement.textureId, placement.imageId, paletteName);
+        if (tex == null) return null;
+
+        if (flatQuadMesh == null)
+        {
+            flatQuadMesh = new Mesh();
+            flatQuadMesh.name = "FlatQuad";
+            flatQuadMesh.vertices = new Vector3[]
+            {
+                new Vector3(-0.5f, 0f, 0f),
+                new Vector3( 0.5f, 0f, 0f),
+                new Vector3( 0.5f, 1f, 0f),
+                new Vector3(-0.5f, 1f, 0f)
+            };
+            flatQuadMesh.uv = new Vector2[]
+            {
+                new Vector2(0, 0),
+                new Vector2(1, 0),
+                new Vector2(1, 1),
+                new Vector2(0, 1)
+            };
+            flatQuadMesh.triangles = new int[] { 0, 2, 1, 0, 3, 2 };
+            flatQuadMesh.normals = new Vector3[]
+            {
+                Vector3.back, Vector3.back, Vector3.back, Vector3.back
+            };
+        }
+
+        string label = !string.IsNullOrEmpty(placement.sourceId) ? placement.sourceId : "Flat_" + placement.textureId + "_" + placement.imageId;
+        GameObject obj = new GameObject(label);
+
+        MeshFilter mf = obj.AddComponent<MeshFilter>();
+        mf.sharedMesh = flatQuadMesh;
+
+        MeshRenderer mr = obj.AddComponent<MeshRenderer>();
+        Material mat = new Material(GetDefaultShader());
+        mat.mainTexture = tex;
+        mr.sharedMaterial = mat;
+
+        ApplyMatrix(obj.transform, placement.transform);
+
+        // Scale quad to match texture aspect ratio
+        float aspect = (float)tex.width / tex.height;
+        obj.transform.localScale = new Vector3(
+            obj.transform.localScale.x * aspect,
+            obj.transform.localScale.y,
+            obj.transform.localScale.z
+        );
+
+        return obj;
     }
 
     private static GameObject LoadModel(string modelName, string extension, string colName, string displayName)
