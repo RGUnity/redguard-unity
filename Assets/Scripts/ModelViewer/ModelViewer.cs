@@ -188,6 +188,12 @@ public class ModelViewer : MonoBehaviour
         }
 
         minimalLoadedFileName = f3Dname;
+        glTFExporter.modelName = f3Dname;
+        glTFExporter.fileType = fileType;
+        glTFExporter.colName = colname;
+        glTFExporter.isAreaExport = false;
+        glTFExporter.rgmName = "";
+        glTFExporter.wldName = "";
         
         SpreadObjects(loadedObjects);
         
@@ -210,6 +216,11 @@ public class ModelViewer : MonoBehaviour
         minimalLoadedFileName = RGM;
         loadedWLD = WLD;
         loadedCOL = COL;
+        glTFExporter.rgmName = RGM;
+        glTFExporter.wldName = WLD;
+        glTFExporter.colName = COL;
+        glTFExporter.isAreaExport = true;
+        glTFExporter.modelName = "";
 
         if (WLD.Equals(string.Empty))
         {
