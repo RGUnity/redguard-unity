@@ -30,7 +30,7 @@ public class RGScriptedObject : MonoBehaviour
         task_facing,
         task_animating,
     }
-	// TODO: this is duplicated from RGRGMStore
+    // TODO: this is duplicated from runtime transform helper
 	const float RGM_MPOB_SCALE = 1/5120.0f;
 	
 	public string objectName;
@@ -145,19 +145,27 @@ public class RGScriptedObject : MonoBehaviour
     public void Instanciate3DObject(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
     {
 		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
-			
-		animations = new AnimData(MPOB.scriptName);
+
+		try
+		{
+			animations = new AnimData(MPOB.scriptName);
+		}
+		catch
+		{
+			animations = null;
+		}
         currentMesh = 0;
 
-		if(animations.animationData.RAANItems.Count > 0)
+		if(animations != null && animations.animationData.RAANItems.Count > 0)
 		{
 			Debug.Log($"ANIMATED {scriptName}");
             type = ScriptedObjectType.scriptedobject_animated;
 
-			RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d,
-                                                                    animations.animationData.RAANItems[0].modelFile,
-                                                                    name_col,
-                                                                    RAHDData.textureId);
+			if (!FFIModelLoader.TryGetMeshData(animations.animationData.RAANItems[0].modelFile, name_col, out Mesh firstMesh, out List<Material> firstMaterials, out int firstFrameCount))
+			{
+				type = ScriptedObjectType.scriptedobject_static;
+				return;
+			}
 
             meshes = new Mesh[animations.animationData.RAANItems.Count];
             meshFrameCount = new int[animations.animationData.RAANItems.Count];
@@ -166,29 +174,26 @@ public class RGScriptedObject : MonoBehaviour
             for(int j=0;j<animations.animationData.RAANItems.Count;j++)
             {
                 string modelname_frame = animations.animationData.RAANItems[j].modelFile;
-                RGMeshStore.UnityData_3D data_frame = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d,
-                                                                           modelname_frame,
-                                                                           name_col,
-                                                                           RAHDData.textureId);
-                meshes[j] = data_frame.mesh;
-                meshFrameCount[j] = data_frame.framecount;
-                totalFrames+=data_frame.framecount;
+				if (FFIModelLoader.TryGetMeshData(modelname_frame, name_col, out Mesh frameMesh, out _, out int frameCount))
+				{
+					meshes[j] = frameMesh;
+					meshFrameCount[j] = frameCount;
+					totalFrames += frameCount;
+				}
             }
-		
-			skinnedMeshRenderer.sharedMesh = meshes[0];
-			skinnedMeshRenderer.SetMaterials(data_3D.materials);
+
+			skinnedMeshRenderer.sharedMesh = firstMesh;
+			skinnedMeshRenderer.SetMaterials(firstMaterials);
 		}
 		else
 		{
             type = ScriptedObjectType.scriptedobject_static;
-            string modelname = MPOB.modelName.Split('.')[0];
-			RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d,
-                                                                    modelname,
-                                                                    name_col,
-                                                                    RAHDData.textureId);
-		
-			skinnedMeshRenderer.sharedMesh = data_3D.mesh;
-			skinnedMeshRenderer.SetMaterials(data_3D.materials);
+            string modelname = !string.IsNullOrEmpty(MPOB.modelName) ? MPOB.modelName.Split('.')[0] : MPOB.scriptName;
+			if (FFIModelLoader.TryGetMeshData(modelname, name_col, out Mesh mesh, out List<Material> materials, out _))
+			{
+				skinnedMeshRenderer.sharedMesh = mesh;
+				skinnedMeshRenderer.SetMaterials(materials);
+			}
 		}
 
     }
@@ -199,13 +204,11 @@ public class RGScriptedObject : MonoBehaviour
 		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
 			
         string modelname = MPOB.scriptName;
-        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_3d,
-                                                                modelname,
-                                                                name_col,
-                                                                RAHDData.textureId);
-    
-        skinnedMeshRenderer.sharedMesh = data_3D.mesh;
-        skinnedMeshRenderer.SetMaterials(data_3D.materials);
+        if (FFIModelLoader.TryGetMeshData(modelname, name_col, out Mesh mesh, out List<Material> materials, out _))
+        {
+            skinnedMeshRenderer.sharedMesh = mesh;
+            skinnedMeshRenderer.SetMaterials(materials);
+        }
 
         AddLight();
         light.type = LightType.Point;
@@ -225,13 +228,16 @@ public class RGScriptedObject : MonoBehaviour
 	public void Instanciate(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
 	{
         scriptName = MPOB.scriptName;
-        RAHDData = filergm.RAHD.dict[scriptName];
+        if (!filergm.RAHD.dict.TryGetValue(scriptName, out RAHDData))
+        {
+            RAHDData = new RGFileImport.RGRGMFile.RGMRAHDItem();
+        }
 
         Vector3 position = Vector3.zero;
  		position.x = (float)(MPOB.posX)*RGM_MPOB_SCALE;
 		position.y = -(float)(MPOB.posY)*RGM_MPOB_SCALE;
 		position.z = -(float)(0xFFFFFF-MPOB.posZ)*RGM_MPOB_SCALE;
-        Vector3 rotation = RGRGMStore.eulers_from_MPOB_data(MPOB);
+        Vector3 rotation = EulerFromMpobData(MPOB);
 		transform.position = position;
 		transform.Rotate(rotation);
         originalRotation = rotation;
@@ -242,6 +248,8 @@ public class RGScriptedObject : MonoBehaviour
         int RALC_offset = RAHDData.RALCOffset/12;
         for(int i=0;i<RAHDData.RALCCount;i++)
         {
+            if (RALC_offset + i >= filergm.RALC.items.Count)
+                break;
             RGRGMFile.RGMRALCItem RALCData = filergm.RALC.items[RALC_offset+i];
             Vector3 loc = position;
             loc.x += (float)(RALCData.offsetX)*RGM_MPOB_SCALE;
@@ -276,10 +284,25 @@ public class RGScriptedObject : MonoBehaviour
                 break;
         }
 
-        script = new ScriptData(MPOB.scriptName, MPOB.id);
+
+		try
+		{
+			script = new ScriptData(MPOB.scriptName, MPOB.id);
+		}
+		catch
+		{
+			script = null;
+		}
 		
         attributes = new byte[256];
-        Array.Copy(filergm.RAAT.attributes, RAHDData.index*256, attributes, 0, 256);
+        if (filergm.RAAT.attributes != null)
+        {
+            int attrOffset = RAHDData.index * 256;
+            if (attrOffset >= 0 && attrOffset + 256 <= filergm.RAAT.attributes.Length)
+            {
+                Array.Copy(filergm.RAAT.attributes, attrOffset, attributes, 0, 256);
+            }
+        }
 
         if(skinnedMeshRenderer != null)
         {
@@ -292,12 +315,13 @@ public class RGScriptedObject : MonoBehaviour
          
         objectName = null;
         objectId = MPOB.id;
-        if(RAHDData.RANMLength > 0)
+        if(RAHDData.RANMLength > 0 && filergm.RANM.data != null)
         {
-            MemoryReader RANMReader = new MemoryReader(filergm.RANM.data);
-            RANMReader.Seek((uint)RAHDData.RANMOffset, 0);
-            char[] curc = RANMReader.ReadChars(RAHDData.RANMLength-1);
-            objectName = new string(curc);
+            int maxLen = Math.Min(RAHDData.RANMLength, filergm.RANM.data.Length - RAHDData.RANMOffset);
+            if (RAHDData.RANMOffset >= 0 && maxLen > 1)
+            {
+                objectName = new string(filergm.RANM.data, RAHDData.RANMOffset, maxLen - 1);
+            }
         }
 
         // TODO: when to add audio source?
@@ -356,6 +380,15 @@ public class RGScriptedObject : MonoBehaviour
             Debug.Log($"{scriptName}: tried to set animation but object type is not animated");
         return 0;
     }
+
+    private static Vector3 EulerFromMpobData(RGFileImport.RGRGMFile.RGMMPOBItem item)
+    {
+        const float da2dg = 180.0f / 1024.0f;
+        Vector3 eulers = new Vector3(item.anglex % 2048, item.angley % 2048, item.anglez % 2048);
+        eulers *= da2dg;
+        return Vector3.Scale(eulers, new Vector3(1f, 1f, 1f));
+    }
+
     int GlobalToLocalFrame(int globalFrame)
     {
         int cnt_tot = 0;
@@ -429,7 +462,7 @@ public class RGScriptedObject : MonoBehaviour
             return;
 
         UpdateTask(mainTask);
-        if(mainTask.type == TaskType.task_idle)
+        if(mainTask.type == TaskType.task_idle && script != null)
         {
             try {
             script.tickScript();
@@ -851,7 +884,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         // i[1]: 1 grays out the item
         // i[2]: the item index (? not 100% sequential, might miss some in-between)
 
-        string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
+        string displayText = FFISoundStore.GetRTX(i[0]).subtitle;
         Game.uiManager.AddDialogueOption(displayText, (i[1] == 1), i[2]);
         return 0;
     }
@@ -869,21 +902,23 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
     {
         // Play a sound from RTX and display subtitles
         // i[0]: index of the RTX data
-        RGSoundStore.RTXEntry rtx = RGSoundStore.GetRTX(i[0]);
+        FFISoundStore.RTXEntry rtx = FFISoundStore.GetRTX(i[0]);
+        float duration = 0f;
 
         if(rtx.audio)
         {
             audioSource.clip = rtx.audio;
             audioSource.Play();
+            duration = audioSource.clip.length;
         }
 
         TaskData newTask = new TaskData();
         newTask.type = TaskType.task_waiting;
-        newTask.duration = audioSource.clip.length;
+        newTask.duration = duration;
         newTask.timer = 0;
 
         string displayText = rtx.subtitle;
-        Game.uiManager.ShowSubtitleText(displayText, audioSource.clip.length);
+        Game.uiManager.ShowSubtitleText(displayText, duration);
 
         AddTask(multitask, newTask);
 
@@ -900,26 +935,31 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         // i[2]: 2nd animation to play
         // i[3]: 3rd animation to play // TODO: this sometimes is a non-existing animation
 
-        RGSoundStore.RTXEntry rtx = RGSoundStore.GetRTX(i[0]);
+        FFISoundStore.RTXEntry rtx = FFISoundStore.GetRTX(i[0]);
         TaskData newTask = new TaskData();
+        float duration = 0f;
  
         if(rtx.audio)
         {
             audioSource.clip = rtx.audio;
             audioSource.Play();
-            newTask.duration = audioSource.clip.length;
+            duration = audioSource.clip.length;
             newTask.dialog = true;
         }
+        newTask.duration = duration;
         string displayText = rtx.subtitle;
-        Game.uiManager.ShowSubtitleText(displayText, audioSource.clip.length);
+        Game.uiManager.ShowSubtitleText(displayText, duration);
 
         newTask.type = TaskType.task_animating;
         newTask.timer = 0;
         newTask.animationFinished = true;
         newTask.animationQueue = new Queue<(int animId, int startFrame)>();
 
-        animations.shouldExitFcn = newTask.animAlwaysExitFcn;
-        animations.doExitFcn= newTask.animSetFinishedFcn;
+        if (animations != null)
+        {
+            animations.shouldExitFcn = newTask.animAlwaysExitFcn;
+            animations.doExitFcn= newTask.animSetFinishedFcn;
+        }
 
         for(int j=1;j<4;j++)
         {
@@ -1223,8 +1263,9 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         // i[1]: TODO: UNKNOWN, volume?
         // i[2]: TODO: UNKNOWN, falloff?
 
-        audioSource.clip = RGSoundStore.GetSFX(i[0]);
-        audioSource.Play();
+        audioSource.clip = FFISoundStore.GetSFX(i[0]);
+        if (audioSource.clip != null)
+            audioSource.Play();
         return 0;
     }
     /*function 94*/
@@ -1235,8 +1276,9 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         // i[1]: TODO: UNKNOWN, volume?
         // i[2]: TODO: UNKNOWN, falloff?
 
-        audioSource.clip = RGSoundStore.GetSFX(i[0]);
-        audioSource.Play();
+        audioSource.clip = FFISoundStore.GetSFX(i[0]);
+        if (audioSource.clip != null)
+            audioSource.Play();
         return 0;
     }
 
@@ -1247,13 +1289,14 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         // i[0]: sound id
         // i[1]: TODO: UNKNOWN, volume?
         // i[2]: TODO: UNKNOWN, falloff?
-        audioSource.clip = RGSoundStore.GetSFX(i[0]);
-        audioSource.Play();
+        audioSource.clip = FFISoundStore.GetSFX(i[0]);
+        if (audioSource.clip != null)
+            audioSource.Play();
 
         // wait until playback is done
         TaskData newTask = new TaskData();
         newTask.type = TaskType.task_waiting;
-        newTask.duration = audioSource.clip.length;
+        newTask.duration = audioSource.clip != null ? audioSource.clip.length : 0f;
         newTask.timer = 0;
 
         AddTask(multitask, newTask);
@@ -1359,7 +1402,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         // i[0]: Stringid shown on screen when looking at the item
         // TODO: we only want a single activatable item to return 1 on this
         // testable by walking to the cave in the jungle and picking up all the potions in 1 go
-        string displayText = RGSoundStore.GetRTX(i[0]).subtitle;
+        string displayText = FFISoundStore.GetRTX(i[0]).subtitle;
         Game.uiManager.ShowInteractionText(displayText);
         if(Game.Input.activate)
             return 1;
@@ -1380,8 +1423,11 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         newTask.animationFinished = true;
         newTask.animationQueue = new Queue<(int animId, int startFrame)>();
 
-        animations.shouldExitFcn = newTask.animAlwaysExitFcn;
-        animations.doExitFcn= newTask.animSetFinishedFcn;
+        if (animations != null)
+        {
+            animations.shouldExitFcn = newTask.animAlwaysExitFcn;
+            animations.doExitFcn= newTask.animSetFinishedFcn;
+        }
 
         (int animId, int startFrame) nextAnim = (i[0], i[1]);
         newTask.animationQueue.Enqueue(nextAnim);

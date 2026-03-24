@@ -113,8 +113,11 @@ public class PlayerMain: MonoBehaviour
                 player = RGObjectStore.GetPlayer();
                 currentAnimState = AnimState.state_panic;
                 wantAnimState = AnimState.state_panic;
-                player.animations.shouldExitFcn = animShouldExitFcn;
-                player.animations.doExitFcn = animDoExitFcn;
+                if (player != null && player.animations != null)
+                {
+                    player.animations.shouldExitFcn = animShouldExitFcn;
+                    player.animations.doExitFcn = animDoExitFcn;
+                }
                 animDoExitFcn();
                 break;
 

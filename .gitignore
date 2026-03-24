@@ -96,3 +96,6 @@ Assets/Plugins/Roslyn.meta
 # get the iotst outputs out the damn list
 /io_tst/*/*.txt
 /io_tst/*/*.exe
+
+# IDE config
+.vsconfig

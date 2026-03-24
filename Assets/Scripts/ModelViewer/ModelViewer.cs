@@ -323,20 +323,21 @@ public class ModelViewer : MonoBehaviour
     
     public void ApplyTextureFilterSetting()
     {
-        if (RGTexStore.MaterialDict == null)
+        if (loadedObjects == null || loadedObjects.Count == 0)
         {
             return;
         }
 
-        foreach (var mat in RGTexStore.MaterialDict)
+        foreach (var renderer in _objectRootGenerated.GetComponentsInChildren<Renderer>())
         {
-            if (settings.useTextureFiltering)
+            foreach (Material mat in renderer.materials)
             {
-                mat.Value.mainTexture.filterMode = FilterMode.Bilinear;
-            }
-            else
-            {
-                mat.Value.mainTexture.filterMode = FilterMode.Point;
+                if (mat == null || mat.mainTexture == null)
+                {
+                    continue;
+                }
+
+                mat.mainTexture.filterMode = settings.useTextureFiltering ? FilterMode.Bilinear : FilterMode.Point;
             }
         }
     }

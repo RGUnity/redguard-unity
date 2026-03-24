@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using SFB;
 
@@ -71,6 +69,7 @@ public class GLTFExporter : MonoBehaviour
     private byte[] ExportModel()
     {
         string artFolder = Game.pathManager.GetArtFolder();
+        string assetsDir = Game.pathManager.GetRootFolder();
         string extension = fileType switch {
             ModelFileType.file3D => ".3D",
             ModelFileType.file3DC => ".3DC",
@@ -78,215 +77,60 @@ public class GLTFExporter : MonoBehaviour
             _ => ".3D"
         };
         string modelPath = Path.Combine(artFolder, modelName + extension);
-        byte[] modelBytes = File.ReadAllBytes(modelPath);
-
-        IntPtr textureCache = CreateTextureCacheFromDisk();
-
-        var modelPin = GCHandle.Alloc(modelBytes, GCHandleType.Pinned);
-        try
+        if (!File.Exists(modelPath))
         {
-            IntPtr resultPtr;
-            if (fileType == ModelFileType.fileROB)
-            {
-                resultPtr = RgpreBindings.ConvertRobToGlb(modelPin.AddrOfPinnedObject(), modelBytes.Length, textureCache);
-            }
-            else
-            {
-                resultPtr = RgpreBindings.ConvertModelToGlb(modelPin.AddrOfPinnedObject(), modelBytes.Length, textureCache);
-            }
-
-            if (resultPtr == IntPtr.Zero)
-            {
-                Debug.LogError("[Export] FFI conversion failed: " + RgpreBindings.GetLastErrorMessage());
-                return null;
-            }
-
-            return RgpreBindings.ExtractBytesAndFree(resultPtr);
+            Debug.LogError("[Export] Model file not found: " + modelPath);
+            return null;
         }
-        finally
+
+        IntPtr resultPtr = RgpreBindings.ConvertModelFromPath(modelPath, assetsDir);
+        if (resultPtr == IntPtr.Zero)
         {
-            modelPin.Free();
-            if (textureCache != IntPtr.Zero)
-            {
-                RgpreBindings.FreeTextureCache(textureCache);
-            }
+            Debug.LogError("[Export] FFI conversion failed: " + RgpreBindings.GetLastErrorMessage());
+            return null;
         }
+
+        return RgpreBindings.ExtractBytesAndFree(resultPtr);
     }
 
     private byte[] ExportArea()
     {
-        string artFolder = Game.pathManager.GetArtFolder();
         string mapsFolder = Game.pathManager.GetMapsFolder();
-        var pinnedHandles = new List<GCHandle>();
-        var allocatedPtrs = new List<IntPtr>();
-        IntPtr textureCache = IntPtr.Zero;
+        string assetsDir = Game.pathManager.GetRootFolder();
 
-        try
+        if (!string.IsNullOrEmpty(wldName))
         {
-            byte[] wldBytes = null;
-            byte[] rgmBytes = File.ReadAllBytes(Path.Combine(mapsFolder, rgmName + ".RGM"));
-
-            if (!string.IsNullOrEmpty(wldName))
+            string wldPath = Path.Combine(mapsFolder, wldName + ".WLD");
+            if (!File.Exists(wldPath))
             {
-                wldBytes = File.ReadAllBytes(Path.Combine(mapsFolder, wldName + ".WLD"));
+                Debug.LogError("[Export] WLD file not found: " + wldPath);
+                return null;
             }
 
-            textureCache = CreateTextureCacheFromDisk();
-
-            var modelNameList = new List<string>();
-            var modelDataList = new List<byte[]>();
-            var modelTypeList = new List<byte>();
-
-            foreach (string path in Directory.GetFiles(artFolder, "*.3D"))
-            {
-                modelNameList.Add(Path.GetFileNameWithoutExtension(path).ToUpperInvariant());
-                modelDataList.Add(File.ReadAllBytes(path));
-                modelTypeList.Add(3);
-            }
-            foreach (string path in Directory.GetFiles(artFolder, "*.3DC"))
-            {
-                modelNameList.Add(Path.GetFileNameWithoutExtension(path).ToUpperInvariant());
-                modelDataList.Add(File.ReadAllBytes(path));
-                modelTypeList.Add(4);
-            }
-            foreach (string path in Directory.GetFiles(artFolder, "*.ROB"))
-            {
-                modelNameList.Add(Path.GetFileNameWithoutExtension(path).ToUpperInvariant());
-                modelDataList.Add(File.ReadAllBytes(path));
-                modelTypeList.Add(5);
-            }
-
-            IntPtr[] modelNames = new IntPtr[modelDataList.Count];
-            IntPtr[] modelDatas = new IntPtr[modelDataList.Count];
-            int[] modelLens = new int[modelDataList.Count];
-            byte[] modelTypes = modelTypeList.ToArray();
-
-            for (int i = 0; i < modelDataList.Count; i++)
-            {
-                IntPtr namePtr = Marshal.StringToHGlobalAnsi(modelNameList[i]);
-                allocatedPtrs.Add(namePtr);
-                modelNames[i] = namePtr;
-
-                var pin = GCHandle.Alloc(modelDataList[i], GCHandleType.Pinned);
-                pinnedHandles.Add(pin);
-                modelDatas[i] = pin.AddrOfPinnedObject();
-                modelLens[i] = modelDataList[i].Length;
-            }
-
-            IntPtr resultPtr;
-            if (wldBytes != null)
-            {
-                var wldPin = GCHandle.Alloc(wldBytes, GCHandleType.Pinned);
-                var rgmPin = GCHandle.Alloc(rgmBytes, GCHandleType.Pinned);
-                pinnedHandles.Add(wldPin);
-                pinnedHandles.Add(rgmPin);
-
-                resultPtr = RgpreBindings.ConvertWldToGlb(
-                    wldPin.AddrOfPinnedObject(), wldBytes.Length,
-                    textureCache,
-                    rgmPin.AddrOfPinnedObject(), rgmBytes.Length,
-                    modelNames, modelDatas, modelLens, modelTypes, modelDataList.Count);
-            }
-            else
-            {
-                var rgmPin = GCHandle.Alloc(rgmBytes, GCHandleType.Pinned);
-                pinnedHandles.Add(rgmPin);
-
-                resultPtr = RgpreBindings.ConvertRgmToGlb(
-                    rgmPin.AddrOfPinnedObject(), rgmBytes.Length,
-                    textureCache,
-                    modelNames, modelDatas, modelLens, modelTypes, modelDataList.Count);
-            }
-
-            if (resultPtr == IntPtr.Zero)
+            IntPtr wldResult = RgpreBindings.ConvertWldFromPath(wldPath, assetsDir);
+            if (wldResult == IntPtr.Zero)
             {
                 Debug.LogError("[Export] FFI area conversion failed: " + RgpreBindings.GetLastErrorMessage());
                 return null;
             }
 
-            return RgpreBindings.ExtractBytesAndFree(resultPtr);
+            return RgpreBindings.ExtractBytesAndFree(wldResult);
         }
-        finally
+
+        string rgmPath = Path.Combine(mapsFolder, rgmName + ".RGM");
+        if (!File.Exists(rgmPath))
         {
-            foreach (var ptr in allocatedPtrs)
-            {
-                if (ptr != IntPtr.Zero)
-                {
-                    Marshal.FreeHGlobal(ptr);
-                }
-            }
-            for (int i = pinnedHandles.Count - 1; i >= 0; i--)
-            {
-                if (pinnedHandles[i].IsAllocated)
-                {
-                    pinnedHandles[i].Free();
-                }
-            }
-            if (textureCache != IntPtr.Zero)
-            {
-                RgpreBindings.FreeTextureCache(textureCache);
-            }
+            Debug.LogError("[Export] RGM file not found: " + rgmPath);
+            return null;
         }
-    }
 
-    private IntPtr CreateTextureCacheFromDisk()
-    {
-        string artFolder = Game.pathManager.GetArtFolder();
-        string paletteName = string.IsNullOrEmpty(colName) ? "ISLAND" : colName;
-        string palettePath = Path.Combine(artFolder, paletteName + ".COL");
-
-        if (!File.Exists(palettePath))
+        IntPtr rgmResult = RgpreBindings.ConvertRgmFromPath(rgmPath, assetsDir);
+        if (rgmResult == IntPtr.Zero)
         {
-            return IntPtr.Zero;
+            Debug.LogError("[Export] FFI area conversion failed: " + RgpreBindings.GetLastErrorMessage());
+            return null;
         }
 
-        byte[] paletteBytes = File.ReadAllBytes(palettePath);
-        var palettePin = GCHandle.Alloc(paletteBytes, GCHandleType.Pinned);
-
-        try
-        {
-            string[] texbsiPaths = Directory.GetFiles(artFolder, "TEXBSI.*");
-            var texbsiIds = new List<ushort>();
-            var texbsiDataList = new List<byte[]>();
-            var texbsiPins = new List<GCHandle>();
-
-            foreach (string path in texbsiPaths)
-            {
-                string ext = Path.GetExtension(path).TrimStart('.');
-                if (int.TryParse(ext, out int id) && id >= 0 && id <= ushort.MaxValue)
-                {
-                    texbsiIds.Add((ushort)id);
-                    texbsiDataList.Add(File.ReadAllBytes(path));
-                }
-            }
-
-            IntPtr[] texbsiDatas = new IntPtr[texbsiDataList.Count];
-            int[] texbsiLens = new int[texbsiDataList.Count];
-            for (int i = 0; i < texbsiDataList.Count; i++)
-            {
-                var pin = GCHandle.Alloc(texbsiDataList[i], GCHandleType.Pinned);
-                texbsiPins.Add(pin);
-                texbsiDatas[i] = pin.AddrOfPinnedObject();
-                texbsiLens[i] = texbsiDataList[i].Length;
-            }
-
-            IntPtr cache = RgpreBindings.CreateTextureCache(
-                palettePin.AddrOfPinnedObject(), paletteBytes.Length,
-                texbsiIds.ToArray(), texbsiDatas, texbsiLens, texbsiDataList.Count);
-
-            foreach (var pin in texbsiPins)
-            {
-                if (pin.IsAllocated)
-                {
-                    pin.Free();
-                }
-            }
-
-            return cache;
-        }
-        finally
-        {
-            palettePin.Free();
-        }
+        return RgpreBindings.ExtractBytesAndFree(rgmResult);
     }
 }

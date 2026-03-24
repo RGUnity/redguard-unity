@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 public static class FFITextureLoader
@@ -13,101 +12,21 @@ public static class FFITextureLoader
     private static readonly Dictionary<string, Texture2D> textureCache = new Dictionary<string, Texture2D>();
     private static readonly Dictionary<string, Color32[]> paletteCache = new Dictionary<string, Color32[]>();
 
-    // Rust-side texture cache handle (created once, reused for all decode calls)
-    private static IntPtr nativeTextureCache = IntPtr.Zero;
-    private static string cachedPaletteName;
-
     public static void ClearCache()
     {
         textureCache.Clear();
         paletteCache.Clear();
-        FreeNativeCache();
-    }
-
-    private static void FreeNativeCache()
-    {
-        if (nativeTextureCache != IntPtr.Zero)
-        {
-            RgpreBindings.FreeTextureCache(nativeTextureCache);
-            nativeTextureCache = IntPtr.Zero;
-            cachedPaletteName = null;
-        }
-    }
-
-    /// Ensure the native TextureCache is created for the given palette.
-    /// Loads all TEXBSI banks from the art folder into one Rust-side cache.
-    public static IntPtr EnsureNativeCache(string paletteName)
-    {
-        if (nativeTextureCache != IntPtr.Zero && cachedPaletteName == paletteName)
-            return nativeTextureCache;
-
-        FreeNativeCache();
-
-        string artFolder = Game.pathManager.GetArtFolder();
-        string palettePath = ResolvePalettePath(artFolder, paletteName);
-
-        byte[] paletteBytes = null;
-        GCHandle palettePin = default;
-
-        if (!string.IsNullOrEmpty(palettePath))
-        {
-            paletteBytes = File.ReadAllBytes(palettePath);
-            palettePin = GCHandle.Alloc(paletteBytes, GCHandleType.Pinned);
-        }
-
-        // Scan for all TEXBSI.### files
-        var texbsiIds = new List<ushort>();
-        var texbsiDataList = new List<byte[]>();
-        var texbsiPins = new List<GCHandle>();
-
-        foreach (string path in Directory.GetFiles(artFolder, "TEXBSI.*"))
-        {
-            string ext = Path.GetExtension(path).TrimStart('.');
-            if (int.TryParse(ext, out int id) && id >= 0 && id <= ushort.MaxValue)
-            {
-                texbsiIds.Add((ushort)id);
-                texbsiDataList.Add(File.ReadAllBytes(path));
-            }
-        }
-
-        IntPtr[] texbsiDatas = new IntPtr[texbsiDataList.Count];
-        int[] texbsiLens = new int[texbsiDataList.Count];
-        for (int i = 0; i < texbsiDataList.Count; i++)
-        {
-            var pin = GCHandle.Alloc(texbsiDataList[i], GCHandleType.Pinned);
-            texbsiPins.Add(pin);
-            texbsiDatas[i] = pin.AddrOfPinnedObject();
-            texbsiLens[i] = texbsiDataList[i].Length;
-        }
-
-        try
-        {
-            nativeTextureCache = RgpreBindings.CreateTextureCache(
-                paletteBytes != null ? palettePin.AddrOfPinnedObject() : IntPtr.Zero,
-                paletteBytes?.Length ?? 0,
-                texbsiIds.ToArray(), texbsiDatas, texbsiLens, texbsiDataList.Count);
-
-            cachedPaletteName = paletteName;
-            return nativeTextureCache;
-        }
-        finally
-        {
-            if (palettePin.IsAllocated) palettePin.Free();
-            foreach (var pin in texbsiPins)
-                if (pin.IsAllocated) pin.Free();
-        }
     }
 
     public static Texture2D DecodeTexture(ushort texbsiId, byte imageId, string paletteName)
     {
-        string cacheKey = texbsiId + "_" + imageId;
+        string cacheKey = paletteName + "_" + texbsiId + "_" + imageId;
         if (textureCache.TryGetValue(cacheKey, out var cachedTexture))
             return cachedTexture;
 
-        IntPtr cache = EnsureNativeCache(paletteName);
-        if (cache == IntPtr.Zero) return null;
+        string assetsDir = Game.pathManager.GetRootFolder();
 
-        IntPtr resultPtr = RgpreBindings.DecodeTexture(cache, texbsiId, imageId);
+        IntPtr resultPtr = RgpreBindings.DecodeTexture(assetsDir, texbsiId, imageId);
         if (resultPtr == IntPtr.Zero)
         {
             Debug.LogWarning("[FFI] Failed to decode texture TEXBSI." + texbsiId.ToString("D3") +

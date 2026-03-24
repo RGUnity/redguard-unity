@@ -8,21 +8,10 @@ public static class RgpreBindings
     public struct ByteBuffer
     {
         public IntPtr ptr;
-        public int length;
-        public int capacity;
+        public int len;
     }
 
-    [DllImport("rgpre", EntryPoint = "rg_parse_model_data", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ParseModelDataNative(IntPtr data, int len);
-
-    [DllImport("rgpre", EntryPoint = "rg_parse_rob_data", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ParseRobDataNative(IntPtr data, int len);
-
-    [DllImport("rgpre", EntryPoint = "rg_parse_wld_terrain_data", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ParseWldTerrainDataNative(IntPtr data, int len);
-
-    [DllImport("rgpre", EntryPoint = "rg_parse_rgm_placements", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ParseRgmPlacementsNative(IntPtr data, int len);
+    // ========== Native imports ==========
 
     [DllImport("rgpre", EntryPoint = "rg_free_buffer", CallingConvention = CallingConvention.Cdecl)]
     private static extern void FreeBufferNative(IntPtr buffer);
@@ -30,255 +19,163 @@ public static class RgpreBindings
     [DllImport("rgpre", EntryPoint = "rg_last_error", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr LastErrorNative();
 
-    [DllImport("rgpre", EntryPoint = "rg_texture_cache_create", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr CreateTextureCacheNative(
-        IntPtr palette_data, int palette_len,
-        [In] ushort[] texbsi_ids,
-        [In] IntPtr[] texbsi_datas,
-        [In] int[] texbsi_lens,
-        int texbsi_count
-    );
+    // --- Scene data (RGMD binary) ---
 
-    [DllImport("rgpre", EntryPoint = "rg_texture_cache_free", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void FreeTextureCacheNative(IntPtr cache);
+    [DllImport("rgpre", EntryPoint = "rg_parse_model_data", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ParseModelDataNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
 
-    [DllImport("rgpre", EntryPoint = "rg_convert_model_to_glb", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ConvertModelToGlbNative(IntPtr data, int len, IntPtr texture_cache);
+    [DllImport("rgpre", EntryPoint = "rg_parse_rob_data", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ParseRobDataNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
 
-    [DllImport("rgpre", EntryPoint = "rg_convert_rob_to_glb", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ConvertRobToGlbNative(IntPtr data, int len, IntPtr texture_cache);
+    [DllImport("rgpre", EntryPoint = "rg_parse_wld_terrain_data", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ParseWldTerrainDataNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
 
-    [DllImport("rgpre", EntryPoint = "rg_convert_rgm_to_glb", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ConvertRgmToGlbNative(
-        IntPtr rgm_data, int rgm_len,
-        IntPtr texture_cache,
-        [In] IntPtr[] model_names,
-        [In] IntPtr[] model_datas,
-        [In] int[] model_lens,
-        [In] byte[] model_types,
-        int model_count
-    );
+    [DllImport("rgpre", EntryPoint = "rg_parse_rgm_placements", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ParseRgmPlacementsNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
 
-    [DllImport("rgpre", EntryPoint = "rg_get_rgm_metadata", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr GetRgmMetadataNative(IntPtr data, int len);
+    // --- RGM section access ---
 
-    [DllImport("rgpre", EntryPoint = "rg_convert_wld_to_glb", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ConvertWldToGlbNative(
-        IntPtr wld_data, int wld_len,
-        IntPtr texture_cache,
-        IntPtr rgm_data, int rgm_len,
-        [In] IntPtr[] model_names,
-        [In] IntPtr[] model_datas,
-        [In] int[] model_lens,
-        [In] byte[] model_types,
-        int model_count
-    );
+    [DllImport("rgpre", EntryPoint = "rg_rgm_section_count", CallingConvention = CallingConvention.Cdecl)]
+    private static extern int RgmSectionCountNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string sectionTag);
 
-    // --- scene.rs: texture decoding ---
+    [DllImport("rgpre", EntryPoint = "rg_get_rgm_section", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr GetRgmSectionNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string sectionTag,
+        int sectionIndex);
+
+    // --- GLB export ---
+
+    [DllImport("rgpre", EntryPoint = "rg_convert_model_from_path", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ConvertModelFromPathNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir);
+
+    [DllImport("rgpre", EntryPoint = "rg_convert_rgm_from_path", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ConvertRgmFromPathNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir);
+
+    [DllImport("rgpre", EntryPoint = "rg_convert_wld_from_path", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ConvertWldFromPathNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir);
+
+    // --- Texture ---
 
     [DllImport("rgpre", EntryPoint = "rg_decode_texture", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DecodeTextureNative(IntPtr texture_cache, ushort texture_id, byte image_id);
+    private static extern IntPtr DecodeTextureNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir,
+        ushort textureId,
+        byte imageId);
 
     [DllImport("rgpre", EntryPoint = "rg_decode_texture_all_frames", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DecodeTextureAllFramesNative(IntPtr texture_cache, ushort texture_id, byte image_id);
+    private static extern IntPtr DecodeTextureAllFramesNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir,
+        ushort textureId,
+        byte imageId);
 
     [DllImport("rgpre", EntryPoint = "rg_texbsi_image_count", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int TexbsiImageCountNative(IntPtr texture_cache, ushort texture_id);
+    private static extern int TexbsiImageCountNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir,
+        ushort textureId);
 
-    // --- scene.rs: audio ---
+    // --- Audio ---
 
     [DllImport("rgpre", EntryPoint = "rg_sfx_effect_count", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int SfxEffectCountNative(IntPtr data, int len);
+    private static extern int SfxEffectCountNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
 
     [DllImport("rgpre", EntryPoint = "rg_convert_sfx_to_wav", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ConvertSfxToWavNative(IntPtr data, int len, int effect_index);
+    private static extern IntPtr ConvertSfxToWavNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        int effectIndex);
 
     [DllImport("rgpre", EntryPoint = "rg_rtx_entry_count", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int RtxEntryCountNative(IntPtr data, int len);
+    private static extern int RtxEntryCountNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
 
     [DllImport("rgpre", EntryPoint = "rg_convert_rtx_entry_to_wav", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ConvertRtxEntryToWavNative(IntPtr data, int len, int entry_index);
+    private static extern IntPtr ConvertRtxEntryToWavNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        int entryIndex);
 
-    [DllImport("rgpre", EntryPoint = "rg_rtx_metadata", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr RtxMetadataNative(IntPtr data, int len);
+    // --- GXA ---
 
-    // --- scene.rs: misc formats ---
+    [DllImport("rgpre", EntryPoint = "rg_gxa_frame_count", CallingConvention = CallingConvention.Cdecl)]
+    private static extern int GxaFrameCountNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
 
-    [DllImport("rgpre", EntryPoint = "rg_parse_palette", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ParsePaletteNative(IntPtr data, int len);
+    [DllImport("rgpre", EntryPoint = "rg_decode_gxa", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DecodeGxaNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        int frame);
 
-    [DllImport("rgpre", EntryPoint = "rg_convert_pvo_to_json", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ConvertPvoToJsonNative(IntPtr data, int len);
-
-    [DllImport("rgpre", EntryPoint = "rg_convert_cht_to_json", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ConvertChtToJsonNative(IntPtr data, int len);
+    // --- Font ---
 
     [DllImport("rgpre", EntryPoint = "rg_convert_fnt_to_ttf", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ConvertFntToTtfNative(IntPtr data, int len);
+    private static extern IntPtr ConvertFntToTtfNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
 
     // ========== Public API ==========
 
-    // --- Raw mesh parsing ---
+    // --- Scene data ---
 
-    public static IntPtr ParseModelData(IntPtr data, int len)
-    {
-        return ParseModelDataNative(data, len);
-    }
+    public static IntPtr ParseModelData(string filePath) => ParseModelDataNative(filePath);
+    public static IntPtr ParseRobData(string filePath) => ParseRobDataNative(filePath);
+    public static IntPtr ParseWldTerrainData(string filePath) => ParseWldTerrainDataNative(filePath);
+    public static IntPtr ParseRgmPlacements(string filePath) => ParseRgmPlacementsNative(filePath);
 
-    public static IntPtr ParseRobData(IntPtr data, int len)
-    {
-        return ParseRobDataNative(data, len);
-    }
+    // --- RGM sections ---
 
-    public static IntPtr ParseWldTerrainData(IntPtr data, int len)
-    {
-        return ParseWldTerrainDataNative(data, len);
-    }
+    public static int RgmSectionCount(string filePath, string sectionTag) => RgmSectionCountNative(filePath, sectionTag);
+    public static IntPtr GetRgmSection(string filePath, string sectionTag, int sectionIndex = 0) => GetRgmSectionNative(filePath, sectionTag, sectionIndex);
 
-    public static IntPtr ParseRgmPlacements(IntPtr data, int len)
-    {
-        return ParseRgmPlacementsNative(data, len);
-    }
+    // --- GLB export ---
 
-    public static IntPtr CreateTextureCache(
-        IntPtr paletteData,
-        int paletteLen,
-        ushort[] texbsiIds,
-        IntPtr[] texbsiDatas,
-        int[] texbsiLens,
-        int texbsiCount)
-    {
-        return CreateTextureCacheNative(paletteData, paletteLen, texbsiIds, texbsiDatas, texbsiLens, texbsiCount);
-    }
+    public static IntPtr ConvertModelFromPath(string filePath, string assetsDir) => ConvertModelFromPathNative(filePath, assetsDir);
+    public static IntPtr ConvertRgmFromPath(string filePath, string assetsDir) => ConvertRgmFromPathNative(filePath, assetsDir);
+    public static IntPtr ConvertWldFromPath(string filePath, string assetsDir) => ConvertWldFromPathNative(filePath, assetsDir);
 
-    public static void FreeTextureCache(IntPtr cache)
-    {
-        FreeTextureCacheNative(cache);
-    }
+    // --- Texture ---
 
-    public static IntPtr ConvertWldToGlb(
-        IntPtr wldData, int wldLen, IntPtr textureCache,
-        IntPtr rgmData, int rgmLen,
-        IntPtr[] modelNames, IntPtr[] modelDatas, int[] modelLens, byte[] modelTypes, int modelCount)
-    {
-        return ConvertWldToGlbNative(wldData, wldLen, textureCache, rgmData, rgmLen,
-            modelNames, modelDatas, modelLens, modelTypes, modelCount);
-    }
+    public static IntPtr DecodeTexture(string assetsDir, ushort textureId, byte imageId) => DecodeTextureNative(assetsDir, textureId, imageId);
+    public static IntPtr DecodeTextureAllFrames(string assetsDir, ushort textureId, byte imageId) => DecodeTextureAllFramesNative(assetsDir, textureId, imageId);
+    public static int TexbsiImageCount(string assetsDir, ushort textureId) => TexbsiImageCountNative(assetsDir, textureId);
 
-    // --- GLB conversion: single model ---
+    // --- Audio ---
 
-    public static IntPtr ConvertModelToGlb(IntPtr data, int len, IntPtr textureCache)
-    {
-        return ConvertModelToGlbNative(data, len, textureCache);
-    }
+    public static int SfxEffectCount(string filePath) => SfxEffectCountNative(filePath);
+    public static IntPtr ConvertSfxToWav(string filePath, int effectIndex) => ConvertSfxToWavNative(filePath, effectIndex);
+    public static int RtxEntryCount(string filePath) => RtxEntryCountNative(filePath);
+    public static IntPtr ConvertRtxEntryToWav(string filePath, int entryIndex) => ConvertRtxEntryToWavNative(filePath, entryIndex);
 
-    // --- GLB conversion: ROB archive ---
+    // --- GXA ---
 
-    public static IntPtr ConvertRobToGlb(IntPtr data, int len, IntPtr textureCache)
-    {
-        return ConvertRobToGlbNative(data, len, textureCache);
-    }
+    public static int GxaFrameCount(string filePath) => GxaFrameCountNative(filePath);
+    public static IntPtr DecodeGxa(string filePath, int frame) => DecodeGxaNative(filePath, frame);
 
-    // --- GLB conversion: RGM scene ---
+    // --- Font ---
 
-    public static IntPtr ConvertRgmToGlb(
-        IntPtr rgmData, int rgmLen, IntPtr textureCache,
-        IntPtr[] modelNames, IntPtr[] modelDatas, int[] modelLens, byte[] modelTypes, int modelCount)
-    {
-        return ConvertRgmToGlbNative(rgmData, rgmLen, textureCache,
-            modelNames, modelDatas, modelLens, modelTypes, modelCount);
-    }
-
-    // --- RGM metadata (JSON) ---
-
-    public static IntPtr GetRgmMetadata(IntPtr data, int len)
-    {
-        return GetRgmMetadataNative(data, len);
-    }
-
-    // --- Texture decoding ---
-
-    public static IntPtr DecodeTexture(IntPtr textureCache, ushort textureId, byte imageId)
-    {
-        return DecodeTextureNative(textureCache, textureId, imageId);
-    }
-
-    public static IntPtr DecodeTextureAllFrames(IntPtr textureCache, ushort textureId, byte imageId)
-    {
-        return DecodeTextureAllFramesNative(textureCache, textureId, imageId);
-    }
-
-    public static int TexbsiImageCount(IntPtr textureCache, ushort textureId)
-    {
-        return TexbsiImageCountNative(textureCache, textureId);
-    }
-
-    // --- Audio: SFX ---
-
-    public static int SfxEffectCount(IntPtr data, int len)
-    {
-        return SfxEffectCountNative(data, len);
-    }
-
-    public static IntPtr ConvertSfxToWav(IntPtr data, int len, int effectIndex)
-    {
-        return ConvertSfxToWavNative(data, len, effectIndex);
-    }
-
-    // --- Audio: RTX dialogue ---
-
-    public static int RtxEntryCount(IntPtr data, int len)
-    {
-        return RtxEntryCountNative(data, len);
-    }
-
-    public static IntPtr ConvertRtxEntryToWav(IntPtr data, int len, int entryIndex)
-    {
-        return ConvertRtxEntryToWavNative(data, len, entryIndex);
-    }
-
-    public static IntPtr RtxMetadata(IntPtr data, int len)
-    {
-        return RtxMetadataNative(data, len);
-    }
-
-    // --- Misc formats ---
-
-    public static IntPtr ParsePalette(IntPtr data, int len)
-    {
-        return ParsePaletteNative(data, len);
-    }
-
-    public static IntPtr ConvertPvoToJson(IntPtr data, int len)
-    {
-        return ConvertPvoToJsonNative(data, len);
-    }
-
-    public static IntPtr ConvertChtToJson(IntPtr data, int len)
-    {
-        return ConvertChtToJsonNative(data, len);
-    }
-
-    public static IntPtr ConvertFntToTtf(IntPtr data, int len)
-    {
-        return ConvertFntToTtfNative(data, len);
-    }
+    public static IntPtr ConvertFntToTtf(string filePath) => ConvertFntToTtfNative(filePath);
 
     // ========== Utilities ==========
 
     public static byte[] ExtractBytesAndFree(IntPtr bufferPtr)
     {
         if (bufferPtr == IntPtr.Zero)
-        {
             return Array.Empty<byte>();
-        }
 
         ByteBuffer buffer = Marshal.PtrToStructure<ByteBuffer>(bufferPtr);
-        byte[] managed = buffer.length > 0 ? new byte[buffer.length] : Array.Empty<byte>();
-        if (buffer.length > 0 && buffer.ptr != IntPtr.Zero)
-        {
-            Marshal.Copy(buffer.ptr, managed, 0, buffer.length);
-        }
+        byte[] managed = buffer.len > 0 ? new byte[buffer.len] : Array.Empty<byte>();
+        if (buffer.len > 0 && buffer.ptr != IntPtr.Zero)
+            Marshal.Copy(buffer.ptr, managed, 0, buffer.len);
 
         FreeBufferNative(bufferPtr);
         return managed;
@@ -288,9 +185,7 @@ public static class RgpreBindings
     {
         IntPtr errPtr = LastErrorNative();
         if (errPtr == IntPtr.Zero)
-        {
             return string.Empty;
-        }
 
         byte[] bytes = ExtractBytesAndFree(errPtr);
         return bytes.Length == 0 ? string.Empty : Encoding.UTF8.GetString(bytes);
