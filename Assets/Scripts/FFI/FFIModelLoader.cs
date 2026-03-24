@@ -84,8 +84,7 @@ public static class FFIModelLoader
                 return new List<GameObject>();
             }
 
-            byte[] rgmdBytes = RgpreBindings.ExtractBytesAndFree(resultPtr);
-            var segments = RgmdDeserializer.DeserializeRobWithMaterials(rgmdBytes, out _, out _);
+            var segments = RgmdDeserializer.DeserializeRobWithMaterials(resultPtr, out _, out _);
             cachedSegments = new List<(string, Mesh, RgmdDeserializer.SubmeshMaterialInfo[], int)>(segments.Count);
             foreach (var seg in segments)
             {
@@ -125,8 +124,7 @@ public static class FFIModelLoader
                 IntPtr resultPtr = RgpreBindings.ParseRobData(robPath);
                 if (resultPtr != IntPtr.Zero)
                 {
-                    byte[] rgmdBytes = RgpreBindings.ExtractBytesAndFree(resultPtr);
-                    var segments = RgmdDeserializer.DeserializeRobWithMaterials(rgmdBytes, out _, out _);
+                    var segments = RgmdDeserializer.DeserializeRobWithMaterials(resultPtr, out _, out _);
                     cachedSegments = new List<(string, Mesh, RgmdDeserializer.SubmeshMaterialInfo[], int)>(segments.Count);
                     foreach (var seg in segments)
                     {
@@ -161,8 +159,7 @@ public static class FFIModelLoader
             IntPtr resultPtr = RgpreBindings.ParseRgmPlacements(rgmPath);
             if (resultPtr != IntPtr.Zero)
             {
-                byte[] rgplBytes = RgpreBindings.ExtractBytesAndFree(resultPtr);
-                var rgpl = RgplDeserializer.Deserialize(rgplBytes);
+                var rgpl = RgplDeserializer.Deserialize(resultPtr);
 
                 int skippedEmpty = 0;
                 int skippedNoMesh = 0;
@@ -256,8 +253,7 @@ public static class FFIModelLoader
                 IntPtr resultPtr = RgpreBindings.ParseWldTerrainData(wldPath);
                 if (resultPtr != IntPtr.Zero)
                 {
-                    byte[] rgmdBytes = RgpreBindings.ExtractBytesAndFree(resultPtr);
-                    var (mesh, matInfos, _) = RgmdDeserializer.DeserializeModel(rgmdBytes, "Terrain");
+                    var (mesh, matInfos, _) = RgmdDeserializer.DeserializeModel(resultPtr, "Terrain");
                     if (mesh != null)
                     {
                         List<Material> materials = CreateMaterials(matInfos, paletteName);
@@ -308,8 +304,7 @@ public static class FFIModelLoader
                 continue;
             }
 
-            byte[] rgmdBytes = RgpreBindings.ExtractBytesAndFree(resultPtr);
-            var (mesh, matInfos, frameCount) = RgmdDeserializer.DeserializeModel(rgmdBytes, modelName);
+            var (mesh, matInfos, frameCount) = RgmdDeserializer.DeserializeModel(resultPtr, modelName);
             if (mesh != null)
             {
                 var result = (mesh, matInfos, frameCount);
@@ -418,8 +413,7 @@ public static class FFIModelLoader
                 return new GameObject(displayName);
             }
 
-            byte[] rgmdBytes = RgpreBindings.ExtractBytesAndFree(resultPtr);
-            var (mesh, materialInfos, frameCount) = RgmdDeserializer.DeserializeModel(rgmdBytes, displayName);
+            var (mesh, materialInfos, frameCount) = RgmdDeserializer.DeserializeModel(resultPtr, displayName);
             if (mesh == null)
             {
                 return new GameObject(displayName);

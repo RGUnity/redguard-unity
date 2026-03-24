@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public static class FFITextureLoader
@@ -34,18 +35,34 @@ public static class FFITextureLoader
             return null;
         }
 
-        byte[] decoded = RgpreBindings.ExtractBytesAndFree(resultPtr);
-        if (decoded.Length < 16) return null;
+        RgpreBindings.NativeBuffer buffer = RgpreBindings.ReadBuffer(resultPtr);
+        byte[] rgbaData;
+        int width;
+        int height;
+        try
+        {
+            int headerSize = Marshal.SizeOf<RgpreBindings.TextureHeader>();
+            if (buffer.data == IntPtr.Zero || buffer.len < headerSize)
+            {
+                return null;
+            }
 
-        int width = BitConverter.ToInt32(decoded, 0);
-        int height = BitConverter.ToInt32(decoded, 4);
-        int rgbaSize = BitConverter.ToInt32(decoded, 12);
+            var header = Marshal.PtrToStructure<RgpreBindings.TextureHeader>(buffer.data);
+            width = header.width;
+            height = header.height;
+            int rgbaSize = header.rgbaSize;
+            if (width <= 0 || height <= 0 || rgbaSize <= 0 || buffer.len < headerSize + rgbaSize)
+            {
+                return null;
+            }
 
-        if (width <= 0 || height <= 0 || rgbaSize <= 0 || decoded.Length < 16 + rgbaSize)
-            return null;
-
-        byte[] rgbaData = new byte[rgbaSize];
-        Buffer.BlockCopy(decoded, 16, rgbaData, 0, rgbaSize);
+            rgbaData = new byte[rgbaSize];
+            Marshal.Copy(buffer.data + headerSize, rgbaData, 0, rgbaSize);
+        }
+        finally
+        {
+            RgpreBindings.FreeBuffer(buffer.handle);
+        }
 
         var texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
         {

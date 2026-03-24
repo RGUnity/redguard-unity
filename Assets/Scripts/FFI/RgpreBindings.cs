@@ -11,6 +11,116 @@ public static class RgpreBindings
         public int len;
     }
 
+    public struct NativeBuffer
+    {
+        public IntPtr data;
+        public int len;
+        public IntPtr handle;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct TextureHeader
+    {
+        public int width;
+        public int height;
+        public int frameCount;
+        public int rgbaSize;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RgmdHeader
+    {
+        public int magic;
+        public int version;
+        public int submeshCount;
+        public int frameCount;
+        public int totalVertexCount;
+        public int totalIndexCount;
+        public uint radius;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RgmdSubmeshHeader
+    {
+        public byte materialType;
+        public byte colorIndex;
+        public ushort textureId;
+        public byte imageId;
+        private byte _pad0;
+        private byte _pad1;
+        private byte _pad2;
+        public int vertexCount;
+        public int indexCount;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RgmdVertex
+    {
+        public float px;
+        public float py;
+        public float pz;
+        public float nx;
+        public float ny;
+        public float nz;
+        public float u;
+        public float v;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RobHeader
+    {
+        public int segmentCount;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RobSegmentHeader
+    {
+        public long segmentName;
+        public byte hasModel;
+        private byte _pad0;
+        private byte _pad1;
+        private byte _pad2;
+        public int modelDataSize;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RgplHeader
+    {
+        public int magic;
+        public int placementCount;
+        public int lightCount;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RgplPlacement
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] modelName;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] sourceId;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public float[] transform;
+        public ushort textureId;
+        public byte imageId;
+        public byte objectType;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RgplLight
+    {
+        public long name0;
+        public long name1;
+        public long name2;
+        public long name3;
+        public float r;
+        public float g;
+        public float b;
+        public float posX;
+        public float posY;
+        public float posZ;
+        public float range;
+    }
+
     // ========== Native imports ==========
 
     [DllImport("rgpre", EntryPoint = "rg_free_buffer", CallingConvention = CallingConvention.Cdecl)]
@@ -179,6 +289,25 @@ public static class RgpreBindings
 
         FreeBufferNative(bufferPtr);
         return managed;
+    }
+
+    public static NativeBuffer ReadBuffer(IntPtr bufferPtr)
+    {
+        if (bufferPtr == IntPtr.Zero)
+        {
+            return new NativeBuffer { data = IntPtr.Zero, len = 0, handle = IntPtr.Zero };
+        }
+
+        ByteBuffer buffer = Marshal.PtrToStructure<ByteBuffer>(bufferPtr);
+        return new NativeBuffer { data = buffer.ptr, len = buffer.len, handle = bufferPtr };
+    }
+
+    public static void FreeBuffer(IntPtr handle)
+    {
+        if (handle != IntPtr.Zero)
+        {
+            FreeBufferNative(handle);
+        }
     }
 
     public static string GetLastErrorMessage()
