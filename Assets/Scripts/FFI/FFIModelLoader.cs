@@ -115,8 +115,6 @@ public static class FFIModelLoader
         string mapsFolder = Game.pathManager.GetMapsFolder();
         string assetsDir = Game.pathManager.GetRootFolder();
 
-        // --- ROB ---
-        var swRob = Stopwatch.StartNew();
         string robPath = Path.Combine(artFolder, areaName + ".ROB");
         var meshDict = new Dictionary<string, (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)>(StringComparer.OrdinalIgnoreCase);
 
@@ -151,30 +149,20 @@ public static class FFIModelLoader
                 }
             }
         }
-        swRob.Stop();
 
-        // --- RGM sections + scripted objects ---
-        var swRgm = Stopwatch.StartNew();
         string rgmPath = Path.Combine(mapsFolder, areaName + ".RGM");
         if (File.Exists(rgmPath))
         {
-            // Load RGM sections via FFI for runtime use (anim, script, scripted objects)
             LoadRgmSections(rgmPath, paletteName, meshDict, objects);
         }
-        swRgm.Stop();
 
-        // --- Placements ---
-        var swPlacements = Stopwatch.StartNew();
-        long msParseRgpl = 0, msModelLoad = 0, msMaterials = 0, msGameObjects = 0, msFlatSprites = 0;
         if (File.Exists(rgmPath))
         {
-            var swPhase = Stopwatch.StartNew();
             IntPtr resultPtr = RgpreBindings.ParseRgmPlacements(rgmPath);
             if (resultPtr != IntPtr.Zero)
             {
                 byte[] rgplBytes = RgpreBindings.ExtractBytesAndFree(resultPtr);
                 var rgpl = RgplDeserializer.Deserialize(rgplBytes);
-                msParseRgpl = swPhase.ElapsedMilliseconds;
 
                 int skippedEmpty = 0;
                 int skippedNoMesh = 0;
@@ -188,9 +176,7 @@ public static class FFIModelLoader
                     // Flat sprite — create a textured quad
                     if (placement.textureId > 0 && string.IsNullOrEmpty(modelName))
                     {
-                        swPhase.Restart();
                         GameObject quad = CreateFlatSprite(placement, paletteName);
-                        msFlatSprites += swPhase.ElapsedMilliseconds;
                         if (quad != null)
                         {
                             objects.Add(quad);
@@ -213,7 +199,6 @@ public static class FFIModelLoader
                     RgmdDeserializer.SubmeshMaterialInfo[] matInfos = null;
                     int frameCount = 0;
 
-                    swPhase.Restart();
                     if (meshDict.TryGetValue(modelName, out var cached))
                     {
                         mesh = cached.mesh;
@@ -231,7 +216,6 @@ public static class FFIModelLoader
                             meshDict[modelName] = loaded.Value;
                         }
                     }
-                    msModelLoad += swPhase.ElapsedMilliseconds;
 
                     if (mesh == null)
                     {
@@ -240,20 +224,14 @@ public static class FFIModelLoader
                         continue;
                     }
 
-                    swPhase.Restart();
                     List<Material> materials = CreateMaterials(matInfos, paletteName);
-                    msMaterials += swPhase.ElapsedMilliseconds;
-
-                    swPhase.Restart();
                     GameObject obj = CreateGameObject(modelName, mesh, materials, frameCount);
                     ApplyMatrix(obj.transform, placement.transform);
                     objects.Add(obj);
-                    msGameObjects += swPhase.ElapsedMilliseconds;
                     placed++;
                 }
 
-                Debug.Log($"[FFI LoadArea] RGPL: {rgpl.placements.Count} placements, {rgpl.lights.Count} lights. Placed: {placed}, Skipped (empty name): {skippedEmpty}, Skipped (no mesh): {skippedNoMesh}");
-                Debug.Log($"[FFI LoadArea] Placement breakdown: ParseRGPL={msParseRgpl}ms, ModelLoad={msModelLoad}ms, Materials={msMaterials}ms, GameObjects={msGameObjects}ms, FlatSprites={msFlatSprites}ms");
+                Debug.Log($"[FFI LoadArea] {rgpl.placements.Count} placements, {rgpl.lights.Count} lights. Placed: {placed}, Skipped (empty): {skippedEmpty}, Skipped (no mesh): {skippedNoMesh}");
                 if (missingModels.Count > 0)
                     Debug.Log($"[FFI LoadArea] Missing models: {string.Join(", ", missingModels)}");
 
@@ -269,10 +247,7 @@ public static class FFIModelLoader
                 }
             }
         }
-        swPlacements.Stop();
 
-        // --- WLD terrain ---
-        var swWld = Stopwatch.StartNew();
         if (!string.IsNullOrEmpty(wldName))
         {
             string wldPath = Path.Combine(mapsFolder, wldName + ".WLD");
@@ -306,10 +281,8 @@ public static class FFIModelLoader
                 }
             }
         }
-        swWld.Stop();
         swTotal.Stop();
-
-        Debug.Log($"[FFI LoadArea] Timing: ROB={swRob.ElapsedMilliseconds}ms, RGM sections={swRgm.ElapsedMilliseconds}ms, Placements={swPlacements.ElapsedMilliseconds}ms, WLD={swWld.ElapsedMilliseconds}ms, Total={swTotal.ElapsedMilliseconds}ms");
+        Debug.Log($"[FFI LoadArea] Total={swTotal.ElapsedMilliseconds}ms");
 
         return objects;
     }
