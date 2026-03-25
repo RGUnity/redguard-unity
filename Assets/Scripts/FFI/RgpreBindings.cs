@@ -319,4 +319,25 @@ public static class RgpreBindings
         byte[] bytes = ExtractBytesAndFree(errPtr);
         return bytes.Length == 0 ? string.Empty : Encoding.UTF8.GetString(bytes);
     }
+
+    // ========== Shared deserialization helpers ==========
+
+    /// <summary>
+    /// Validates that <paramref name="bytesNeeded"/> bytes can be read from <paramref name="ptr"/>
+    /// without exceeding <paramref name="end"/>. Throws on failure.
+    /// </summary>
+    public static void EnsureReadable(IntPtr ptr, int bytesNeeded, IntPtr end, string label)
+    {
+        if (bytesNeeded < 0)
+        {
+            throw new System.InvalidOperationException($"Negative byte count for {label}: {bytesNeeded}.");
+        }
+
+        long current = ptr.ToInt64();
+        long final_ = end.ToInt64();
+        if (current < 0 || final_ < current || current + bytesNeeded > final_)
+        {
+            throw new System.InvalidOperationException($"Unexpected end of data while reading {label}.");
+        }
+    }
 }

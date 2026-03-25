@@ -8,7 +8,7 @@ public static class WorldLoader
     struct WorldLoadRequest
     {
         public bool loadRequested;
-        public FFIWorldStore.worldData worldData;
+        public FFIWorldStore.WorldData worldData;
         public int playerSpawnLocation;
         public int playerSpawnOrientation;
     }
@@ -71,7 +71,7 @@ public static class WorldLoader
         }
         return false;
     }
-    public static void LoadWorld(FFIWorldStore.worldData worldData, int playerSpawnLocation, int playerSpawnOrientation)
+    public static void LoadWorld(FFIWorldStore.WorldData worldData, int playerSpawnLocation, int playerSpawnOrientation)
     {
         string RGM;
         string COL;
@@ -108,7 +108,7 @@ public static class WorldLoader
         for(int i = 0; i < WorldObjects[RGM].Count;i++)
         {
             
-            if (FFIModelLoader.scriptedObjects.TryGetValue(WorldObjects[RGM][i], out RGScriptedObject scriptedObject))
+            if (FFIModelLoader.ScriptedObjects.TryGetValue(WorldObjects[RGM][i], out RGScriptedObject scriptedObject))
             {
                 scriptedObject.EnableScripting();
             }

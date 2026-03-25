@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public static class FFIGxaLoader
@@ -31,60 +31,60 @@ public static class FFIGxaLoader
             return null;
         }
 
-        byte[] decoded = RgpreBindings.ExtractBytesAndFree(decodedPtr);
-        if (decoded.Length < 16)
+        RgpreBindings.NativeBuffer buffer = RgpreBindings.ReadBuffer(decodedPtr);
+        try
         {
-            return null;
+            int headerSize = Marshal.SizeOf<RgpreBindings.TextureHeader>();
+            if (buffer.data == IntPtr.Zero || buffer.len < headerSize)
+            {
+                return null;
+            }
+
+            var header = Marshal.PtrToStructure<RgpreBindings.TextureHeader>(buffer.data);
+            if (header.width <= 0 || header.height <= 0 || header.rgbaSize <= 0 || buffer.len < headerSize + header.rgbaSize)
+            {
+                return null;
+            }
+
+            byte[] rgba = new byte[header.rgbaSize];
+            Marshal.Copy(buffer.data + headerSize, rgba, 0, header.rgbaSize);
+
+            var texture = new Texture2D(header.width, header.height, TextureFormat.RGBA32, false)
+            {
+                name = "GXA_" + upperName + "_" + frame,
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp
+            };
+            texture.LoadRawTextureData(rgba);
+            texture.Apply();
+
+            var material = new Material(GetShader());
+            material.mainTexture = texture;
+            materialCache[key] = material;
+            return material;
         }
-
-        int width = BitConverter.ToInt32(decoded, 0);
-        int height = BitConverter.ToInt32(decoded, 4);
-        int rgbaSize = BitConverter.ToInt32(decoded, 12);
-        if (width <= 0 || height <= 0 || rgbaSize <= 0 || decoded.Length < 16 + rgbaSize)
+        finally
         {
-            return null;
+            RgpreBindings.FreeBuffer(buffer.handle);
         }
-
-        byte[] rgba = new byte[rgbaSize];
-        Buffer.BlockCopy(decoded, 16, rgba, 0, rgbaSize);
-
-        var texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
-        {
-            name = "GXA_" + upperName + "_" + frame,
-            filterMode = FilterMode.Point,
-            wrapMode = TextureWrapMode.Clamp
-        };
-        texture.LoadRawTextureData(rgba);
-        texture.Apply();
-
-        var material = new Material(GetShader());
-        material.mainTexture = texture;
-        materialCache[key] = material;
-        return material;
     }
 
     public static void ClearCache()
     {
+        foreach (var mat in materialCache.Values)
+        {
+            if (mat != null)
+            {
+                if (mat.mainTexture != null)
+                    UnityEngine.Object.Destroy(mat.mainTexture);
+                UnityEngine.Object.Destroy(mat);
+            }
+        }
         materialCache.Clear();
     }
 
     private static string ResolveGxaPath(string gxaName)
-    {
-        string systemFolder = Game.pathManager.GetSystemFolder();
-        string uppercase = Path.Combine(systemFolder, gxaName + ".GXA");
-        if (File.Exists(uppercase))
-        {
-            return uppercase;
-        }
-
-        string lowercase = Path.Combine(systemFolder, gxaName.ToLowerInvariant() + ".gxa");
-        if (File.Exists(lowercase))
-        {
-            return lowercase;
-        }
-
-        return null;
-    }
+        => FFIPathUtils.ResolveFile(Game.pathManager.GetSystemFolder(), gxaName, ".GXA");
 
     private static Shader GetShader()
     {

@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using UnityEngine;
 
 public static class FFISoundStore
 {
+    private const int WavMinHeaderSize = 44;
+    private const float Pcm8Scale = 128f;
+    private const float Pcm16Scale = 32768f;
+
     public class RTXEntry
     {
         public string subtitle;
@@ -18,29 +21,12 @@ public static class FFISoundStore
         }
     }
 
-    [Serializable]
-    private class RtxMetadataRoot
-    {
-        public List<RtxMetadataEntry> entries;
-        public List<RtxMetadataEntry> rtx_entries;
-        public List<RtxMetadataEntry> subtitles;
-    }
-
-    [Serializable]
-    private class RtxMetadataEntry
-    {
-        public int id;
-        public int index;
-        public string subtitle;
-        public string text;
-    }
-
-    public static List<AudioClip> SFXList { get; } = new List<AudioClip>();
-    public static Dictionary<int, RTXEntry> RTXDict { get; } = new Dictionary<int, RTXEntry>();
+    public static List<AudioClip> SfxClips { get; } = new List<AudioClip>();
+    public static Dictionary<int, RTXEntry> RtxEntries { get; } = new Dictionary<int, RTXEntry>();
 
     public static RTXEntry GetRTX(int id)
     {
-        if (RTXDict.TryGetValue(id, out RTXEntry entry))
+        if (RtxEntries.TryGetValue(id, out RTXEntry entry))
         {
             return entry;
         }
@@ -50,77 +36,31 @@ public static class FFISoundStore
 
     public static AudioClip GetSFX(int id)
     {
-        if (id >= 0 && id < SFXList.Count)
+        if (id >= 0 && id < SfxClips.Count)
         {
-            return SFXList[id];
+            return SfxClips[id];
         }
 
         throw new IndexOutOfRangeException("SFX id not loaded: " + id);
     }
 
+    // TODO: RTX loading disabled — each entry currently re-parses the full file, causing a hang.
+    // When re-enabled, use path-based APIs:
+    // - RgpreBindings.RtxEntryCount(path)
+    // - RgpreBindings.ConvertRtxEntryToWav(path, entryIndex)
     public static void LoadRTX(string rtxName)
     {
-        // TODO: RTX loading disabled — each entry currently re-parses the full file, causing a hang.
-        // When re-enabled, use path-based APIs:
-        // - RgpreBindings.RtxEntryCount(path)
-        // - RgpreBindings.RtxMetadata(path)
-        // - RgpreBindings.ConvertRtxEntryToWav(path, entryIndex)
         Debug.Log("[FFI] RTX loading skipped (not yet implemented with cached FFI)");
-        return;
-
-        RTXDict.Clear();
-
-        string rootFolder = Game.pathManager.GetRootFolder();
-        string uppercasePath = Path.Combine(rootFolder, rtxName + ".RTX");
-        string lowercasePath = Path.Combine(rootFolder, rtxName.ToLowerInvariant() + ".rtx");
-        string path = File.Exists(uppercasePath) ? uppercasePath : lowercasePath;
-
-        if (!File.Exists(path))
-        {
-            Debug.LogWarning("[FFI] RTX file not found: " + rtxName);
-            return;
-        }
-
-        int count = RgpreBindings.RtxEntryCount(path);
-        Dictionary<int, RtxMetadataEntry> metadataByIndex = GetRtxMetadataByIndex(path);
-
-        for (int entryIndex = 0; entryIndex < count; entryIndex++)
-        {
-            IntPtr wavPtr = RgpreBindings.ConvertRtxEntryToWav(path, entryIndex);
-            AudioClip clip = null;
-            if (wavPtr != IntPtr.Zero)
-            {
-                byte[] wavBytes = RgpreBindings.ExtractBytesAndFree(wavPtr);
-                clip = WavToAudioClip(wavBytes, "RTX_" + entryIndex);
-            }
-
-            string subtitle = string.Empty;
-            int metadataId = 0;
-            if (metadataByIndex.TryGetValue(entryIndex, out RtxMetadataEntry metadata))
-            {
-                subtitle = !string.IsNullOrEmpty(metadata.subtitle) ? metadata.subtitle : (metadata.text ?? string.Empty);
-                metadataId = metadata.id;
-            }
-
-            RTXEntry rtxEntry = new RTXEntry(subtitle, clip);
-            RTXDict[entryIndex] = rtxEntry;
-            if (metadataId != 0)
-            {
-                RTXDict[metadataId] = rtxEntry;
-            }
-        }
     }
 
     public static void LoadSFX(string sfxName)
     {
-        SFXList.Clear();
+        SfxClips.Clear();
 
         string soundFolder = Game.pathManager.GetSoundFolder();
-        string uppercasePath = Path.Combine(soundFolder, sfxName + ".SFX");
-        string lowercasePath = Path.Combine(soundFolder, sfxName.ToLowerInvariant() + ".sfx");
-        string path = File.Exists(uppercasePath) ? uppercasePath : lowercasePath;
+        string path = FFIPathUtils.ResolveFile(soundFolder, sfxName, ".SFX");
 
-        if (!File.Exists(path))
+        if (string.IsNullOrEmpty(path) || !File.Exists(path))
         {
             Debug.LogWarning("[FFI] SFX file not found: " + sfxName);
             return;
@@ -132,19 +72,13 @@ public static class FFISoundStore
             IntPtr wavPtr = RgpreBindings.ConvertSfxToWav(path, effectIndex);
             if (wavPtr == IntPtr.Zero)
             {
-                SFXList.Add(null);
+                SfxClips.Add(null);
                 continue;
             }
 
             byte[] wavBytes = RgpreBindings.ExtractBytesAndFree(wavPtr);
-            SFXList.Add(WavToAudioClip(wavBytes, "SFX_" + effectIndex));
+            SfxClips.Add(WavToAudioClip(wavBytes, "SFX_" + effectIndex));
         }
-    }
-
-    private static Dictionary<int, RtxMetadataEntry> GetRtxMetadataByIndex(string filePath)
-    {
-        // TODO: rg_rtx_metadata was removed from DLL. Re-enable when RTX cache API is available.
-        return new Dictionary<int, RtxMetadataEntry>();
     }
 
     private static AudioClip WavToAudioClip(byte[] wavBytes, string clipName)
@@ -184,7 +118,7 @@ public static class FFISoundStore
         bitsPerSample = 0;
         pcmData = null;
 
-        if (wavBytes == null || wavBytes.Length < 44)
+        if (wavBytes == null || wavBytes.Length < WavMinHeaderSize)
         {
             return false;
         }
@@ -235,7 +169,7 @@ public static class FFISoundStore
         float[] output = new float[pcm.Length];
         for (int i = 0; i < pcm.Length; i++)
         {
-            output[i] = (pcm[i] - 128f) / 128f;
+            output[i] = (pcm[i] - Pcm8Scale) / Pcm8Scale;
         }
 
         return output;
@@ -248,7 +182,7 @@ public static class FFISoundStore
         for (int i = 0; i < count; i++)
         {
             short value = BitConverter.ToInt16(pcm, i * 2);
-            output[i] = value / 32768f;
+            output[i] = value / Pcm16Scale;
         }
 
         return output;

@@ -15,6 +15,11 @@ public static class FFITextureLoader
 
     public static void ClearCache()
     {
+        foreach (var tex in textureCache.Values)
+        {
+            if (tex != null)
+                UnityEngine.Object.Destroy(tex);
+        }
         textureCache.Clear();
         paletteCache.Clear();
     }
@@ -119,13 +124,5 @@ public static class FFITextureLoader
     }
 
     private static string ResolvePalettePath(string artFolder, string paletteName)
-    {
-        string uppercasePath = Path.Combine(artFolder, paletteName + ".COL");
-        if (File.Exists(uppercasePath)) return uppercasePath;
-
-        string lowercasePath = Path.Combine(artFolder, paletteName.ToLowerInvariant() + ".col");
-        if (File.Exists(lowercasePath)) return lowercasePath;
-
-        return null;
-    }
+        => FFIPathUtils.ResolveFile(artFolder, paletteName, ".COL");
 }

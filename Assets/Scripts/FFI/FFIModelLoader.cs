@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using UnityEngine;
 using RGFileImport;
 using Debug = UnityEngine.Debug;
@@ -10,7 +9,7 @@ using Debug = UnityEngine.Debug;
 public static class FFIModelLoader
 {
     private static Shader defaultShader;
-    public static Dictionary<uint, RGScriptedObject> scriptedObjects = new Dictionary<uint, RGScriptedObject>();
+    public static Dictionary<uint, RGScriptedObject> ScriptedObjects = new Dictionary<uint, RGScriptedObject>();
     public static RGRGMFile CurrentRgmData { get; private set; } = new RGRGMFile();
 
     // Global caches — persist across LoadArea/LoadModel/TryGetMeshData calls
@@ -21,37 +20,36 @@ public static class FFIModelLoader
         = new Dictionary<string, List<(string, Mesh, RgmdDeserializer.SubmeshMaterialInfo[], int)>>(StringComparer.OrdinalIgnoreCase);
 
     private static readonly Dictionary<string, Material> materialCache
-        = new Dictionary<string, Material>();
+        = new Dictionary<string, Material>(StringComparer.OrdinalIgnoreCase);
 
     public static void ClearCache()
     {
+        foreach (var entry in meshCache.Values)
+        {
+            if (entry.mesh != null)
+                UnityEngine.Object.Destroy(entry.mesh);
+        }
         meshCache.Clear();
+
+        foreach (var segments in robCache.Values)
+        {
+            foreach (var seg in segments)
+            {
+                if (seg.mesh != null)
+                    UnityEngine.Object.Destroy(seg.mesh);
+            }
+        }
         robCache.Clear();
+
+        foreach (var mat in materialCache.Values)
+        {
+            if (mat != null)
+                UnityEngine.Object.Destroy(mat);
+        }
         materialCache.Clear();
+
         FFITextureLoader.ClearCache();
         FFIGxaLoader.ClearCache();
-    }
-
-    [Serializable]
-    private class RgmMetadataRoot
-    {
-        public List<MpobMetadataEntry> mpob_objects;
-    }
-
-    [Serializable]
-    private class MpobMetadataEntry
-    {
-        public uint id;
-        public string script_name;
-        public string model_name;
-        public string object_type;
-        public float[] position;
-        public float[] angles;
-        public int radius;
-        public int intensity;
-        public int red;
-        public int green;
-        public int blue;
     }
 
     public static GameObject Load3D(string modelName, string colName)
@@ -67,7 +65,6 @@ public static class FFIModelLoader
     public static List<GameObject> LoadROB(string robName, string colName)
     {
         string artFolder = Game.pathManager.GetArtFolder();
-        string assetsDir = Game.pathManager.GetRootFolder();
         string robPath = Path.Combine(artFolder, robName + ".ROB");
         if (!File.Exists(robPath))
         {
@@ -75,23 +72,11 @@ public static class FFIModelLoader
             return new List<GameObject>();
         }
 
-        if (!robCache.TryGetValue(robName, out var cachedSegments))
+        var cachedSegments = EnsureRobCached(robName, robPath);
+        if (cachedSegments == null)
         {
-            IntPtr resultPtr = RgpreBindings.ParseRobData(robPath);
-            if (resultPtr == IntPtr.Zero)
-            {
-                Debug.LogError("[FFI] Failed to parse ROB " + robName + ": " + RgpreBindings.GetLastErrorMessage());
-                return new List<GameObject>();
-            }
-
-            var segments = RgmdDeserializer.DeserializeRobWithMaterials(resultPtr, out _, out _);
-            cachedSegments = new List<(string, Mesh, RgmdDeserializer.SubmeshMaterialInfo[], int)>(segments.Count);
-            foreach (var seg in segments)
-            {
-                int fc = seg.mesh != null ? seg.mesh.blendShapeCount : 0;
-                cachedSegments.Add((seg.name, seg.mesh, seg.materials, fc));
-            }
-            robCache[robName] = cachedSegments;
+            Debug.LogError("[FFI] Failed to parse ROB " + robName + ": " + RgpreBindings.GetLastErrorMessage());
+            return new List<GameObject>();
         }
 
         var objects = new List<GameObject>(cachedSegments.Count);
@@ -104,37 +89,48 @@ public static class FFIModelLoader
         return objects;
     }
 
+    /// <summary>
+    /// Parses and caches ROB segments. Returns null only if the native parse fails.
+    /// </summary>
+    private static List<(string name, Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)> EnsureRobCached(string robName, string robPath)
+    {
+        if (robCache.TryGetValue(robName, out var cachedSegments))
+        {
+            return cachedSegments;
+        }
+
+        IntPtr resultPtr = RgpreBindings.ParseRobData(robPath);
+        if (resultPtr == IntPtr.Zero)
+        {
+            return null;
+        }
+
+        var segments = RgmdDeserializer.DeserializeRobWithMaterials(resultPtr, out _, out _);
+        cachedSegments = new List<(string, Mesh, RgmdDeserializer.SubmeshMaterialInfo[], int)>(segments.Count);
+        foreach (var seg in segments)
+        {
+            int fc = seg.mesh != null ? seg.mesh.blendShapeCount : 0;
+            cachedSegments.Add((seg.name, seg.mesh, seg.materials, fc));
+        }
+        robCache[robName] = cachedSegments;
+        return cachedSegments;
+    }
+
     public static List<GameObject> LoadArea(string areaName, string paletteName, string wldName)
     {
         var swTotal = Stopwatch.StartNew();
         var objects = new List<GameObject>();
-        scriptedObjects = new Dictionary<uint, RGScriptedObject>();
+        ScriptedObjects = new Dictionary<uint, RGScriptedObject>();
         CurrentRgmData = new RGRGMFile();
         string artFolder = Game.pathManager.GetArtFolder();
         string mapsFolder = Game.pathManager.GetMapsFolder();
-        string assetsDir = Game.pathManager.GetRootFolder();
 
         string robPath = Path.Combine(artFolder, areaName + ".ROB");
         var meshDict = new Dictionary<string, (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)>(StringComparer.OrdinalIgnoreCase);
 
         if (File.Exists(robPath))
         {
-            if (!robCache.TryGetValue(areaName, out var cachedSegments))
-            {
-                IntPtr resultPtr = RgpreBindings.ParseRobData(robPath);
-                if (resultPtr != IntPtr.Zero)
-                {
-                    var segments = RgmdDeserializer.DeserializeRobWithMaterials(resultPtr, out _, out _);
-                    cachedSegments = new List<(string, Mesh, RgmdDeserializer.SubmeshMaterialInfo[], int)>(segments.Count);
-                    foreach (var seg in segments)
-                    {
-                        int fc = seg.mesh != null ? seg.mesh.blendShapeCount : 0;
-                        cachedSegments.Add((seg.name, seg.mesh, seg.materials, fc));
-                    }
-                    robCache[areaName] = cachedSegments;
-                }
-            }
-
+            var cachedSegments = EnsureRobCached(areaName, robPath);
             if (cachedSegments != null)
             {
                 foreach (var seg in cachedSegments)
@@ -156,131 +152,158 @@ public static class FFIModelLoader
 
         if (File.Exists(rgmPath))
         {
-            IntPtr resultPtr = RgpreBindings.ParseRgmPlacements(rgmPath);
-            if (resultPtr != IntPtr.Zero)
-            {
-                var rgpl = RgplDeserializer.Deserialize(resultPtr);
-
-                int skippedEmpty = 0;
-                int skippedNoMesh = 0;
-                int placed = 0;
-                var missingModels = new HashSet<string>();
-
-                foreach (var placement in rgpl.placements)
-                {
-                    string modelName = placement.modelName;
-
-                    // Flat sprite — create a textured quad
-                    if (placement.textureId > 0 && string.IsNullOrEmpty(modelName))
-                    {
-                        GameObject quad = CreateFlatSprite(placement, paletteName);
-                        if (quad != null)
-                        {
-                            objects.Add(quad);
-                            placed++;
-                        }
-                        else
-                        {
-                            skippedNoMesh++;
-                        }
-                        continue;
-                    }
-
-                    if (string.IsNullOrEmpty(modelName))
-                    {
-                        skippedEmpty++;
-                        continue;
-                    }
-
-                    Mesh mesh = null;
-                    RgmdDeserializer.SubmeshMaterialInfo[] matInfos = null;
-                    int frameCount = 0;
-
-                    if (meshDict.TryGetValue(modelName, out var cached))
-                    {
-                        mesh = cached.mesh;
-                        matInfos = cached.materials;
-                        frameCount = cached.frameCount;
-                    }
-                    else
-                    {
-                        var loaded = TryLoadModelFile(modelName);
-                        if (loaded.HasValue)
-                        {
-                            mesh = loaded.Value.mesh;
-                            matInfos = loaded.Value.materials;
-                            frameCount = loaded.Value.frameCount;
-                            meshDict[modelName] = loaded.Value;
-                        }
-                    }
-
-                    if (mesh == null)
-                    {
-                        skippedNoMesh++;
-                        missingModels.Add(modelName);
-                        continue;
-                    }
-
-                    List<Material> materials = CreateMaterials(matInfos, paletteName);
-                    GameObject obj = CreateGameObject(modelName, mesh, materials, frameCount);
-                    ApplyMatrix(obj.transform, placement.transform);
-                    objects.Add(obj);
-                    placed++;
-                }
-
-                Debug.Log($"[FFI LoadArea] {rgpl.placements.Count} placements, {rgpl.lights.Count} lights. Placed: {placed}, Skipped (empty): {skippedEmpty}, Skipped (no mesh): {skippedNoMesh}");
-                if (missingModels.Count > 0)
-                    Debug.Log($"[FFI LoadArea] Missing models: {string.Join(", ", missingModels)}");
-
-                foreach (var light in rgpl.lights)
-                {
-                    GameObject lightObj = new GameObject("Light_" + light.name);
-                    Light lightComp = lightObj.AddComponent<Light>();
-                    lightComp.type = LightType.Point;
-                    lightComp.color = light.color;
-                    lightComp.range = light.range;
-                    lightObj.transform.position = light.position;
-                    objects.Add(lightObj);
-                }
-            }
+            PlaceRgplObjects(rgmPath, paletteName, meshDict, objects);
         }
 
-        if (!string.IsNullOrEmpty(wldName))
-        {
-            string wldPath = Path.Combine(mapsFolder, wldName + ".WLD");
-            if (File.Exists(wldPath))
-            {
-                IntPtr resultPtr = RgpreBindings.ParseWldTerrainData(wldPath);
-                if (resultPtr != IntPtr.Zero)
-                {
-                    var (mesh, matInfos, _) = RgmdDeserializer.DeserializeModel(resultPtr, "Terrain");
-                    if (mesh != null)
-                    {
-                        List<Material> materials = CreateMaterials(matInfos, paletteName);
-                        GameObject terrainObj = new GameObject("Terrain");
-                        terrainObj.isStatic = true;
+        LoadTerrain(mapsFolder, wldName, paletteName, objects);
 
-                        MeshRenderer renderer = terrainObj.AddComponent<MeshRenderer>();
-                        MeshFilter filter = terrainObj.AddComponent<MeshFilter>();
-                        filter.sharedMesh = mesh;
-                        renderer.SetMaterials(materials);
-
-                        MeshCollider collider = terrainObj.AddComponent<MeshCollider>();
-                        collider.sharedMesh = mesh;
-
-                        objects.Add(terrainObj);
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning("[FFI] Failed to parse WLD terrain: " + RgpreBindings.GetLastErrorMessage());
-                }
-            }
-        }
         swTotal.Stop();
         Debug.Log($"[FFI LoadArea] Total={swTotal.ElapsedMilliseconds}ms");
 
         return objects;
+    }
+
+    private static void PlaceRgplObjects(
+        string rgmPath,
+        string paletteName,
+        Dictionary<string, (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)> meshDict,
+        List<GameObject> objects)
+    {
+        IntPtr resultPtr = RgpreBindings.ParseRgmPlacements(rgmPath);
+        if (resultPtr == IntPtr.Zero)
+        {
+            return;
+        }
+
+        var rgpl = RgplDeserializer.Deserialize(resultPtr);
+
+        int skippedEmpty = 0;
+        int skippedNoMesh = 0;
+        int placed = 0;
+        var missingModels = new HashSet<string>();
+
+        foreach (var placement in rgpl.placements)
+        {
+            string modelName = placement.modelName;
+
+            // Flat sprite — create a textured quad
+            if (placement.textureId > 0 && string.IsNullOrEmpty(modelName))
+            {
+                GameObject quad = CreateFlatSprite(placement, paletteName);
+                if (quad != null)
+                {
+                    objects.Add(quad);
+                    placed++;
+                }
+                else
+                {
+                    skippedNoMesh++;
+                }
+                continue;
+            }
+
+            if (string.IsNullOrEmpty(modelName))
+            {
+                skippedEmpty++;
+                continue;
+            }
+
+            Mesh mesh = null;
+            RgmdDeserializer.SubmeshMaterialInfo[] matInfos = null;
+            int frameCount = 0;
+
+            if (meshDict.TryGetValue(modelName, out var cached))
+            {
+                mesh = cached.mesh;
+                matInfos = cached.materials;
+                frameCount = cached.frameCount;
+            }
+            else
+            {
+                var loaded = TryLoadModelFile(modelName);
+                if (loaded.HasValue)
+                {
+                    mesh = loaded.Value.mesh;
+                    matInfos = loaded.Value.materials;
+                    frameCount = loaded.Value.frameCount;
+                    meshDict[modelName] = loaded.Value;
+                }
+            }
+
+            if (mesh == null)
+            {
+                skippedNoMesh++;
+                missingModels.Add(modelName);
+                continue;
+            }
+
+            List<Material> materials = CreateMaterials(matInfos, paletteName);
+            GameObject obj = CreateGameObject(modelName, mesh, materials, frameCount);
+            ApplyMatrix(obj.transform, placement.transform);
+            objects.Add(obj);
+            placed++;
+        }
+
+        Debug.Log($"[FFI LoadArea] {rgpl.placements.Count} placements, {rgpl.lights.Count} lights. Placed: {placed}, Skipped (empty): {skippedEmpty}, Skipped (no mesh): {skippedNoMesh}");
+        if (missingModels.Count > 0)
+            Debug.Log($"[FFI LoadArea] Missing models: {string.Join(", ", missingModels)}");
+
+        CreateLights(rgpl.lights, objects);
+    }
+
+    private static void CreateLights(List<RgplDeserializer.LightData> lights, List<GameObject> objects)
+    {
+        foreach (var light in lights)
+        {
+            GameObject lightObj = new GameObject("Light_" + light.name);
+            Light lightComp = lightObj.AddComponent<Light>();
+            lightComp.type = LightType.Point;
+            lightComp.color = light.color;
+            lightComp.range = light.range;
+            lightObj.transform.position = light.position;
+            objects.Add(lightObj);
+        }
+    }
+
+    private static void LoadTerrain(string mapsFolder, string wldName, string paletteName, List<GameObject> objects)
+    {
+        if (string.IsNullOrEmpty(wldName))
+        {
+            return;
+        }
+
+        string wldPath = Path.Combine(mapsFolder, wldName + ".WLD");
+        if (!File.Exists(wldPath))
+        {
+            return;
+        }
+
+        IntPtr resultPtr = RgpreBindings.ParseWldTerrainData(wldPath);
+        if (resultPtr == IntPtr.Zero)
+        {
+            Debug.LogWarning("[FFI] Failed to parse WLD terrain: " + RgpreBindings.GetLastErrorMessage());
+            return;
+        }
+
+        var (mesh, matInfos, _) = RgmdDeserializer.DeserializeModel(resultPtr, "Terrain");
+        if (mesh == null)
+        {
+            return;
+        }
+
+        List<Material> materials = CreateMaterials(matInfos, paletteName);
+        GameObject terrainObj = new GameObject("Terrain");
+        terrainObj.isStatic = true;
+
+        MeshRenderer renderer = terrainObj.AddComponent<MeshRenderer>();
+        MeshFilter filter = terrainObj.AddComponent<MeshFilter>();
+        filter.sharedMesh = mesh;
+        renderer.SetMaterials(materials);
+
+        MeshCollider collider = terrainObj.AddComponent<MeshCollider>();
+        collider.sharedMesh = mesh;
+
+        objects.Add(terrainObj);
     }
 
     private static (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)? TryLoadModelFile(string modelName)
@@ -526,9 +549,6 @@ public static class FFIModelLoader
         {
             return false;
         }
-        {
-            return false;
-        }
 
         mesh = loaded.Value.mesh;
         frameCount = loaded.Value.frameCount;
@@ -551,9 +571,32 @@ public static class FFIModelLoader
     {
         CurrentRgmData = new RGRGMFile();
 
-        // Load raw sections via FFI
-        byte[] rahdBytes = GetSection(rgmPath, "RAHD");
-        byte[] mpobBytes = GetSection(rgmPath, "MPOB");
+        PopulateRawSections(rgmPath);
+        ParseRAHD(GetSection(rgmPath, "RAHD"));
+        ParseMPOB(GetSection(rgmPath, "MPOB"), paletteName, meshDict, objects);
+
+        // Initialize animation and script stores
+        try
+        {
+            RGRGMAnimStore.ReadAnim(CurrentRgmData);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("[FFI] AnimStore init: " + ex.Message);
+        }
+
+        try
+        {
+            RGRGMScriptStore.ReadScript(CurrentRgmData);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("[FFI] ScriptStore init: " + ex.Message);
+        }
+    }
+
+    private static void PopulateRawSections(string rgmPath)
+    {
         byte[] raatBytes = GetSection(rgmPath, "RAAT");
         byte[] ranmBytes = GetSection(rgmPath, "RANM");
         byte[] ralcBytes = GetSection(rgmPath, "RALC");
@@ -565,7 +608,6 @@ public static class FFIModelLoader
         byte[] rascBytes = GetSection(rgmPath, "RASC");
         byte[] rahkBytes = GetSection(rgmPath, "RAHK");
 
-        // Populate raw byte sections
         if (raatBytes != null) CurrentRgmData.RAAT.attributes = raatBytes;
         if (raanBytes != null) CurrentRgmData.RAAN.data = raanBytes;
         if (ragrBytes != null) CurrentRgmData.RAGR.data = ragrBytes;
@@ -600,14 +642,14 @@ public static class FFIModelLoader
                 CurrentRgmData.RAVA.data[i] = BitConverter.ToInt32(ravaBytes, i * 4);
         }
 
-        // Parse RALC items (12 bytes each: 3x int32)
-        if (ralcBytes != null && ralcBytes.Length >= 12)
+        const int RalcItemSize = 12; // 3x int32
+        if (ralcBytes != null && ralcBytes.Length >= RalcItemSize)
         {
-            int count = ralcBytes.Length / 12;
+            int count = ralcBytes.Length / RalcItemSize;
             CurrentRgmData.RALC.items = new List<RGRGMFile.RGMRALCItem>(count);
             for (int i = 0; i < count; i++)
             {
-                int off = i * 12;
+                int off = i * RalcItemSize;
                 CurrentRgmData.RALC.items.Add(new RGRGMFile.RGMRALCItem
                 {
                     offsetX = BitConverter.ToInt32(ralcBytes, off),
@@ -616,195 +658,127 @@ public static class FFIModelLoader
                 });
             }
         }
-
-        // Parse RAHD (structured — uses MemoryReader)
-        if (rahdBytes != null && rahdBytes.Length > 4)
-        {
-            var reader = new RGFileImport.MemoryReader(rahdBytes);
-            uint numItems = (uint)reader.ReadInt32();
-            for (int i = 0; i < (int)numItems; i++)
-            {
-                var item = new RGRGMFile.RGMRAHDItem();
-                item.index = i;
-                item.unknown0 = reader.ReadInt32();
-                item.unknown1 = reader.ReadInt32();
-                char[] nameChars = reader.ReadChars(9);
-                item.scriptName = new string(nameChars).Split('\0')[0];
-                item.MPOBCount = reader.ReadInt32();
-                item.unknown2 = reader.ReadInt32();
-                item.RANMLength = reader.ReadInt32();
-                item.RANMOffset = reader.ReadInt32();
-                item.RAATOffset = reader.ReadInt32();
-                item.RAANCount = reader.ReadInt32();
-                item.RAANLength = reader.ReadInt32();
-                item.RAANOffset = reader.ReadInt32();
-                item.RAGRMaxGroup = reader.ReadInt32();
-                item.RAGROffset = reader.ReadInt32();
-                item.unknown3 = reader.ReadInt32();
-                item.unknown4 = reader.ReadInt32();
-                item.unknown5 = reader.ReadInt32();
-                item.RASBCount = reader.ReadInt32();
-                item.RASBLength = reader.ReadInt32();
-                item.RASBOffset = reader.ReadInt32();
-                item.RASCLength = reader.ReadInt32();
-                item.RASCOffset = reader.ReadInt32();
-                item.RASCThreadStart = reader.ReadInt32();
-                item.RAHKLength = reader.ReadInt32();
-                item.RAHKOffset = reader.ReadInt32();
-                item.RALCCount = reader.ReadInt32();
-                item.RALCLength = reader.ReadInt32();
-                item.RALCOffset = reader.ReadInt32();
-                item.RAEXLength = reader.ReadInt32();
-                item.RAEXOffset = reader.ReadInt32();
-                item.RAVACount = reader.ReadInt32();
-                item.RAVALength = reader.ReadInt32();
-                item.RAVAOffset = reader.ReadInt32();
-                item.unknown6 = reader.ReadInt32();
-                item.frameCount = reader.ReadInt32();
-                item.MPSZNormalId = reader.ReadInt32();
-                item.MPSZCombatId = reader.ReadInt32();
-                item.MPSZDeadId = reader.ReadInt32();
-                item.unknown7 = reader.ReadInt16();
-                item.unknown8 = reader.ReadInt16();
-                item.unknown9 = reader.ReadInt16();
-                item.textureId = reader.ReadInt16();
-                item.RAVCOffset = reader.ReadInt32();
-
-                CurrentRgmData.RAHD.dict[item.scriptName] = item;
-            }
-        }
-
-        // Parse MPOB and build scripted objects (66 bytes per item)
-        if (mpobBytes != null && mpobBytes.Length > 4)
-        {
-            var reader = new RGFileImport.MemoryReader(mpobBytes);
-            uint numItems = (uint)reader.ReadInt32();
-            for (int i = 0; i < (int)numItems; i++)
-            {
-                var mpob = new RGRGMFile.RGMMPOBItem();
-                mpob.id = (uint)reader.ReadInt32();                     // 4 bytes
-                mpob.type = (RGRGMFile.ObjectType)reader.ReadByte();    // 1 byte
-                byte isActive = reader.ReadByte();                      // 1 byte
-
-                char[] scriptChars = reader.ReadChars(9);               // 9 bytes
-                mpob.scriptName = new string(scriptChars).Split('\0')[0];
-
-                char[] modelChars = reader.ReadChars(9);                // 9 bytes
-                string rawModel = new string(modelChars).Split('\0')[0];
-                mpob.modelName = NormalizeModelName(rawModel);
-
-                reader.ReadByte();                                      // isStatic 1 byte
-                reader.ReadInt16();                                     // unknown1 2 bytes
-
-                // positions are 24-bit + 1 padding byte each
-                mpob.posX = reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
-                reader.ReadByte();
-                mpob.posY = reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
-                reader.ReadByte();
-                mpob.posZ = reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
-
-                mpob.anglex = reader.ReadInt32();                       // 4 bytes
-                mpob.angley = reader.ReadInt32();                       // 4 bytes
-                mpob.anglez = reader.ReadInt32();                       // 4 bytes
-
-                short textureData = reader.ReadInt16();                 // 2 bytes
-                // textureId = high 9 bits, imageId = low 7 bits
-                mpob.intensity = reader.ReadInt16();                    // 2 bytes
-                mpob.radius = reader.ReadInt16();                       // 2 bytes
-                reader.ReadInt16();                                     // modelId 2 bytes
-                reader.ReadInt16();                                     // worldId 2 bytes
-                mpob.red = reader.ReadInt16();                          // 2 bytes
-                mpob.green = reader.ReadInt16();                        // 2 bytes
-                mpob.blue = reader.ReadInt16();                         // 2 bytes
-
-                try
-                {
-                    string objectName = "B_" + i.ToString("D3") + "_" + (mpob.scriptName ?? "OBJ");
-                    GameObject go = new GameObject(objectName);
-                    go.AddComponent<RGScriptedObject>();
-                    RGScriptedObject scripted = go.GetComponent<RGScriptedObject>();
-                    scripted.Instanciate(mpob, CurrentRgmData, paletteName);
-                    scriptedObjects[mpob.id] = scripted;
-                    objects.Add(go);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogWarning("[FFI] Failed to spawn scripted object " + mpob.scriptName + ": " + ex.Message);
-                }
-
-                if (!string.IsNullOrEmpty(mpob.modelName) && !meshDict.ContainsKey(mpob.modelName))
-                {
-                    var loaded = TryLoadModelFile(mpob.modelName);
-                    if (loaded.HasValue)
-                        meshDict[mpob.modelName] = loaded.Value;
-                }
-            }
-        }
-
-        // Initialize animation and script stores
-        try { RGRGMAnimStore.ReadAnim(CurrentRgmData); } catch (Exception ex) { Debug.LogWarning("[FFI] AnimStore init: " + ex.Message); }
-        try { RGRGMScriptStore.ReadScript(CurrentRgmData); } catch (Exception ex) { Debug.LogWarning("[FFI] ScriptStore init: " + ex.Message); }
     }
 
-    private static void BuildRuntimeObjectsFromMetadata(
-        byte[] metadataBytes,
-        string paletteName,
-        Dictionary<string, (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)> meshDict,
-        List<GameObject> worldObjects)
+    private static void ParseRAHD(byte[] rahdBytes)
     {
-        string metadataJson = Encoding.UTF8.GetString(metadataBytes);
-        RgmMetadataRoot metadata = JsonUtility.FromJson<RgmMetadataRoot>(metadataJson);
-        if (metadata == null || metadata.mpob_objects == null)
+        if (rahdBytes == null || rahdBytes.Length <= 4)
         {
             return;
         }
 
-        CurrentRgmData = new RGRGMFile();
-        CurrentRgmData.RAAT.attributes = new byte[Math.Max(metadata.mpob_objects.Count * 256, 256)];
-
-        int index = 0;
-        foreach (MpobMetadataEntry entry in metadata.mpob_objects)
+        var reader = new RGFileImport.MemoryReader(rahdBytes);
+        uint numItems = (uint)reader.ReadInt32();
+        for (int i = 0; i < (int)numItems; i++)
         {
-            var ra = new RGRGMFile.RGMRAHDItem
-            {
-                scriptName = entry.script_name ?? string.Empty,
-                index = index,
-                textureId = 0,
-                RALCOffset = 0,
-                RALCCount = 0,
-                RANMOffset = 0,
-                RANMLength = 0
-            };
-            CurrentRgmData.RAHD.dict[ra.scriptName] = ra;
+            var item = new RGRGMFile.RGMRAHDItem();
+            item.index = i;
+            item.unknown0 = reader.ReadInt32();
+            item.unknown1 = reader.ReadInt32();
+            char[] nameChars = reader.ReadChars(9);
+            item.scriptName = new string(nameChars).Split('\0')[0];
+            item.MPOBCount = reader.ReadInt32();
+            item.unknown2 = reader.ReadInt32();
+            item.RANMLength = reader.ReadInt32();
+            item.RANMOffset = reader.ReadInt32();
+            item.RAATOffset = reader.ReadInt32();
+            item.RAANCount = reader.ReadInt32();
+            item.RAANLength = reader.ReadInt32();
+            item.RAANOffset = reader.ReadInt32();
+            item.RAGRMaxGroup = reader.ReadInt32();
+            item.RAGROffset = reader.ReadInt32();
+            item.unknown3 = reader.ReadInt32();
+            item.unknown4 = reader.ReadInt32();
+            item.unknown5 = reader.ReadInt32();
+            item.RASBCount = reader.ReadInt32();
+            item.RASBLength = reader.ReadInt32();
+            item.RASBOffset = reader.ReadInt32();
+            item.RASCLength = reader.ReadInt32();
+            item.RASCOffset = reader.ReadInt32();
+            item.RASCThreadStart = reader.ReadInt32();
+            item.RAHKLength = reader.ReadInt32();
+            item.RAHKOffset = reader.ReadInt32();
+            item.RALCCount = reader.ReadInt32();
+            item.RALCLength = reader.ReadInt32();
+            item.RALCOffset = reader.ReadInt32();
+            item.RAEXLength = reader.ReadInt32();
+            item.RAEXOffset = reader.ReadInt32();
+            item.RAVACount = reader.ReadInt32();
+            item.RAVALength = reader.ReadInt32();
+            item.RAVAOffset = reader.ReadInt32();
+            item.unknown6 = reader.ReadInt32();
+            item.frameCount = reader.ReadInt32();
+            item.MPSZNormalId = reader.ReadInt32();
+            item.MPSZCombatId = reader.ReadInt32();
+            item.MPSZDeadId = reader.ReadInt32();
+            item.unknown7 = reader.ReadInt16();
+            item.unknown8 = reader.ReadInt16();
+            item.unknown9 = reader.ReadInt16();
+            item.textureId = reader.ReadInt16();
+            item.RAVCOffset = reader.ReadInt32();
 
-            var mpob = new RGRGMFile.RGMMPOBItem
-            {
-                id = entry.id,
-                scriptName = entry.script_name ?? string.Empty,
-                modelName = NormalizeModelName(entry.model_name),
-                type = ParseObjectType(entry.object_type),
-                posX = ReadInt(entry.position, 0),
-                posY = ReadInt(entry.position, 1),
-                posZ = ReadInt(entry.position, 2),
-                anglex = ReadInt(entry.angles, 0),
-                angley = ReadInt(entry.angles, 1),
-                anglez = ReadInt(entry.angles, 2),
-                radius = entry.radius,
-                intensity = entry.intensity,
-                red = entry.red,
-                green = entry.green,
-                blue = entry.blue
-            };
+            CurrentRgmData.RAHD.dict[item.scriptName] = item;
+        }
+    }
+
+    private static void ParseMPOB(
+        byte[] mpobBytes,
+        string paletteName,
+        Dictionary<string, (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)> meshDict,
+        List<GameObject> objects)
+    {
+        if (mpobBytes == null || mpobBytes.Length <= 4)
+        {
+            return;
+        }
+
+        var reader = new RGFileImport.MemoryReader(mpobBytes);
+        uint numItems = (uint)reader.ReadInt32();
+        for (int i = 0; i < (int)numItems; i++)
+        {
+            var mpob = new RGRGMFile.RGMMPOBItem();
+            mpob.id = (uint)reader.ReadInt32();                     // 4 bytes
+            mpob.type = (RGRGMFile.ObjectType)reader.ReadByte();    // 1 byte
+            reader.ReadByte();                                      // isActive 1 byte
+
+            char[] scriptChars = reader.ReadChars(9);               // 9 bytes
+            mpob.scriptName = new string(scriptChars).Split('\0')[0];
+
+            char[] modelChars = reader.ReadChars(9);                // 9 bytes
+            string rawModel = new string(modelChars).Split('\0')[0];
+            mpob.modelName = NormalizeModelName(rawModel);
+
+            reader.ReadByte();                                      // isStatic 1 byte
+            reader.ReadInt16();                                     // unknown1 2 bytes
+
+            // positions are 24-bit + 1 padding byte each
+            mpob.posX = reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
+            reader.ReadByte();
+            mpob.posY = reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
+            reader.ReadByte();
+            mpob.posZ = reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
+
+            mpob.anglex = reader.ReadInt32();                       // 4 bytes
+            mpob.angley = reader.ReadInt32();                       // 4 bytes
+            mpob.anglez = reader.ReadInt32();                       // 4 bytes
+
+            reader.ReadInt16();                                     // textureData 2 bytes
+            mpob.intensity = reader.ReadInt16();                    // 2 bytes
+            mpob.radius = reader.ReadInt16();                       // 2 bytes
+            reader.ReadInt16();                                     // modelId 2 bytes
+            reader.ReadInt16();                                     // worldId 2 bytes
+            mpob.red = reader.ReadInt16();                          // 2 bytes
+            mpob.green = reader.ReadInt16();                        // 2 bytes
+            mpob.blue = reader.ReadInt16();                         // 2 bytes
 
             try
             {
-                string objectName = "B_" + index.ToString("D3") + "_" + (mpob.scriptName ?? "OBJ");
+                string objectName = "B_" + i.ToString("D3") + "_" + (mpob.scriptName ?? "OBJ");
                 GameObject go = new GameObject(objectName);
-                go.AddComponent<RGScriptedObject>();
-                RGScriptedObject scripted = go.GetComponent<RGScriptedObject>();
+                RGScriptedObject scripted = go.AddComponent<RGScriptedObject>();
                 scripted.Instanciate(mpob, CurrentRgmData, paletteName);
-                scriptedObjects[mpob.id] = scripted;
-                worldObjects.Add(go);
+                ScriptedObjects[mpob.id] = scripted;
+                objects.Add(go);
             }
             catch (Exception ex)
             {
@@ -815,50 +789,13 @@ public static class FFIModelLoader
             {
                 var loaded = TryLoadModelFile(mpob.modelName);
                 if (loaded.HasValue)
-                {
                     meshDict[mpob.modelName] = loaded.Value;
-                }
             }
-
-            index++;
         }
-    }
-
-    private static int ReadInt(float[] values, int index)
-    {
-        if (values == null || values.Length <= index)
-        {
-            return 0;
-        }
-
-        return Mathf.RoundToInt(values[index]);
     }
 
     private static string NormalizeModelName(string modelName)
-    {
-        if (string.IsNullOrEmpty(modelName))
-        {
-            return string.Empty;
-        }
-
-        string normalized = modelName.Replace('\\', '/');
-        int slash = normalized.LastIndexOf('/');
-        string file = slash >= 0 ? normalized.Substring(slash + 1) : normalized;
-        int dot = file.LastIndexOf('.');
-        string stem = dot > 0 ? file.Substring(0, dot) : file;
-        return stem.ToUpperInvariant();
-    }
-
-    private static RGRGMFile.ObjectType ParseObjectType(string objectType)
-    {
-        return objectType switch
-        {
-            "object_lightobject" => RGRGMFile.ObjectType.object_lightobject,
-            "object_light" => RGRGMFile.ObjectType.object_light,
-            "object_sound" => RGRGMFile.ObjectType.object_sound,
-            _ => RGRGMFile.ObjectType.object_3d
-        };
-    }
+        => FFIPathUtils.NormalizeModelName(modelName);
 
     private static Shader GetDefaultShader()
     {

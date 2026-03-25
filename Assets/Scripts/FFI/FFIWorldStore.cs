@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class FFIWorldStore
 {
-    public struct worldData
+    public struct WorldData
     {
         public string RGM;
         public string WLD;
@@ -16,14 +16,14 @@ public static class FFIWorldStore
         public string loadScreen;
     }
 
-    private static Dictionary<int, worldData> cachedWorldList;
+    private static Dictionary<int, WorldData> cachedWorldList;
 
-    public static Dictionary<int, worldData> GetWorldList()
+    public static Dictionary<int, WorldData> GetWorldList()
     {
         if (cachedWorldList != null)
             return cachedWorldList;
 
-        cachedWorldList = new Dictionary<int, worldData>();
+        cachedWorldList = new Dictionary<int, WorldData>();
         string worldIniPath = Path.Combine(Game.pathManager.GetRootFolder(), "WORLD.INI");
         if (!File.Exists(worldIniPath))
         {
@@ -31,7 +31,7 @@ public static class FFIWorldStore
             return cachedWorldList;
         }
 
-        var worlds = new Dictionary<int, worldData>();
+        var worlds = new Dictionary<int, WorldData>();
         string[] lines = File.ReadAllLines(worldIniPath);
 
         foreach (string rawLine in lines)
@@ -61,9 +61,9 @@ public static class FFIWorldStore
 
             string memberName = key.Substring(0, bracketOpen);
 
-            if (!worlds.TryGetValue(worldIndex, out worldData w))
+            if (!worlds.TryGetValue(worldIndex, out WorldData w))
             {
-                w = new worldData
+                w = new WorldData
                 {
                     RGM = string.Empty,
                     WLD = string.Empty,
@@ -113,15 +113,5 @@ public static class FFIWorldStore
     }
 
     private static string ToUpperStem(string path)
-    {
-        if (string.IsNullOrWhiteSpace(path))
-            return string.Empty;
-
-        string normalized = path.Replace('\\', '/');
-        int slash = normalized.LastIndexOf('/');
-        string file = slash >= 0 ? normalized.Substring(slash + 1) : normalized;
-        int dot = file.LastIndexOf('.');
-        string stem = dot > 0 ? file.Substring(0, dot) : file;
-        return stem.ToUpperInvariant();
-    }
+        => FFIPathUtils.NormalizeModelName(path);
 }

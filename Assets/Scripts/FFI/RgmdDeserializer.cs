@@ -232,17 +232,5 @@ public static class RgmdDeserializer
     }
 
     private static void EnsureReadable(IntPtr ptr, int bytesNeeded, IntPtr end, string label)
-    {
-        if (bytesNeeded < 0)
-        {
-            throw new InvalidOperationException($"Negative byte count for {label}: {bytesNeeded}.");
-        }
-
-        long current = ptr.ToInt64();
-        long final = end.ToInt64();
-        if (current < 0 || final < current || current + bytesNeeded > final)
-        {
-            throw new InvalidOperationException($"Unexpected end of data while reading {label}.");
-        }
-    }
+        => RgpreBindings.EnsureReadable(ptr, bytesNeeded, end, label);
 }
