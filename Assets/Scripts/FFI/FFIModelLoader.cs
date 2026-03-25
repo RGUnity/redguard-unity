@@ -99,7 +99,7 @@ public static class FFIModelLoader
             return cachedSegments;
         }
 
-        IntPtr resultPtr = RgpreBindings.ParseRobData(robPath);
+        IntPtr resultPtr = RgpreBindings.ParseRobData(robPath, Game.pathManager.GetRootFolder());
         if (resultPtr == IntPtr.Zero)
         {
             return null;
@@ -321,7 +321,7 @@ public static class FFIModelLoader
                 continue;
             }
 
-            IntPtr resultPtr = RgpreBindings.ParseModelData(path);
+            IntPtr resultPtr = RgpreBindings.ParseModelData(path, Game.pathManager.GetRootFolder());
             if (resultPtr == IntPtr.Zero)
             {
                 continue;
@@ -429,7 +429,7 @@ public static class FFIModelLoader
                 return new GameObject(displayName);
             }
 
-            IntPtr resultPtr = RgpreBindings.ParseModelData(modelPath);
+            IntPtr resultPtr = RgpreBindings.ParseModelData(modelPath, Game.pathManager.GetRootFolder());
             if (resultPtr == IntPtr.Zero)
             {
                 Debug.LogError("[FFI] Failed to parse " + modelName + extension + ": " + RgpreBindings.GetLastErrorMessage());

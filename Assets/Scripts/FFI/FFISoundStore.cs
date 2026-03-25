@@ -44,9 +44,8 @@ public static class FFISoundStore
         throw new IndexOutOfRangeException("SFX id not loaded: " + id);
     }
 
-    // NOTE: Each ConvertRtxEntryToWav call re-parses the full file on the native side.
-    // This is slow for large RTX files but acceptable as a one-time load.
-    // NOTE: Subtitle extraction is not yet exposed by rgpre — entries load with audio only.
+    // NOTE: Each ConvertRtxEntryToWav / GetRtxSubtitle call re-parses the full file
+    // on the native side. This is slow for large RTX files but acceptable as a one-time load.
     public static void LoadRTX(string rtxName)
     {
         RtxEntries.Clear();
@@ -72,7 +71,16 @@ public static class FFISoundStore
                 clip = WavToAudioClip(wavBytes, "RTX_" + entryIndex);
             }
 
-            RtxEntries[entryIndex] = new RTXEntry("", clip);
+            string subtitle = "";
+            IntPtr subPtr = RgpreBindings.GetRtxSubtitle(path, entryIndex);
+            if (subPtr != IntPtr.Zero)
+            {
+                byte[] subBytes = RgpreBindings.ExtractBytesAndFree(subPtr);
+                if (subBytes.Length > 0)
+                    subtitle = System.Text.Encoding.UTF8.GetString(subBytes);
+            }
+
+            RtxEntries[entryIndex] = new RTXEntry(subtitle, clip);
         }
 
         Debug.Log($"[FFI] Loaded {count} RTX entries from {rtxName}");

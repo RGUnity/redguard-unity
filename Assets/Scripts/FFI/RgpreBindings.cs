@@ -133,11 +133,13 @@ public static class RgpreBindings
 
     [DllImport("rgpre", EntryPoint = "rg_parse_model_data", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr ParseModelDataNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir);
 
     [DllImport("rgpre", EntryPoint = "rg_parse_rob_data", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr ParseRobDataNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir);
 
     [DllImport("rgpre", EntryPoint = "rg_parse_wld_terrain_data", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr ParseWldTerrainDataNative(
@@ -216,6 +218,11 @@ public static class RgpreBindings
         [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
         int entryIndex);
 
+    [DllImport("rgpre", EntryPoint = "rg_get_rtx_subtitle", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr GetRtxSubtitleNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        int entryIndex);
+
     // --- GXA ---
 
     [DllImport("rgpre", EntryPoint = "rg_gxa_frame_count", CallingConvention = CallingConvention.Cdecl)]
@@ -237,8 +244,8 @@ public static class RgpreBindings
 
     // --- Scene data ---
 
-    public static IntPtr ParseModelData(string filePath) => ParseModelDataNative(filePath);
-    public static IntPtr ParseRobData(string filePath) => ParseRobDataNative(filePath);
+    public static IntPtr ParseModelData(string filePath, string assetsDir) => ParseModelDataNative(filePath, assetsDir);
+    public static IntPtr ParseRobData(string filePath, string assetsDir) => ParseRobDataNative(filePath, assetsDir);
     public static IntPtr ParseWldTerrainData(string filePath) => ParseWldTerrainDataNative(filePath);
     public static IntPtr ParseRgmPlacements(string filePath) => ParseRgmPlacementsNative(filePath);
 
@@ -265,6 +272,7 @@ public static class RgpreBindings
     public static IntPtr ConvertSfxToWav(string filePath, int effectIndex) => ConvertSfxToWavNative(filePath, effectIndex);
     public static int RtxEntryCount(string filePath) => RtxEntryCountNative(filePath);
     public static IntPtr ConvertRtxEntryToWav(string filePath, int entryIndex) => ConvertRtxEntryToWavNative(filePath, entryIndex);
+    public static IntPtr GetRtxSubtitle(string filePath, int entryIndex) => GetRtxSubtitleNative(filePath, entryIndex);
 
     // --- GXA ---
 
