@@ -28,6 +28,14 @@ public static class RgpreBindings
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct AllFramesHeader
+    {
+        public int width;
+        public int height;
+        public int frameCount;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct RgmdHeader
     {
         public int magic;

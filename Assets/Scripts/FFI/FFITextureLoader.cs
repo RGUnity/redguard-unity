@@ -11,6 +11,7 @@ public static class FFITextureLoader
     private const int PaletteStride = 3;
 
     private static readonly Dictionary<string, Texture2D> textureCache = new Dictionary<string, Texture2D>();
+    private static readonly Dictionary<string, List<Texture2D>> allFramesCache = new Dictionary<string, List<Texture2D>>();
     private static readonly Dictionary<string, Color32[]> paletteCache = new Dictionary<string, Color32[]>();
 
     public static void ClearCache()
@@ -20,7 +21,16 @@ public static class FFITextureLoader
             if (tex != null)
                 UnityEngine.Object.Destroy(tex);
         }
+        foreach (var frames in allFramesCache.Values)
+        {
+            foreach (var tex in frames)
+            {
+                if (tex != null)
+                    UnityEngine.Object.Destroy(tex);
+            }
+        }
         textureCache.Clear();
+        allFramesCache.Clear();
         paletteCache.Clear();
     }
 
@@ -81,6 +91,72 @@ public static class FFITextureLoader
 
         textureCache[cacheKey] = texture;
         return texture;
+    }
+
+    public static List<Texture2D> DecodeTextureAllFrames(ushort texbsiId, byte imageId, string paletteName)
+    {
+        string cacheKey = paletteName + "_" + texbsiId + "_" + imageId;
+        if (allFramesCache.TryGetValue(cacheKey, out var cached))
+            return cached;
+
+        string assetsDir = Game.pathManager.GetRootFolder();
+
+        IntPtr resultPtr = RgpreBindings.DecodeTextureAllFrames(assetsDir, texbsiId, imageId);
+        if (resultPtr == IntPtr.Zero)
+        {
+            Debug.LogWarning("[FFI] Failed to decode all frames for TEXBSI." + texbsiId.ToString("D3") +
+                " image " + imageId + ": " + RgpreBindings.GetLastErrorMessage());
+            return null;
+        }
+
+        RgpreBindings.NativeBuffer buffer = RgpreBindings.ReadBuffer(resultPtr);
+        var frames = new List<Texture2D>();
+        try
+        {
+            int headerSize = Marshal.SizeOf<RgpreBindings.AllFramesHeader>();
+            if (buffer.data == IntPtr.Zero || buffer.len < headerSize)
+                return null;
+
+            var header = Marshal.PtrToStructure<RgpreBindings.AllFramesHeader>(buffer.data);
+            if (header.width <= 0 || header.height <= 0 || header.frameCount <= 0)
+                return null;
+
+            IntPtr ptr = buffer.data + headerSize;
+            IntPtr end = buffer.data + buffer.len;
+
+            for (int i = 0; i < header.frameCount; i++)
+            {
+                if ((end.ToInt64() - ptr.ToInt64()) < 4)
+                    break;
+
+                int rgbaSize = Marshal.ReadInt32(ptr);
+                ptr += 4;
+
+                if (rgbaSize <= 0 || (end.ToInt64() - ptr.ToInt64()) < rgbaSize)
+                    break;
+
+                byte[] rgbaData = new byte[rgbaSize];
+                Marshal.Copy(ptr, rgbaData, 0, rgbaSize);
+                ptr += rgbaSize;
+
+                var texture = new Texture2D(header.width, header.height, TextureFormat.RGBA32, false)
+                {
+                    name = "TEXBSI_" + texbsiId + "_" + imageId + "_F" + i,
+                    filterMode = FilterMode.Point,
+                    wrapMode = TextureWrapMode.Repeat
+                };
+                texture.LoadRawTextureData(rgbaData);
+                texture.Apply();
+                frames.Add(texture);
+            }
+        }
+        finally
+        {
+            RgpreBindings.FreeBuffer(buffer.handle);
+        }
+
+        allFramesCache[cacheKey] = frames;
+        return frames;
     }
 
     public static Color GetPaletteColor(byte colorIndex, string paletteName)

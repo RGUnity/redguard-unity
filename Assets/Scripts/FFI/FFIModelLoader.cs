@@ -487,13 +487,18 @@ public static class FFIModelLoader
             }
             else
             {
-                Texture2D texture = FFITextureLoader.DecodeTexture(info.textureId, info.imageId, colName);
-                if (texture != null)
+                List<Texture2D> frames = FFITextureLoader.DecodeTextureAllFrames(info.textureId, info.imageId, colName);
+                if (frames != null && frames.Count > 0)
                 {
-                    material.mainTexture = texture;
+                    material.mainTexture = frames[0];
                     // UVs from DLL are divided by 16.0 only (pixel-space).
                     // Scale by 1/textureDimensions to get normalized 0-1 UVs.
-                    material.mainTextureScale = new Vector2(1f / texture.width, 1f / texture.height);
+                    material.mainTextureScale = new Vector2(1f / frames[0].width, 1f / frames[0].height);
+
+                    for (int f = 0; f < frames.Count; f++)
+                    {
+                        material.SetTexture("FRAME_" + f, frames[f]);
+                    }
                 }
                 else
                 {
