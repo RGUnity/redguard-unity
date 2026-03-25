@@ -677,6 +677,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[93] = Sound;
         functions[94] = FlatSound;
         functions[95] = AmbientSound;
+        functions[96] = AmbientRtx;
         functions[99] = WaitOnDialog;
         functions[100] = HideMe;
         functions[101] = ShowMe;
@@ -1297,6 +1298,30 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         TaskData newTask = new TaskData();
         newTask.type = TaskType.task_waiting;
         newTask.duration = audioSource.clip != null ? audioSource.clip.length : 0f;
+        newTask.timer = 0;
+
+        AddTask(multitask, newTask);
+        return 0;
+    }
+    /*multitask 96*/
+    public int AmbientRtx(uint caller, bool multitask, int[] i /*3*/)
+    {
+        // plays RTX audio and displays subtitles as ambient dialogue
+        // i[0]: index of the RTX data
+        // i[1]: TODO: UNKNOWN, volume?
+        // i[2]: TODO: UNKNOWN, falloff?
+        FFISoundStore.RTXEntry rtx = FFISoundStore.GetRTX(i[0]);
+
+        if (rtx.audio)
+        {
+            audioSource.clip = rtx.audio;
+            audioSource.Play();
+        }
+
+        // wait until playback is done
+        TaskData newTask = new TaskData();
+        newTask.type = TaskType.task_waiting;
+        newTask.duration = rtx.audio != null ? rtx.audio.length : 0f;
         newTask.timer = 0;
 
         AddTask(multitask, newTask);

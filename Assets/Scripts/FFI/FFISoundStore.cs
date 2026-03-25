@@ -44,13 +44,38 @@ public static class FFISoundStore
         throw new IndexOutOfRangeException("SFX id not loaded: " + id);
     }
 
-    // TODO: RTX loading disabled — each entry currently re-parses the full file, causing a hang.
-    // When re-enabled, use path-based APIs:
-    // - RgpreBindings.RtxEntryCount(path)
-    // - RgpreBindings.ConvertRtxEntryToWav(path, entryIndex)
+    // NOTE: Each ConvertRtxEntryToWav call re-parses the full file on the native side.
+    // This is slow for large RTX files but acceptable as a one-time load.
+    // NOTE: Subtitle extraction is not yet exposed by rgpre — entries load with audio only.
     public static void LoadRTX(string rtxName)
     {
-        Debug.Log("[FFI] RTX loading skipped (not yet implemented with cached FFI)");
+        RtxEntries.Clear();
+
+        string soundFolder = Game.pathManager.GetSoundFolder();
+        string path = FFIPathUtils.ResolveFile(soundFolder, rtxName, ".RTX");
+
+        if (string.IsNullOrEmpty(path) || !File.Exists(path))
+        {
+            Debug.LogWarning("[FFI] RTX file not found: " + rtxName);
+            return;
+        }
+
+        int count = RgpreBindings.RtxEntryCount(path);
+        for (int entryIndex = 0; entryIndex < count; entryIndex++)
+        {
+            IntPtr wavPtr = RgpreBindings.ConvertRtxEntryToWav(path, entryIndex);
+            AudioClip clip = null;
+
+            if (wavPtr != IntPtr.Zero)
+            {
+                byte[] wavBytes = RgpreBindings.ExtractBytesAndFree(wavPtr);
+                clip = WavToAudioClip(wavBytes, "RTX_" + entryIndex);
+            }
+
+            RtxEntries[entryIndex] = new RTXEntry("", clip);
+        }
+
+        Debug.Log($"[FFI] Loaded {count} RTX entries from {rtxName}");
     }
 
     public static void LoadSFX(string sfxName)

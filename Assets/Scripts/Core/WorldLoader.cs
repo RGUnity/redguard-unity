@@ -91,11 +91,13 @@ public static class WorldLoader
         if(!SFXLoaded)
         {
             FFISoundStore.LoadSFX(SFX);
+            SFXLoaded = true;
         }
 
         if(!RTXLoaded)
         {
             FFISoundStore.LoadRTX(RTX);
+            RTXLoaded = true;
         }
 
 
