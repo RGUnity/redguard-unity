@@ -14,8 +14,8 @@ public static class RgprePluginDownloader
     private const string RepoName = "redguard-preservation";
     private const string LatestReleaseApiUrl = "https://api.github.com/repos/" + RepoOwner + "/" + RepoName + "/releases/latest";
     private const string TagReleaseApiUrl = "https://api.github.com/repos/" + RepoOwner + "/" + RepoName + "/releases/tags/";
-    private const string PluginsDirectoryAssetPath = "Assets/Plugins";
-    private const string VersionAssetPath = "Assets/Plugins/rgpre.version.txt";
+    private const string PluginsDirectoryAssetPath = "Assets/Plugins/rgpre";
+    private const string VersionAssetPath = "Assets/Plugins/rgpre/rgpre.version.txt";
 
     [Serializable]
     private sealed class GitHubRelease
@@ -49,7 +49,7 @@ public static class RgprePluginDownloader
             Label = "Windows x64",
             AssetPattern = "librgpre-x86_64-pc-windows-msvc.zip",
             BinaryFileName = "rgpre.dll",
-            TargetAssetPath = "Assets/Plugins/Windows/x86_64/rgpre.dll",
+            TargetAssetPath = "Assets/Plugins/rgpre/Windows/x86_64/rgpre.dll",
             BuildTarget = BuildTarget.StandaloneWindows64,
             EditorCpu = "x86_64",
             PlatformCpu = "x86_64"
@@ -59,7 +59,7 @@ public static class RgprePluginDownloader
             Label = "macOS x64",
             AssetPattern = "librgpre-x86_64-apple-darwin.tar.gz",
             BinaryFileName = "librgpre.dylib",
-            TargetAssetPath = "Assets/Plugins/macOS/x86_64/librgpre.dylib",
+            TargetAssetPath = "Assets/Plugins/rgpre/macOS/x86_64/librgpre.dylib",
             BuildTarget = BuildTarget.StandaloneOSX,
             EditorCpu = "x86_64",
             PlatformCpu = "x86_64"
@@ -69,7 +69,7 @@ public static class RgprePluginDownloader
             Label = "macOS ARM64",
             AssetPattern = "librgpre-aarch64-apple-darwin.tar.gz",
             BinaryFileName = "librgpre.dylib",
-            TargetAssetPath = "Assets/Plugins/macOS/arm64/librgpre.dylib",
+            TargetAssetPath = "Assets/Plugins/rgpre/macOS/arm64/librgpre.dylib",
             BuildTarget = BuildTarget.StandaloneOSX,
             EditorCpu = "ARM64",
             PlatformCpu = "ARM64"
@@ -79,7 +79,7 @@ public static class RgprePluginDownloader
             Label = "Linux x64",
             AssetPattern = "librgpre-x86_64-unknown-linux-gnu.tar.gz",
             BinaryFileName = "librgpre.so",
-            TargetAssetPath = "Assets/Plugins/Linux/x86_64/librgpre.so",
+            TargetAssetPath = "Assets/Plugins/rgpre/Linux/x86_64/librgpre.so",
             BuildTarget = BuildTarget.StandaloneLinux64,
             EditorCpu = "x86_64",
             PlatformCpu = "x86_64"
