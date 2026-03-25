@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
@@ -11,10 +10,12 @@ using UnityEngine.Networking;
 [InitializeOnLoad]
 public static class RgprePluginDownloader
 {
-    private const string ReleaseApiUrl = "https://api.github.com/repos/michidk/redguard-preservation/releases/latest";
+    private const string RepoOwner = "michidk";
+    private const string RepoName = "redguard-preservation";
+    private const string LatestReleaseApiUrl = "https://api.github.com/repos/" + RepoOwner + "/" + RepoName + "/releases/latest";
+    private const string TagReleaseApiUrl = "https://api.github.com/repos/" + RepoOwner + "/" + RepoName + "/releases/tags/";
     private const string PluginsDirectoryAssetPath = "Assets/Plugins";
     private const string VersionAssetPath = "Assets/Plugins/rgpre.version.txt";
-    private const string MenuPath = "Tools/Update rgpre Native Plugin";
 
     [Serializable]
     private sealed class GitHubRelease
@@ -30,112 +31,182 @@ public static class RgprePluginDownloader
         public string browser_download_url;
     }
 
-    private sealed class PlatformInfo
+    private sealed class PlatformTarget
     {
+        public string Label;
         public string AssetPattern;
         public string BinaryFileName;
         public string TargetAssetPath;
         public BuildTarget BuildTarget;
+        public string EditorCpu;
+        public string PlatformCpu;
     }
+
+    private static readonly PlatformTarget[] AllPlatforms = new[]
+    {
+        new PlatformTarget
+        {
+            Label = "Windows x64",
+            AssetPattern = "librgpre-x86_64-pc-windows-msvc.zip",
+            BinaryFileName = "rgpre.dll",
+            TargetAssetPath = "Assets/Plugins/Windows/x86_64/rgpre.dll",
+            BuildTarget = BuildTarget.StandaloneWindows64,
+            EditorCpu = "x86_64",
+            PlatformCpu = "x86_64"
+        },
+        new PlatformTarget
+        {
+            Label = "macOS x64",
+            AssetPattern = "librgpre-x86_64-apple-darwin.tar.gz",
+            BinaryFileName = "librgpre.dylib",
+            TargetAssetPath = "Assets/Plugins/macOS/x86_64/librgpre.dylib",
+            BuildTarget = BuildTarget.StandaloneOSX,
+            EditorCpu = "x86_64",
+            PlatformCpu = "x86_64"
+        },
+        new PlatformTarget
+        {
+            Label = "macOS ARM64",
+            AssetPattern = "librgpre-aarch64-apple-darwin.tar.gz",
+            BinaryFileName = "librgpre.dylib",
+            TargetAssetPath = "Assets/Plugins/macOS/arm64/librgpre.dylib",
+            BuildTarget = BuildTarget.StandaloneOSX,
+            EditorCpu = "ARM64",
+            PlatformCpu = "ARM64"
+        },
+        new PlatformTarget
+        {
+            Label = "Linux x64",
+            AssetPattern = "librgpre-x86_64-unknown-linux-gnu.tar.gz",
+            BinaryFileName = "librgpre.so",
+            TargetAssetPath = "Assets/Plugins/Linux/x86_64/librgpre.so",
+            BuildTarget = BuildTarget.StandaloneLinux64,
+            EditorCpu = "x86_64",
+            PlatformCpu = "x86_64"
+        }
+    };
+
+    // ========== Startup check ==========
 
     static RgprePluginDownloader()
     {
-        if (!TryGetPlatformInfo(out PlatformInfo platformInfo, out _))
+        bool anyFound = false;
+        foreach (var platform in AllPlatforms)
         {
-            return;
+            if (File.Exists(AssetPathToAbsolutePath(platform.TargetAssetPath)))
+            {
+                anyFound = true;
+                break;
+            }
         }
 
-        string pluginAbsolutePath = AssetPathToAbsolutePath(platformInfo.TargetAssetPath);
-        if (!File.Exists(pluginAbsolutePath))
+        if (!anyFound)
         {
-            Debug.LogWarning("[rgpre] Native plugin not found. Run Tools > Update rgpre Native Plugin to download it.");
+            Debug.LogWarning("[rgpre] No native plugins found. Use Tools > rgpre > Update to Latest to download them.");
         }
     }
 
-    [MenuItem(MenuPath)]
-    public static async void UpdateRgpreNativePlugin()
+    // ========== Menu items ==========
+
+    [MenuItem("Tools/rgpre/Update to Latest")]
+    public static async void UpdateToLatest()
     {
-        await UpdateRgpreNativePluginAsync();
+        await DownloadReleaseAsync(null);
     }
 
-    private static async Task UpdateRgpreNativePluginAsync()
+    [MenuItem("Tools/rgpre/Download Specific Version...")]
+    public static void DownloadSpecificVersion()
     {
-        if (!TryGetPlatformInfo(out PlatformInfo platformInfo, out string platformError))
-        {
-            Debug.LogError($"[rgpre] {platformError}");
-            return;
-        }
+        RgpreVersionWindow.Show();
+    }
 
-        string currentVersion = ReadCurrentVersion();
+    // ========== Core download logic ==========
+
+    internal static async Task DownloadReleaseAsync(string versionTag)
+    {
+        bool isLatest = string.IsNullOrWhiteSpace(versionTag);
+        string description = isLatest ? "latest" : versionTag;
 
         try
         {
-            EditorUtility.DisplayProgressBar("rgpre Plugin Update", "Checking latest release...", 0.05f);
+            EditorUtility.DisplayProgressBar("rgpre Plugin Update", $"Fetching {description} release...", 0.02f);
 
-            GitHubRelease latestRelease = await GetLatestReleaseAsync();
-            if (latestRelease == null)
+            string apiUrl = isLatest ? LatestReleaseApiUrl : TagReleaseApiUrl + versionTag;
+            GitHubRelease release = await FetchReleaseAsync(apiUrl);
+            if (release == null)
             {
-                Debug.LogError("[rgpre] Failed to parse latest release response.");
+                Debug.LogError($"[rgpre] Failed to fetch release ({description}). Check the version tag.");
                 return;
             }
 
-            string latestVersion = string.IsNullOrWhiteSpace(latestRelease.tag_name) ? "unknown" : latestRelease.tag_name.Trim();
-            if (string.IsNullOrWhiteSpace(currentVersion))
+            string resolvedVersion = string.IsNullOrWhiteSpace(release.tag_name) ? "unknown" : release.tag_name.Trim();
+            string currentVersion = ReadCurrentVersion();
+
+            if (!string.IsNullOrEmpty(currentVersion) && string.Equals(currentVersion, resolvedVersion, StringComparison.Ordinal))
             {
-                Debug.Log($"[rgpre] Current: none, Latest: {latestVersion}");
-            }
-            else if (string.Equals(currentVersion, latestVersion, StringComparison.Ordinal))
-            {
-                Debug.Log($"[rgpre] Already up to date ({latestVersion})");
+                Debug.Log($"[rgpre] Already at {resolvedVersion}.");
             }
             else
             {
-                Debug.Log($"[rgpre] Current: {currentVersion}, Latest: {latestVersion}");
+                Debug.Log($"[rgpre] Current: {currentVersion ?? "none"} → Target: {resolvedVersion}");
             }
 
-            GitHubAsset matchingAsset = FindMatchingAsset(latestRelease.assets, platformInfo.AssetPattern);
-            if (matchingAsset == null)
+            int succeeded = 0;
+            int failed = 0;
+
+            for (int i = 0; i < AllPlatforms.Length; i++)
             {
-                Debug.LogError($"[rgpre] Could not find release asset matching '{platformInfo.AssetPattern}'.");
-                return;
-            }
+                PlatformTarget target = AllPlatforms[i];
+                float baseProgress = 0.05f + (0.9f * i / AllPlatforms.Length);
+                float sliceSize = 0.9f / AllPlatforms.Length;
 
-            if (string.IsNullOrWhiteSpace(matchingAsset.browser_download_url))
-            {
-                Debug.LogError("[rgpre] Release asset is missing browser_download_url.");
-                return;
-            }
+                EditorUtility.DisplayProgressBar("rgpre Plugin Update", $"[{i + 1}/{AllPlatforms.Length}] {target.Label}: finding asset...", baseProgress);
 
-            EditorUtility.DisplayProgressBar("rgpre Plugin Update", $"Downloading {matchingAsset.name}...", 0.2f);
-            byte[] archiveBytes = await DownloadBytesAsync(
-                matchingAsset.browser_download_url,
-                progress =>
+                GitHubAsset matchingAsset = FindMatchingAsset(release.assets, target.AssetPattern);
+                if (matchingAsset == null || string.IsNullOrWhiteSpace(matchingAsset.browser_download_url))
                 {
-                    float clamped = Mathf.Clamp01(progress);
-                    EditorUtility.DisplayProgressBar("rgpre Plugin Update", $"Downloading {matchingAsset.name}...", 0.2f + (0.6f * clamped));
-                });
+                    Debug.LogWarning($"[rgpre] No release asset for {target.Label} (expected '{target.AssetPattern}').");
+                    failed++;
+                    continue;
+                }
 
-            EditorUtility.DisplayProgressBar("rgpre Plugin Update", "Extracting archive...", 0.85f);
-            byte[] binaryBytes = ExtractExpectedBinary(archiveBytes, matchingAsset.name, platformInfo.BinaryFileName);
-            if (binaryBytes == null || binaryBytes.Length == 0)
-            {
-                Debug.LogError($"[rgpre] Failed to extract '{platformInfo.BinaryFileName}' from '{matchingAsset.name}'.");
-                return;
+                EditorUtility.DisplayProgressBar("rgpre Plugin Update", $"[{i + 1}/{AllPlatforms.Length}] {target.Label}: downloading...", baseProgress + sliceSize * 0.1f);
+
+                byte[] archiveBytes = await DownloadBytesAsync(
+                    matchingAsset.browser_download_url,
+                    progress => EditorUtility.DisplayProgressBar(
+                        "rgpre Plugin Update",
+                        $"[{i + 1}/{AllPlatforms.Length}] {target.Label}: downloading...",
+                        baseProgress + sliceSize * (0.1f + 0.7f * Mathf.Clamp01(progress))));
+
+                EditorUtility.DisplayProgressBar("rgpre Plugin Update", $"[{i + 1}/{AllPlatforms.Length}] {target.Label}: extracting...", baseProgress + sliceSize * 0.85f);
+
+                byte[] binaryBytes = ExtractExpectedBinary(archiveBytes, matchingAsset.name, target.BinaryFileName);
+                if (binaryBytes == null || binaryBytes.Length == 0)
+                {
+                    Debug.LogError($"[rgpre] Failed to extract '{target.BinaryFileName}' from '{matchingAsset.name}'.");
+                    failed++;
+                    continue;
+                }
+
+                string targetAbsoluteDir = Path.GetDirectoryName(AssetPathToAbsolutePath(target.TargetAssetPath));
+                Directory.CreateDirectory(targetAbsoluteDir);
+                File.WriteAllBytes(AssetPathToAbsolutePath(target.TargetAssetPath), binaryBytes);
+                AssetDatabase.ImportAsset(target.TargetAssetPath, ImportAssetOptions.ForceUpdate);
+                ConfigurePluginImporter(target);
+
+                Debug.Log($"[rgpre] {target.Label}: {target.TargetAssetPath} ({binaryBytes.LongLength:N0} bytes)");
+                succeeded++;
             }
 
-            string pluginsDirectoryAbsolute = AssetPathToAbsolutePath(PluginsDirectoryAssetPath);
-            Directory.CreateDirectory(pluginsDirectoryAbsolute);
-
-            string pluginAbsolutePath = AssetPathToAbsolutePath(platformInfo.TargetAssetPath);
-            File.WriteAllBytes(pluginAbsolutePath, binaryBytes);
-            File.WriteAllText(AssetPathToAbsolutePath(VersionAssetPath), latestVersion + "\n", Encoding.UTF8);
-
-            AssetDatabase.ImportAsset(platformInfo.TargetAssetPath, ImportAssetOptions.ForceUpdate);
-            ConfigurePluginImporter(platformInfo.TargetAssetPath, platformInfo.BuildTarget);
+            // Write version file
+            string pluginsAbsolute = AssetPathToAbsolutePath(PluginsDirectoryAssetPath);
+            Directory.CreateDirectory(pluginsAbsolute);
+            File.WriteAllText(AssetPathToAbsolutePath(VersionAssetPath), resolvedVersion + "\n", Encoding.UTF8);
             AssetDatabase.ImportAsset(VersionAssetPath, ImportAssetOptions.ForceUpdate);
             AssetDatabase.Refresh();
 
-            Debug.Log($"[rgpre] Updated to {latestVersion}: {platformInfo.TargetAssetPath} ({binaryBytes.LongLength} bytes).");
+            Debug.Log($"[rgpre] Updated to {resolvedVersion}: {succeeded} platforms succeeded, {failed} failed.");
         }
         catch (Exception ex)
         {
@@ -147,16 +218,22 @@ public static class RgprePluginDownloader
         }
     }
 
-    private static async Task<GitHubRelease> GetLatestReleaseAsync()
+    // ========== GitHub API ==========
+
+    private static async Task<GitHubRelease> FetchReleaseAsync(string apiUrl)
     {
-        using (UnityWebRequest request = UnityWebRequest.Get(ReleaseApiUrl))
+        using (UnityWebRequest request = UnityWebRequest.Get(apiUrl))
         {
             request.SetRequestHeader("Accept", "application/vnd.github+json");
             request.SetRequestHeader("User-Agent", "redguard-unity-rgpre-updater");
 
             await SendRequestAsync(request, null);
-            string json = request.downloadHandler.text;
-            return JsonUtility.FromJson<GitHubRelease>(json);
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                return null;
+            }
+
+            return JsonUtility.FromJson<GitHubRelease>(request.downloadHandler.text);
         }
     }
 
@@ -165,7 +242,6 @@ public static class RgprePluginDownloader
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("User-Agent", "redguard-unity-rgpre-updater");
-
             await SendRequestAsync(request, onProgress);
             return request.downloadHandler.data;
         }
@@ -188,6 +264,8 @@ public static class RgprePluginDownloader
         }
     }
 
+    // ========== Asset matching ==========
+
     private static GitHubAsset FindMatchingAsset(GitHubAsset[] assets, string expectedName)
     {
         if (assets == null)
@@ -197,15 +275,16 @@ public static class RgprePluginDownloader
 
         for (int i = 0; i < assets.Length; i++)
         {
-            GitHubAsset asset = assets[i];
-            if (asset != null && string.Equals(asset.name, expectedName, StringComparison.Ordinal))
+            if (assets[i] != null && string.Equals(assets[i].name, expectedName, StringComparison.Ordinal))
             {
-                return asset;
+                return assets[i];
             }
         }
 
         return null;
     }
+
+    // ========== Archive extraction ==========
 
     private static byte[] ExtractExpectedBinary(byte[] archiveBytes, string archiveName, string expectedBinaryFileName)
     {
@@ -238,10 +317,9 @@ public static class RgprePluginDownloader
             string[] files = Directory.GetFiles(extractDirectory, "*", SearchOption.AllDirectories);
             for (int i = 0; i < files.Length; i++)
             {
-                string filePath = files[i];
-                if (string.Equals(Path.GetFileName(filePath), expectedBinaryFileName, StringComparison.Ordinal))
+                if (string.Equals(Path.GetFileName(files[i]), expectedBinaryFileName, StringComparison.Ordinal))
                 {
-                    return File.ReadAllBytes(filePath);
+                    return File.ReadAllBytes(files[i]);
                 }
             }
 
@@ -298,94 +376,56 @@ public static class RgprePluginDownloader
         return null;
     }
 
-    private static bool TryGetPlatformInfo(out PlatformInfo info, out string error)
+    // ========== Plugin importer configuration ==========
+
+    private static void ConfigurePluginImporter(PlatformTarget target)
     {
-        Architecture architecture = RuntimeInformation.OSArchitecture;
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && architecture == Architecture.X64)
-        {
-            info = new PlatformInfo
-            {
-                AssetPattern = "librgpre-x86_64-pc-windows-msvc.zip",
-                BinaryFileName = "rgpre.dll",
-                TargetAssetPath = "Assets/Plugins/rgpre.dll",
-                BuildTarget = BuildTarget.StandaloneWindows64
-            };
-            error = null;
-            return true;
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && architecture == Architecture.X64)
-        {
-            info = new PlatformInfo
-            {
-                AssetPattern = "librgpre-x86_64-apple-darwin.tar.gz",
-                BinaryFileName = "librgpre.dylib",
-                TargetAssetPath = "Assets/Plugins/rgpre.dylib",
-                BuildTarget = BuildTarget.StandaloneOSX
-            };
-            error = null;
-            return true;
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && architecture == Architecture.Arm64)
-        {
-            info = new PlatformInfo
-            {
-                AssetPattern = "librgpre-aarch64-apple-darwin.tar.gz",
-                BinaryFileName = "librgpre.dylib",
-                TargetAssetPath = "Assets/Plugins/rgpre.dylib",
-                BuildTarget = BuildTarget.StandaloneOSX
-            };
-            error = null;
-            return true;
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && architecture == Architecture.X64)
-        {
-            info = new PlatformInfo
-            {
-                AssetPattern = "librgpre-x86_64-unknown-linux-gnu.tar.gz",
-                BinaryFileName = "librgpre.so",
-                TargetAssetPath = "Assets/Plugins/librgpre.so",
-                BuildTarget = BuildTarget.StandaloneLinux64
-            };
-            error = null;
-            return true;
-        }
-
-        info = null;
-        error = $"Unsupported platform: {RuntimeInformation.OSDescription} ({architecture})";
-        return false;
-    }
-
-    private static void ConfigurePluginImporter(string pluginAssetPath, BuildTarget targetPlatform)
-    {
-        PluginImporter importer = AssetImporter.GetAtPath(pluginAssetPath) as PluginImporter;
+        PluginImporter importer = AssetImporter.GetAtPath(target.TargetAssetPath) as PluginImporter;
         if (importer == null)
         {
-            Debug.LogWarning($"[rgpre] PluginImporter not found for {pluginAssetPath}.");
+            Debug.LogWarning($"[rgpre] PluginImporter not found for {target.TargetAssetPath}.");
             return;
         }
 
         importer.SetCompatibleWithAnyPlatform(false);
+
+        // Editor: compatible, with correct CPU
         importer.SetCompatibleWithEditor(true);
+        importer.SetEditorData("CPU", target.EditorCpu);
+        importer.SetEditorData("OS", GetEditorOs(target.BuildTarget));
+
+        // Standalone platforms: only the matching one
         importer.SetCompatibleWithPlatform(BuildTarget.StandaloneWindows64, false);
         importer.SetCompatibleWithPlatform(BuildTarget.StandaloneOSX, false);
         importer.SetCompatibleWithPlatform(BuildTarget.StandaloneLinux64, false);
-        importer.SetCompatibleWithPlatform(targetPlatform, true);
+        importer.SetCompatibleWithPlatform(target.BuildTarget, true);
+        importer.SetPlatformData(target.BuildTarget, "CPU", target.PlatformCpu);
+
         importer.SaveAndReimport();
     }
 
+    private static string GetEditorOs(BuildTarget target)
+    {
+        switch (target)
+        {
+            case BuildTarget.StandaloneWindows64: return "Windows";
+            case BuildTarget.StandaloneOSX: return "OSX";
+            case BuildTarget.StandaloneLinux64: return "Linux";
+            default: return "AnyOS";
+        }
+    }
+
+    // ========== Utilities ==========
+
     private static string ReadCurrentVersion()
     {
-        string versionAbsolutePath = AssetPathToAbsolutePath(VersionAssetPath);
-        if (!File.Exists(versionAbsolutePath))
+        string path = AssetPathToAbsolutePath(VersionAssetPath);
+        if (!File.Exists(path))
         {
             return null;
         }
 
-        return File.ReadAllText(versionAbsolutePath).Trim();
+        return File.ReadAllText(path).Trim();
     }
 
     private static string AssetPathToAbsolutePath(string assetPath)
@@ -393,6 +433,8 @@ public static class RgprePluginDownloader
         string projectRoot = Path.GetDirectoryName(Application.dataPath);
         return Path.Combine(projectRoot, assetPath.Replace('/', Path.DirectorySeparatorChar));
     }
+
+    // ========== Tar/stream helpers ==========
 
     private static bool TryReadExact(Stream stream, int count, out byte[] buffer)
     {
@@ -523,5 +565,49 @@ public static class RgprePluginDownloader
 
         long remainder = value % 512;
         return remainder == 0 ? value : value + (512 - remainder);
+    }
+}
+
+/// <summary>
+/// Small EditorWindow for entering a specific rgpre version tag to download.
+/// </summary>
+public class RgpreVersionWindow : EditorWindow
+{
+    private string versionTag = "v";
+
+    public static void Show()
+    {
+        var window = GetWindow<RgpreVersionWindow>(true, "Download rgpre Version", true);
+        window.minSize = new Vector2(340, 90);
+        window.maxSize = new Vector2(340, 90);
+        window.ShowUtility();
+    }
+
+    private void OnGUI()
+    {
+        EditorGUILayout.Space(8);
+        EditorGUILayout.LabelField("Enter version tag (e.g. v0.3.4):");
+        versionTag = EditorGUILayout.TextField(versionTag);
+
+        EditorGUILayout.Space(4);
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+
+        if (GUILayout.Button("Download", GUILayout.Width(100)))
+        {
+            string tag = versionTag?.Trim();
+            if (!string.IsNullOrEmpty(tag))
+            {
+                Close();
+                _ = RgprePluginDownloader.DownloadReleaseAsync(tag);
+            }
+        }
+
+        if (GUILayout.Button("Cancel", GUILayout.Width(80)))
+        {
+            Close();
+        }
+
+        EditorGUILayout.EndHorizontal();
     }
 }
