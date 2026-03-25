@@ -169,7 +169,7 @@ public class ModelViewer : MonoBehaviour
         }
         
         PrepareLoad();
-        FFITextureLoader.ClearCache();
+        FFIModelLoader.ClearCache();
         
         loadedObjects = new List<GameObject>();
         switch (fileType)
@@ -211,7 +211,7 @@ public class ModelViewer : MonoBehaviour
         }
         
         PrepareLoad();
-        FFITextureLoader.ClearCache();
+        FFIModelLoader.ClearCache();
         
         // Load Area objects
         loadedObjects = FFIModelLoader.LoadArea(RGM, COL, WLD);
@@ -413,7 +413,7 @@ public class ModelViewer : MonoBehaviour
         string fileName = minimalLoadedFileName;
 
         // Clear caches so it rebuilds with the new palette
-        FFITextureLoader.ClearCache();
+        FFIModelLoader.ClearCache();
 
         // Force reload by clearing the name check
         string savedLoadedFileName = loadedFileName;

@@ -469,7 +469,7 @@ public static class FFIModelLoader
             var info = materialInfos[i];
             string matKey;
             if (info.isSolidColor)
-                matKey = colName + "_solid_" + info.colorIndex;
+                matKey = "solid_" + info.solidColor.r + "_" + info.solidColor.g + "_" + info.solidColor.b;
             else
                 matKey = colName + "_tex_" + info.textureId + "_" + info.imageId;
 
@@ -483,7 +483,7 @@ public static class FFIModelLoader
 
             if (info.isSolidColor)
             {
-                material.color = FFITextureLoader.GetPaletteColor(info.colorIndex, colName);
+                material.color = info.solidColor;
             }
             else
             {
@@ -491,9 +491,6 @@ public static class FFIModelLoader
                 if (frames != null && frames.Count > 0)
                 {
                     material.mainTexture = frames[0];
-                    // UVs from DLL are divided by 16.0 only (pixel-space).
-                    // Scale by 1/textureDimensions to get normalized 0-1 UVs.
-                    material.mainTextureScale = new Vector2(1f / frames[0].width, 1f / frames[0].height);
 
                     for (int f = 0; f < frames.Count; f++)
                     {

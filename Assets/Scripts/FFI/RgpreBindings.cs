@@ -50,13 +50,13 @@ public static class RgpreBindings
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct RgmdSubmeshHeader
     {
-        public byte materialType;
-        public byte colorIndex;
-        public ushort textureId;
-        public byte imageId;
-        private byte _pad0;
-        private byte _pad1;
-        private byte _pad2;
+        public byte textured;       // 0 = solid color (color holds resolved RGB), 1 = textured
+        public byte colorR;         // resolved RGB red (solid) or 0 (textured)
+        public byte colorG;         // resolved RGB green (solid) or 0 (textured)
+        public byte colorB;         // resolved RGB blue (solid) or 0 (textured)
+        public ushort textureId;    // TEXBSI id (textured) or 0 (solid)
+        public byte imageId;        // TEXBSI image (textured) or 0 (solid)
+        private byte _pad;
         public int vertexCount;
         public int indexCount;
     }

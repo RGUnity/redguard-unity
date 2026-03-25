@@ -17,7 +17,7 @@ public static class RgmdDeserializer
     public struct SubmeshMaterialInfo
     {
         public bool isSolidColor;
-        public byte colorIndex;
+        public Color32 solidColor;  // resolved RGB from native (solid colors only)
         public ushort textureId;
         public byte imageId;
     }
@@ -141,8 +141,8 @@ public static class RgmdDeserializer
 
             submeshMaterials[submeshIndex] = new SubmeshMaterialInfo
             {
-                isSolidColor = submeshHeader.materialType == 0,
-                colorIndex = submeshHeader.colorIndex,
+                isSolidColor = submeshHeader.textured == 0,
+                solidColor = new Color32(submeshHeader.colorR, submeshHeader.colorG, submeshHeader.colorB, 255),
                 textureId = submeshHeader.textureId,
                 imageId = submeshHeader.imageId
             };

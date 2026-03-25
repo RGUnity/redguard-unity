@@ -24,7 +24,7 @@ public class SceneLoader : MonoBehaviour
         _sceneSubRoot.transform.SetParent(sceneParent.transform);
         _sceneSubRoot.name = RGM;
 
-        FFITextureLoader.ClearCache();
+        FFIModelLoader.ClearCache();
         loadedObjects = FFIModelLoader.LoadArea(RGM, COL, WLD);
 
         foreach (var obj in loadedObjects)
