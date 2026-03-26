@@ -151,7 +151,6 @@ using(s_load_mesh.Auto()){
     public static UnityData_WLD WLD2Mesh(string filename_wld, string name_col)
     {
 
-using(s_load_WLD2mesh.Auto()){
         RGFileImport.RGWLDFile file_wld = new RGFileImport.RGWLDFile();
         file_wld.LoadFile(filename_wld);
         Mesh mesh_wld = LoadMesh_WLD(file_wld);
@@ -168,14 +167,15 @@ using(s_load_WLD2mesh.Auto()){
         data.materials = materials;
 
         return data;
-}
     }
     public static UnityData_3D FLAT2Mesh(string meshname, string palettename)
     {
-using(s_load_FLAT2mesh.Auto()){
         RG3DStore.Mesh3D_intermediate mesh_i = RG3DStore.LoadMeshIntermediateFlat(meshname);
-        return LoadMesh_3DStore(mesh_i, palettename, "FLATS", 0); // TODO: check if any FLATs have overrides
-}
+        UnityData_3D data = LoadMesh_3DStore(mesh_i, palettename, "FLATS", 0); // TODO: check if any FLATs have overrides
+        // Quick hack here to keep uvs in 0->1 range, they should be scaled but differently from the rest? otherwise i end up with a bunch of 0,0 uvs
+        data.mesh.uv = mesh_i.uv.ToArray();
+ 
+        return data;
     }
 
     public static UnityData_3D f3D2Mesh(string meshname, string palettename, int texture_override = 0)
@@ -195,7 +195,6 @@ using(s_load_FLAT2mesh.Auto()){
             return LoadMesh_3DStore(mesh_i, palettename, "DEFAULT", texture_override);
         }
     }
-    
     private static UnityData_3D LoadMesh_3DStore(RG3DStore.Mesh3D_intermediate mesh_i, string palettename, string shadername, int texture_override)
     {
         List<Material> materials = new List<Material>();
