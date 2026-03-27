@@ -131,7 +131,7 @@ Material:
     - _GlossyReflections: 0
     - _Interval: 10
     - _Max_Frames: 1
-    - _Maximum_Frames: 2
+    - _Maximum_Frames: 5
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005

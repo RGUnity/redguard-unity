@@ -118,7 +118,7 @@ Material:
     - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _Cutoff: 0.5
-    - _Delay: 10
+    - _Delay: 5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -131,7 +131,7 @@ Material:
     - _GlossyReflections: 0
     - _Interval: 10
     - _Max_Frames: 1
-    - _Maximum_Frames: 2
+    - _Maximum_Frames: 3
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
