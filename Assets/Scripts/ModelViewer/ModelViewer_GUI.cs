@@ -44,7 +44,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private List<GameObject> areaButtonList = new();
     private List<GameObject> modelButtonList = new();
-    private List<RGINIStore.worldData> areaList = new();
+    private List<FFIWorldStore.WorldData> areaList = new();
     private List<FileInfo> modelList = new();
 
     private int selectedButtonIndex = -1;
@@ -344,7 +344,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         // generate the area list, if it is missing
         if (areaList.Count <= 0)
         {
-            areaList = RGINIStore.GetWorldList().Values.ToList();
+            areaList = FFIWorldStore.GetWorldList().Values.ToList();
 
             for(int i=0;i<areaList.Count;i++)
             {
@@ -360,7 +360,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             // Add the missing HIDEOUT area that is missing from WORLD.INI
             if (File.Exists(Game.pathManager.GetMapsFolder() + "HIDEOUT.RGM"))
             {
-                areaList.Add(new RGINIStore.worldData
+                areaList.Add(new FFIWorldStore.WorldData
                 {
                     RGM = "HIDEOUT",
                     COL = "HIDEOUT",
@@ -611,7 +611,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void RequestExportGLTF()
     {
-        modelViewer.glTFExporter.ExportGLTF(modelViewer._objectRootGenerated, modelViewer.minimalLoadedFileName);
+        modelViewer.glTFExporter.ExportGLTF(modelViewer.minimalLoadedFileName);
     }
 
     public void RequestObjectIsolation()

@@ -8,7 +8,7 @@ public static class WorldLoader
     struct WorldLoadRequest
     {
         public bool loadRequested;
-        public RGINIStore.worldData worldData;
+        public FFIWorldStore.WorldData worldData;
         public int playerSpawnLocation;
         public int playerSpawnOrientation;
     }
@@ -33,12 +33,15 @@ public static class WorldLoader
     public static void RequestLoadWorld(int worldId, int playerSpawnLocation, int playerSpawnOrientation)
     {
         loadRequest.loadRequested = true;
-        loadRequest.worldData = RGINIStore.GetWorldList()[worldId];
+        loadRequest.worldData = FFIWorldStore.GetWorldList()[worldId];
         loadRequest.playerSpawnLocation = playerSpawnLocation;
         loadRequest.playerSpawnOrientation = playerSpawnOrientation;
 
-        Material loadScreenMat = RGTexStore.GetMaterial_GXA(loadRequest.worldData.loadScreen, 0);
-        Game.uiManager.ShowLoadingScreen(loadScreenMat.mainTexture);
+        Material loadScreenMat = FFIGxaLoader.GetMaterial_GXA(loadRequest.worldData.loadScreen, 0);
+        if (loadScreenMat != null)
+        {
+            Game.uiManager.ShowLoadingScreen(loadScreenMat.mainTexture);
+        }
 
     }
     static void UnloadLoadedWorld()
@@ -68,7 +71,7 @@ public static class WorldLoader
         }
         return false;
     }
-    public static void LoadWorld(RGINIStore.worldData worldData, int playerSpawnLocation, int playerSpawnOrientation)
+    public static void LoadWorld(FFIWorldStore.WorldData worldData, int playerSpawnLocation, int playerSpawnOrientation)
     {
         string RGM;
         string COL;
@@ -87,17 +90,19 @@ public static class WorldLoader
         // soundLoading
         if(!SFXLoaded)
         {
-            RGSoundStore.LoadSFX(SFX);
+            FFISoundStore.LoadSFX(SFX);
+            SFXLoaded = true;
         }
 
         if(!RTXLoaded)
         {
-            RGSoundStore.LoadRTX(RTX);
+            FFISoundStore.LoadRTX(RTX);
+            RTXLoaded = true;
         }
 
 
         // load in objects
-        loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
+        loadedObjects = FFIModelLoader.LoadArea(RGM, COL, WLD);
 
         // load the player
         LoadPlayer(RGM, playerSpawnLocation, playerSpawnOrientation);
@@ -105,7 +110,10 @@ public static class WorldLoader
         for(int i = 0; i < WorldObjects[RGM].Count;i++)
         {
             
-            ModelLoader.scriptedObjects[WorldObjects[RGM][i]].EnableScripting();
+            if (FFIModelLoader.ScriptedObjects.TryGetValue(WorldObjects[RGM][i], out RGScriptedObject scriptedObject))
+            {
+                scriptedObject.EnableScripting();
+            }
         }
 
     }
@@ -115,7 +123,7 @@ public static class WorldLoader
         if(!playerLoaded)
         {
             // TODO: we need to account for gremlin too
-            RGFileImport.RGRGMFile filergm = RGRGMStore.GetRGM(RGM);
+            RGFileImport.RGRGMFile filergm = FFIModelLoader.CurrentRgmData;
 
             // Create scripted object
             RGFileImport.RGRGMFile.RGMMPOBItem cyrus_data = new RGFileImport.RGRGMFile.RGMMPOBItem();
@@ -134,7 +142,11 @@ public static class WorldLoader
             playerLoaded = true;
         }
 
-        Vector3 playerSpawnPos = RGObjectStore.mapMarkerList[playerSpawnLocation];
+        Vector3 playerSpawnPos = Vector3.zero;
+        if (RGObjectStore.mapMarkerList != null && playerSpawnLocation >= 0 && playerSpawnLocation < RGObjectStore.mapMarkerList.Count)
+        {
+            playerSpawnPos = RGObjectStore.mapMarkerList[playerSpawnLocation];
+        }
         Quaternion playerSpawnRot = Quaternion.AngleAxis(((float)playerSpawnOrientation)*DA2DG, Vector3.up);
 
         RGObjectStore.GetPlayerMain().SetPositionAndRotation(playerSpawnPos, playerSpawnRot);

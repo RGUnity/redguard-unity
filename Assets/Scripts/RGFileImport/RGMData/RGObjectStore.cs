@@ -277,7 +277,7 @@ public class PlayerInventory
     {
         activeItem = -1;
         items = new int[itemCount];
-        // TODO: set starting items here, should come from RGINIStore
+        // TODO: set starting items from game data source
     }
     public int HaveItem(int id)
     {
