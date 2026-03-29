@@ -17,6 +17,7 @@ public class ModelViewer_Settings : MonoBehaviour
 
     // Camera
     public float fieldOfView = 60f;
+    public float flySpeedMultiplier = 1f;
 
     // Rendering
     public bool useFog;
@@ -78,6 +79,13 @@ public class ModelViewer_Settings : MonoBehaviour
     {
         fieldOfView = Mathf.Clamp(fov, 30f, 120f);
         Camera.main.fieldOfView = fieldOfView;
+    }
+
+    public void SetFlySpeedMultiplier(float multiplier)
+    {
+        flySpeedMultiplier = Mathf.Clamp(multiplier, 0.1f, 20f);
+        if (gui.flySpeedSlider != null) gui.flySpeedSlider.SetValueWithoutNotify(flySpeedMultiplier);
+        mv_camera.flySpeedMultiplier = flySpeedMultiplier;
     }
 
     public void ToggleFog(bool enable)

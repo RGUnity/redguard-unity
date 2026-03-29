@@ -30,6 +30,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public Toggle animationToggle;
     [SerializeField] public Toggle flyModeToggle;
     [SerializeField] public Slider fovSlider;
+    [SerializeField] public Slider flySpeedSlider;
     [SerializeField] public Slider bgColorR, bgColorG, bgColorB;
     [SerializeField] public Toggle cameraLightToggle;
     [SerializeField] public Toggle sceneLightToggle;
@@ -151,6 +152,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             animationToggle.SetIsOnWithoutNotify(settings.playAnimations);
         if (fovSlider != null)
             fovSlider.SetValueWithoutNotify(settings.fieldOfView);
+        if (flySpeedSlider != null)
+            flySpeedSlider.SetValueWithoutNotify(settings.flySpeedMultiplier);
         if (bgColorR != null)
             bgColorR.SetValueWithoutNotify(settings.backgroundColor.r);
         if (bgColorG != null)
@@ -179,6 +182,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             animationToggle.onValueChanged.AddListener(val => settings.ToggleAnimations(val));
         if (fovSlider != null)
             fovSlider.onValueChanged.AddListener(val => settings.SetFieldOfView(val));
+        if (flySpeedSlider != null)
+            flySpeedSlider.onValueChanged.AddListener(val => settings.SetFlySpeedMultiplier(val));
         if (bgColorR != null)
             bgColorR.onValueChanged.AddListener(val => settings.SetBackgroundColor(new Color(val, settings.backgroundColor.g, settings.backgroundColor.b)));
         if (bgColorG != null)
