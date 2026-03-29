@@ -3270,100 +3270,100 @@ public static class WorldLoader
             }
         },
         {"OBSERVE" , new List<uint>{
-            // 0x82BD3750, // X
-            // 0x82BD9D00, // X
+            0x82BD3750, // X
+            0x82BD9D00, // X
             0x82BD9E40, // EXTOBSRV
-            // 0x82BDA0F0, // OB_CAM21
-            // 0x82BDA330, // OB_DOR02
-            // 0x82BDA470, // OB_DOR01
-            // 0x82BDA6A0, // OB_ENG21
-            // 0x82BDA9B0, // OB_STEPR
-            // 0x82BDABD0, // OB_DOME3
-            // 0x82BDAE08, // OB_DOME4
-            // 0x82BDB040, // OB_DOME5
-            // 0x82BDB358, // OB_DOME2
-            // 0x82BDB598, // OB_PLT05
-            // 0x82BDB7D0, // OB_CON01
-            // 0x82BDB9F0, // OB_PLT06
-            // 0x82BDBC58, // OB_PLT07
-             0x82BDBD98, // ERASMO
-            // 0x82BDBF70, // OB_GEAR
-            // 0x82BDC140, // OB_ENG03
-            // 0x82BDC378, // OB_PIPE
-            // 0x82BDC5B0, // OB_ENG23
-            // 0x82BDC9E8, // OB_ENG22
-            // 0x82BDCC28, // OB_ENGC
-            // 0x82BDCE60, // OB_STEP2
-            // 0x82BDCF98, // OB_STEP1
-            // 0x82BDD1B8, // A
-            // 0x82BDD3F0, // OB_CON12
-            // 0x82BDD628, // OB_TEL01
-            // 0x82BDD868, // OB_TEL00
-            // 0x82BDDB80, // OB_DOME1
-            // 0x82BDDDB8, // OB_DOME7
-            // 0x82BDE188, // OB_DOME6
-            // 0x82BDE3C0, // OB_PLT03
-            // 0x82BDE5F0, // OB_CON02
-            // 0x82BDE730, // GEARSND
-            // 0x82BDE968, // OB_PLT02
-            // 0x82BDEAD8, // OB_PLT01
-            // 0x82BDED18, // OB_PIPE
-            // 0x82BDEE58, // OB_STJET
-            // 0x82BDF098, // OB_PLT08
-            // 0x82BDF408, // OB_PLT04
-            // 0x82BDF628, // OB_ORY16
-            // 0x82BDF860, // OB_ORY09
-            // 0x82BDFA78, // OB_ORY07
-            // 0x82BDFAC0, // OB_STJET
-            // 0x82BDFC00, // OB_STJET
-            // 0x82BDFE40, // OB_ENGA
-            // 0x82BE0080, // OB_ORY11
-            // 0x82BE02B8, // OB_ORY17
-            // 0x82BE04D8, // OB_ORY15
-            // 0x82BE0740, // OB_ORY14
-            // 0x82BE08A0, // OB_ORY10
-            // 0x82BE09B0, // GEARSND
-            // 0x82BE0BF0, // OB_ORY03
-            // 0x82BE1D10, // OB_ORY12
-            // 0x82BE1F78, // OB_TEL04
-            // 0x82BE2148, // OB_ORY13
-            // 0x82BE2380, // OB_ENG12
-            // 0x82BE25A8, // OB_ENG11
-            // 0x82BE27C0, // OB_ENG13
-            // 0x82BE2AD8, // OB_ENG01
-            // 0x82BE2D08, // OB_PLT00
-            // 0x82BE2F40, // OB_ORY08
-            // 0x82BE3178, // OB_ORY06
-            // 0x82BE33B8, // OB_ORY05
-            // 0x82BE35F8, // OB_ORY04
-            // 0x82BE3830, // OB_ORY02
-            // 0x82BE3B28, // OB_ORY01
-            // 0x82BE3D60, // OB_ENG04
-            // 0x82BE42F8, // OB_ENG05
-            // 0x82BE4538, // OB_TEL03
-            // 0x82BE4698, // OB_CON11
-            // 0x82BE4728, // GEARSND
-            // 0x82BE4948, // OB_PIPE
-            // 0x82BE4B68, // OB_TEL02
-            // 0x82BE4DA0, // OB_CON04
-            // 0x82BE4FD8, // OB_CON03
-            // 0x82BE5218, // OB_LIFT
-            // 0x82BE5668, // OB_CON05
-            // 0x82BE5970, // OB_ENG18
-            // 0x82BE5C58, // OB_CON08
-            // 0x82BE5D98, // OB_LIFT
-            // 0x82BE60A8, // OB_ENG25
-            // 0x82BE6490, // OB_ENG17
-            // 0x82BE66C8, // OB_CON10
-            // 0x82BE6900, // OB_CON09
-            // 0x82BE6B78, // OB_CON06
-            // 0x82BE6BC0, // OB_ENGW
-            // 0x82BE74E8, // OB_PIPE
-            // 0x82BE7730, // OB_ERSL
-            // 0x82BE7988, // OB_CON07
-            // 0x82BE7CA0, // OB_ERS10
-            // 0x82BE7FB8, // OB_ERS08
-            // 0x0, // OB_ERS06
+            0x82BDA0F0, // OB_CAM21
+            0x82BDA330, // OB_DOR02
+            0x82BDA470, // OB_DOR01
+            0x82BDA6A0, // OB_ENG21
+            0x82BDA9B0, // OB_STEPR
+            0x82BDABD0, // OB_DOME3
+            0x82BDAE08, // OB_DOME4
+            0x82BDB040, // OB_DOME5
+            0x82BDB358, // OB_DOME2
+            0x82BDB598, // OB_PLT05
+            0x82BDB7D0, // OB_CON01
+            0x82BDB9F0, // OB_PLT06
+            0x82BDBC58, // OB_PLT07
+            0x82BDBD98, // ERASMO
+            0x82BDBF70, // OB_GEAR
+            0x82BDC140, // OB_ENG03
+            0x82BDC378, // OB_PIPE
+            0x82BDC5B0, // OB_ENG23
+            0x82BDC9E8, // OB_ENG22
+            0x82BDCC28, // OB_ENGC
+            0x82BDCE60, // OB_STEP2
+            0x82BDCF98, // OB_STEP1
+            0x82BDD1B8, // A
+            0x82BDD3F0, // OB_CON12
+            0x82BDD628, // OB_TEL01
+            0x82BDD868, // OB_TEL00
+            0x82BDDB80, // OB_DOME1
+            0x82BDDDB8, // OB_DOME7
+            0x82BDE188, // OB_DOME6
+            0x82BDE3C0, // OB_PLT03
+            0x82BDE5F0, // OB_CON02
+            0x82BDE730, // GEARSND
+            0x82BDE968, // OB_PLT02
+            0x82BDEAD8, // OB_PLT01
+            0x82BDED18, // OB_PIPE
+            0x82BDEE58, // OB_STJET
+            0x82BDF098, // OB_PLT08
+            0x82BDF408, // OB_PLT04
+            0x82BDF628, // OB_ORY16
+            0x82BDF860, // OB_ORY09
+            0x82BDFA78, // OB_ORY07
+            0x82BDFAC0, // OB_STJET
+            0x82BDFC00, // OB_STJET
+            0x82BDFE40, // OB_ENGA
+            0x82BE0080, // OB_ORY11
+            0x82BE02B8, // OB_ORY17
+            0x82BE04D8, // OB_ORY15
+            0x82BE0740, // OB_ORY14
+            0x82BE08A0, // OB_ORY10
+            0x82BE09B0, // GEARSND
+            0x82BE0BF0, // OB_ORY03
+            0x82BE1D10, // OB_ORY12
+            0x82BE1F78, // OB_TEL04
+            0x82BE2148, // OB_ORY13
+            0x82BE2380, // OB_ENG12
+            0x82BE25A8, // OB_ENG11
+            0x82BE27C0, // OB_ENG13
+            0x82BE2AD8, // OB_ENG01
+            0x82BE2D08, // OB_PLT00
+            0x82BE2F40, // OB_ORY08
+            0x82BE3178, // OB_ORY06
+            0x82BE33B8, // OB_ORY05
+            0x82BE35F8, // OB_ORY04
+            0x82BE3830, // OB_ORY02
+            0x82BE3B28, // OB_ORY01
+            0x82BE3D60, // OB_ENG04
+            0x82BE42F8, // OB_ENG05
+            0x82BE4538, // OB_TEL03
+            0x82BE4698, // OB_CON11
+            0x82BE4728, // GEARSND
+            0x82BE4948, // OB_PIPE
+            0x82BE4B68, // OB_TEL02
+            0x82BE4DA0, // OB_CON04
+            0x82BE4FD8, // OB_CON03
+            0x82BE5218, // OB_LIFT
+            0x82BE5668, // OB_CON05
+            0x82BE5970, // OB_ENG18
+            0x82BE5C58, // OB_CON08
+            0x82BE5D98, // OB_LIFT
+            0x82BE60A8, // OB_ENG25
+            0x82BE6490, // OB_ENG17
+            0x82BE66C8, // OB_CON10
+            0x82BE6900, // OB_CON09
+            0x82BE6B78, // OB_CON06
+            0x82BE6BC0, // OB_ENGW
+            0x82BE74E8, // OB_PIPE
+            0x82BE7730, // OB_ERSL
+            0x82BE7988, // OB_CON07
+            0x82BE7CA0, // OB_ERS10
+            0x82BE7FB8, // OB_ERS08
+            0x0, // OB_ERS06
             }
         },
         {"HIDEOUT" , new List<uint>{

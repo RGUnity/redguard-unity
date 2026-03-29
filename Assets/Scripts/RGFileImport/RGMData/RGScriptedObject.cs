@@ -12,7 +12,8 @@ public class RGScriptedObject : MonoBehaviour
         scriptedobject_static       = 0,
         scriptedobject_animated     = 1,
         scriptedobject_light        = 2,
-        scriptedobject_sound        = 3
+        scriptedobject_sound        = 3,
+        scriptedobject_flat         = 4,
     }
     public enum TaskType
     {
@@ -21,6 +22,7 @@ public class RGScriptedObject : MonoBehaviour
         task_waitingdialog,
         task_rotating,
         task_moving,
+        task_moving_local,
         task_waiting,
         task_waiting_on_player,
         task_waiting_for_menu,
@@ -36,6 +38,7 @@ public class RGScriptedObject : MonoBehaviour
 	public string objectName;
 	public uint objectId;
 	public string scriptName;
+	public string colName;
 
     Vector3 originalRotation;
 
@@ -53,6 +56,8 @@ public class RGScriptedObject : MonoBehaviour
     Light light;
     Collider collider;
     AudioSource audioSource;
+
+	GameObject flat;
 
     public bool playerStanding;
     public RGScriptedObject offsetTarget;
@@ -87,6 +92,8 @@ public class RGScriptedObject : MonoBehaviour
         // moving
         public Vector3 positionTarget;
         public Vector3 positionStart;
+        // moving_local
+        public Vector3 direction;
         // waiting
         // waiting_on_player
         // waiting_for_menu,
@@ -224,10 +231,25 @@ public class RGScriptedObject : MonoBehaviour
         light.range = (float)(MPOB.radius)/20.0f;
         light.color = new Color((float)(MPOB.red)/255.0f,(float)(MPOB.green)/255.0f,(float)(MPOB.blue)/255.0f);
     }
+    public void InstanciateFlat(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
+    {
+        type = ScriptedObjectType.scriptedobject_flat;
+		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
+			
+        string flatstr= $"{MPOB.textureId}/{MPOB.imageId}";
+
+        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_flat,
+                                                                flatstr,
+                                                                name_col);
+    
+        skinnedMeshRenderer.sharedMesh = data_3D.mesh;
+        skinnedMeshRenderer.SetMaterials(data_3D.materials);
+    }
 
 	public void Instanciate(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
 	{
         scriptName = MPOB.scriptName;
+        colName = name_col;
         if (!filergm.RAHD.dict.TryGetValue(scriptName, out RAHDData))
         {
             RAHDData = new RGFileImport.RGRGMFile.RGMRAHDItem();
@@ -279,6 +301,10 @@ public class RGScriptedObject : MonoBehaviour
             case RGFileImport.RGRGMFile.ObjectType.object_light:
                 InstanciateLight(MPOB, filergm);
                 break;
+            case RGFileImport.RGRGMFile.ObjectType.object_flat:
+                InstanciateFlat(MPOB, filergm, name_col);
+                break;
+            case RGFileImport.RGRGMFile.ObjectType.object_audio:
             default:
                 Debug.Log($"unhandled type: {MPOB.type} for object {MPOB.scriptName} with model {MPOB.modelName}");
                 break;
@@ -332,6 +358,39 @@ public class RGScriptedObject : MonoBehaviour
         //EnableScripting();
 
 	}
+
+    void makeFlat()
+    {
+        flat = new GameObject($"{objectName}_FLAT");
+        flat.AddComponent<MeshRenderer>();
+        flat.AddComponent<MeshFilter>();
+
+        Vector3 parentPosition;
+        Quaternion parentRotation;
+        this.transform.GetPositionAndRotation(out parentPosition, out parentRotation);
+        flat.transform.SetPositionAndRotation(parentPosition, parentRotation);
+
+        flat.transform.SetParent(this.transform);
+    }
+    void enableFlat(bool en)
+    {
+        if(flat == null)
+            makeFlat();
+        flat.GetComponent<MeshRenderer>().enabled = en;
+    }
+    void setFlatMaterial(List<Material> materials)
+    {
+        if(flat == null)
+            makeFlat();
+        flat.GetComponent<MeshRenderer>().SetMaterials(materials);
+    }
+    void setFlatMesh(Mesh mesh)
+    {
+        if(flat == null)
+            makeFlat();
+        flat.GetComponent<MeshFilter>().sharedMesh = mesh;
+    }
+    
     public void EnableScripting(bool debug = false)
     {
         allowScripting = true;
@@ -545,6 +604,18 @@ public class RGScriptedObject : MonoBehaviour
                 }
                 transform.localPosition = newPosition;
                 break;
+            case TaskType.task_moving_local:
+                taskData.timer += frameTime;
+                newPosition = Vector3.zero;
+                if(taskData.timer < taskData.duration)
+                {
+                    newPosition = taskData.direction*frameTime;
+                    newPosition = transform.TransformDirection(newPosition);
+                }
+                else
+                    taskData.type = TaskType.task_idle;
+                transform.localPosition += newPosition;
+                break;
             case TaskType.task_waiting:
                 taskData.timer += frameTime;
                 if(taskData.timer > taskData.duration)
@@ -671,6 +742,9 @@ public class RGScriptedObject : MonoBehaviour
         functions[64] = LightIntensity;
         functions[65] = LightOff;
         functions[66] = LightOffset;
+        functions[77] = FlatSetTexture;
+        functions[78] = FlatOff;
+        functions[79] = FlatOffset;
         functions[83] = SetAttribute;
         functions[84] = GetAttribute;
         functions[88] = FacePlayer;
@@ -1025,7 +1099,6 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
 
         newTask.rotationTarget = rotationDelta*localRotation;
         newTask.rotationStart = localRotation;
-//        ScriptingDBG($"lr: {localRotation}\nrt: {rt}\ntar:{newTask.rotationTarget}");
         AddTask(multitask, newTask);
 
         return 0;
@@ -1049,7 +1122,6 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
 
         newTask.rotationTarget = rotationDelta;
         newTask.rotationStart = localRotation;
-//        ScriptingDBG($"lr: {localRotation}\nrt: {rt}\ntar:{newTask.rotationTarget}");
         AddTask(multitask, newTask);
 
         return 0;
@@ -1127,7 +1199,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         // i[1]: amount
         // i[2]: time to complete
         TaskData newTask = new TaskData();
-        newTask.type = TaskType.task_moving;
+        newTask.type = TaskType.task_moving_local;
         newTask.duration = ((float)i[2])*TIME_VAL;;
         newTask.timer = 0;
 
@@ -1147,9 +1219,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
                 mt = new Vector3(0,0,0);
                 break;
         }
-        mt = transform.TransformDirection(mt);
-        newTask.positionTarget = transform.localPosition + mt;
-        newTask.positionStart = transform.localPosition;
+        newTask.direction = mt/newTask.duration;
         AddTask(multitask, newTask);
         return 0;
     }
@@ -1256,6 +1326,57 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         }
         return 0;
     }
+    /*function 77*/
+    public int FlatSetTexture(uint caller, bool multitask, int[] i /*2*/)
+    {
+        // Sets the texture of the attached flat and enables it
+        // i[0]: the TEXBSI # to load
+        // i[1]: the image # to load (probably, always 0)
+        ScriptingDBG($"{multitask}_{scriptName}_FlatSetTexture({string.Join(",",i)})");
+
+        string flatstr= $"{i[0]}/{i[1]}";
+
+        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_flat,
+                                                                flatstr,
+                                                                colName);
+    
+        setFlatMesh(data_3D.mesh);
+        setFlatMaterial(data_3D.materials);
+        enableFlat(true);
+ 
+        return 0;
+
+    }
+    /*function 78*/
+    public int FlatOff(uint caller, bool multitask, int[] i /*0*/)
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_FlatOff({string.Join(",",i)})");
+        // Disabled the attached flat
+        enableFlat(false);
+        return 0;
+    }
+     /*function 79*/
+    public int FlatOffset(uint caller, bool multitask, int[] i /*3*/)
+    {
+        // Offsets the flatalong local axis
+        // i[0]: offset x
+        // i[1]: offset y
+        // i[2]: offset z
+         
+        ScriptingDBG($"{multitask}_{scriptName}_FlatOffset({string.Join(",",i)})");
+        if(flat == null)
+            makeFlat();
+
+        Vector3 ofs = new Vector3(((float)i[0])*RGM_MPOB_SCALE,
+                                   -(float)((float)i[1]*RGM_MPOB_SCALE),
+                                   0.0f);
+                                   
+        if(i[2] != 0)
+            ofs.z = -(float)((float)(0xFFFFFF-i[2])*RGM_MPOB_SCALE);
+        flat.transform.localPosition = ofs;
+        return 0;
+    }
+
     /*function 93*/
     public int Sound(uint caller, bool multitask, int[] i /*3*/)	
     {
