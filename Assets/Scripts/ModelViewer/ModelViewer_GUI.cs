@@ -30,7 +30,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public Toggle animationToggle;
     [SerializeField] public Toggle flyModeToggle;
     [SerializeField] public Slider fovSlider;
-    [SerializeField] public Slider bgColorR, bgColorG, bgColorB;
     [SerializeField] public Toggle cameraLightToggle;
     [SerializeField] public Toggle sceneLightToggle;
     [SerializeField] public Slider sceneLightIntensitySlider;
@@ -151,12 +150,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             animationToggle.SetIsOnWithoutNotify(settings.playAnimations);
         if (fovSlider != null)
             fovSlider.SetValueWithoutNotify(settings.fieldOfView);
-        if (bgColorR != null)
-            bgColorR.SetValueWithoutNotify(settings.backgroundColor.r);
-        if (bgColorG != null)
-            bgColorG.SetValueWithoutNotify(settings.backgroundColor.g);
-        if (bgColorB != null)
-            bgColorB.SetValueWithoutNotify(settings.backgroundColor.b);
         if (cameraLightToggle != null)
             cameraLightToggle.SetIsOnWithoutNotify(settings.useCameraLight);
         if (sceneLightToggle != null)
@@ -179,12 +172,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             animationToggle.onValueChanged.AddListener(val => settings.ToggleAnimations(val));
         if (fovSlider != null)
             fovSlider.onValueChanged.AddListener(val => settings.SetFieldOfView(val));
-        if (bgColorR != null)
-            bgColorR.onValueChanged.AddListener(val => settings.SetBackgroundColor(new Color(val, settings.backgroundColor.g, settings.backgroundColor.b)));
-        if (bgColorG != null)
-            bgColorG.onValueChanged.AddListener(val => settings.SetBackgroundColor(new Color(settings.backgroundColor.r, val, settings.backgroundColor.b)));
-        if (bgColorB != null)
-            bgColorB.onValueChanged.AddListener(val => settings.SetBackgroundColor(new Color(settings.backgroundColor.r, settings.backgroundColor.g, val)));
         if (cameraLightToggle != null)
             cameraLightToggle.onValueChanged.AddListener(val => settings.ToggleCameraLight(val));
         if (sceneLightToggle != null)

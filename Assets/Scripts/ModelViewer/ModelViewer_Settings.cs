@@ -35,7 +35,6 @@ public class ModelViewer_Settings : MonoBehaviour
     public void Initialize()
     {
         Camera.main.fieldOfView = fieldOfView;
-        ApplyBackgroundColor();
         ApplyFog();
 
         showUI = gui.gameObject.activeSelf;
@@ -101,40 +100,6 @@ public class ModelViewer_Settings : MonoBehaviour
         Camera.main.backgroundColor = backgroundColor;
     }
 
-    public void SetBackgroundColor(Color color)
-    {
-        backgroundColor = color;
-        ApplyBackgroundColor();
-    }
-
-    public void SetBackgroundR(float val)
-    {
-        backgroundColor.r = val;
-        ApplyBackgroundColor();
-    }
-
-    public void SetBackgroundG(float val)
-    {
-        backgroundColor.g = val;
-        ApplyBackgroundColor();
-    }
-
-    public void SetBackgroundB(float val)
-    {
-        backgroundColor.b = val;
-        ApplyBackgroundColor();
-    }
-
-    private void ApplyBackgroundColor()
-    {
-        var cam = Camera.main;
-        cam.clearFlags = CameraClearFlags.SolidColor;
-        cam.backgroundColor = backgroundColor;
-        if (useFog)
-            RenderSettings.fogColor = backgroundColor;
-        RenderSettings.skybox = null;
-    }
-
     public void ToggleCameraLight(bool enable)
     {
         useCameraLight = enable;
@@ -153,11 +118,9 @@ public class ModelViewer_Settings : MonoBehaviour
         mv.SetSceneLightIntensity(intensity);
     }
 
-
     public void ToggleScriptObjects(bool show)
     {
         showScriptObjects = show;
         mv.ApplyScriptObjectVisibility();
     }
-
 }
