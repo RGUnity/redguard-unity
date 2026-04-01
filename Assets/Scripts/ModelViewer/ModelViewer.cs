@@ -169,25 +169,32 @@ public class ModelViewer : MonoBehaviour
         }
         
         PrepareLoad();
+        FFIModelLoader.ClearCache();
         
         loadedObjects = new List<GameObject>();
         switch (fileType)
         {
             case ModelFileType.file3D:
-                loadedObjects.Add(ModelLoader.Load3D(f3Dname, colname));
+                loadedObjects.Add(FFIModelLoader.Load3D(f3Dname, colname));
                 loadedFileName = "/Redguard/fxart/" + f3Dname + ".3D";
                 break;
             case ModelFileType.file3DC:
-                loadedObjects.Add(ModelLoader.Load3DC(f3Dname, colname));
+                loadedObjects.Add(FFIModelLoader.Load3DC(f3Dname, colname));
                 loadedFileName = "/Redguard/fxart/" + f3Dname + ".3DC";
                 break;
             case ModelFileType.fileROB:
-                loadedObjects = ModelLoader.LoadROB(f3Dname, colname);
+                loadedObjects = FFIModelLoader.LoadROB(f3Dname, colname);
                 loadedFileName = "/Redguard/fxart/" + f3Dname + ".ROB";
                 break;
         }
 
         minimalLoadedFileName = f3Dname;
+        glTFExporter.modelName = f3Dname;
+        glTFExporter.fileType = fileType;
+        glTFExporter.colName = colname;
+        glTFExporter.isAreaExport = false;
+        glTFExporter.rgmName = "";
+        glTFExporter.wldName = "";
         
         SpreadObjects(loadedObjects);
         
@@ -204,12 +211,18 @@ public class ModelViewer : MonoBehaviour
         }
         
         PrepareLoad();
+        FFIModelLoader.ClearCache();
         
         // Load Area objects
-        loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
+        loadedObjects = FFIModelLoader.LoadArea(RGM, COL, WLD);
         minimalLoadedFileName = RGM;
         loadedWLD = WLD;
         loadedCOL = COL;
+        glTFExporter.rgmName = RGM;
+        glTFExporter.wldName = WLD;
+        glTFExporter.colName = COL;
+        glTFExporter.isAreaExport = true;
+        glTFExporter.modelName = "";
 
         if (WLD.Equals(string.Empty))
         {
@@ -310,20 +323,21 @@ public class ModelViewer : MonoBehaviour
     
     public void ApplyTextureFilterSetting()
     {
-        if (RGTexStore.MaterialDict == null)
+        if (loadedObjects == null || loadedObjects.Count == 0)
         {
             return;
         }
 
-        foreach (var mat in RGTexStore.MaterialDict)
+        foreach (var renderer in _objectRootGenerated.GetComponentsInChildren<Renderer>())
         {
-            if (settings.useTextureFiltering)
+            foreach (Material mat in renderer.materials)
             {
-                mat.Value.mainTexture.filterMode = FilterMode.Bilinear;
-            }
-            else
-            {
-                mat.Value.mainTexture.filterMode = FilterMode.Point;
+                if (mat == null || mat.mainTexture == null)
+                {
+                    continue;
+                }
+
+                mat.mainTexture.filterMode = settings.useTextureFiltering ? FilterMode.Bilinear : FilterMode.Point;
             }
         }
     }
@@ -399,8 +413,7 @@ public class ModelViewer : MonoBehaviour
         string fileName = minimalLoadedFileName;
 
         // Clear caches so it rebuilds with the new palette
-        RGMeshStore.ClearCache();
-        RGTexStore.ClearCache();
+        FFIModelLoader.ClearCache();
 
         // Force reload by clearing the name check
         string savedLoadedFileName = loadedFileName;
