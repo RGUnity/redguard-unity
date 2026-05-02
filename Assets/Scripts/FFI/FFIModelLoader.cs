@@ -436,21 +436,35 @@ public static class FFIModelLoader
     {
         transform.position = new Vector3(matrix.m03, matrix.m13, matrix.m23);
 
-        Vector3 scale = new Vector3(
-            new Vector3(matrix.m00, matrix.m10, matrix.m20).magnitude,
-            new Vector3(matrix.m01, matrix.m11, matrix.m21).magnitude,
-            new Vector3(matrix.m02, matrix.m12, matrix.m22).magnitude
-        );
-        transform.localScale = scale;
+        Vector3 basisX = new Vector3(matrix.m00, matrix.m10, matrix.m20);
+        Vector3 basisY = new Vector3(matrix.m01, matrix.m11, matrix.m21);
+        Vector3 basisZ = new Vector3(matrix.m02, matrix.m12, matrix.m22);
+
+        Vector3 scale = new Vector3(basisX.magnitude, basisY.magnitude, basisZ.magnitude);
 
         if (scale.x > 0f && scale.y > 0f && scale.z > 0f)
         {
+            Vector3 rotX = basisX / scale.x;
+            Vector3 rotY = basisY / scale.y;
+            Vector3 rotZ = basisZ / scale.z;
+
+            if (Vector3.Dot(Vector3.Cross(rotX, rotY), rotZ) < 0f)
+            {
+                scale.x = -scale.x;
+                rotX = -rotX;
+            }
+
+            transform.localScale = scale;
+
             Matrix4x4 rotMatrix = Matrix4x4.identity;
-            rotMatrix.SetColumn(0, matrix.GetColumn(0) / scale.x);
-            rotMatrix.SetColumn(1, matrix.GetColumn(1) / scale.y);
-            rotMatrix.SetColumn(2, matrix.GetColumn(2) / scale.z);
+            rotMatrix.SetColumn(0, new Vector4(rotX.x, rotX.y, rotX.z, 0f));
+            rotMatrix.SetColumn(1, new Vector4(rotY.x, rotY.y, rotY.z, 0f));
+            rotMatrix.SetColumn(2, new Vector4(rotZ.x, rotZ.y, rotZ.z, 0f));
             transform.rotation = rotMatrix.rotation;
+            return;
         }
+
+        transform.localScale = scale;
     }
 
     private static Mesh flatQuadMesh;

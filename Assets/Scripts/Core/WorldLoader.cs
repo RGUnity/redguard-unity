@@ -5,6 +5,14 @@ using Unity.Profiling;
 
 public static class WorldLoader
 {
+    class WorldStateHost : MonoBehaviour
+    {
+        public bool hasActiveWorld;
+        public int worldId;
+        public int playerSpawnLocation;
+        public int playerSpawnOrientation;
+    }
+
     struct WorldLoadRequest
     {
         public bool loadRequested;
@@ -19,6 +27,20 @@ public static class WorldLoader
     static List<GameObject> loadedObjects;
 
     static WorldLoadRequest loadRequest;
+
+    static WorldStateHost EnsureStateHost()
+    {
+        WorldStateHost host = UnityEngine.Object.FindFirstObjectByType<WorldStateHost>();
+        if (host != null)
+            return host;
+
+        Game game = UnityEngine.Object.FindFirstObjectByType<Game>();
+        GameObject target = game != null ? game.gameObject : new GameObject("WorldLoaderStateHost");
+        host = target.GetComponent<WorldStateHost>();
+        if (host == null)
+            host = target.AddComponent<WorldStateHost>();
+        return host;
+    }
 
     static WorldLoader()
     {
@@ -37,6 +59,12 @@ public static class WorldLoader
         loadRequest.playerSpawnLocation = playerSpawnLocation;
         loadRequest.playerSpawnOrientation = playerSpawnOrientation;
 
+        WorldStateHost host = EnsureStateHost();
+        host.hasActiveWorld = true;
+        host.worldId = worldId;
+        host.playerSpawnLocation = playerSpawnLocation;
+        host.playerSpawnOrientation = playerSpawnOrientation;
+
         Material loadScreenMat = FFIGxaLoader.GetMaterial_GXA(loadRequest.worldData.loadScreen, 0);
         if (loadScreenMat != null)
         {
@@ -53,10 +81,30 @@ public static class WorldLoader
         FFIModelLoader.CloseWorldContext();
         Resources.UnloadUnusedAssets();
         RGObjectStore.Clear();
+
+        WorldStateHost host = EnsureStateHost();
+        host.hasActiveWorld = false;
     }
 
     public static bool LoadWorldIfRequested()
     {
+        if (!loadRequest.loadRequested && FFIModelLoader.CurrentWorldHandle == IntPtr.Zero)
+        {
+            WorldStateHost host = EnsureStateHost();
+            if (host.hasActiveWorld)
+            {
+                var worldList = FFIWorldStore.GetWorldList();
+                if (worldList.TryGetValue(host.worldId, out FFIWorldStore.WorldData worldData))
+                {
+                    loadRequest.loadRequested = true;
+                    loadRequest.worldData = worldData;
+                    loadRequest.playerSpawnLocation = host.playerSpawnLocation;
+                    loadRequest.playerSpawnOrientation = host.playerSpawnOrientation;
+                    Debug.Log($"[WorldLoader] Restoring world context for worldId={host.worldId} after reload.");
+                }
+            }
+        }
+
         if(loadRequest.loadRequested)
         {
             loadRequest.loadRequested = false;
@@ -110,6 +158,12 @@ public static class WorldLoader
 
         // load in objects
         loadedObjects = FFIModelLoader.LoadArea(RGM, COL, WLD);
+
+        WorldStateHost host = EnsureStateHost();
+        host.hasActiveWorld = true;
+        host.worldId = worldData.worldId;
+        host.playerSpawnLocation = playerSpawnLocation;
+        host.playerSpawnOrientation = playerSpawnOrientation;
 
         // load the player
         LoadPlayer(RGM, playerSpawnLocation, playerSpawnOrientation);
