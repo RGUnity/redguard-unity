@@ -13,6 +13,7 @@ public class PlayerMain: MonoBehaviour
         state_run_forward       = RGRGMAnimStore.AnimGroup.anim_run_forward,
         state_turn_left         = RGRGMAnimStore.AnimGroup.anim_turn_left,
         state_turn_right        = RGRGMAnimStore.AnimGroup.anim_turn_right,
+        state_locked            = 1337, //  bit of a hack but better than before :)
     }
 
     private RGScriptedObject player;
@@ -61,6 +62,20 @@ public class PlayerMain: MonoBehaviour
         cc.enabled = true;
     }
 
+    public void setLocked(bool l)
+    {
+        if(l)
+        {
+            currentAnimState = AnimState.state_locked;
+            wantAnimState = AnimState.state_locked;
+        }
+        else
+        {
+            currentAnimState = AnimState.state_init;
+            wantAnimState = AnimState.state_init;
+        }
+    }
+
     bool animShouldExitFcn()
     {
         if(wantAnimState != currentAnimState)
@@ -71,16 +86,13 @@ public class PlayerMain: MonoBehaviour
     {
         currentAnimState = wantAnimState;
         player.SetAnim((int)currentAnimState, 0);
+
+        _velocity = Vector3.zero;
     }
     
     [SerializeField] private bool locked;
     private void doAnimStateMachine()
     {
-        // TODO: clean lockout
-        // TODO: unlock should set anim exit fcns
-        if(player)
-            if(player.locked)
-                return;
         if(Game.Input.moveForward)
         {
             if (Game.Input.moveModifier)
@@ -108,7 +120,8 @@ public class PlayerMain: MonoBehaviour
 
         switch(currentAnimState)
         {
-
+            case AnimState.state_locked:
+                break;
             case AnimState.state_init:
                 player = RGObjectStore.GetPlayer();
                 currentAnimState = AnimState.state_panic;
@@ -169,7 +182,6 @@ public class PlayerMain: MonoBehaviour
         _playerRootPosition = new Vector3(transform.position.x, playerRootHeight, transform.position.z);
 
         GroundCheck();
-        HandleStepOffset();
         doAnimStateMachine();
         // Apply ground magnet
         _velocity.y += config.groundMagnet;
@@ -178,6 +190,7 @@ public class PlayerMain: MonoBehaviour
         _smoothVelocity = Vector3.MoveTowards(_smoothVelocity, _velocity, (1 / config.velocitySmoothing));
         _velocity.z = _smoothVelocity.z;
         _velocity.x = _smoothVelocity.x;
+        HandleStepOffset();
         
         // Step dropping
         if (_isGrounded
@@ -414,39 +427,14 @@ public class PlayerMain: MonoBehaviour
     }
     
 
-    // There is a bug in Unity's CC where it ignores the step limit and jumps upwards when walking near some edges.
-    // Here is a forum thread that explains more and also offers a workaround, which is implemented below.
-    // Link: https://forum.unity.com/threads/character-controller-unexpected-step-offset-behaviour.640828/
 
     private void HandleStepOffset()
     {
-        float distance = cc.radius + cc.skinWidth + config.rayDistance;
-        Vector3 targetDirection = _forwardOnSurface * Game.Input.move.y + transform.right * Game.Input.move.x;
-        
-        //Raycast at player's ground level in direction of movement
-        bool bottomRaycast = Physics.Raycast(_playerRootPosition, targetDirection, out _, distance);
-        
-        //Raycast at player's ground level + StepOffset in direction of movement
-        Vector3 bottomWithStepOffset = _playerRootPosition + new Vector3(0,config.stepOffset, 0);
-        bool upperRaycast = Physics.Raycast(bottomWithStepOffset, targetDirection, out _, distance/2);
-        
-        if (bottomRaycast && upperRaycast)
-        {
-            // When both the lower and high ray hit something, we are probably in front of a wall.
-            // In this case, set stepOffset to 0 to avoid the player glitching over it
-            cc.stepOffset = 0;
-        }
-        else if (bottomRaycast && !upperRaycast)
-        {
-            // if only the lower ray hits something, we are probably in front of a step.
-            // In this case, set stepOffset to the desired value
-            cc.stepOffset = config.stepOffset;
-        }
-        else
-        {
-            // In all other cases, set stepOffset to 0 just to be sure
-            cc.stepOffset = 0;
-        }
+        // Empty, the bugfix doesnt seem to work anymore; TODO: figure out why
+
+        // There is a bug in Unity's CC where it ignores the step limit and jumps upwards when walking near some edges.
+        // Here is a forum thread that explains more and also offers a workaround, which is implemented below.
+        // Link: https://forum.unity.com/threads/character-controller-unexpected-step-offset-behaviour.640828/
     }
 
     private void Jump()

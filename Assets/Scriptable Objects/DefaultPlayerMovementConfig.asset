@@ -12,9 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7874607d58f76634097c913219ded576, type: 3}
   m_Name: DefaultPlayerMovementConfig
   m_EditorClassIdentifier: 
-  objectInfo: {fileID: 0}
-  displayName: 
-  amount: 1
   groundLayers:
     serializedVersion: 2
     m_Bits: 1
@@ -24,7 +21,7 @@ MonoBehaviour:
   walkSpeed: 2
   velocitySmoothing: 100
   turnSpeed: 1.8
-  stepOffset: 0.9
+  stepOffset: 1
   rayDistance: 1
   jumpHeight: 1.2
   longJumpDistance: 1.3
