@@ -34,6 +34,15 @@ public class RGScriptedObject : MonoBehaviour
     }
     // TODO: this is duplicated from runtime transform helper
 	const float RGM_MPOB_SCALE = 1/5120.0f;
+	const float RGM_SCENE_OFFSET_SCALE = 256.0f * RGM_MPOB_SCALE;
+
+	static Vector3 SceneOffsetPosition(int x, int y, int z)
+	{
+		return new Vector3(
+			(float)x * RGM_SCENE_OFFSET_SCALE,
+			-(float)y * RGM_SCENE_OFFSET_SCALE,
+			-(float)z * RGM_SCENE_OFFSET_SCALE);
+	}
 	
 	public string objectName;
 	public uint objectId;
@@ -250,9 +259,9 @@ public class RGScriptedObject : MonoBehaviour
         }
 
         Vector3 position = Vector3.zero;
- 		position.x = (float)(MPOB.posX)*RGM_MPOB_SCALE;
-		position.y = -(float)(MPOB.posY)*RGM_MPOB_SCALE;
-		position.z = -(float)(0xFFFFFF-MPOB.posZ)*RGM_MPOB_SCALE;
+		position.x = -((float)MPOB.posX * 256.0f) * RGM_MPOB_SCALE;
+		position.y = -((float)MPOB.posY * 256.0f) * RGM_MPOB_SCALE;
+		position.z = -((float)0xFFFFFF - ((float)MPOB.posZ * 256.0f)) * RGM_MPOB_SCALE;
         Vector3 rotation = EulerFromMpobData(MPOB);
 		transform.position = position;
 		transform.Rotate(rotation);
@@ -267,10 +276,7 @@ public class RGScriptedObject : MonoBehaviour
             if (RALC_offset + i >= filergm.RALC.items.Count)
                 break;
             RGRGMFile.RGMRALCItem RALCData = filergm.RALC.items[RALC_offset+i];
-            Vector3 loc = position;
-            loc.x += (float)(RALCData.offsetX)*RGM_MPOB_SCALE;
-            loc.y += -(float)(RALCData.offsetY)*RGM_MPOB_SCALE;
-            loc.z += -(float)(RALCData.offsetZ)*RGM_MPOB_SCALE;
+            Vector3 loc = position + SceneOffsetPosition(RALCData.offsetX, RALCData.offsetY, RALCData.offsetZ);
             locations.Add(loc);
         }
 
@@ -1323,7 +1329,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
             Vector3 ofs = new Vector3(((float)i[0])*RGM_MPOB_SCALE,
                                        -(float)((float)i[1]*RGM_MPOB_SCALE),
                                        0.0f);
-                                       
+                                        
             if(i[2] != 0)
                 ofs.z = -(float)((float)(0xFFFFFF-i[2])*RGM_MPOB_SCALE);
             light.gameObject.transform.localPosition = ofs;
@@ -1371,7 +1377,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         Vector3 ofs = new Vector3(((float)i[0])*RGM_MPOB_SCALE,
                                    -(float)((float)i[1]*RGM_MPOB_SCALE),
                                    0.0f);
-                                   
+                                    
         if(i[2] != 0)
             ofs.z = -(float)((float)(0xFFFFFF-i[2])*RGM_MPOB_SCALE);
         flat.transform.localPosition = ofs;

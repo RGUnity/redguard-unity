@@ -14,6 +14,20 @@ public static class FFIModelLoader
     public static IntPtr CurrentWorldHandle { get; private set; } = IntPtr.Zero;
     public static string CurrentWorldContextKey { get; private set; } = string.Empty;
 
+    private static int ReadSignedInt24(MemoryReader reader)
+    {
+        int value = reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
+        if ((value & 0x00800000) != 0)
+        {
+            value |= unchecked((int)0xFF000000);
+        }
+
+        return value;
+    }
+
+    private static int ReadUnsignedInt24(MemoryReader reader)
+        => reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
+
     // Global caches — persist across LoadArea/LoadModel/TryGetMeshData calls
     private static readonly Dictionary<string, (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)> meshCache
         = new Dictionary<string, (Mesh, RgmdDeserializer.SubmeshMaterialInfo[], int)>(StringComparer.OrdinalIgnoreCase);
@@ -884,11 +898,11 @@ public static class FFIModelLoader
             mpob.unknown1 = reader.ReadInt16();                     // unknown1 2 bytes
 
             // positions are 24-bit + 1 padding byte each
-            mpob.posX = reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
+            mpob.posX = ReadSignedInt24(reader);
             reader.ReadByte();
-            mpob.posY = reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
+            mpob.posY = ReadSignedInt24(reader);
             reader.ReadByte();
-            mpob.posZ = reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
+            mpob.posZ = ReadUnsignedInt24(reader);
 
             mpob.anglex = reader.ReadInt32();                       // 4 bytes
             mpob.angley = reader.ReadInt32();                       // 4 bytes
