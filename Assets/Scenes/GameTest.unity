@@ -189,11 +189,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5460861568075509288, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
       propertyPath: m_Radius
-      value: 1.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5460861568075509288, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5460861568075509288, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
+      propertyPath: m_SkinWidth
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 8245515018042640262, guid: 2c9c4ea9f09b3894a9bf7da131452e9d, type: 3}
       propertyPath: m_TagString
@@ -236,6 +240,7 @@ MonoBehaviour:
   cc: {fileID: 138097833}
   config: {fileID: 11400000, guid: c71b60b0d8cb67e449c69f963be683a6, type: 2}
   _currentScriptedGround: {fileID: 0}
+  locked: 0
 --- !u!1 &1169139703
 GameObject:
   m_ObjectHideFlags: 0

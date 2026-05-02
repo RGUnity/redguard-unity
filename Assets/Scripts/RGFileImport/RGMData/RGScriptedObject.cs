@@ -63,9 +63,6 @@ public class RGScriptedObject : MonoBehaviour
     public RGScriptedObject offsetTarget;
     Vector3 offsetDelta;
 
-    // TODO: clean player lockout
-    public bool locked;
-
     public byte[] attributes;
 
 // animations
@@ -396,7 +393,7 @@ public class RGScriptedObject : MonoBehaviour
     {
         if(type == ScriptedObjectType.scriptedobject_animated)
         {
-            if(animations.PushAnimation((RGRGMAnimStore.AnimGroup)animId,firstFrame) == 0)
+            if(animations.SetAnimation((RGRGMAnimStore.AnimGroup)animId,firstFrame) == 0)
             {
                 for(int i=0;i<skinnedMeshRenderer.sharedMesh.blendShapeCount;i++)
                     skinnedMeshRenderer.SetBlendShapeWeight(i, 0.0f);
@@ -687,6 +684,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[21] = showObj;
         functions[22] = showObjLoc;
         functions[30] = showCyrusLoc;
+        functions[33] = PlayAnimation;
         functions[34] = lockoutPlayer;
         functions[35] = menuNew;
         functions[36] = menuProc;
@@ -886,6 +884,16 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
  
         return 0;
     }
+    /*function 33*/
+    public int PlayAnimation(uint caller, bool multitask, int[] i /*2*/)	
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_PlayAnimation({string.Join(",",i)})");
+        // Plays an animation
+        // i[0]: animation ID
+        // i[1]: first frame
+        return SetAnim(i[0], i[1]);
+    }
+
 
     /*function 34*/
     public int lockoutPlayer(uint caller, bool multitask, int[] i /*1*/)	
@@ -893,8 +901,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         ScriptingDBG($"{multitask}_{scriptName}_lockoutPlayer({string.Join(",",i)})");
         // Locks the player control
         // i[0]: 1 = lock the player, 0 = unlock
-        RGScriptedObject player = RGObjectStore.GetPlayer();
-        player.locked = (i[0] == 1);
+        RGObjectStore.GetPlayerMain().setLocked(i[0] == 1);
         return 0;
     }
 

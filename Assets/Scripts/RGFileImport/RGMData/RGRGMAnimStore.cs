@@ -61,10 +61,8 @@ public class AnimData
         return o;
     }
 
-    // SOUPDEF:
-    // public int PushAnimation(int obj, int animationid, int firstframe)
-    // returns 1 on failure, 0 on success
-    public int PushAnimation(RGRGMAnimStore.AnimGroup animId, int firstframe = 0)
+    // sets anim to play NOW
+    public int SetAnimation(RGRGMAnimStore.AnimGroup animId, int firstframe = 0)
     {
         int anim_i = -1;
         if(!validAnims.TryGetValue(animId, out anim_i))
