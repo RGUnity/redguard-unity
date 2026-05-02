@@ -129,6 +129,25 @@ public static class RgpreBindings
         public float range;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RgWorldDescriptor
+    {
+        public int worldId;
+        public byte hasWld;
+        private byte _pad0;
+        private byte _pad1;
+        private byte _pad2;
+        public ushort texbsiId;
+        private byte _pad3;
+        private byte _pad4;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] rgmPath;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] wldPath;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] palettePath;
+    }
+
     // ========== Native imports ==========
 
     [DllImport("rgpre", EntryPoint = "rg_free_buffer", CallingConvention = CallingConvention.Cdecl)]
@@ -137,38 +156,61 @@ public static class RgpreBindings
     [DllImport("rgpre", EntryPoint = "rg_last_error", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr LastErrorNative();
 
-    // --- Scene data (RGMD binary) ---
+    [DllImport("rgpre", EntryPoint = "rg_open_world", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr OpenWorldNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir,
+        int worldId);
 
-    [DllImport("rgpre", EntryPoint = "rg_parse_model_data", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ParseModelDataNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+    [DllImport("rgpre", EntryPoint = "rg_open_world_explicit", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr OpenWorldExplicitNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string rgmPath,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string wldPath,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string palettePath);
+
+    [DllImport("rgpre", EntryPoint = "rg_close_world", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void CloseWorldNative(IntPtr worldHandle);
+
+    [DllImport("rgpre", EntryPoint = "rg_world_count", CallingConvention = CallingConvention.Cdecl)]
+    private static extern int WorldCountNative(
         [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir);
 
-    [DllImport("rgpre", EntryPoint = "rg_parse_rob_data", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ParseRobDataNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir);
+    [DllImport("rgpre", EntryPoint = "rg_get_world_descriptor", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr GetWorldDescriptorNative(IntPtr worldHandle);
 
-    [DllImport("rgpre", EntryPoint = "rg_parse_wld_terrain_data", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ParseWldTerrainDataNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
+    [DllImport("rgpre", EntryPoint = "rg_get_world_terrain", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr GetWorldTerrainNative(IntPtr worldHandle);
 
-    [DllImport("rgpre", EntryPoint = "rg_parse_rgm_placements", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ParseRgmPlacementsNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
+    [DllImport("rgpre", EntryPoint = "rg_get_world_placements", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr GetWorldPlacementsNative(IntPtr worldHandle);
 
-    // --- RGM section access ---
+    [DllImport("rgpre", EntryPoint = "rg_decode_texture_world", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DecodeTextureWorldNative(IntPtr worldHandle, ushort textureId, byte imageId);
 
-    [DllImport("rgpre", EntryPoint = "rg_rgm_section_count", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int RgmSectionCountNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+    [DllImport("rgpre", EntryPoint = "rg_decode_texture_all_frames_world", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DecodeTextureAllFramesWorldNative(IntPtr worldHandle, ushort textureId, byte imageId);
+
+    [DllImport("rgpre", EntryPoint = "rg_rgm_section_count_world", CallingConvention = CallingConvention.Cdecl)]
+    private static extern int RgmSectionCountWorldNative(IntPtr worldHandle,
         [MarshalAs(UnmanagedType.LPUTF8Str)] string sectionTag);
 
-    [DllImport("rgpre", EntryPoint = "rg_get_rgm_section", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr GetRgmSectionNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+    [DllImport("rgpre", EntryPoint = "rg_get_rgm_section_world", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr GetRgmSectionWorldNative(
+        IntPtr worldHandle,
         [MarshalAs(UnmanagedType.LPUTF8Str)] string sectionTag,
         int sectionIndex);
+
+    // --- Scene data (RGMD binary) ---
+
+    [DllImport("rgpre", EntryPoint = "rg_parse_model_data_world", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ParseModelDataWorldNative(
+        IntPtr worldHandle,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
+
+    [DllImport("rgpre", EntryPoint = "rg_parse_rob_data_world", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ParseRobDataWorldNative(
+        IntPtr worldHandle,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
 
     // --- GLB export ---
 
@@ -186,25 +228,6 @@ public static class RgpreBindings
     private static extern IntPtr ConvertWldFromPathNative(
         [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
         [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir);
-
-    // --- Texture ---
-
-    [DllImport("rgpre", EntryPoint = "rg_decode_texture", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DecodeTextureNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir,
-        ushort textureId,
-        byte imageId);
-
-    [DllImport("rgpre", EntryPoint = "rg_decode_texture_all_frames", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DecodeTextureAllFramesNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir,
-        ushort textureId,
-        byte imageId);
-
-    [DllImport("rgpre", EntryPoint = "rg_texbsi_image_count", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int TexbsiImageCountNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir,
-        ushort textureId);
 
     // --- Audio ---
 
@@ -252,27 +275,29 @@ public static class RgpreBindings
 
     // --- Scene data ---
 
-    public static IntPtr ParseModelData(string filePath, string assetsDir) => ParseModelDataNative(filePath, assetsDir);
-    public static IntPtr ParseRobData(string filePath, string assetsDir) => ParseRobDataNative(filePath, assetsDir);
-    public static IntPtr ParseWldTerrainData(string filePath) => ParseWldTerrainDataNative(filePath);
-    public static IntPtr ParseRgmPlacements(string filePath) => ParseRgmPlacementsNative(filePath);
+    public static IntPtr ParseModelDataWorld(IntPtr worldHandle, string filePath) => ParseModelDataWorldNative(worldHandle, filePath);
+    public static IntPtr ParseRobDataWorld(IntPtr worldHandle, string filePath) => ParseRobDataWorldNative(worldHandle, filePath);
 
-    // --- RGM sections ---
+    // --- World handles ---
 
-    public static int RgmSectionCount(string filePath, string sectionTag) => RgmSectionCountNative(filePath, sectionTag);
-    public static IntPtr GetRgmSection(string filePath, string sectionTag, int sectionIndex = 0) => GetRgmSectionNative(filePath, sectionTag, sectionIndex);
+    public static IntPtr OpenWorld(string assetsDir, int worldId) => OpenWorldNative(assetsDir, worldId);
+    public static IntPtr OpenWorldExplicit(string assetsDir, string rgmPath, string wldPath, string palettePath)
+        => OpenWorldExplicitNative(assetsDir, rgmPath, wldPath, palettePath);
+    public static void CloseWorld(IntPtr worldHandle) => CloseWorldNative(worldHandle);
+    public static int WorldCount(string assetsDir) => WorldCountNative(assetsDir);
+    public static IntPtr GetWorldDescriptor(IntPtr worldHandle) => GetWorldDescriptorNative(worldHandle);
+    public static IntPtr GetWorldTerrain(IntPtr worldHandle) => GetWorldTerrainNative(worldHandle);
+    public static IntPtr GetWorldPlacements(IntPtr worldHandle) => GetWorldPlacementsNative(worldHandle);
+    public static IntPtr DecodeTextureWorld(IntPtr worldHandle, ushort textureId, byte imageId) => DecodeTextureWorldNative(worldHandle, textureId, imageId);
+    public static IntPtr DecodeTextureAllFramesWorld(IntPtr worldHandle, ushort textureId, byte imageId) => DecodeTextureAllFramesWorldNative(worldHandle, textureId, imageId);
+    public static int RgmSectionCountWorld(IntPtr worldHandle, string sectionTag) => RgmSectionCountWorldNative(worldHandle, sectionTag);
+    public static IntPtr GetRgmSectionWorld(IntPtr worldHandle, string sectionTag, int sectionIndex = 0) => GetRgmSectionWorldNative(worldHandle, sectionTag, sectionIndex);
 
     // --- GLB export ---
 
     public static IntPtr ConvertModelFromPath(string filePath, string assetsDir) => ConvertModelFromPathNative(filePath, assetsDir);
     public static IntPtr ConvertRgmFromPath(string filePath, string assetsDir) => ConvertRgmFromPathNative(filePath, assetsDir);
     public static IntPtr ConvertWldFromPath(string filePath, string assetsDir) => ConvertWldFromPathNative(filePath, assetsDir);
-
-    // --- Texture ---
-
-    public static IntPtr DecodeTexture(string assetsDir, ushort textureId, byte imageId) => DecodeTextureNative(assetsDir, textureId, imageId);
-    public static IntPtr DecodeTextureAllFrames(string assetsDir, ushort textureId, byte imageId) => DecodeTextureAllFramesNative(assetsDir, textureId, imageId);
-    public static int TexbsiImageCount(string assetsDir, ushort textureId) => TexbsiImageCountNative(assetsDir, textureId);
 
     // --- Audio ---
 

@@ -50,6 +50,7 @@ public static class WorldLoader
         {
             UnityEngine.Object.Destroy(obj);
         }
+        FFIModelLoader.CloseWorldContext();
         Resources.UnloadUnusedAssets();
         RGObjectStore.Clear();
     }
@@ -86,6 +87,12 @@ public static class WorldLoader
         SFX = "MAIN";
         // TODO: this should come from SYSTEM.INI
         RTX = "ENGLISH";
+
+        if (!FFIModelLoader.OpenWorldContext(worldData.worldId))
+        {
+            Debug.LogError("[FFI] Failed to open world context for worldId=" + worldData.worldId + ": " + RgpreBindings.GetLastErrorMessage());
+            return;
+        }
 
         // soundLoading
         if(!SFXLoaded)

@@ -233,14 +233,11 @@ public class RGScriptedObject : MonoBehaviour
         type = ScriptedObjectType.scriptedobject_flat;
 		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
 			
-        string flatstr= $"{MPOB.textureId}/{MPOB.imageId}";
-
-        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_flat,
-                                                                flatstr,
-                                                                name_col);
-    
-        skinnedMeshRenderer.sharedMesh = data_3D.mesh;
-        skinnedMeshRenderer.SetMaterials(data_3D.materials);
+        if (FFIModelLoader.TryGetFlatData((ushort)MPOB.textureId, MPOB.imageId, out Mesh mesh, out List<Material> materials))
+        {
+            skinnedMeshRenderer.sharedMesh = mesh;
+            skinnedMeshRenderer.SetMaterials(materials);
+        }
     }
 
 	public void Instanciate(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
@@ -1341,15 +1338,12 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         // i[1]: the image # to load (probably, always 0)
         ScriptingDBG($"{multitask}_{scriptName}_FlatSetTexture({string.Join(",",i)})");
 
-        string flatstr= $"{i[0]}/{i[1]}";
-
-        RGMeshStore.UnityData_3D data_3D = RGMeshStore.LoadMesh(RGMeshStore.mesh_type.mesh_flat,
-                                                                flatstr,
-                                                                colName);
-    
-        setFlatMesh(data_3D.mesh);
-        setFlatMaterial(data_3D.materials);
-        enableFlat(true);
+        if (FFIModelLoader.TryGetFlatData((ushort)i[0], (byte)i[1], out Mesh mesh, out List<Material> materials))
+        {
+            setFlatMesh(mesh);
+            setFlatMaterial(materials);
+            enableFlat(true);
+        }
  
         return 0;
 

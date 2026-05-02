@@ -349,6 +349,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             {
                 areaList.Add(new FFIWorldStore.WorldData
                 {
+                    worldId = -1,
                     RGM = "HIDEOUT",
                     COL = "HIDEOUT",
                     WLD = "HIDEOUT"
@@ -394,7 +395,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (areaButtonList.Count <= 0)
         {
             for(int i=0;i<areaList.Count;i++)
-                SpawnButton_Area(areaList[i].RGM,areaList[i].WLD, areaList[i].COL);
+                SpawnButton_Area(areaList[i].worldId, areaList[i].RGM,areaList[i].WLD, areaList[i].COL);
         }
         // show them if they already exist
         else
@@ -406,7 +407,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
     }
 
-    private void SpawnButton_Area(string RGM, string WLD, string COL)
+    private void SpawnButton_Area(int worldId, string RGM, string WLD, string COL)
     {
         var newButton = Instantiate(buttonROB_Prefab, root_ButtonList);
         newButton.name = "Button_" + RGM;
@@ -415,6 +416,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (newButton.TryGetComponent(out ModelViewer_AreaButton component))
         {
             component.mv_GUI = this;
+            component.worldId = worldId;
             component.RGM = RGM;
             component.WLD = WLD;
             component.COL = COL;
@@ -548,7 +550,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         if (button.TryGetComponent(out ModelViewer_AreaButton areaBtn))
         {
-            RequestArea(areaBtn.RGM, areaBtn.WLD, areaBtn.COL, areaBtn.prettyAreaName);
+            RequestArea(areaBtn.worldId, areaBtn.RGM, areaBtn.WLD, areaBtn.COL, areaBtn.prettyAreaName);
         }
         else if (button.TryGetComponent(out ModelViewer_ModelButton modelBtn))
         {
@@ -590,10 +592,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         modelViewer.SpawnModel(fileName, fileType, col);
     }
 
-    public void RequestArea(string RGM, string WLD, string COL, string prettyAreaName)
+    public void RequestArea(int worldId, string RGM, string WLD, string COL, string prettyAreaName)
     {
         print("Requesting area: " + RGM);
-        modelViewer.SpawnArea(RGM, WLD, COL, prettyAreaName);
+        modelViewer.SpawnArea(worldId, RGM, WLD, COL, prettyAreaName);
     }
 
     public void RequestExportGLTF()

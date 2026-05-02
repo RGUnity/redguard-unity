@@ -17,6 +17,7 @@ public class ModelViewer : MonoBehaviour
     public string minimalLoadedFileName = "";
     public string loadedWLD = "";
     public string loadedCOL = "";
+    public int loadedWorldId = -1;
     public GameObject _objectRootGenerated;
     public List<GameObject> loadedObjects = new();
 
@@ -170,6 +171,11 @@ public class ModelViewer : MonoBehaviour
         
         PrepareLoad();
         FFIModelLoader.ClearCache();
+        if (!FFIModelLoader.OpenPaletteContext(colname))
+        {
+            print("Failed to open palette context: " + RgpreBindings.GetLastErrorMessage());
+            return;
+        }
         
         loadedObjects = new List<GameObject>();
         switch (fileType)
@@ -204,6 +210,11 @@ public class ModelViewer : MonoBehaviour
     
     public void SpawnArea(string RGM, string WLD, string COL, string prettyAreaName)
     {
+        SpawnArea(-1, RGM, WLD, COL, prettyAreaName);
+    }
+
+    public void SpawnArea(int worldId, string RGM, string WLD, string COL, string prettyAreaName)
+    {
         // If the same area is already loaded, stop
         if (RGM == minimalLoadedFileName)
         {
@@ -212,12 +223,21 @@ public class ModelViewer : MonoBehaviour
         
         PrepareLoad();
         FFIModelLoader.ClearCache();
+        bool opened = worldId >= 0
+            ? FFIModelLoader.OpenWorldContext(worldId)
+            : FFIModelLoader.OpenExplicitWorldContext(RGM, WLD, COL);
+        if (!opened)
+        {
+            print("Failed to open world context: " + RgpreBindings.GetLastErrorMessage());
+            return;
+        }
         
         // Load Area objects
         loadedObjects = FFIModelLoader.LoadArea(RGM, COL, WLD);
         minimalLoadedFileName = RGM;
         loadedWLD = WLD;
         loadedCOL = COL;
+        loadedWorldId = worldId;
         glTFExporter.rgmName = RGM;
         glTFExporter.wldName = WLD;
         glTFExporter.colName = COL;
@@ -240,6 +260,7 @@ public class ModelViewer : MonoBehaviour
     private void PrepareLoad()
     {
         DeleteLoadedObject();
+        FFIModelLoader.CloseWorldContext();
     }
 
     private void FinalizeLoad()
@@ -432,7 +453,10 @@ public class ModelViewer : MonoBehaviour
 
     private void ReloadAreaWithPalette(string rgmName, string paletteName)
     {
-        SpawnArea(rgmName, loadedWLD, paletteName, rgmName);
+        if (FFIWorldStore.TryFindWorldId(rgmName, loadedWLD, paletteName, out int worldId))
+            SpawnArea(worldId, rgmName, loadedWLD, paletteName, rgmName);
+        else
+            SpawnArea(-1, rgmName, loadedWLD, paletteName, rgmName);
     }
 
     private void RepositionSceneLight()

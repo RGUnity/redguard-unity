@@ -34,15 +34,19 @@ public static class FFITextureLoader
         paletteCache.Clear();
     }
 
-    public static Texture2D DecodeTexture(ushort texbsiId, byte imageId, string paletteName)
+    public static Texture2D DecodeTexture(ushort texbsiId, byte imageId)
     {
-        string cacheKey = paletteName + "_" + texbsiId + "_" + imageId;
+        string cacheKey = FFIModelLoader.CurrentWorldContextKey + "_" + texbsiId + "_" + imageId;
         if (textureCache.TryGetValue(cacheKey, out var cachedTexture))
             return cachedTexture;
 
-        string assetsDir = Game.pathManager.GetRootFolder();
+        if (FFIModelLoader.CurrentWorldHandle == IntPtr.Zero)
+        {
+            Debug.LogWarning("[FFI] Cannot decode texture without an active world context.");
+            return null;
+        }
 
-        IntPtr resultPtr = RgpreBindings.DecodeTexture(assetsDir, texbsiId, imageId);
+        IntPtr resultPtr = RgpreBindings.DecodeTextureWorld(FFIModelLoader.CurrentWorldHandle, texbsiId, imageId);
         if (resultPtr == IntPtr.Zero)
         {
             Debug.LogWarning("[FFI] Failed to decode texture TEXBSI." + texbsiId.ToString("D3") +
@@ -93,15 +97,19 @@ public static class FFITextureLoader
         return texture;
     }
 
-    public static List<Texture2D> DecodeTextureAllFrames(ushort texbsiId, byte imageId, string paletteName)
+    public static List<Texture2D> DecodeTextureAllFrames(ushort texbsiId, byte imageId)
     {
-        string cacheKey = paletteName + "_" + texbsiId + "_" + imageId;
+        string cacheKey = FFIModelLoader.CurrentWorldContextKey + "_" + texbsiId + "_" + imageId;
         if (allFramesCache.TryGetValue(cacheKey, out var cached))
             return cached;
 
-        string assetsDir = Game.pathManager.GetRootFolder();
+        if (FFIModelLoader.CurrentWorldHandle == IntPtr.Zero)
+        {
+            Debug.LogWarning("[FFI] Cannot decode texture frames without an active world context.");
+            return null;
+        }
 
-        IntPtr resultPtr = RgpreBindings.DecodeTextureAllFrames(assetsDir, texbsiId, imageId);
+        IntPtr resultPtr = RgpreBindings.DecodeTextureAllFramesWorld(FFIModelLoader.CurrentWorldHandle, texbsiId, imageId);
         if (resultPtr == IntPtr.Zero)
         {
             Debug.LogWarning("[FFI] Failed to decode all frames for TEXBSI." + texbsiId.ToString("D3") +

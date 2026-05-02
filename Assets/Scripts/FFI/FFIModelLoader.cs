@@ -11,6 +11,8 @@ public static class FFIModelLoader
     private static Shader defaultShader;
     public static Dictionary<uint, RGScriptedObject> ScriptedObjects = new Dictionary<uint, RGScriptedObject>();
     public static RGRGMFile CurrentRgmData { get; private set; } = new RGRGMFile();
+    public static IntPtr CurrentWorldHandle { get; private set; } = IntPtr.Zero;
+    public static string CurrentWorldContextKey { get; private set; } = string.Empty;
 
     // Global caches — persist across LoadArea/LoadModel/TryGetMeshData calls
     private static readonly Dictionary<string, (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)> meshCache
@@ -21,6 +23,72 @@ public static class FFIModelLoader
 
     private static readonly Dictionary<string, Material> materialCache
         = new Dictionary<string, Material>(StringComparer.OrdinalIgnoreCase);
+
+    public static void CloseWorldContext()
+    {
+        if (CurrentWorldHandle != IntPtr.Zero)
+        {
+            RgpreBindings.CloseWorld(CurrentWorldHandle);
+            CurrentWorldHandle = IntPtr.Zero;
+        }
+
+        CurrentWorldContextKey = string.Empty;
+    }
+
+    public static bool OpenWorldContext(int worldId)
+    {
+        CloseWorldContext();
+        CurrentWorldHandle = RgpreBindings.OpenWorld(Game.pathManager.GetRootFolder(), worldId);
+        if (CurrentWorldHandle == IntPtr.Zero)
+        {
+            return false;
+        }
+
+        CurrentWorldContextKey = "world:" + worldId;
+        return true;
+    }
+
+    public static bool OpenExplicitWorldContext(string rgmName, string wldName, string paletteName)
+    {
+        CloseWorldContext();
+
+        string mapsFolder = Game.pathManager.GetMapsFolder();
+        string rgmPath = string.IsNullOrEmpty(rgmName) ? string.Empty : Path.Combine(mapsFolder, rgmName + ".RGM");
+        string wldPath = string.IsNullOrEmpty(wldName) ? string.Empty : Path.Combine(mapsFolder, wldName + ".WLD");
+
+        CurrentWorldHandle = RgpreBindings.OpenWorldExplicit(
+            Game.pathManager.GetRootFolder(),
+            rgmPath,
+            wldPath,
+            paletteName);
+        if (CurrentWorldHandle == IntPtr.Zero)
+        {
+            return false;
+        }
+
+        CurrentWorldContextKey = $"explicit:{rgmName}:{wldName}:{paletteName}";
+        return true;
+    }
+
+    public static bool OpenPaletteContext(string paletteName)
+    {
+        CloseWorldContext();
+        CurrentWorldHandle = RgpreBindings.OpenWorldExplicit(
+            Game.pathManager.GetRootFolder(),
+            string.Empty,
+            string.Empty,
+            paletteName);
+        if (CurrentWorldHandle == IntPtr.Zero)
+        {
+            return false;
+        }
+
+        CurrentWorldContextKey = "palette:" + paletteName;
+        return true;
+    }
+
+    private static string ContextualKey(string id)
+        => string.IsNullOrEmpty(CurrentWorldContextKey) ? id : CurrentWorldContextKey + "::" + id;
 
     public static void ClearCache()
     {
@@ -94,12 +162,18 @@ public static class FFIModelLoader
     /// </summary>
     private static List<(string name, Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)> EnsureRobCached(string robName, string robPath)
     {
-        if (robCache.TryGetValue(robName, out var cachedSegments))
+        string cacheKey = ContextualKey(robName);
+        if (robCache.TryGetValue(cacheKey, out var cachedSegments))
         {
             return cachedSegments;
         }
 
-        IntPtr resultPtr = RgpreBindings.ParseRobData(robPath, Game.pathManager.GetRootFolder());
+        if (CurrentWorldHandle == IntPtr.Zero)
+        {
+            return null;
+        }
+
+        IntPtr resultPtr = RgpreBindings.ParseRobDataWorld(CurrentWorldHandle, robPath);
         if (resultPtr == IntPtr.Zero)
         {
             return null;
@@ -112,7 +186,7 @@ public static class FFIModelLoader
             int fc = seg.mesh != null ? seg.mesh.blendShapeCount : 0;
             cachedSegments.Add((seg.name, seg.mesh, seg.materials, fc));
         }
-        robCache[robName] = cachedSegments;
+        robCache[cacheKey] = cachedSegments;
         return cachedSegments;
     }
 
@@ -138,7 +212,7 @@ public static class FFIModelLoader
                     if (!meshDict.ContainsKey(seg.name))
                     {
                         meshDict[seg.name] = (seg.mesh, seg.materials, seg.frameCount);
-                        meshCache[seg.name] = (seg.mesh, seg.materials, seg.frameCount);
+                        meshCache[ContextualKey(seg.name)] = (seg.mesh, seg.materials, seg.frameCount);
                     }
                 }
             }
@@ -147,15 +221,15 @@ public static class FFIModelLoader
         string rgmPath = Path.Combine(mapsFolder, areaName + ".RGM");
         if (File.Exists(rgmPath))
         {
-            LoadRgmSections(rgmPath, paletteName, meshDict, objects);
+            LoadRgmSections(paletteName, meshDict, objects);
         }
 
-        if (File.Exists(rgmPath))
+        if (CurrentWorldHandle != IntPtr.Zero)
         {
-            PlaceRgplObjects(rgmPath, paletteName, meshDict, objects);
+            PlaceRgplObjects(paletteName, meshDict, objects);
         }
 
-        LoadTerrain(mapsFolder, wldName, paletteName, objects);
+        LoadTerrain(paletteName, objects);
 
         swTotal.Stop();
         Debug.Log($"[FFI LoadArea] Total={swTotal.ElapsedMilliseconds}ms");
@@ -164,12 +238,16 @@ public static class FFIModelLoader
     }
 
     private static void PlaceRgplObjects(
-        string rgmPath,
         string paletteName,
         Dictionary<string, (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)> meshDict,
         List<GameObject> objects)
     {
-        IntPtr resultPtr = RgpreBindings.ParseRgmPlacements(rgmPath);
+        if (CurrentWorldHandle == IntPtr.Zero)
+        {
+            return;
+        }
+
+        IntPtr resultPtr = RgpreBindings.GetWorldPlacements(CurrentWorldHandle);
         if (resultPtr == IntPtr.Zero)
         {
             return;
@@ -189,7 +267,7 @@ public static class FFIModelLoader
             // Flat sprite — create a textured quad
             if (placement.textureId > 0 && string.IsNullOrEmpty(modelName))
             {
-                GameObject quad = CreateFlatSprite(placement, paletteName);
+                GameObject quad = CreateFlatSprite(placement);
                 if (quad != null)
                 {
                     objects.Add(quad);
@@ -265,20 +343,14 @@ public static class FFIModelLoader
         }
     }
 
-    private static void LoadTerrain(string mapsFolder, string wldName, string paletteName, List<GameObject> objects)
+    private static void LoadTerrain(string paletteName, List<GameObject> objects)
     {
-        if (string.IsNullOrEmpty(wldName))
+        if (CurrentWorldHandle == IntPtr.Zero)
         {
             return;
         }
 
-        string wldPath = Path.Combine(mapsFolder, wldName + ".WLD");
-        if (!File.Exists(wldPath))
-        {
-            return;
-        }
-
-        IntPtr resultPtr = RgpreBindings.ParseWldTerrainData(wldPath);
+        IntPtr resultPtr = RgpreBindings.GetWorldTerrain(CurrentWorldHandle);
         if (resultPtr == IntPtr.Zero)
         {
             Debug.LogWarning("[FFI] Failed to parse WLD terrain: " + RgpreBindings.GetLastErrorMessage());
@@ -308,7 +380,8 @@ public static class FFIModelLoader
 
     private static (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)? TryLoadModelFile(string modelName)
     {
-        if (meshCache.TryGetValue(modelName, out var cached))
+        string cacheKey = ContextualKey(modelName);
+        if (meshCache.TryGetValue(cacheKey, out var cached))
             return cached;
 
         string artFolder = Game.pathManager.GetArtFolder();
@@ -321,7 +394,12 @@ public static class FFIModelLoader
                 continue;
             }
 
-            IntPtr resultPtr = RgpreBindings.ParseModelData(path, Game.pathManager.GetRootFolder());
+            if (CurrentWorldHandle == IntPtr.Zero)
+            {
+                return null;
+            }
+
+            IntPtr resultPtr = RgpreBindings.ParseModelDataWorld(CurrentWorldHandle, path);
             if (resultPtr == IntPtr.Zero)
             {
                 continue;
@@ -331,7 +409,7 @@ public static class FFIModelLoader
             if (mesh != null)
             {
                 var result = (mesh, matInfos, frameCount);
-                meshCache[modelName] = result;
+                meshCache[cacheKey] = result;
                 return result;
             }
         }
@@ -362,9 +440,9 @@ public static class FFIModelLoader
 
     private static Mesh flatQuadMesh;
 
-    private static GameObject CreateFlatSprite(RgplDeserializer.Placement placement, string paletteName)
+    private static GameObject CreateFlatSprite(RgplDeserializer.Placement placement)
     {
-        Texture2D tex = FFITextureLoader.DecodeTexture(placement.textureId, placement.imageId, paletteName);
+        Texture2D tex = FFITextureLoader.DecodeTexture(placement.textureId, placement.imageId);
         if (tex == null) return null;
 
         if (flatQuadMesh == null)
@@ -429,7 +507,13 @@ public static class FFIModelLoader
                 return new GameObject(displayName);
             }
 
-            IntPtr resultPtr = RgpreBindings.ParseModelData(modelPath, Game.pathManager.GetRootFolder());
+            if (CurrentWorldHandle == IntPtr.Zero)
+            {
+                Debug.LogError("[FFI] No active world context for model load: " + modelName);
+                return new GameObject(displayName);
+            }
+
+            IntPtr resultPtr = RgpreBindings.ParseModelDataWorld(CurrentWorldHandle, modelPath);
             if (resultPtr == IntPtr.Zero)
             {
                 Debug.LogError("[FFI] Failed to parse " + modelName + extension + ": " + RgpreBindings.GetLastErrorMessage());
@@ -442,7 +526,7 @@ public static class FFIModelLoader
                 return new GameObject(displayName);
             }
 
-            meshCache[modelName] = (mesh, materialInfos, frameCount);
+            meshCache[ContextualKey(modelName)] = (mesh, materialInfos, frameCount);
             List<Material> mats = CreateMaterials(materialInfos, colName);
             return CreateGameObject(displayName, mesh, mats, frameCount);
         }
@@ -471,7 +555,7 @@ public static class FFIModelLoader
             if (info.isSolidColor)
                 matKey = "solid_" + info.solidColor.r + "_" + info.solidColor.g + "_" + info.solidColor.b;
             else
-                matKey = colName + "_tex_" + info.textureId + "_" + info.imageId;
+                matKey = CurrentWorldContextKey + "_tex_" + info.textureId + "_" + info.imageId;
 
             if (materialCache.TryGetValue(matKey, out Material cachedMat))
             {
@@ -487,7 +571,7 @@ public static class FFIModelLoader
             }
             else
             {
-                List<Texture2D> frames = FFITextureLoader.DecodeTextureAllFrames(info.textureId, info.imageId, colName);
+                List<Texture2D> frames = FFITextureLoader.DecodeTextureAllFrames(info.textureId, info.imageId);
                 if (frames != null && frames.Count > 0)
                 {
                     material.mainTexture = frames[0];
@@ -558,24 +642,69 @@ public static class FFIModelLoader
         return true;
     }
 
-    private static byte[] GetSection(string rgmPath, string tag)
+    public static bool TryGetFlatData(ushort textureId, byte imageId, out Mesh mesh, out List<Material> materials)
     {
-        IntPtr ptr = RgpreBindings.GetRgmSection(rgmPath, tag, 0);
+        mesh = flatQuadMesh;
+        materials = null;
+
+        Texture2D tex = FFITextureLoader.DecodeTexture(textureId, imageId);
+        if (tex == null)
+        {
+            return false;
+        }
+
+        if (flatQuadMesh == null)
+        {
+            flatQuadMesh = new Mesh();
+            flatQuadMesh.name = "FlatQuad";
+            flatQuadMesh.vertices = new Vector3[]
+            {
+                new Vector3(-0.5f, 0f, 0f),
+                new Vector3( 0.5f, 0f, 0f),
+                new Vector3( 0.5f, 1f, 0f),
+                new Vector3(-0.5f, 1f, 0f)
+            };
+            flatQuadMesh.uv = new Vector2[]
+            {
+                new Vector2(0, 0),
+                new Vector2(1, 0),
+                new Vector2(1, 1),
+                new Vector2(0, 1)
+            };
+            flatQuadMesh.triangles = new int[] { 0, 2, 1, 0, 3, 2 };
+            flatQuadMesh.normals = new Vector3[]
+            {
+                Vector3.back, Vector3.back, Vector3.back, Vector3.back
+            };
+            mesh = flatQuadMesh;
+        }
+
+        Material material = new Material(GetDefaultShader());
+        material.mainTexture = tex;
+        materials = new List<Material> { material };
+        return true;
+    }
+
+    private static byte[] GetSection(string tag)
+    {
+        if (CurrentWorldHandle == IntPtr.Zero)
+            return null;
+
+        IntPtr ptr = RgpreBindings.GetRgmSectionWorld(CurrentWorldHandle, tag, 0);
         if (ptr == IntPtr.Zero) return null;
         return RgpreBindings.ExtractBytesAndFree(ptr);
     }
 
     private static void LoadRgmSections(
-        string rgmPath,
         string paletteName,
         Dictionary<string, (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)> meshDict,
         List<GameObject> objects)
     {
         CurrentRgmData = new RGRGMFile();
 
-        PopulateRawSections(rgmPath);
-        ParseRAHD(GetSection(rgmPath, "RAHD"));
-        ParseMPOB(GetSection(rgmPath, "MPOB"), paletteName, meshDict, objects);
+        PopulateRawSections();
+        ParseRAHD(GetSection("RAHD"));
+        ParseMPOB(GetSection("MPOB"), paletteName, meshDict, objects);
 
         // Initialize animation and script stores
         try
@@ -597,18 +726,18 @@ public static class FFIModelLoader
         }
     }
 
-    private static void PopulateRawSections(string rgmPath)
+    private static void PopulateRawSections()
     {
-        byte[] raatBytes = GetSection(rgmPath, "RAAT");
-        byte[] ranmBytes = GetSection(rgmPath, "RANM");
-        byte[] ralcBytes = GetSection(rgmPath, "RALC");
-        byte[] raanBytes = GetSection(rgmPath, "RAAN");
-        byte[] ragrBytes = GetSection(rgmPath, "RAGR");
-        byte[] rastBytes = GetSection(rgmPath, "RAST");
-        byte[] rasbBytes = GetSection(rgmPath, "RASB");
-        byte[] ravaBytes = GetSection(rgmPath, "RAVA");
-        byte[] rascBytes = GetSection(rgmPath, "RASC");
-        byte[] rahkBytes = GetSection(rgmPath, "RAHK");
+        byte[] raatBytes = GetSection("RAAT");
+        byte[] ranmBytes = GetSection("RANM");
+        byte[] ralcBytes = GetSection("RALC");
+        byte[] raanBytes = GetSection("RAAN");
+        byte[] ragrBytes = GetSection("RAGR");
+        byte[] rastBytes = GetSection("RAST");
+        byte[] rasbBytes = GetSection("RASB");
+        byte[] ravaBytes = GetSection("RAVA");
+        byte[] rascBytes = GetSection("RASC");
+        byte[] rahkBytes = GetSection("RAHK");
 
         if (raatBytes != null) CurrentRgmData.RAAT.attributes = raatBytes;
         if (raanBytes != null) CurrentRgmData.RAAN.data = raanBytes;
@@ -741,7 +870,7 @@ public static class FFIModelLoader
             var mpob = new RGRGMFile.RGMMPOBItem();
             mpob.id = (uint)reader.ReadInt32();                     // 4 bytes
             mpob.type = (RGRGMFile.ObjectType)reader.ReadByte();    // 1 byte
-            reader.ReadByte();                                      // isActive 1 byte
+            mpob.isActive = reader.ReadByte();                      // isActive 1 byte
 
             char[] scriptChars = reader.ReadChars(9);               // 9 bytes
             mpob.scriptName = new string(scriptChars).Split('\0')[0];
@@ -750,8 +879,8 @@ public static class FFIModelLoader
             string rawModel = new string(modelChars).Split('\0')[0];
             mpob.modelName = NormalizeModelName(rawModel);
 
-            reader.ReadByte();                                      // isStatic 1 byte
-            reader.ReadInt16();                                     // unknown1 2 bytes
+            mpob.isStatic = reader.ReadByte();                      // isStatic 1 byte
+            mpob.unknown1 = reader.ReadInt16();                     // unknown1 2 bytes
 
             // positions are 24-bit + 1 padding byte each
             mpob.posX = reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
@@ -764,11 +893,13 @@ public static class FFIModelLoader
             mpob.angley = reader.ReadInt32();                       // 4 bytes
             mpob.anglez = reader.ReadInt32();                       // 4 bytes
 
-            reader.ReadInt16();                                     // textureData 2 bytes
+            ushort textureData = reader.ReadUInt16();               // 2 bytes
+            mpob.textureId = (byte)(textureData >> 7);
+            mpob.imageId = (byte)(textureData & 0x7F);
             mpob.intensity = reader.ReadInt16();                    // 2 bytes
             mpob.radius = reader.ReadInt16();                       // 2 bytes
-            reader.ReadInt16();                                     // modelId 2 bytes
-            reader.ReadInt16();                                     // worldId 2 bytes
+            mpob.modelId = reader.ReadInt16();                      // modelId 2 bytes
+            mpob.worldId = reader.ReadInt16();                      // worldId 2 bytes
             mpob.red = reader.ReadInt16();                          // 2 bytes
             mpob.green = reader.ReadInt16();                        // 2 bytes
             mpob.blue = reader.ReadInt16();                         // 2 bytes

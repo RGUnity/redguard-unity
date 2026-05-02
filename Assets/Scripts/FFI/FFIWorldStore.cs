@@ -7,6 +7,7 @@ public static class FFIWorldStore
 {
     public struct WorldData
     {
+        public int worldId;
         public string RGM;
         public string WLD;
         public string COL;
@@ -65,6 +66,7 @@ public static class FFIWorldStore
             {
                 w = new WorldData
                 {
+                    worldId = worldIndex,
                     RGM = string.Empty,
                     WLD = string.Empty,
                     COL = string.Empty,
@@ -110,6 +112,38 @@ public static class FFIWorldStore
     public static void ClearCache()
     {
         cachedWorldList = null;
+    }
+
+    public static bool TryFindWorldId(string rgm, string wld, string col, out int worldId)
+    {
+        foreach (var world in GetWorldList().Values)
+        {
+            if (string.Equals(world.RGM, rgm, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(world.WLD ?? string.Empty, wld ?? string.Empty, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(world.COL, col, StringComparison.OrdinalIgnoreCase))
+            {
+                worldId = world.worldId;
+                return true;
+            }
+        }
+
+        worldId = -1;
+        return false;
+    }
+
+    public static bool TryFindAnyWorldIdForPalette(string col, out int worldId)
+    {
+        foreach (var world in GetWorldList().Values)
+        {
+            if (string.Equals(world.COL, col, StringComparison.OrdinalIgnoreCase))
+            {
+                worldId = world.worldId;
+                return true;
+            }
+        }
+
+        worldId = -1;
+        return false;
     }
 
     private static string ToUpperStem(string path)
