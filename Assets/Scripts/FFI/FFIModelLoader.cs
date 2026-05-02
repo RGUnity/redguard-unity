@@ -316,7 +316,8 @@ public static class FFIModelLoader
             }
 
             List<Material> materials = CreateMaterials(matInfos, paletteName);
-            GameObject obj = CreateGameObject(modelName, mesh, materials, frameCount);
+            string objectName = !string.IsNullOrEmpty(placement.sourceId) ? placement.sourceId : modelName;
+            GameObject obj = CreateGameObject(objectName, mesh, materials, frameCount);
             ApplyMatrix(obj.transform, placement.transform);
             objects.Add(obj);
             placed++;
