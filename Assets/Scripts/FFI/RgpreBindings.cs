@@ -127,6 +127,10 @@ public static class RgpreBindings
         public float posY;
         public float posZ;
         public float range;
+        public byte lightType;
+        private byte _pad0;
+        private byte _pad1;
+        private byte _pad2;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
