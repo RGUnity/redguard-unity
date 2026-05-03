@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using RGFileImport;
+using UnityEngine;
 
 
 public class AnimData
@@ -498,23 +499,27 @@ public static class RGRGMAnimStore
         {
             MemoryReader memoryReader;
 
-            memoryReader = new MemoryReader(RAAN.data);
-            memoryReader.Seek((uint)RAHD.RAANOffset, 0);
             RAANItems = new List<RGMRAANItem>();
-            for(int i=0;i<RAHD.RAANCount;i++)
+            if (RAAN.data != null && RAHD.RAANCount > 0)
             {
-                RAANItems.Add(new RGMRAANItem(memoryReader));
+                memoryReader = new MemoryReader(RAAN.data);
+                memoryReader.Seek((uint)RAHD.RAANOffset, 0);
+                for (int i = 0; i < RAHD.RAANCount; i++)
+                {
+                    RAANItems.Add(new RGMRAANItem(memoryReader));
+                }
             }
 
-            memoryReader = new MemoryReader(RAGR.data);
-            memoryReader.Seek((uint)RAHD.RAGROffset, 0);
             RAGRItems = new List<RGMRAGRItem>();
-            while(memoryReader.PeekInt16() != 0)
+            if (RAGR.data != null)
             {
-                RAGRItems.Add(new RGMRAGRItem(memoryReader));
+                memoryReader = new MemoryReader(RAGR.data);
+                memoryReader.Seek((uint)RAHD.RAGROffset, 0);
+                while (memoryReader.PeekInt16() != 0)
+                {
+                    RAGRItems.Add(new RGMRAGRItem(memoryReader));
+                }
             }
-
-
         }
         public override string ToString()
         {
@@ -553,16 +558,26 @@ public static class RGRGMAnimStore
     static public Dictionary<string, RGMAnim> Anims; // key: RAHD.scriptName
     static public void ReadAnim(RGFileImport.RGRGMFile filergm)
     {
-        Anims = new Dictionary<string, RGMAnim>();
-        foreach(KeyValuePair<string,RGRGMFile.RGMRAHDItem> entry in filergm.RAHD.dict)
-        {
-            RGMAnim Anim = new RGMAnim(entry.Value, filergm.RAAN, filergm.RAGR);
-            Anims.Add(entry.Value.scriptName, Anim);
+        if (Anims == null)
+            Anims = new Dictionary<string, RGMAnim>();
 
+        foreach (KeyValuePair<string, RGRGMFile.RGMRAHDItem> entry in filergm.RAHD.dict)
+        {
+            try
+            {
+                RGMAnim Anim = new RGMAnim(entry.Value, filergm.RAAN, filergm.RAGR);
+                Anims[entry.Value.scriptName] = Anim;
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogWarning($"[RGRGMAnimStore] ReadAnim failed for {entry.Value.scriptName}: {ex.Message}");
+            }
         }
     }
     static public RGMAnim getAnim(string scriptname)
     {
-        return Anims[scriptname];
+        if (Anims == null || !Anims.TryGetValue(scriptname, out RGMAnim anim))
+            throw new KeyNotFoundException($"Animation not found for: {scriptname}");
+        return anim;
     }
 }

@@ -105,13 +105,13 @@ public class RGObjectStore
         Debug.Log($"Adding item {id} with name {objectName}");
         if(scriptedObjects == null)
             scriptedObjects = new Dictionary<uint, RGScriptedObject>();
-        scriptedObjects.Add(id, o);
+        scriptedObjects[id] = o;
 
         if(objectName != null)
         {
             if(namedScriptedObjects == null)
                 namedScriptedObjects = new Dictionary<string, RGScriptedObject>();
-            namedScriptedObjects.Add(objectName, o);
+            namedScriptedObjects[objectName] = o;
         }
     }
     public static void RemoveObject(uint id, string objectName)
@@ -137,8 +137,9 @@ public class RGObjectStore
     public static void AddPlayer(RGFileImport.RGRGMFile filergm,RGFileImport.RGRGMFile.RGMMPOBItem cyrus_data)
     {
         GameObject[] playerObjects = GameObject.FindGameObjectsWithTag("PlayerObject");
-        playerObjects[0].AddComponent<RGScriptedObject>();
         player = playerObjects[0].GetComponent<RGScriptedObject>();
+        if(player == null)
+            player = playerObjects[0].AddComponent<RGScriptedObject>();
         player.Instanciate(cyrus_data, filergm, "ISLAND");
         player.transform.localPosition = Vector3.zero;
         player.transform.localRotation = Quaternion.identity;
@@ -150,10 +151,26 @@ public class RGObjectStore
     }
     public static RGScriptedObject GetPlayer()
     {
+        if (player == null)
+        {
+            GameObject[] playerObjects = GameObject.FindGameObjectsWithTag("PlayerObject");
+            if (playerObjects != null && playerObjects.Length > 0)
+            {
+                player = playerObjects[0].GetComponent<RGScriptedObject>();
+            }
+        }
         return player;
     }
     public static GameObject GetPlayerObject()
     {
+        if (playerRootObject == null)
+        {
+            GameObject[] playerRootObjects = GameObject.FindGameObjectsWithTag("Player");
+            if (playerRootObjects != null && playerRootObjects.Length > 0)
+            {
+                playerRootObject = playerRootObjects[0];
+            }
+        }
         return playerRootObject;
     }
     public static PlayerMain GetPlayerMain()

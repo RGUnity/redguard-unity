@@ -221,6 +221,19 @@ namespace RGFileImport
             public List<RGMMPSZItem> items;
         }
 
+        public struct RGMMPMKItem
+        {
+            public int posX;
+            public int posY;
+            public int posZ;
+        }
+
+        public struct RGMMPMKSection
+        {
+            public uint num_items;
+            public List<RGMMPMKItem> items;
+        }
+
         public RGMRAHDSection RAHD;
         public RGMRASTSection RAST;
         public RGMRASBSection RASB;
@@ -235,6 +248,7 @@ namespace RGFileImport
         public RGMRANMSection RANM;
         public RGMRAVCSection RAVC;
         public RGMMPOBSection MPOB;
+        public RGMMPMKSection MPMK;
         public RGMMPSZSection MPSZ;
         public long fileSize;
 
@@ -254,6 +268,7 @@ namespace RGFileImport
             RAVC.items = new List<RGMRAVCItem>();
             RALC.items = new List<RGMRALCItem>();
             MPOB.items = new List<RGMMPOBItem>();
+            MPMK.items = new List<RGMMPMKItem>();
             MPSZ.items = new List<RGMMPSZItem>();
         }
     }

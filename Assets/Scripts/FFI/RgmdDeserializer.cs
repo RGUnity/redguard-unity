@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
@@ -13,6 +14,7 @@ public static class RgmdDeserializer
     private static readonly int RgmdHeaderSize = Marshal.SizeOf<RgpreBindings.RgmdHeader>();
     private static readonly int RgmdSubmeshHeaderSize = Marshal.SizeOf<RgpreBindings.RgmdSubmeshHeader>();
     private static readonly int RgmdVertexSize = Marshal.SizeOf<RgpreBindings.RgmdVertex>();
+    private static readonly int RgmdDeltaVertexSize = Marshal.SizeOf<RgpreBindings.RgmdDeltaVertex>();
 
     public struct SubmeshMaterialInfo
     {
@@ -230,6 +232,80 @@ public static class RgmdDeserializer
         }
 
         mesh.RecalculateBounds();
+
+        // Build blendshapes from per-frame delta blocks, matching rgunity-main LoadMesh_3DStore logic
+        if (frameCount > 0)
+        {
+            int totalVerts = mesh.vertexCount;
+
+            // Read all frame deltas first
+            var allDeltaPos = new Vector3[frameCount][];
+            var allDeltaNorm = new Vector3[frameCount][];
+
+            for (int frame = 0; frame < frameCount; frame++)
+            {
+                allDeltaPos[frame] = new Vector3[totalVerts];
+                allDeltaNorm[frame] = new Vector3[totalVerts];
+
+                if (ptr.ToInt64() >= end.ToInt64()) break;
+
+                int vertOffset = 0;
+                for (int si = 0; si < submeshCount; si++)
+                {
+                    if (ptr.ToInt64() + 4 > end.ToInt64()) break;
+                    int deltaCount = Marshal.ReadInt32(ptr);
+                    ptr += 4;
+
+                    if (ptr.ToInt64() + (long)deltaCount * RgmdDeltaVertexSize > end.ToInt64()) break;
+                    for (int v = 0; v < deltaCount && vertOffset + v < totalVerts; v++)
+                    {
+                        var d = Marshal.PtrToStructure<RgpreBindings.RgmdDeltaVertex>(
+                            ptr + v * RgmdDeltaVertexSize);
+                        allDeltaPos[frame][vertOffset + v] = new Vector3(-d.dx, d.dy, d.dz);
+                        allDeltaNorm[frame][vertOffset + v] = new Vector3(-d.dnx, d.dny, d.dnz);
+                    }
+                    ptr += deltaCount * RgmdDeltaVertexSize;
+                    vertOffset += deltaCount;
+                }
+            }
+
+            // Rebase to frame 1 (first real animation pose) so default appearance is not T-pose
+            // matches rgunity-main RGMeshStore.cs:210
+            Vector3[] rebaseDeltaV = null;
+            Vector3[] rebaseDeltaN = null;
+            if (frameCount > 1)
+            {
+                rebaseDeltaV = allDeltaPos[1];
+                rebaseDeltaN = allDeltaNorm[1];
+                var baseVerts = mesh.vertices;
+                var baseNorms = mesh.normals;
+                for (int v = 0; v < totalVerts; v++)
+                {
+                    baseVerts[v] += rebaseDeltaV[v];
+                    baseNorms[v] += rebaseDeltaN[v];
+                }
+                mesh.vertices = baseVerts;
+                mesh.normals = baseNorms;
+                mesh.RecalculateBounds();
+            }
+
+            // Add all frames as blendshapes, subtracting rebase delta
+            for (int frame = 0; frame < frameCount; frame++)
+            {
+                var deltaV = (Vector3[])allDeltaPos[frame].Clone();
+                var deltaN = (Vector3[])allDeltaNorm[frame].Clone();
+                if (rebaseDeltaV != null)
+                {
+                    for (int v = 0; v < totalVerts; v++)
+                    {
+                        deltaV[v] -= rebaseDeltaV[v];
+                        deltaN[v] -= rebaseDeltaN[v];
+                    }
+                }
+                mesh.AddBlendShapeFrame($"FRAME_{frame}", 100.0f, deltaV, deltaN, null);
+            }
+        }
+
         return (mesh, submeshMaterials, frameCount);
     }
 

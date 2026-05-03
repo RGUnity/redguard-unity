@@ -166,7 +166,7 @@ public static class WorldLoader
         host.playerSpawnOrientation = playerSpawnOrientation;
 
         // load the player
-        LoadPlayer(RGM, playerSpawnLocation, playerSpawnOrientation);
+        LoadPlayer(RGM, COL, playerSpawnLocation, playerSpawnOrientation);
 
         for(int i = 0; i < WorldObjects[RGM].Count;i++)
         {
@@ -178,7 +178,7 @@ public static class WorldLoader
         }
 
     }
-    static void LoadPlayer(string RGM, int playerSpawnLocation, int playerSpawnOrientation)
+    static void LoadPlayer(string RGM, string COL, int playerSpawnLocation, int playerSpawnOrientation)
     {
         // only load player once, this is a bit of a hack, we should just clear it decently
         if(!playerLoaded)
@@ -199,7 +199,20 @@ public static class WorldLoader
     */
 
             RGObjectStore.AddPlayer(filergm, cyrus_data);
-            RGObjectStore.GetPlayer().EnableScripting();
+            var addedPlayer = RGObjectStore.GetPlayer();
+            if (addedPlayer != null)
+            {
+                // If animations failed during Instanciate (e.g. anim store not ready),
+                // retry now that ReadAnim has run
+                addedPlayer.TryReinitAnimations(filergm, COL);
+                addedPlayer.EnableScripting();
+                // Match the old project/player controller startup by giving CYRUS
+                // an initial idle animation immediately after creation.
+                if (addedPlayer.animations != null)
+                {
+                    addedPlayer.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_panic, 0);
+                }
+            }
             playerLoaded = true;
         }
 

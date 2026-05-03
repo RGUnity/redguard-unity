@@ -757,10 +757,11 @@ public static class FFIModelLoader
         try
         {
             RGRGMAnimStore.ReadAnim(CurrentRgmData);
+            Debug.Log($"[FFI] AnimStore loaded {RGRGMAnimStore.Anims?.Count ?? 0} entries");
         }
         catch (Exception ex)
         {
-            Debug.LogWarning("[FFI] AnimStore init: " + ex.Message);
+            Debug.LogWarning("[FFI] AnimStore init failed: " + ex.Message + "\n" + ex.StackTrace);
         }
 
         try
@@ -801,6 +802,9 @@ public static class FFIModelLoader
                 posZ = posZ,
             });
 
+            // X: un-negate (raw formula had x_sign=-1 matching Rust; we negate back)
+            // Y: keep negated (Rust convention y_sign=-1, Unity Y matches)
+            // Z: keep as-is
             Vector3 markerPos = new Vector3(
                 (float)posX * (1.0f / 5120.0f),
                 -(float)posY * (1.0f / 5120.0f),

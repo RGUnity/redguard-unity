@@ -48,6 +48,13 @@ public static class RgpreBindings
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RgmdDeltaVertex
+    {
+        public float dx, dy, dz;
+        public float dnx, dny, dnz;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct RgmdSubmeshHeader
     {
         public byte textured;       // 0 = solid color (color holds resolved RGB), 1 = textured

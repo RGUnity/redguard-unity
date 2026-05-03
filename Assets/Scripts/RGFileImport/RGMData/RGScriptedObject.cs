@@ -155,6 +155,23 @@ public class RGScriptedObject : MonoBehaviour
 		light = lightGO.AddComponent<Light>();
     }
 
+    public void TryReinitAnimations(RGFileImport.RGRGMFile filergm, string name_col)
+    {
+        if (animations != null) return;
+        if (type != ScriptedObjectType.scriptedobject_animated) return;
+        if (skinnedMeshRenderer == null) return;
+
+        try
+        {
+            animations = new AnimData(scriptName);
+            Debug.Log($"[RGScriptedObject] TryReinitAnimations: {scriptName} ok RAAN={animations.animationData.RAANItems.Count}");
+        }
+        catch (Exception animEx)
+        {
+            Debug.LogWarning($"[RGScriptedObject] TryReinitAnimations({scriptName}) failed: {animEx.Message}");
+        }
+    }
+
     public void Instanciate3DObject(RGFileImport.RGRGMFile.RGMMPOBItem MPOB, RGFileImport.RGRGMFile filergm, string name_col)
     {
 		skinnedMeshRenderer = gameObject.AddComponent<SkinnedMeshRenderer>();
@@ -163,8 +180,9 @@ public class RGScriptedObject : MonoBehaviour
 		{
 			animations = new AnimData(MPOB.scriptName);
 		}
-		catch
+		catch (Exception animEx)
 		{
+			Debug.LogWarning($"[RGScriptedObject] AnimData({MPOB.scriptName}) failed: {animEx.Message}");
 			animations = null;
 		}
         currentMesh = 0;
@@ -259,6 +277,8 @@ public class RGScriptedObject : MonoBehaviour
         }
 
         Vector3 position = Vector3.zero;
+        // Negate X: the raw formula produces -X (matching Rust SCENE_CONVENTION x_sign=-1).
+        // We negate again to get the correct left-handed Unity X coordinate.
 		position.x = ((float)MPOB.posX * 256.0f) * RGM_MPOB_SCALE;
 		position.y = -((float)MPOB.posY * 256.0f) * RGM_MPOB_SCALE;
 		position.z = -((float)0xFFFFFF - ((float)MPOB.posZ * 256.0f)) * RGM_MPOB_SCALE;
@@ -420,6 +440,11 @@ public class RGScriptedObject : MonoBehaviour
     {
         if(type == ScriptedObjectType.scriptedobject_animated)
         {
+            if(animations == null)
+            {
+                Debug.LogWarning($"{scriptName}: SetAnim({animId}) called but animations is null");
+                return 0;
+            }
             if(animations.SetAnimation((RGRGMAnimStore.AnimGroup)animId,firstFrame) == 0)
             {
                 for(int i=0;i<skinnedMeshRenderer.sharedMesh.blendShapeCount;i++)
@@ -445,6 +470,7 @@ public class RGScriptedObject : MonoBehaviour
         const float da2dg = 180.0f / 1024.0f;
         Vector3 eulers = new Vector3(item.anglex % 2048, item.angley % 2048, item.anglez % 2048);
         eulers *= da2dg;
+        // Match the old redguard-unity-main MPOB convention: (+X, -Y, +Z).
         return Vector3.Scale(eulers, new Vector3(1f, -1f, 1f));
     }
 
@@ -472,7 +498,7 @@ public class RGScriptedObject : MonoBehaviour
     }
     void UpdateAnimations()
 	{
-		if (allowAnimation)
+		if (allowAnimation && animations != null)
 		{
             int oldGlobal = animations.getCurrentFrame();
             int oldMesh = currentMesh;
