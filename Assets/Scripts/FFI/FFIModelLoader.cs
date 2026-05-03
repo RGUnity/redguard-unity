@@ -28,6 +28,14 @@ public static class FFIModelLoader
     private static int ReadUnsignedInt24(MemoryReader reader)
         => reader.ReadByte() | (reader.ReadByte() << 8) | (reader.ReadByte() << 16);
 
+    private static int ReadLegacyShiftedInt24(MemoryReader reader)
+    {
+        int b0 = reader.ReadByte();
+        int b1 = reader.ReadByte();
+        int b2 = reader.ReadByte();
+        return (b0 << 8) | (b1 << 16) | (b2 << 24);
+    }
+
     // Global caches — persist across LoadArea/LoadModel/TryGetMeshData calls
     private static readonly Dictionary<string, (Mesh mesh, RgmdDeserializer.SubmeshMaterialInfo[] materials, int frameCount)> meshCache
         = new Dictionary<string, (Mesh, RgmdDeserializer.SubmeshMaterialInfo[], int)>(StringComparer.OrdinalIgnoreCase);
@@ -434,6 +442,16 @@ public static class FFIModelLoader
 
     private static void ApplyMatrix(Transform transform, Matrix4x4 matrix)
     {
+        // RGPL/MPS placement matrices arrive in the exported scene convention, where X is
+        // reflected relative to Unity. Convert with M' = S * M * S, S = diag(-1, 1, 1).
+        // For a column-major 4x4 that means negating the row-0 XOR col-0 terms:
+        //   m10, m20, m01, m02, m03
+        matrix.m10 = -matrix.m10;
+        matrix.m20 = -matrix.m20;
+        matrix.m01 = -matrix.m01;
+        matrix.m02 = -matrix.m02;
+        matrix.m03 = -matrix.m03;
+
         transform.position = new Vector3(matrix.m03, matrix.m13, matrix.m23);
 
         Vector3 basisX = new Vector3(matrix.m00, matrix.m10, matrix.m20);
@@ -733,7 +751,7 @@ public static class FFIModelLoader
 
         PopulateRawSections();
         ParseRAHD(GetSection("RAHD"));
-        ParseMPOB(GetSection("MPOB"), paletteName, meshDict, objects);
+        ParseMPMK(GetSection("MPMK"));
 
         // Initialize animation and script stores
         try
@@ -752,6 +770,42 @@ public static class FFIModelLoader
         catch (Exception ex)
         {
             Debug.LogWarning("[FFI] ScriptStore init: " + ex.Message);
+        }
+
+        ParseMPOB(GetSection("MPOB"), paletteName, meshDict, objects);
+    }
+
+    private static void ParseMPMK(byte[] mpmkBytes)
+    {
+        CurrentRgmData.MPMK.items.Clear();
+        RGObjectStore.mapMarkerList = new List<Vector3>();
+
+        if (mpmkBytes == null || mpmkBytes.Length < 4)
+            return;
+
+        var reader = new MemoryReader(mpmkBytes);
+        uint numItems = (uint)reader.ReadInt32();
+        for (int i = 0; i < (int)numItems; i++)
+        {
+            int posX = ReadLegacyShiftedInt24(reader);
+            reader.ReadByte();
+            int posY = ReadLegacyShiftedInt24(reader);
+            reader.ReadByte();
+            int posZ = ReadLegacyShiftedInt24(reader);
+            reader.ReadByte();
+
+            CurrentRgmData.MPMK.items.Add(new RGRGMFile.RGMMPMKItem
+            {
+                posX = posX,
+                posY = posY,
+                posZ = posZ,
+            });
+
+            Vector3 markerPos = new Vector3(
+                (float)posX * (1.0f / 5120.0f),
+                -(float)posY * (1.0f / 5120.0f),
+                -(float)(0xFFFFFF - posZ) * (1.0f / 5120.0f));
+            RGObjectStore.AddMapMarker(markerPos);
         }
     }
 
@@ -963,7 +1017,11 @@ public static class FFIModelLoader
     {
         if (defaultShader == null)
         {
-            defaultShader = Shader.Find("Universal Render Pipeline/Lit");
+            defaultShader = Shader.Find("Universal Render Pipeline/Simple Lit");
+            if (defaultShader == null)
+            {
+                defaultShader = Shader.Find("Universal Render Pipeline/Lit");
+            }
             if (defaultShader == null)
             {
                 defaultShader = Shader.Find("Standard");

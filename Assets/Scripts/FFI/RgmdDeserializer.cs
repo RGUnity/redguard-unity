@@ -161,8 +161,8 @@ public static class RgmdDeserializer
                 var vertex = Marshal.PtrToStructure<RgpreBindings.RgmdVertex>(ptr);
                 ptr += RgmdVertexSize;
 
-                vertices.Add(new Vector3(vertex.px, vertex.py, vertex.pz));
-                normals.Add(new Vector3(vertex.nx, vertex.ny, vertex.nz));
+                vertices.Add(new Vector3(-vertex.px, vertex.py, vertex.pz));
+                normals.Add(new Vector3(-vertex.nx, vertex.ny, vertex.nz));
                 uvs.Add(new Vector2(vertex.u, vertex.v));
             }
 
@@ -174,15 +174,23 @@ public static class RgmdDeserializer
                 Marshal.Copy(ptr, indexWords, 0, indexCount);
                 ptr += indexCount * sizeof(uint);
 
-                for (int idx = 0; idx < indexCount; idx++)
+                // Indices come in as triangles (triplets). We reverse winding within each
+                // triangle to compensate for the X-axis negation above (flipping one axis
+                // changes the handedness of the winding order).
+                for (int idx = 0; idx < indexCount; idx += 3)
                 {
-                    uint raw = unchecked((uint)indexWords[idx]);
-                    if (raw > int.MaxValue)
+                    for (int t = 0; t < 3; t++)
                     {
-                        throw new InvalidOperationException($"Segment '{segmentName}' has index value too large in submesh {submeshIndex}.");
-                    }
+                        // Swap index 1 and 2 within each triangle (0,1,2 → 0,2,1)
+                        int src = idx + (t == 1 ? 2 : t == 2 ? 1 : 0);
+                        uint raw = unchecked((uint)indexWords[src]);
+                        if (raw > int.MaxValue)
+                        {
+                            throw new InvalidOperationException($"Segment '{segmentName}' has index value too large in submesh {submeshIndex}.");
+                        }
 
-                    allIndices.Add(submeshVertexStart + (int)raw);
+                        allIndices.Add(submeshVertexStart + (int)raw);
+                    }
                 }
             }
 

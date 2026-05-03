@@ -259,7 +259,7 @@ public class RGScriptedObject : MonoBehaviour
         }
 
         Vector3 position = Vector3.zero;
-		position.x = -((float)MPOB.posX * 256.0f) * RGM_MPOB_SCALE;
+		position.x = ((float)MPOB.posX * 256.0f) * RGM_MPOB_SCALE;
 		position.y = -((float)MPOB.posY * 256.0f) * RGM_MPOB_SCALE;
 		position.z = -((float)0xFFFFFF - ((float)MPOB.posZ * 256.0f)) * RGM_MPOB_SCALE;
         Vector3 rotation = EulerFromMpobData(MPOB);
@@ -445,7 +445,7 @@ public class RGScriptedObject : MonoBehaviour
         const float da2dg = 180.0f / 1024.0f;
         Vector3 eulers = new Vector3(item.anglex % 2048, item.angley % 2048, item.anglez % 2048);
         eulers *= da2dg;
-        return Vector3.Scale(eulers, new Vector3(1f, 1f, 1f));
+        return Vector3.Scale(eulers, new Vector3(1f, -1f, 1f));
     }
 
     int GlobalToLocalFrame(int globalFrame)
@@ -602,7 +602,7 @@ public class RGScriptedObject : MonoBehaviour
                     newPosition = taskData.positionTarget;
                     taskData.type = TaskType.task_idle;
                 }
-                transform.localPosition = newPosition;
+                transform.position = newPosition;
                 break;
             case TaskType.task_moving_local:
                 taskData.timer += frameTime;
@@ -653,10 +653,10 @@ public class RGScriptedObject : MonoBehaviour
             case TaskType.task_pathfinding:
                 // TODO: actual pathfinding :D
                 taskData.timer += frameTime;
-                Vector3 twd = Vector3.MoveTowards(transform.localPosition,
+                Vector3 twd = Vector3.MoveTowards(transform.position,
                                                   taskData.positionTarget,
                                                   taskData.moveSpeed*frameTime);
-                transform.localPosition = twd;
+                transform.position = twd;
                 if(twd == taskData.positionTarget)
                 {
                     taskData.type = TaskType.task_idle;
@@ -1195,8 +1195,8 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
                 mt = new Vector3(0,0,0);
                 break;
         }
-        newTask.positionTarget = transform.localPosition + mt;
-        newTask.positionStart = transform.localPosition;
+        newTask.positionTarget = transform.position + mt;
+        newTask.positionStart = transform.position;
         AddTask(multitask, newTask);
         return 0;
     }
@@ -1247,7 +1247,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         newTask.timer = 0;
 
         newTask.positionTarget = locations[i[0]];
-        newTask.positionStart = transform.localPosition;
+        newTask.positionStart = transform.position;
         AddTask(multitask, newTask);
         return 0;
 
