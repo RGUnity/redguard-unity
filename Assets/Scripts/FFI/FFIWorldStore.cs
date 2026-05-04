@@ -29,7 +29,7 @@ public static class FFIWorldStore
         string worldIniPath = Path.Combine(Game.pathManager.GetRootFolder(), "WORLD.INI");
         if (!File.Exists(worldIniPath))
         {
-            Debug.LogWarning("[FFIWorldStore] WORLD.INI not found: " + worldIniPath);
+            Debug.LogWarning("[FFI] WORLD.INI not found: " + worldIniPath);
             return cachedWorldList;
         }
 

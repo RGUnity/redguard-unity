@@ -47,6 +47,19 @@ public static class FFIModelLoader
     private static readonly Dictionary<string, Material> materialCache
         = new Dictionary<string, Material>(StringComparer.OrdinalIgnoreCase);
 
+    // Cached Shader.PropertyToID values for "FRAME_0", "FRAME_1", ... — avoids per-frame
+    // string-to-id hashing inside Material.SetTexture during animated material setup.
+    private static readonly List<int> frameTextureIds = new List<int>();
+
+    private static int FrameTextureId(int frame)
+    {
+        while (frameTextureIds.Count <= frame)
+        {
+            frameTextureIds.Add(Shader.PropertyToID("FRAME_" + frameTextureIds.Count));
+        }
+        return frameTextureIds[frame];
+    }
+
     public static void CloseWorldContext()
     {
         if (CurrentWorldHandle != IntPtr.Zero)
@@ -255,7 +268,7 @@ public static class FFIModelLoader
         LoadTerrain(paletteName, objects);
 
         swTotal.Stop();
-        Debug.Log($"[FFI LoadArea] Total={swTotal.ElapsedMilliseconds}ms");
+        Debug.Log($"[FFI] Total={swTotal.ElapsedMilliseconds}ms");
 
         return objects;
     }
@@ -346,9 +359,9 @@ public static class FFIModelLoader
             placed++;
         }
 
-        Debug.Log($"[FFI LoadArea] {rgpl.placements.Count} placements, {rgpl.lights.Count} lights. Placed: {placed}, Skipped (empty): {skippedEmpty}, Skipped (no mesh): {skippedNoMesh}");
+        Debug.Log($"[FFI] {rgpl.placements.Count} placements, {rgpl.lights.Count} lights. Placed: {placed}, Skipped (empty): {skippedEmpty}, Skipped (no mesh): {skippedNoMesh}");
         if (missingModels.Count > 0)
-            Debug.Log($"[FFI LoadArea] Missing models: {string.Join(", ", missingModels)}");
+            Debug.Log($"[FFI] Missing models: {string.Join(", ", missingModels)}");
 
         CreateLights(rgpl.lights, objects);
     }
@@ -624,7 +637,7 @@ public static class FFIModelLoader
 
                     for (int f = 0; f < frames.Count; f++)
                     {
-                        material.SetTexture("FRAME_" + f, frames[f]);
+                        material.SetTexture(FrameTextureId(f), frames[f]);
                     }
                 }
                 else

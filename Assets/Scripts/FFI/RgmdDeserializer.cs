@@ -289,18 +289,33 @@ public static class RgmdDeserializer
                 mesh.RecalculateBounds();
             }
 
-            // Add all frames as blendshapes, subtracting rebase delta
+            // Add all frames as blendshapes, subtracting the rebase delta into a
+            // pair of reusable buffers. AddBlendShapeFrame copies the input arrays
+            // internally, so reusing the same buffer across frames is safe and
+            // avoids allocating 2*frameCount Vector3[totalVerts] arrays.
+            Vector3[] frameDeltaV = rebaseDeltaV != null ? new Vector3[totalVerts] : null;
+            Vector3[] frameDeltaN = rebaseDeltaN != null ? new Vector3[totalVerts] : null;
+
             for (int frame = 0; frame < frameCount; frame++)
             {
-                var deltaV = (Vector3[])allDeltaPos[frame].Clone();
-                var deltaN = (Vector3[])allDeltaNorm[frame].Clone();
+                Vector3[] deltaV;
+                Vector3[] deltaN;
                 if (rebaseDeltaV != null)
                 {
+                    var srcV = allDeltaPos[frame];
+                    var srcN = allDeltaNorm[frame];
                     for (int v = 0; v < totalVerts; v++)
                     {
-                        deltaV[v] -= rebaseDeltaV[v];
-                        deltaN[v] -= rebaseDeltaN[v];
+                        frameDeltaV[v] = srcV[v] - rebaseDeltaV[v];
+                        frameDeltaN[v] = srcN[v] - rebaseDeltaN[v];
                     }
+                    deltaV = frameDeltaV;
+                    deltaN = frameDeltaN;
+                }
+                else
+                {
+                    deltaV = allDeltaPos[frame];
+                    deltaN = allDeltaNorm[frame];
                 }
                 mesh.AddBlendShapeFrame($"FRAME_{frame}", 100.0f, deltaV, deltaN, null);
             }
