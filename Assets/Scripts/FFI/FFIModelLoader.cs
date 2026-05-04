@@ -442,15 +442,7 @@ public static class FFIModelLoader
 
     private static void ApplyMatrix(Transform transform, Matrix4x4 matrix)
     {
-        // RGPL/MPS placement matrices arrive in the exported scene convention, where X is
-        // reflected relative to Unity. Convert with M' = S * M * S, S = diag(-1, 1, 1).
-        // For a column-major 4x4 that means negating the row-0 XOR col-0 terms:
-        //   m10, m20, m01, m02, m03
-        matrix.m10 = -matrix.m10;
-        matrix.m20 = -matrix.m20;
-        matrix.m01 = -matrix.m01;
-        matrix.m02 = -matrix.m02;
-        matrix.m03 = -matrix.m03;
+        matrix = RedguardSceneTransform.ReflectPlacementMatrix(matrix);
 
         transform.position = new Vector3(matrix.m03, matrix.m13, matrix.m23);
 
@@ -805,10 +797,7 @@ public static class FFIModelLoader
             // X: un-negate (raw formula had x_sign=-1 matching Rust; we negate back)
             // Y: keep negated (Rust convention y_sign=-1, Unity Y matches)
             // Z: keep as-is
-            Vector3 markerPos = new Vector3(
-                (float)posX * (1.0f / 5120.0f),
-                -(float)posY * (1.0f / 5120.0f),
-                -(float)(0xFFFFFF - posZ) * (1.0f / 5120.0f));
+            Vector3 markerPos = RedguardSceneTransform.ConvertMarkerPosition(posX, posY, posZ);
             RGObjectStore.AddMapMarker(markerPos);
         }
     }

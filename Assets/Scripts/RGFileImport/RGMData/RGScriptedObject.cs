@@ -38,10 +38,7 @@ public class RGScriptedObject : MonoBehaviour
 
 	static Vector3 SceneOffsetPosition(int x, int y, int z)
 	{
-		return new Vector3(
-			(float)x * RGM_SCENE_OFFSET_SCALE,
-			-(float)y * RGM_SCENE_OFFSET_SCALE,
-			-(float)z * RGM_SCENE_OFFSET_SCALE);
+		return RedguardSceneTransform.ConvertSceneOffset(x, y, z);
 	}
 	
 	public string objectName;
@@ -276,12 +273,7 @@ public class RGScriptedObject : MonoBehaviour
             RAHDData = new RGFileImport.RGRGMFile.RGMRAHDItem();
         }
 
-        Vector3 position = Vector3.zero;
-        // Negate X: the raw formula produces -X (matching Rust SCENE_CONVENTION x_sign=-1).
-        // We negate again to get the correct left-handed Unity X coordinate.
-		position.x = ((float)MPOB.posX * 256.0f) * RGM_MPOB_SCALE;
-		position.y = -((float)MPOB.posY * 256.0f) * RGM_MPOB_SCALE;
-		position.z = -((float)0xFFFFFF - ((float)MPOB.posZ * 256.0f)) * RGM_MPOB_SCALE;
+        Vector3 position = RedguardSceneTransform.ConvertMpobPosition(MPOB.posX, MPOB.posY, MPOB.posZ);
         Vector3 rotation = EulerFromMpobData(MPOB);
 		transform.position = position;
 		transform.Rotate(rotation);

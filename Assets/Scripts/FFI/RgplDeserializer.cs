@@ -90,7 +90,7 @@ public static class RgplDeserializer
                 {
                     name = ReadFixedString(ReadLightNameBytes(src)),
                     color = new Color(src.r, src.g, src.b),
-                    position = new Vector3(src.posX, src.posY, src.posZ),
+                    position = RedguardSceneTransform.ReflectSceneLightPosition(new Vector3(src.posX, src.posY, src.posZ)),
                     range = src.range
                 });
             }

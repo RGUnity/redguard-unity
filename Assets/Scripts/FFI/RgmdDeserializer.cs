@@ -163,8 +163,8 @@ public static class RgmdDeserializer
                 var vertex = Marshal.PtrToStructure<RgpreBindings.RgmdVertex>(ptr);
                 ptr += RgmdVertexSize;
 
-                vertices.Add(new Vector3(-vertex.px, vertex.py, vertex.pz));
-                normals.Add(new Vector3(-vertex.nx, vertex.ny, vertex.nz));
+                vertices.Add(RedguardSceneTransform.ReflectVertex(new Vector3(vertex.px, vertex.py, vertex.pz)));
+                normals.Add(RedguardSceneTransform.ReflectNormal(new Vector3(vertex.nx, vertex.ny, vertex.nz)));
                 uvs.Add(new Vector2(vertex.u, vertex.v));
             }
 
