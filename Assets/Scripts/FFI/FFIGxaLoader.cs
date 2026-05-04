@@ -6,7 +6,6 @@ using UnityEngine;
 public static class FFIGxaLoader
 {
     private static readonly Dictionary<string, Material> materialCache = new Dictionary<string, Material>();
-    private static Shader gxaShader;
 
     public static Material GetMaterial_GXA(string gxaName, int frame)
     {
@@ -58,7 +57,7 @@ public static class FFIGxaLoader
             texture.LoadRawTextureData(rgba);
             texture.Apply();
 
-            var material = new Material(GetShader());
+            var material = new Material(FFIShaders.GetDefaultLit());
             material.mainTexture = texture;
             materialCache[key] = material;
             return material;
@@ -85,14 +84,4 @@ public static class FFIGxaLoader
 
     private static string ResolveGxaPath(string gxaName)
         => FFIPathUtils.ResolveFile(Game.pathManager.GetSystemFolder(), gxaName, ".GXA");
-
-    private static Shader GetShader()
-    {
-        if (gxaShader == null)
-        {
-            gxaShader = Shader.Find("Universal Render Pipeline/Simple Lit");
-        }
-
-        return gxaShader;
-    }
 }

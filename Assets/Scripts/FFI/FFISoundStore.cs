@@ -44,8 +44,15 @@ public static class FFISoundStore
         throw new IndexOutOfRangeException("SFX id not loaded: " + id);
     }
 
-    // NOTE: Each ConvertRtxEntryToWav / GetRtxSubtitle call re-parses the full file
-    // on the native side. This is slow for large RTX files but acceptable as a one-time load.
+    // TODO: RTX files actually live at the install root (next to WORLD.INI), but
+    // resolving them there exposes a perf bottleneck: each ConvertRtxEntryToWav and
+    // GetRtxSubtitle call re-parses the FULL file on the native side, so a real
+    // ENGLISH.RTX with hundreds of entries hangs the editor for tens of seconds at
+    // load. A single-call API (e.g. rg_load_rtx_all_entries) on the rgpre side
+    // would parse once and let us batch this — until that exists, we deliberately
+    // look in /sound/ where nothing matches, so the warning fires and we bail
+    // early. This matches the effective behavior on master (no RTX loaded) without
+    // the hang. Switch back to GetRootFolder() once rgpre has the batch API.
     public static void LoadRTX(string rtxName)
     {
         RtxEntries.Clear();
@@ -60,18 +67,21 @@ public static class FFISoundStore
         }
 
         int count = RgpreBindings.RtxEntryCount(path);
+        int loaded = 0;
         for (int entryIndex = 0; entryIndex < count; entryIndex++)
         {
             IntPtr wavPtr = RgpreBindings.ConvertRtxEntryToWav(path, entryIndex);
-            AudioClip clip = null;
-
-            if (wavPtr != IntPtr.Zero)
+            if (wavPtr == IntPtr.Zero)
             {
-                byte[] wavBytes = RgpreBindings.ExtractBytesAndFree(wavPtr);
-                clip = WavToAudioClip(wavBytes, "RTX_" + entryIndex);
+                // Skip the subtitle fetch entirely when audio is missing — no point
+                // paying for a second native re-parse for an entry we cannot use.
+                continue;
             }
 
-            string subtitle = "";
+            byte[] wavBytes = RgpreBindings.ExtractBytesAndFree(wavPtr);
+            AudioClip clip = WavToAudioClip(wavBytes, "RTX_" + entryIndex);
+
+            string subtitle = string.Empty;
             IntPtr subPtr = RgpreBindings.GetRtxSubtitle(path, entryIndex);
             if (subPtr != IntPtr.Zero)
             {
@@ -81,9 +91,10 @@ public static class FFISoundStore
             }
 
             RtxEntries[entryIndex] = new RTXEntry(subtitle, clip);
+            loaded++;
         }
 
-        Debug.Log($"[FFI] Loaded {count} RTX entries from {rtxName}");
+        Debug.Log($"[FFI] Loaded {loaded}/{count} RTX entries from {rtxName}");
     }
 
     public static void LoadSFX(string sfxName)
@@ -116,7 +127,7 @@ public static class FFISoundStore
 
     private static AudioClip WavToAudioClip(byte[] wavBytes, string clipName)
     {
-        if (!TryReadWav(wavBytes, out int channels, out int sampleRate, out int bitsPerSample, out byte[] pcmData))
+        if (!TryReadWav(wavBytes, clipName, out int channels, out int sampleRate, out int bitsPerSample, out byte[] pcmData))
         {
             return null;
         }
@@ -128,14 +139,22 @@ public static class FFISoundStore
             _ => null
         };
 
-        if (samples == null || channels <= 0)
+        if (samples == null)
         {
+            Debug.LogWarning($"[FFI] {clipName}: unsupported bits-per-sample {bitsPerSample} (only 8/16 supported).");
+            return null;
+        }
+
+        if (channels <= 0)
+        {
+            Debug.LogWarning($"[FFI] {clipName}: invalid channel count {channels}.");
             return null;
         }
 
         int sampleCount = samples.Length / channels;
         if (sampleCount <= 0)
         {
+            Debug.LogWarning($"[FFI] {clipName}: empty PCM data.");
             return null;
         }
 
@@ -144,7 +163,7 @@ public static class FFISoundStore
         return clip;
     }
 
-    private static bool TryReadWav(byte[] wavBytes, out int channels, out int sampleRate, out int bitsPerSample, out byte[] pcmData)
+    private static bool TryReadWav(byte[] wavBytes, string clipName, out int channels, out int sampleRate, out int bitsPerSample, out byte[] pcmData)
     {
         channels = 0;
         sampleRate = 0;
@@ -153,6 +172,7 @@ public static class FFISoundStore
 
         if (wavBytes == null || wavBytes.Length < WavMinHeaderSize)
         {
+            Debug.LogWarning($"[FFI] {clipName}: WAV too small ({wavBytes?.Length ?? 0} bytes, need {WavMinHeaderSize}).");
             return false;
         }
 
@@ -164,6 +184,7 @@ public static class FFISoundStore
         string wave = new string(reader.ReadChars(4));
         if (riff != "RIFF" || wave != "WAVE")
         {
+            Debug.LogWarning($"[FFI] {clipName}: not a RIFF/WAVE file (got '{riff}'/'{wave}').");
             return false;
         }
 
@@ -183,6 +204,7 @@ public static class FFISoundStore
                 bitsPerSample = reader.ReadInt16();
                 if (format != 1)
                 {
+                    Debug.LogWarning($"[FFI] {clipName}: unsupported WAV format code {format} (only PCM=1 supported).");
                     return false;
                 }
             }
@@ -194,7 +216,13 @@ public static class FFISoundStore
             reader.BaseStream.Position = nextChunk;
         }
 
-        return channels > 0 && sampleRate > 0 && bitsPerSample > 0 && pcmData != null;
+        if (channels <= 0 || sampleRate <= 0 || bitsPerSample <= 0 || pcmData == null)
+        {
+            Debug.LogWarning($"[FFI] {clipName}: incomplete WAV (channels={channels}, rate={sampleRate}, bits={bitsPerSample}, data={(pcmData == null ? "missing" : pcmData.Length + " bytes")}).");
+            return false;
+        }
+
+        return true;
     }
 
     private static float[] Pcm8ToFloat(byte[] pcm)

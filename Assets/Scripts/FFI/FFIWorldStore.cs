@@ -25,6 +25,7 @@ public static class FFIWorldStore
             return cachedWorldList;
 
         cachedWorldList = new Dictionary<int, WorldData>();
+
         string worldIniPath = Path.Combine(Game.pathManager.GetRootFolder(), "WORLD.INI");
         if (!File.Exists(worldIniPath))
         {
@@ -32,10 +33,7 @@ public static class FFIWorldStore
             return cachedWorldList;
         }
 
-        var worlds = new Dictionary<int, WorldData>();
-        string[] lines = File.ReadAllLines(worldIniPath);
-
-        foreach (string rawLine in lines)
+        foreach (string rawLine in File.ReadAllLines(worldIniPath))
         {
             string line = rawLine.Trim();
             if (line.Length == 0 || line[0] == ';' || line[0] == '[')
@@ -62,7 +60,7 @@ public static class FFIWorldStore
 
             string memberName = key.Substring(0, bracketOpen);
 
-            if (!worlds.TryGetValue(worldIndex, out WorldData w))
+            if (!cachedWorldList.TryGetValue(worldIndex, out WorldData w))
             {
                 w = new WorldData
                 {
@@ -102,10 +100,9 @@ public static class FFIWorldStore
                     break;
             }
 
-            worlds[worldIndex] = w;
+            cachedWorldList[worldIndex] = w;
         }
 
-        cachedWorldList = worlds;
         return cachedWorldList;
     }
 

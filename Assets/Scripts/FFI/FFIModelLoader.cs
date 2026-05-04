@@ -8,11 +8,12 @@ using Debug = UnityEngine.Debug;
 
 public static class FFIModelLoader
 {
-    private static Shader defaultShader;
     public static Dictionary<uint, RGScriptedObject> ScriptedObjects = new Dictionary<uint, RGScriptedObject>();
     public static RGRGMFile CurrentRgmData { get; private set; } = new RGRGMFile();
     public static IntPtr CurrentWorldHandle { get; private set; } = IntPtr.Zero;
     public static string CurrentWorldContextKey { get; private set; } = string.Empty;
+
+    private static Mesh flatQuadMesh;
 
     private static int ReadSignedInt24(MemoryReader reader)
     {
@@ -477,46 +478,52 @@ public static class FFIModelLoader
         transform.localScale = scale;
     }
 
-    private static Mesh flatQuadMesh;
+    private static Mesh EnsureFlatQuadMesh()
+    {
+        if (flatQuadMesh != null)
+        {
+            return flatQuadMesh;
+        }
+
+        flatQuadMesh = new Mesh { name = "FlatQuad" };
+        flatQuadMesh.vertices = new Vector3[]
+        {
+            new Vector3(-0.5f, 0f, 0f),
+            new Vector3( 0.5f, 0f, 0f),
+            new Vector3( 0.5f, 1f, 0f),
+            new Vector3(-0.5f, 1f, 0f)
+        };
+        flatQuadMesh.uv = new Vector2[]
+        {
+            new Vector2(0, 0),
+            new Vector2(1, 0),
+            new Vector2(1, 1),
+            new Vector2(0, 1)
+        };
+        flatQuadMesh.triangles = new int[] { 0, 2, 1, 0, 3, 2 };
+        flatQuadMesh.normals = new Vector3[]
+        {
+            Vector3.back, Vector3.back, Vector3.back, Vector3.back
+        };
+
+        return flatQuadMesh;
+    }
 
     private static GameObject CreateFlatSprite(RgplDeserializer.Placement placement)
     {
         Texture2D tex = FFITextureLoader.DecodeTexture(placement.textureId, placement.imageId);
         if (tex == null) return null;
 
-        if (flatQuadMesh == null)
-        {
-            flatQuadMesh = new Mesh();
-            flatQuadMesh.name = "FlatQuad";
-            flatQuadMesh.vertices = new Vector3[]
-            {
-                new Vector3(-0.5f, 0f, 0f),
-                new Vector3( 0.5f, 0f, 0f),
-                new Vector3( 0.5f, 1f, 0f),
-                new Vector3(-0.5f, 1f, 0f)
-            };
-            flatQuadMesh.uv = new Vector2[]
-            {
-                new Vector2(0, 0),
-                new Vector2(1, 0),
-                new Vector2(1, 1),
-                new Vector2(0, 1)
-            };
-            flatQuadMesh.triangles = new int[] { 0, 2, 1, 0, 3, 2 };
-            flatQuadMesh.normals = new Vector3[]
-            {
-                Vector3.back, Vector3.back, Vector3.back, Vector3.back
-            };
-        }
+        Mesh quadMesh = EnsureFlatQuadMesh();
 
         string label = !string.IsNullOrEmpty(placement.sourceId) ? placement.sourceId : "Flat_" + placement.textureId + "_" + placement.imageId;
         GameObject obj = new GameObject(label);
 
         MeshFilter mf = obj.AddComponent<MeshFilter>();
-        mf.sharedMesh = flatQuadMesh;
+        mf.sharedMesh = quadMesh;
 
         MeshRenderer mr = obj.AddComponent<MeshRenderer>();
-        Material mat = new Material(GetDefaultShader());
+        Material mat = new Material(FFIShaders.GetDefaultLit());
         mat.mainTexture = tex;
         mr.sharedMaterial = mat;
 
@@ -581,7 +588,7 @@ public static class FFIModelLoader
 
         if (materialCount == 0)
         {
-            var fallback = new Material(GetDefaultShader());
+            var fallback = new Material(FFIShaders.GetDefaultLit());
             fallback.color = Color.magenta;
             materials.Add(fallback);
             return materials;
@@ -602,7 +609,7 @@ public static class FFIModelLoader
                 continue;
             }
 
-            var material = new Material(GetDefaultShader());
+            var material = new Material(FFIShaders.GetDefaultLit());
 
             if (info.isSolidColor)
             {
@@ -683,7 +690,7 @@ public static class FFIModelLoader
 
     public static bool TryGetFlatData(ushort textureId, byte imageId, out Mesh mesh, out List<Material> materials)
     {
-        mesh = flatQuadMesh;
+        mesh = null;
         materials = null;
 
         Texture2D tex = FFITextureLoader.DecodeTexture(textureId, imageId);
@@ -692,33 +699,9 @@ public static class FFIModelLoader
             return false;
         }
 
-        if (flatQuadMesh == null)
-        {
-            flatQuadMesh = new Mesh();
-            flatQuadMesh.name = "FlatQuad";
-            flatQuadMesh.vertices = new Vector3[]
-            {
-                new Vector3(-0.5f, 0f, 0f),
-                new Vector3( 0.5f, 0f, 0f),
-                new Vector3( 0.5f, 1f, 0f),
-                new Vector3(-0.5f, 1f, 0f)
-            };
-            flatQuadMesh.uv = new Vector2[]
-            {
-                new Vector2(0, 0),
-                new Vector2(1, 0),
-                new Vector2(1, 1),
-                new Vector2(0, 1)
-            };
-            flatQuadMesh.triangles = new int[] { 0, 2, 1, 0, 3, 2 };
-            flatQuadMesh.normals = new Vector3[]
-            {
-                Vector3.back, Vector3.back, Vector3.back, Vector3.back
-            };
-            mesh = flatQuadMesh;
-        }
+        mesh = EnsureFlatQuadMesh();
 
-        Material material = new Material(GetDefaultShader());
+        Material material = new Material(FFIShaders.GetDefaultLit());
         material.mainTexture = tex;
         materials = new List<Material> { material };
         return true;
@@ -1005,22 +988,4 @@ public static class FFIModelLoader
 
     private static string NormalizeModelName(string modelName)
         => FFIPathUtils.NormalizeModelName(modelName);
-
-    private static Shader GetDefaultShader()
-    {
-        if (defaultShader == null)
-        {
-            defaultShader = Shader.Find("Universal Render Pipeline/Simple Lit");
-            if (defaultShader == null)
-            {
-                defaultShader = Shader.Find("Universal Render Pipeline/Lit");
-            }
-            if (defaultShader == null)
-            {
-                defaultShader = Shader.Find("Standard");
-            }
-        }
-
-        return defaultShader;
-    }
 }
