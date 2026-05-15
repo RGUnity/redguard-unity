@@ -20,10 +20,6 @@ public class ModelViewer : MonoBehaviour
     public GameObject _objectRootGenerated;
     public List<GameObject> loadedObjects = new();
 
-    private Light cameraLight;
-    private Light sceneLight;
-    private GameObject sceneLightGizmo;
-
     // Double-click-to-isolate
     private Vector2 mouseDownPosition;
     private const float clickDistanceThreshold = 5f;
@@ -42,7 +38,6 @@ public class ModelViewer : MonoBehaviour
         // Initialize GUI
         gui.Initialize();
         settings.Initialize();
-        SetupLights();
     }
 
     private void Update()
@@ -105,59 +100,6 @@ public class ModelViewer : MonoBehaviour
                 }
             }
         }
-
-        // Scene light drag (middle mouse button)
-        if (settings.useSceneLight && sceneLight != null
-            && Mouse.current.middleButton.isPressed && !gui.IsMouseOverUI)
-        {
-            Vector2 mouseDelta = Mouse.current.delta.ReadValue();
-            Transform camTransform = mvCam.GetCameraTransform();
-            float speed = 0.02f;
-            Vector3 move = camTransform.right * mouseDelta.x * speed
-                         + camTransform.up * mouseDelta.y * speed;
-            sceneLight.transform.position += move;
-        }
-    }
-
-    private void SetupLights()
-    {
-        // Camera light — parented to camera
-        var camLightGO = new GameObject("CameraLight");
-        camLightGO.transform.SetParent(mvCam.GetCameraTransform(), false);
-        camLightGO.transform.localPosition = Vector3.zero;
-        camLightGO.transform.localRotation = Quaternion.Euler(30f, 0f, 0f);
-        cameraLight = camLightGO.AddComponent<Light>();
-        cameraLight.type = LightType.Directional;
-        cameraLight.intensity = 0.3f;
-        cameraLight.color = Color.white;
-        cameraLight.shadows = LightShadows.None;
-        cameraLight.gameObject.SetActive(settings.useCameraLight);
-
-        var sceneLightGO = new GameObject("SceneLight");
-        sceneLightGO.transform.SetParent(objectRoot.transform, false);
-        sceneLightGO.transform.localPosition = new Vector3(-3f, 3f, -2f);
-        sceneLight = sceneLightGO.AddComponent<Light>();
-        sceneLight.type = LightType.Point;
-        sceneLight.intensity = settings.sceneLightIntensity * 100f;
-        sceneLight.range = 500f;
-        sceneLight.color = Color.white;
-        sceneLight.shadows = LightShadows.None;
-
-        // Gizmo sphere
-        sceneLightGizmo = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sceneLightGizmo.name = "SceneLightGizmo";
-        sceneLightGizmo.transform.SetParent(sceneLightGO.transform, false);
-        sceneLightGizmo.transform.localPosition = Vector3.zero;
-        sceneLightGizmo.transform.localScale = Vector3.one * 0.3f;
-        Destroy(sceneLightGizmo.GetComponent<Collider>());
-        var gizmoRenderer = sceneLightGizmo.GetComponent<Renderer>();
-        var gizmoMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        gizmoMat.SetColor("_EmissionColor", Color.yellow * 2f);
-        gizmoMat.EnableKeyword("_EMISSION");
-        gizmoMat.color = Color.yellow;
-        gizmoRenderer.material = gizmoMat;
-
-        sceneLightGO.SetActive(settings.useSceneLight);
     }
 
     public void SpawnModel(string f3Dname, ModelFileType fileType, string colname)
@@ -241,7 +183,6 @@ public class ModelViewer : MonoBehaviour
         ApplyTextureFilterSetting();
         ApplyAnimationSetting();
         ApplyScriptObjectVisibility();
-        RepositionSceneLight();
     }
     
     // Spread the loaded objects in negative X direction
@@ -358,28 +299,6 @@ public class ModelViewer : MonoBehaviour
         }
     }
 
-    public void SetCameraLight(bool enable)
-    {
-        if (cameraLight != null)
-            cameraLight.gameObject.SetActive(enable);
-    }
-
-    public void SetSceneLight(bool enable)
-    {
-        if (sceneLight != null)
-        {
-            sceneLight.gameObject.SetActive(enable);
-            if (sceneLightGizmo != null)
-                sceneLightGizmo.SetActive(enable);
-        }
-    }
-
-    public void SetSceneLightIntensity(float intensity)
-    {
-        if (sceneLight != null)
-            sceneLight.intensity = intensity * 100f;
-    }
-
     public void ApplyScriptObjectVisibility()
     {
         if (loadedObjects == null) return;
@@ -421,19 +340,7 @@ public class ModelViewer : MonoBehaviour
     {
         SpawnArea(rgmName, loadedWLD, paletteName, rgmName);
     }
-
-    private void RepositionSceneLight()
-    {
-        if (sceneLight == null || _objectRootGenerated == null) return;
-        Bounds bounds = GetObjectBounds();
-        float size = bounds.extents.magnitude;
-        sceneLight.transform.position = bounds.center
-            + Vector3.left * size * 1.0f
-            + Vector3.up * size * 0.8f
-            + Vector3.back * size * 0.6f;
-        sceneLight.range = size * 4f;
-    }
-
+    
     private Bounds GetObjectBounds()
     {
         if (_objectRootGenerated == null)

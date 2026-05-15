@@ -24,11 +24,6 @@ public class ModelViewer_Settings : MonoBehaviour
     public float fogDensity = 0.5f;
     public Color fogColor = new(0.682353f, 0.7960784f, 1f, 1f);
 
-    // Lighting
-    public bool useCameraLight;
-    public bool useSceneLight;
-    public float sceneLightIntensity = 1f;
-
     // Objects
     public bool showScriptObjects = true;
 
@@ -41,8 +36,6 @@ public class ModelViewer_Settings : MonoBehaviour
         ToggleTextureFiltering(useTextureFiltering);
         ToggleAnimations(playAnimations);
         ToggleFlyMode(useFlyMode);
-        ToggleCameraLight(useCameraLight);
-        ToggleSceneLight(useSceneLight);
         ToggleScriptObjects(showScriptObjects);
     }
 
@@ -97,24 +90,6 @@ public class ModelViewer_Settings : MonoBehaviour
         RenderSettings.fogMode = FogMode.ExponentialSquared;
         RenderSettings.fogDensity = math.square(fogDensity) / 100;
         RenderSettings.fogColor = fogColor;
-    }
-
-    public void ToggleCameraLight(bool enable)
-    {
-        useCameraLight = enable;
-        mv.SetCameraLight(enable);
-    }
-
-    public void ToggleSceneLight(bool enable)
-    {
-        useSceneLight = enable;
-        mv.SetSceneLight(enable);
-    }
-
-    public void SetSceneLightIntensity(float intensity)
-    {
-        sceneLightIntensity = intensity;
-        mv.SetSceneLightIntensity(intensity);
     }
 
     public void ToggleScriptObjects(bool show)

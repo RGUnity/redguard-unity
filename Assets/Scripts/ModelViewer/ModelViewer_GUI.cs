@@ -30,9 +30,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public Toggle animationToggle;
     [SerializeField] public Toggle flyModeToggle;
     [SerializeField] public Slider fovSlider;
-    [SerializeField] public Toggle cameraLightToggle;
-    [SerializeField] public Toggle sceneLightToggle;
-    [SerializeField] public Slider sceneLightIntensitySlider;
     [SerializeField] public Toggle fogToggle;
     [SerializeField] public Slider fogDensitySlider;
     [SerializeField] public Toggle scriptObjectsToggle;
@@ -150,12 +147,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             animationToggle.SetIsOnWithoutNotify(settings.playAnimations);
         if (fovSlider != null)
             fovSlider.SetValueWithoutNotify(settings.fieldOfView);
-        if (cameraLightToggle != null)
-            cameraLightToggle.SetIsOnWithoutNotify(settings.useCameraLight);
-        if (sceneLightToggle != null)
-            sceneLightToggle.SetIsOnWithoutNotify(settings.useSceneLight);
-        if (sceneLightIntensitySlider != null)
-            sceneLightIntensitySlider.SetValueWithoutNotify(settings.sceneLightIntensity);
         if (fogToggle != null)
             fogToggle.SetIsOnWithoutNotify(settings.useFog);
         if (fogDensitySlider != null)
@@ -172,12 +163,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             animationToggle.onValueChanged.AddListener(val => settings.ToggleAnimations(val));
         if (fovSlider != null)
             fovSlider.onValueChanged.AddListener(val => settings.SetFieldOfView(val));
-        if (cameraLightToggle != null)
-            cameraLightToggle.onValueChanged.AddListener(val => settings.ToggleCameraLight(val));
-        if (sceneLightToggle != null)
-            sceneLightToggle.onValueChanged.AddListener(val => settings.ToggleSceneLight(val));
-        if (sceneLightIntensitySlider != null)
-            sceneLightIntensitySlider.onValueChanged.AddListener(val => settings.SetSceneLightIntensity(val));
         if (fogToggle != null)
             fogToggle.onValueChanged.AddListener(val => settings.ToggleFog(val));
         if (fogDensitySlider != null)
