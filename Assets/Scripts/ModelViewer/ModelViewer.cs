@@ -182,7 +182,6 @@ public class ModelViewer : MonoBehaviour
 
         ApplyTextureFilterSetting();
         ApplyAnimationSetting();
-        ApplyScriptObjectVisibility();
     }
     
     // Spread the loaded objects in negative X direction
@@ -295,18 +294,6 @@ public class ModelViewer : MonoBehaviour
                     bsa.Play();
                 else
                     bsa.Stop();
-            }
-        }
-    }
-
-    public void ApplyScriptObjectVisibility()
-    {
-        if (loadedObjects == null) return;
-        foreach (var obj in loadedObjects)
-        {
-            if (obj.TryGetComponent(out RGScriptedObject rgso))
-            {
-                obj.SetActive(settings.showScriptObjects);
             }
         }
     }

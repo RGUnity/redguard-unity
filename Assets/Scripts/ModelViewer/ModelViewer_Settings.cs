@@ -24,9 +24,6 @@ public class ModelViewer_Settings : MonoBehaviour
     public float fogDensity = 0.5f;
     public Color fogColor = new(0.682353f, 0.7960784f, 1f, 1f);
 
-    // Objects
-    public bool showScriptObjects = true;
-
     public void Initialize()
     {
         Camera.main.fieldOfView = fieldOfView;
@@ -36,7 +33,6 @@ public class ModelViewer_Settings : MonoBehaviour
         ToggleTextureFiltering(useTextureFiltering);
         ToggleAnimations(playAnimations);
         ToggleFlyMode(useFlyMode);
-        ToggleScriptObjects(showScriptObjects);
     }
 
     public void ToggleUI()
@@ -90,11 +86,5 @@ public class ModelViewer_Settings : MonoBehaviour
         RenderSettings.fogMode = FogMode.ExponentialSquared;
         RenderSettings.fogDensity = math.square(fogDensity) / 100;
         RenderSettings.fogColor = fogColor;
-    }
-
-    public void ToggleScriptObjects(bool show)
-    {
-        showScriptObjects = show;
-        mv.ApplyScriptObjectVisibility();
     }
 }

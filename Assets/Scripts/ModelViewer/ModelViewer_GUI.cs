@@ -32,7 +32,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public Slider fovSlider;
     [SerializeField] public Toggle fogToggle;
     [SerializeField] public Slider fogDensitySlider;
-    [SerializeField] public Toggle scriptObjectsToggle;
     [SerializeField] public TMP_Dropdown paletteDropdown;
 
     [Header("Bottom Panel")]
@@ -151,8 +150,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             fogToggle.SetIsOnWithoutNotify(settings.useFog);
         if (fogDensitySlider != null)
             fogDensitySlider.SetValueWithoutNotify(settings.fogDensity);
-        if (scriptObjectsToggle != null)
-            scriptObjectsToggle.SetIsOnWithoutNotify(settings.showScriptObjects);
 
         // Now wire callbacks
         if (flyModeToggle != null)
@@ -167,8 +164,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             fogToggle.onValueChanged.AddListener(val => settings.ToggleFog(val));
         if (fogDensitySlider != null)
             fogDensitySlider.onValueChanged.AddListener(val => settings.SetFogDensity(val));
-        if (scriptObjectsToggle != null)
-            scriptObjectsToggle.onValueChanged.AddListener(val => settings.ToggleScriptObjects(val));
     }
 
     public bool IsMouseOverUI { get; private set; }
