@@ -21,6 +21,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] private GameObject buttonROB_Prefab;
 
     [Header("Center Area")]
+    [SerializeField] public GameObject objectDropDownGroup;
     [SerializeField] public TMP_Dropdown objectDropDown;
     [SerializeField] public string objectDropdownResetText = "All";
     [SerializeField] public TMP_Text fileNameText;
@@ -285,7 +286,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         if (modelViewer.loadedObjects.Count > 1)
         {
-            objectDropDown.transform.parent.gameObject.SetActive(true);
+            objectDropDownGroup.gameObject.SetActive(true);
             foreach (var obj in modelViewer.loadedObjects)
             {
                 if (obj.TryGetComponent(out Renderer component))
@@ -297,7 +298,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
         else
         {
-            objectDropDown.transform.parent.gameObject.SetActive(false);
+            objectDropDownGroup.gameObject.SetActive(false);
         }
     }
 
