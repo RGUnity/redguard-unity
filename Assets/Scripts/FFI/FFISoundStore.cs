@@ -44,21 +44,18 @@ public static class FFISoundStore
         throw new IndexOutOfRangeException("SFX id not loaded: " + id);
     }
 
-    // TODO: RTX files actually live at the install root (next to WORLD.INI), but
-    // resolving them there exposes a perf bottleneck: each ConvertRtxEntryToWav and
-    // GetRtxSubtitle call re-parses the FULL file on the native side, so a real
-    // ENGLISH.RTX with hundreds of entries hangs the editor for tens of seconds at
-    // load. A single-call API (e.g. rg_load_rtx_all_entries) on the rgpre side
-    // would parse once and let us batch this — until that exists, we deliberately
-    // look in /sound/ where nothing matches, so the warning fires and we bail
-    // early. This matches the effective behavior on master (no RTX loaded) without
-    // the hang. Switch back to GetRootFolder() once rgpre has the batch API.
+    // RTX files live at the install root (next to WORLD.INI), NOT in /sound/.
+    // We open one native handle per file via rg_open_rtx, then issue cheap
+    // handle-based queries for each entry — the handle owns the parsed file
+    // so we do not re-parse on every call. Entries are keyed by their 4-byte
+    // ASCII tag (interpreted as little-endian int32), matching the lookup key
+    // SOUPDEF scripts pass to RTX(stringId) in the original engine.
     public static void LoadRTX(string rtxName)
     {
         RtxEntries.Clear();
 
-        string soundFolder = Game.pathManager.GetSoundFolder();
-        string path = FFIPathUtils.ResolveFile(soundFolder, rtxName, ".RTX");
+        string rootFolder = Game.pathManager.GetRootFolder();
+        string path = FFIPathUtils.ResolveFile(rootFolder, rtxName, ".RTX");
 
         if (string.IsNullOrEmpty(path) || !File.Exists(path))
         {
@@ -66,35 +63,59 @@ public static class FFISoundStore
             return;
         }
 
-        int count = RgpreBindings.RtxEntryCount(path);
-        int loaded = 0;
-        for (int entryIndex = 0; entryIndex < count; entryIndex++)
+        IntPtr handle = RgpreBindings.OpenRtx(path);
+        if (handle == IntPtr.Zero)
         {
-            IntPtr wavPtr = RgpreBindings.ConvertRtxEntryToWav(path, entryIndex);
-            if (wavPtr == IntPtr.Zero)
-            {
-                // Skip the subtitle fetch entirely when audio is missing — no point
-                // paying for a second native re-parse for an entry we cannot use.
-                continue;
-            }
-
-            byte[] wavBytes = RgpreBindings.ExtractBytesAndFree(wavPtr);
-            AudioClip clip = WavToAudioClip(wavBytes, "RTX_" + entryIndex);
-
-            string subtitle = string.Empty;
-            IntPtr subPtr = RgpreBindings.GetRtxSubtitle(path, entryIndex);
-            if (subPtr != IntPtr.Zero)
-            {
-                byte[] subBytes = RgpreBindings.ExtractBytesAndFree(subPtr);
-                if (subBytes.Length > 0)
-                    subtitle = System.Text.Encoding.UTF8.GetString(subBytes);
-            }
-
-            RtxEntries[entryIndex] = new RTXEntry(subtitle, clip);
-            loaded++;
+            Debug.LogWarning($"[FFI] Failed to open RTX file '{rtxName}': {RgpreBindings.GetLastErrorMessage()}");
+            return;
         }
 
-        Debug.Log($"[FFI] Loaded {loaded}/{count} RTX entries from {rtxName}");
+        try
+        {
+            int count = RgpreBindings.RtxHandleEntryCount(handle);
+            int audioLoaded = 0;
+            int textLoaded = 0;
+            for (int entryIndex = 0; entryIndex < count; entryIndex++)
+            {
+                int tag = RgpreBindings.RtxHandleEntryTag(handle, entryIndex);
+                if (tag == 0)
+                {
+                    // Tag fetch failed for this entry — skip rather than collide
+                    // with a real tag at key 0.
+                    continue;
+                }
+
+                string subtitle = string.Empty;
+                IntPtr subPtr = RgpreBindings.RtxHandleGetSubtitle(handle, entryIndex);
+                if (subPtr != IntPtr.Zero)
+                {
+                    byte[] subBytes = RgpreBindings.ExtractBytesAndFree(subPtr);
+                    if (subBytes.Length > 0)
+                        subtitle = System.Text.Encoding.UTF8.GetString(subBytes);
+                }
+
+                AudioClip clip = null;
+                IntPtr wavPtr = RgpreBindings.RtxHandleConvertEntryToWav(handle, entryIndex);
+                if (wavPtr != IntPtr.Zero)
+                {
+                    byte[] wavBytes = RgpreBindings.ExtractBytesAndFree(wavPtr);
+                    clip = WavToAudioClip(wavBytes, "RTX_" + entryIndex);
+                    audioLoaded++;
+                }
+                else
+                {
+                    textLoaded++;
+                }
+
+                RtxEntries[tag] = new RTXEntry(subtitle, clip);
+            }
+
+            Debug.Log($"[FFI] Loaded {RtxEntries.Count} RTX entries from {rtxName} ({audioLoaded} audio + {textLoaded} text-only)");
+        }
+        finally
+        {
+            RgpreBindings.CloseRtx(handle);
+        }
     }
 
     public static void LoadSFX(string sfxName)

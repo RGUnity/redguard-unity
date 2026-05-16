@@ -251,19 +251,24 @@ public static class RgpreBindings
         [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
         int effectIndex);
 
-    [DllImport("rgpre", EntryPoint = "rg_rtx_entry_count", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int RtxEntryCountNative(
+    [DllImport("rgpre", EntryPoint = "rg_open_rtx", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr OpenRtxNative(
         [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
 
-    [DllImport("rgpre", EntryPoint = "rg_convert_rtx_entry_to_wav", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ConvertRtxEntryToWavNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
-        int entryIndex);
+    [DllImport("rgpre", EntryPoint = "rg_close_rtx", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void CloseRtxNative(IntPtr handle);
 
-    [DllImport("rgpre", EntryPoint = "rg_get_rtx_subtitle", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr GetRtxSubtitleNative(
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
-        int entryIndex);
+    [DllImport("rgpre", EntryPoint = "rg_rtx_handle_entry_count", CallingConvention = CallingConvention.Cdecl)]
+    private static extern int RtxHandleEntryCountNative(IntPtr handle);
+
+    [DllImport("rgpre", EntryPoint = "rg_rtx_handle_entry_tag", CallingConvention = CallingConvention.Cdecl)]
+    private static extern int RtxHandleEntryTagNative(IntPtr handle, int entryIndex);
+
+    [DllImport("rgpre", EntryPoint = "rg_rtx_handle_convert_entry_to_wav", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr RtxHandleConvertEntryToWavNative(IntPtr handle, int entryIndex);
+
+    [DllImport("rgpre", EntryPoint = "rg_rtx_handle_get_subtitle", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr RtxHandleGetSubtitleNative(IntPtr handle, int entryIndex);
 
     // --- GXA ---
 
@@ -314,9 +319,12 @@ public static class RgpreBindings
 
     public static int SfxEffectCount(string filePath) => SfxEffectCountNative(filePath);
     public static IntPtr ConvertSfxToWav(string filePath, int effectIndex) => ConvertSfxToWavNative(filePath, effectIndex);
-    public static int RtxEntryCount(string filePath) => RtxEntryCountNative(filePath);
-    public static IntPtr ConvertRtxEntryToWav(string filePath, int entryIndex) => ConvertRtxEntryToWavNative(filePath, entryIndex);
-    public static IntPtr GetRtxSubtitle(string filePath, int entryIndex) => GetRtxSubtitleNative(filePath, entryIndex);
+    public static IntPtr OpenRtx(string filePath) => OpenRtxNative(filePath);
+    public static void CloseRtx(IntPtr handle) => CloseRtxNative(handle);
+    public static int RtxHandleEntryCount(IntPtr handle) => RtxHandleEntryCountNative(handle);
+    public static int RtxHandleEntryTag(IntPtr handle, int entryIndex) => RtxHandleEntryTagNative(handle, entryIndex);
+    public static IntPtr RtxHandleConvertEntryToWav(IntPtr handle, int entryIndex) => RtxHandleConvertEntryToWavNative(handle, entryIndex);
+    public static IntPtr RtxHandleGetSubtitle(IntPtr handle, int entryIndex) => RtxHandleGetSubtitleNative(handle, entryIndex);
 
     // --- GXA ---
 
