@@ -7493,13 +7493,17 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4116119756953062885, guid: 2a3c8bfb32310c54bacabadfa5b801d8, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[0].m_Text
+      value: Jump_01
+      objectReference: {fileID: 0}
     - target: {fileID: 4558322684966795463, guid: 2a3c8bfb32310c54bacabadfa5b801d8, type: 3}
       propertyPath: m_Name
       value: Dropdown
       objectReference: {fileID: 0}
     - target: {fileID: 4745747670967047836, guid: 2a3c8bfb32310c54bacabadfa5b801d8, type: 3}
       propertyPath: m_text
-      value: Animations
+      value: Animation
       objectReference: {fileID: 0}
     - target: {fileID: 5609040993592551779, guid: 2a3c8bfb32310c54bacabadfa5b801d8, type: 3}
       propertyPath: m_Padding.m_Left
