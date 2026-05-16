@@ -96,7 +96,7 @@ public static class FFIModelLoader
             Game.pathManager.GetRootFolder(),
             rgmPath,
             wldPath,
-            paletteName);
+            ResolvePalettePath(paletteName));
         if (CurrentWorldHandle == IntPtr.Zero)
         {
             return false;
@@ -113,7 +113,7 @@ public static class FFIModelLoader
             Game.pathManager.GetRootFolder(),
             string.Empty,
             string.Empty,
-            paletteName);
+            ResolvePalettePath(paletteName));
         if (CurrentWorldHandle == IntPtr.Zero)
         {
             return false;
@@ -121,6 +121,19 @@ public static class FFIModelLoader
 
         CurrentWorldContextKey = "palette:" + paletteName;
         return true;
+    }
+
+    // The native rgpre API expects a palette file path (with .COL extension), matching
+    // the WORLD.INI convention (e.g. "FXART\ISLAND.COL"). Callers here pass bare palette
+    // names ("ISLAND"), so resolve to a full file path before crossing the FFI boundary.
+    private static string ResolvePalettePath(string paletteName)
+    {
+        if (string.IsNullOrEmpty(paletteName))
+        {
+            return string.Empty;
+        }
+
+        return Path.Combine(Game.pathManager.GetArtFolder(), paletteName + ".COL");
     }
 
     private static string ContextualKey(string id)
