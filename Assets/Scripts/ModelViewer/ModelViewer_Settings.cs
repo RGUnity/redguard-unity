@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -20,17 +21,8 @@ public class ModelViewer_Settings : MonoBehaviour
 
     // Rendering
     public bool useFog;
-    public float fogDensity = 0.002f;
-
-    public Color backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1f);
-
-    // Lighting
-    public bool useCameraLight;
-    public bool useSceneLight;
-    public float sceneLightIntensity = 1f;
-
-    // Objects
-    public bool showScriptObjects = true;
+    public float fogDensity = 0.5f;
+    public Color fogColor = new(0.682353f, 0.7960784f, 1f, 1f);
 
     public void Initialize()
     {
@@ -41,9 +33,6 @@ public class ModelViewer_Settings : MonoBehaviour
         ToggleTextureFiltering(useTextureFiltering);
         ToggleAnimations(playAnimations);
         ToggleFlyMode(useFlyMode);
-        ToggleCameraLight(useCameraLight);
-        ToggleSceneLight(useSceneLight);
-        ToggleScriptObjects(showScriptObjects);
     }
 
     public void ToggleUI()
@@ -87,7 +76,7 @@ public class ModelViewer_Settings : MonoBehaviour
 
     public void SetFogDensity(float density)
     {
-        fogDensity = Mathf.Clamp(density, 0.0001f, 0.1f);
+        fogDensity = density;
         ApplyFog();
     }
 
@@ -95,32 +84,7 @@ public class ModelViewer_Settings : MonoBehaviour
     {
         RenderSettings.fog = useFog;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogDensity = fogDensity;
-        RenderSettings.fogColor = backgroundColor;
-        Camera.main.backgroundColor = backgroundColor;
-    }
-
-    public void ToggleCameraLight(bool enable)
-    {
-        useCameraLight = enable;
-        mv.SetCameraLight(enable);
-    }
-
-    public void ToggleSceneLight(bool enable)
-    {
-        useSceneLight = enable;
-        mv.SetSceneLight(enable);
-    }
-
-    public void SetSceneLightIntensity(float intensity)
-    {
-        sceneLightIntensity = intensity;
-        mv.SetSceneLightIntensity(intensity);
-    }
-
-    public void ToggleScriptObjects(bool show)
-    {
-        showScriptObjects = show;
-        mv.ApplyScriptObjectVisibility();
+        RenderSettings.fogDensity = math.square(fogDensity) / 100;
+        RenderSettings.fogColor = fogColor;
     }
 }

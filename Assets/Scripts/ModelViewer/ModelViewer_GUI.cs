@@ -21,6 +21,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] private GameObject buttonROB_Prefab;
 
     [Header("Center Area")]
+    [SerializeField] public GameObject objectDropDownGroup;
     [SerializeField] public TMP_Dropdown objectDropDown;
     [SerializeField] public string objectDropdownResetText = "All";
     [SerializeField] public TMP_Text fileNameText;
@@ -30,12 +31,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public Toggle animationToggle;
     [SerializeField] public Toggle flyModeToggle;
     [SerializeField] public Slider fovSlider;
-    [SerializeField] public Toggle cameraLightToggle;
-    [SerializeField] public Toggle sceneLightToggle;
-    [SerializeField] public Slider sceneLightIntensitySlider;
     [SerializeField] public Toggle fogToggle;
     [SerializeField] public Slider fogDensitySlider;
-    [SerializeField] public Toggle scriptObjectsToggle;
     [SerializeField] public TMP_Dropdown paletteDropdown;
 
     [Header("Bottom Panel")]
@@ -150,18 +147,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             animationToggle.SetIsOnWithoutNotify(settings.playAnimations);
         if (fovSlider != null)
             fovSlider.SetValueWithoutNotify(settings.fieldOfView);
-        if (cameraLightToggle != null)
-            cameraLightToggle.SetIsOnWithoutNotify(settings.useCameraLight);
-        if (sceneLightToggle != null)
-            sceneLightToggle.SetIsOnWithoutNotify(settings.useSceneLight);
-        if (sceneLightIntensitySlider != null)
-            sceneLightIntensitySlider.SetValueWithoutNotify(settings.sceneLightIntensity);
         if (fogToggle != null)
             fogToggle.SetIsOnWithoutNotify(settings.useFog);
         if (fogDensitySlider != null)
             fogDensitySlider.SetValueWithoutNotify(settings.fogDensity);
-        if (scriptObjectsToggle != null)
-            scriptObjectsToggle.SetIsOnWithoutNotify(settings.showScriptObjects);
 
         // Now wire callbacks
         if (flyModeToggle != null)
@@ -172,18 +161,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             animationToggle.onValueChanged.AddListener(val => settings.ToggleAnimations(val));
         if (fovSlider != null)
             fovSlider.onValueChanged.AddListener(val => settings.SetFieldOfView(val));
-        if (cameraLightToggle != null)
-            cameraLightToggle.onValueChanged.AddListener(val => settings.ToggleCameraLight(val));
-        if (sceneLightToggle != null)
-            sceneLightToggle.onValueChanged.AddListener(val => settings.ToggleSceneLight(val));
-        if (sceneLightIntensitySlider != null)
-            sceneLightIntensitySlider.onValueChanged.AddListener(val => settings.SetSceneLightIntensity(val));
         if (fogToggle != null)
             fogToggle.onValueChanged.AddListener(val => settings.ToggleFog(val));
         if (fogDensitySlider != null)
             fogDensitySlider.onValueChanged.AddListener(val => settings.SetFogDensity(val));
-        if (scriptObjectsToggle != null)
-            scriptObjectsToggle.onValueChanged.AddListener(val => settings.ToggleScriptObjects(val));
     }
 
     public bool IsMouseOverUI { get; private set; }
@@ -305,7 +286,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         if (modelViewer.loadedObjects.Count > 1)
         {
-            objectDropDown.transform.parent.gameObject.SetActive(true);
+            objectDropDownGroup.gameObject.SetActive(true);
             foreach (var obj in modelViewer.loadedObjects)
             {
                 if (obj.TryGetComponent(out Renderer component))
@@ -317,7 +298,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
         else
         {
-            objectDropDown.transform.parent.gameObject.SetActive(false);
+            objectDropDownGroup.gameObject.SetActive(false);
         }
     }
 
