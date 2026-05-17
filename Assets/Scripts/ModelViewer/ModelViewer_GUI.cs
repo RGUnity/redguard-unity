@@ -25,6 +25,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public TMP_Dropdown objectDropDown;
     [SerializeField] public string objectDropdownResetText = "All";
     [SerializeField] public TMP_Text fileNameText;
+    [SerializeField] public AnimationOverlay animationOverlay;
 
     [Header("Settings Panel")]
     [SerializeField] public Toggle filterToggle;
@@ -47,84 +48,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private Color defaultButtonColor = new Color(0.2f, 0.2f, 0.2f, 1f);
     private Color selectedButtonColor = new Color(0.3f, 0.4f, 0.6f, 1f);
     private ScrollRect fileListScrollRect;
-
-    private Dictionary<string, string> modelPaletteDict = new()
-    {
-        // Necromancer Isle, City Jail
-        ["DEAD.3DC"] = "NECRO",
-        ["JAILINT.ROB"] = "NECRO",
-        ["NECRISLE.ROB"] = "NECRO",
-        ["NECRTOWR.ROB"] = "NECRO",
-        ["NCROCK.3D"] = "NECRO",
-        ["SKELA001.3DC"] = "NECRO",
-        ["SKELA002.3DC"] = "NECRO",
-        ["SKELA003.3DC"] = "NECRO",
-        ["SKELA004.3DC"] = "NECRO",
-        ["VERMA001.3DC"] = "NECRO",
-        ["VERMA002.3DC"] = "NECRO",
-        ["VULTA001.3DC"] = "NECRO",
-        ["ZOMBA001.3DC"] = "NECRO",
-        ["ZOMBA002.3DC"] = "NECRO",
-
-        // Goblin Caves, Mages Guild
-        ["CAVERNS.ROB"] = "REDCAVE",
-        ["CV_BOOM.3D"] = "REDCAVE",
-        ["CV_BOOM.3DC"] = "REDCAVE",
-        ["CV_EXPL1.3DC"] = "REDCAVE",
-        ["CV_MUSH2.3DC"] = "REDCAVE",
-        ["MGUILD.ROB"] = "REDCAVE",
-
-        // Observatory, Dwemer Caves
-        ["DGOLA001.3DC"] = "OBSERVAT",
-        ["DRINT.ROB"] = "OBSERVAT",
-        ["ERASA001.3DC"] = "OBSERVAT",
-        ["GOLMA001.3DC"] = "OBSERVAT",
-        ["GOLMA002.3DC"] = "OBSERVAT",
-        ["OBSERVE.ROB"] = "OBSERVAT",
-
-        // Restless League Hideout
-        ["FLAG_RL.3DC"] = "HIDEOUT",
-        ["HIDEINT.ROB"] = "HIDEOUT",
-        ["HIDEOUT.ROB"] = "HIDEOUT",
-
-        // Imperial Palace
-        ["PALACE.ROB"] = "PALACE00",
-        ["PALATEST.ROB"] = "PALACE00",
-
-        // Catacombs
-        ["CATACOMB.ROB"] = "CATACOMB"
-    };
-
-    private Dictionary<string, string> areaNameDict = new()
-    {
-        ["BELLTOWR"] = "Bell Tower",
-        ["BRENNANS"] = "Brennan's Ship",
-        ["CARTOGR"] = "Cartographer",
-        ["CATACOMB"] = "Palace Catacombs",
-        ["CAVERNS"] = "Goblin Caverns",
-        ["DRINT"] = "Dwarven Ruins",
-        ["EXTPALAC"] = "Palace Courtyard",
-        ["GERRICKS"] = "Gerrick's Store",
-        ["HARBTOWR"] = "Harbor Tower",
-        ["HIDEINT"] = "League Hideout Interior",
-        ["HIDEOUT"] = "League Hideout Exterior",
-        ["ISLAND"] = "Stros M'kai",
-        ["JAILINT"] = "City Jail",
-        ["JFFERS"] = "J'ffer's Book Store",
-        ["MGUILD"] = "Mages Guild",
-        ["NECRISLE"] = "N'Gasta's Island",
-        ["NECRTOWR"] = "N'Gasta's Tower",
-        ["OBSERVE"] = "Dwarven Observatory",
-        ["PALACE"] = "Palace Interior",
-        ["ROLLOS"] = "Rollo's House",
-        ["SILVER1"] = "Silversmith's",
-        ["SILVER2"] = "Silversmith's Dwelling",
-        ["SMDEN"] = "Smuggler's Den",
-        ["START"] = "Starting Area",
-        ["TAVERN"] = "Draggin Tale Tavern",
-        ["TEMPLE"] = "Temple of Arkay",
-        ["VILE"] = "Realm of Clavicus Vile"
-    };
 
     public void Initialize()
     {
@@ -237,7 +160,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             foreach (var ext in extensions)
             {
                 string key = modelViewer.minimalLoadedFileName + ext;
-                if (modelPaletteDict.TryGetValue(key, out string pal))
+                if (ModelPalettes.Dict.TryGetValue(key, out string pal))
                 {
                     currentPal = pal;
                     break;
@@ -345,7 +268,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
             // Sort areaList alphabetically
             areaList = areaList.OrderBy(item =>
-                    areaNameDict.GetValueOrDefault(item.RGM, item.RGM),
+                    AreaNames.Dict.GetValueOrDefault(item.RGM, item.RGM),
                 StringComparer.OrdinalIgnoreCase).ToList();
         }
 
@@ -389,7 +312,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             component.COL = COL;
 
             // Look for a pretty name in areaNameDict, or use the RGM string as text
-            var prettyAreaName = areaNameDict.GetValueOrDefault(RGM, RGM);
+            var prettyAreaName = AreaNames.Dict.GetValueOrDefault(RGM, RGM);
             component.prettyAreaName = prettyAreaName;
             component.SetButtonText(prettyAreaName);
         }
@@ -428,7 +351,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             {
                 string palette = "ISLAND"; // Default
 
-                if (modelPaletteDict.TryGetValue(file.Name, out string customPalette))
+                if (ModelPalettes.Dict.TryGetValue(file.Name, out string customPalette))
                 {
                     palette = customPalette;
                 }
