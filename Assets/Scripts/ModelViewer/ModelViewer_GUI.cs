@@ -52,26 +52,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void Initialize()
     {
         fileListScrollRect = root_ButtonList.GetComponentInParent<ScrollRect>();
-        WireSettingsCallbacks();
         SwitchMode(ViewerModes.Areas);
         UpdateModelDependentUI();
-    }
-
-    private void WireSettingsCallbacks()
-    {
-        // Sync all UI controls to code defaults before wiring callbacks
-        if (flyModeToggle != null)
-            flyModeToggle.SetIsOnWithoutNotify(SettingsData.useFlyMode);
-        if (filterToggle != null)
-            filterToggle.SetIsOnWithoutNotify(SettingsData.useTextureFiltering);
-        if (animationToggle != null)
-            animationToggle.SetIsOnWithoutNotify(SettingsData.playAnimations);
-        if (fovSlider != null)
-            fovSlider.SetValueWithoutNotify(SettingsData.fieldOfView);
-        if (fogToggle != null)
-            fogToggle.SetIsOnWithoutNotify(SettingsData.useFog);
-        if (fogDensitySlider != null)
-            fogDensitySlider.SetValueWithoutNotify(SettingsData.fogDensity);
     }
 
     public bool IsMouseOverUI { get; private set; }
