@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class AreaNames
+public class AreaNames
 {
     public static readonly Dictionary<string, string> Dict = new()
     {

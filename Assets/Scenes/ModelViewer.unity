@@ -6411,14 +6411,6 @@ MonoBehaviour:
   mv: {fileID: 1065159419}
   gui: {fileID: 189839338}
   mv_camera: {fileID: 1516451609}
-  showUI: 0
-  useTextureFiltering: 1
-  playAnimations: 0
-  useFlyMode: 0
-  fieldOfView: 60
-  useFog: 0
-  fogDensity: 0.5
-  fogColor: {r: 0.68235296, g: 0.79607844, b: 1, a: 1}
 --- !u!4 &847651789
 Transform:
   m_ObjectHideFlags: 0

@@ -316,7 +316,7 @@ public class ModelViewer : MonoBehaviour
             {
                 if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
                 {
-                    if(settings.playAnimations == true)
+                    if(SettingsData.playAnimations == true)
                         rgso.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_panic, 0);
                     else
                         rgso.ClearAnim();
@@ -325,7 +325,7 @@ public class ModelViewer : MonoBehaviour
 
             if (obj.TryGetComponent(out BlendShapeAnimator bsa))
             {
-                if (settings.playAnimations)
+                if (SettingsData.playAnimations)
                     bsa.Play();
                 else
                     bsa.Stop();

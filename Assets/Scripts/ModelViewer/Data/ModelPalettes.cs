@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class ModelPalettes
+public class ModelPalettes
 {
     public static readonly Dictionary<string, string> Dict = new()
     {

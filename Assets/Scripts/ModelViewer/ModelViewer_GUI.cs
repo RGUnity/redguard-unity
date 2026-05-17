@@ -63,17 +63,17 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         // Sync all UI controls to code defaults before wiring callbacks
         if (flyModeToggle != null)
-            flyModeToggle.SetIsOnWithoutNotify(settings.useFlyMode);
+            flyModeToggle.SetIsOnWithoutNotify(SettingsData.useFlyMode);
         if (filterToggle != null)
-            filterToggle.SetIsOnWithoutNotify(settings.useTextureFiltering);
+            filterToggle.SetIsOnWithoutNotify(SettingsData.useTextureFiltering);
         if (animationToggle != null)
-            animationToggle.SetIsOnWithoutNotify(settings.playAnimations);
+            animationToggle.SetIsOnWithoutNotify(SettingsData.playAnimations);
         if (fovSlider != null)
-            fovSlider.SetValueWithoutNotify(settings.fieldOfView);
+            fovSlider.SetValueWithoutNotify(SettingsData.fieldOfView);
         if (fogToggle != null)
-            fogToggle.SetIsOnWithoutNotify(settings.useFog);
+            fogToggle.SetIsOnWithoutNotify(SettingsData.useFog);
         if (fogDensitySlider != null)
-            fogDensitySlider.SetValueWithoutNotify(settings.fogDensity);
+            fogDensitySlider.SetValueWithoutNotify(SettingsData.fogDensity);
     }
 
     public bool IsMouseOverUI { get; private set; }
@@ -90,7 +90,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void Update()
     {
-        if (!modelViewer.settings.showUI) return;
+        if (!SettingsData.showUI) return;
 
         var kb = Keyboard.current;
         if (kb == null) return;

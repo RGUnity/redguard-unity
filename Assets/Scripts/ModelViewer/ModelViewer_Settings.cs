@@ -11,80 +11,66 @@ public class ModelViewer_Settings : MonoBehaviour
     [SerializeField] private ModelViewer_GUI gui;
     [SerializeField] private ModelViewer_Camera mv_camera;
 
-    public bool showUI;
-    public bool useTextureFiltering;
-    public bool playAnimations;
-    public bool useFlyMode;
-
-    // Camera
-    public float fieldOfView = 60f;
-
-    // Rendering
-    public bool useFog;
-    public float fogDensity = 0.5f;
-    public Color fogColor = new(0.682353f, 0.7960784f, 1f, 1f);
-
     public void Initialize()
     {
-        Camera.main.fieldOfView = fieldOfView;
+        Camera.main.fieldOfView = SettingsData.fieldOfView;
         ApplyFog();
-
-        showUI = gui.gameObject.activeSelf;
-        ToggleTextureFiltering(useTextureFiltering);
-        ToggleAnimations(playAnimations);
-        ToggleFlyMode(useFlyMode);
+        
+        ToggleTextureFiltering(SettingsData.useTextureFiltering);
+        ToggleAnimations(SettingsData.playAnimations);
+        ToggleFlyMode(SettingsData.useFlyMode);
     }
 
     public void ToggleUI()
     {
-        showUI = !showUI;
-        gui.gameObject.SetActive(showUI);
+        SettingsData.showUI = !SettingsData.showUI;
+        gui.gameObject.SetActive(SettingsData.showUI);
     }
 
     public void ToggleTextureFiltering(bool enableFiltering)
     {
-        useTextureFiltering = enableFiltering;
+        SettingsData.useTextureFiltering = enableFiltering;
         if (gui.filterToggle != null) gui.filterToggle.SetIsOnWithoutNotify(enableFiltering);
         mv.ApplyTextureFilterSetting();
     }
 
     public void ToggleAnimations(bool enableAnimations)
     {
-        playAnimations = enableAnimations;
+        SettingsData.playAnimations = enableAnimations;
         if (gui.animationToggle != null) gui.animationToggle.SetIsOnWithoutNotify(enableAnimations);
         mv.ApplyAnimationSetting();
     }
 
     public void ToggleFlyMode(bool toggle)
     {
-        useFlyMode = toggle;
+        SettingsData.useFlyMode = toggle;
         if (gui.flyModeToggle != null) gui.flyModeToggle.SetIsOnWithoutNotify(toggle);
         mv_camera.useFlyMode = toggle;
     }
 
     public void SetFieldOfView(float fov)
     {
-        fieldOfView = Mathf.Clamp(fov, 30f, 120f);
-        Camera.main.fieldOfView = fieldOfView;
+        SettingsData.fieldOfView = Mathf.Clamp(fov, 30f, 120f);
+        Camera.main.fieldOfView = SettingsData.fieldOfView;
     }
 
     public void ToggleFog(bool enable)
     {
-        useFog = enable;
+        SettingsData.useFog = enable;
         ApplyFog();
     }
 
     public void SetFogDensity(float density)
     {
-        fogDensity = density;
+        SettingsData.fogDensity = density;
         ApplyFog();
     }
 
     private void ApplyFog()
     {
-        RenderSettings.fog = useFog;
+        RenderSettings.fog = SettingsData.useFog;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogDensity = math.square(fogDensity) / 100;
-        RenderSettings.fogColor = fogColor;
+        RenderSettings.fogDensity = math.square(SettingsData.fogDensity) / 100;
+        RenderSettings.fogColor = SettingsData.fogColor;
     }
 }
