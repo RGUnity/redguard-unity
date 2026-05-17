@@ -5,10 +5,18 @@ using Unity.Profiling;
 
 public static class WorldLoader
 {
+    class WorldStateHost : MonoBehaviour
+    {
+        public bool hasActiveWorld;
+        public int worldId;
+        public int playerSpawnLocation;
+        public int playerSpawnOrientation;
+    }
+
     struct WorldLoadRequest
     {
         public bool loadRequested;
-        public RGINIStore.worldData worldData;
+        public FFIWorldStore.WorldData worldData;
         public int playerSpawnLocation;
         public int playerSpawnOrientation;
     }
@@ -19,6 +27,20 @@ public static class WorldLoader
     static List<GameObject> loadedObjects;
 
     static WorldLoadRequest loadRequest;
+
+    static WorldStateHost EnsureStateHost()
+    {
+        WorldStateHost host = UnityEngine.Object.FindFirstObjectByType<WorldStateHost>();
+        if (host != null)
+            return host;
+
+        Game game = UnityEngine.Object.FindFirstObjectByType<Game>();
+        GameObject target = game != null ? game.gameObject : new GameObject("WorldLoaderStateHost");
+        host = target.GetComponent<WorldStateHost>();
+        if (host == null)
+            host = target.AddComponent<WorldStateHost>();
+        return host;
+    }
 
     static WorldLoader()
     {
@@ -33,12 +55,21 @@ public static class WorldLoader
     public static void RequestLoadWorld(int worldId, int playerSpawnLocation, int playerSpawnOrientation)
     {
         loadRequest.loadRequested = true;
-        loadRequest.worldData = RGINIStore.GetWorldList()[worldId];
+        loadRequest.worldData = FFIWorldStore.GetWorldList()[worldId];
         loadRequest.playerSpawnLocation = playerSpawnLocation;
         loadRequest.playerSpawnOrientation = playerSpawnOrientation;
 
-        Material loadScreenMat = RGTexStore.GetMaterial_GXA(loadRequest.worldData.loadScreen, 0);
-        Game.uiManager.ShowLoadingScreen(loadScreenMat.mainTexture);
+        WorldStateHost host = EnsureStateHost();
+        host.hasActiveWorld = true;
+        host.worldId = worldId;
+        host.playerSpawnLocation = playerSpawnLocation;
+        host.playerSpawnOrientation = playerSpawnOrientation;
+
+        Material loadScreenMat = FFIGxaLoader.GetMaterial_GXA(loadRequest.worldData.loadScreen, 0);
+        if (loadScreenMat != null)
+        {
+            Game.uiManager.ShowLoadingScreen(loadScreenMat.mainTexture);
+        }
 
     }
     static void UnloadLoadedWorld()
@@ -47,12 +78,33 @@ public static class WorldLoader
         {
             UnityEngine.Object.Destroy(obj);
         }
+        FFIModelLoader.CloseWorldContext();
         Resources.UnloadUnusedAssets();
         RGObjectStore.Clear();
+
+        WorldStateHost host = EnsureStateHost();
+        host.hasActiveWorld = false;
     }
 
     public static bool LoadWorldIfRequested()
     {
+        if (!loadRequest.loadRequested && FFIModelLoader.CurrentWorldHandle == IntPtr.Zero)
+        {
+            WorldStateHost host = EnsureStateHost();
+            if (host.hasActiveWorld)
+            {
+                var worldList = FFIWorldStore.GetWorldList();
+                if (worldList.TryGetValue(host.worldId, out FFIWorldStore.WorldData worldData))
+                {
+                    loadRequest.loadRequested = true;
+                    loadRequest.worldData = worldData;
+                    loadRequest.playerSpawnLocation = host.playerSpawnLocation;
+                    loadRequest.playerSpawnOrientation = host.playerSpawnOrientation;
+                    Debug.Log($"[WorldLoader] Restoring world context for worldId={host.worldId} after reload.");
+                }
+            }
+        }
+
         if(loadRequest.loadRequested)
         {
             loadRequest.loadRequested = false;
@@ -68,7 +120,7 @@ public static class WorldLoader
         }
         return false;
     }
-    public static void LoadWorld(RGINIStore.worldData worldData, int playerSpawnLocation, int playerSpawnOrientation)
+    public static void LoadWorld(FFIWorldStore.WorldData worldData, int playerSpawnLocation, int playerSpawnOrientation)
     {
         string RGM;
         string COL;
@@ -84,38 +136,55 @@ public static class WorldLoader
         // TODO: this should come from SYSTEM.INI
         RTX = "ENGLISH";
 
+        if (!FFIModelLoader.OpenWorldContext(worldData.worldId))
+        {
+            Debug.LogError("[FFI] Failed to open world context for worldId=" + worldData.worldId + ": " + RgpreBindings.GetLastErrorMessage());
+            return;
+        }
+
         // soundLoading
         if(!SFXLoaded)
         {
-            RGSoundStore.LoadSFX(SFX);
+            FFISoundStore.LoadSFX(SFX);
+            SFXLoaded = true;
         }
 
         if(!RTXLoaded)
         {
-            RGSoundStore.LoadRTX(RTX);
+            FFISoundStore.LoadRTX(RTX);
+            RTXLoaded = true;
         }
 
 
         // load in objects
-        loadedObjects = ModelLoader.LoadArea(RGM, COL, WLD);
+        loadedObjects = FFIModelLoader.LoadArea(RGM, COL, WLD);
+
+        WorldStateHost host = EnsureStateHost();
+        host.hasActiveWorld = true;
+        host.worldId = worldData.worldId;
+        host.playerSpawnLocation = playerSpawnLocation;
+        host.playerSpawnOrientation = playerSpawnOrientation;
 
         // load the player
-        LoadPlayer(RGM, playerSpawnLocation, playerSpawnOrientation);
+        LoadPlayer(RGM, COL, playerSpawnLocation, playerSpawnOrientation);
 
         for(int i = 0; i < WorldObjects[RGM].Count;i++)
         {
             
-            ModelLoader.scriptedObjects[WorldObjects[RGM][i]].EnableScripting();
+            if (FFIModelLoader.ScriptedObjects.TryGetValue(WorldObjects[RGM][i], out RGScriptedObject scriptedObject))
+            {
+                scriptedObject.EnableScripting();
+            }
         }
 
     }
-    static void LoadPlayer(string RGM, int playerSpawnLocation, int playerSpawnOrientation)
+    static void LoadPlayer(string RGM, string COL, int playerSpawnLocation, int playerSpawnOrientation)
     {
         // only load player once, this is a bit of a hack, we should just clear it decently
         if(!playerLoaded)
         {
             // TODO: we need to account for gremlin too
-            RGFileImport.RGRGMFile filergm = RGRGMStore.GetRGM(RGM);
+            RGFileImport.RGRGMFile filergm = FFIModelLoader.CurrentRgmData;
 
             // Create scripted object
             RGFileImport.RGRGMFile.RGMMPOBItem cyrus_data = new RGFileImport.RGRGMFile.RGMMPOBItem();
@@ -130,11 +199,28 @@ public static class WorldLoader
     */
 
             RGObjectStore.AddPlayer(filergm, cyrus_data);
-            RGObjectStore.GetPlayer().EnableScripting();
+            var addedPlayer = RGObjectStore.GetPlayer();
+            if (addedPlayer != null)
+            {
+                // If animations failed during Instanciate (e.g. anim store not ready),
+                // retry now that ReadAnim has run
+                addedPlayer.TryReinitAnimations(filergm, COL);
+                addedPlayer.EnableScripting();
+                // Match the old project/player controller startup by giving CYRUS
+                // an initial idle animation immediately after creation.
+                if (addedPlayer.animations != null)
+                {
+                    addedPlayer.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_panic, 0);
+                }
+            }
             playerLoaded = true;
         }
 
-        Vector3 playerSpawnPos = RGObjectStore.mapMarkerList[playerSpawnLocation];
+        Vector3 playerSpawnPos = Vector3.zero;
+        if (RGObjectStore.mapMarkerList != null && playerSpawnLocation >= 0 && playerSpawnLocation < RGObjectStore.mapMarkerList.Count)
+        {
+            playerSpawnPos = RGObjectStore.mapMarkerList[playerSpawnLocation];
+        }
         Quaternion playerSpawnRot = Quaternion.AngleAxis(((float)playerSpawnOrientation)*DA2DG, Vector3.up);
 
         RGObjectStore.GetPlayerMain().SetPositionAndRotation(playerSpawnPos, playerSpawnRot);

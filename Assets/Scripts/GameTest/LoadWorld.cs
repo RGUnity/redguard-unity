@@ -23,16 +23,7 @@ public class LoadWorld : MonoBehaviour
 //        WorldLoader.RequestLoadWorld(1,22,1024);
         WorldLoader.LoadWorldIfRequested();
 
-RG3DStore.LoadMeshIntermediatesROB("INVENTRY");
-/*
-Dictionary<int, RGINIStore.itemData> itemdict;
- itemdict = RGINIStore.GetItemList();
-foreach(KeyValuePair<int, RGINIStore.itemData> entry in itemdict)
-{
-    Debug.LogWarning($"item {entry.Key}: {entry.Value.name} | {entry.Value.description}");
-}
-*/
-     }
+      }
     // Update is called once per frame
     void Update()
     {
@@ -42,8 +33,11 @@ foreach(KeyValuePair<int, RGINIStore.itemData> entry in itemdict)
             Game.uiManager.HideLoadingScreen();
         if(Input.GetKeyDown("space"))
         {
-            Material loadScreenMat = RGTexStore.GetMaterial_GXA("ISLAND", 0);
-            Game.uiManager.ShowLoadingScreen(loadScreenMat.mainTexture);
+            Material loadScreenMat = FFIGxaLoader.GetMaterial_GXA("ISLAND", 0);
+            if (loadScreenMat != null)
+            {
+                Game.uiManager.ShowLoadingScreen(loadScreenMat.mainTexture);
+            }
         }
     }
 }

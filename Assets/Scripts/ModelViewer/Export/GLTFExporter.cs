@@ -1,55 +1,136 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using UnityEngine;
-using GLTFast.Export;
 using SFB;
 
 public class GLTFExporter : MonoBehaviour
 {
-    public async Task ExportGLTF(GameObject obj, string objectName)
-    {
-        var extensionList = new [] {
-            new ExtensionFilter("glTF Binary", "glb"),
-            new ExtensionFilter("glTF Separate (unpacked mesh & textures)", "gltf"),
-        };
-        var filePath = StandaloneFileBrowser.SaveFilePanel("Save File", "", objectName, extensionList);
+    [HideInInspector] public string modelName;
+    [HideInInspector] public ModelFileType fileType;
+    [HideInInspector] public string colName;
+    [HideInInspector] public string rgmName;
+    [HideInInspector] public string wldName;
+    [HideInInspector] public bool isAreaExport;
 
-        if (filePath == String.Empty)
+    public void ExportGLTF(string objectName)
+    {
+        var extensionList = new[] {
+            new ExtensionFilter("glTF Binary", "glb"),
+        };
+        var filePath = StandaloneFileBrowser.SaveFilePanel("Export GLB", "", objectName, extensionList);
+        if (string.IsNullOrEmpty(filePath))
         {
             return;
         }
 
-        // Define objects to export
-        var objectsToExport = new GameObject[] {obj};
+        bool success = ExportToPath(filePath);
+        if (!success)
+        {
+            Debug.LogError("[Export] Failed to export " + objectName);
+        }
+    }
 
-        var settings = new ExportSettings()
+    public bool ExportToPath(string filePath)
+    {
+        try
         {
-            Format = GltfFormat.Json,
+            byte[] glbBytes;
+            if (isAreaExport)
+            {
+                glbBytes = ExportArea();
+            }
+            else
+            {
+                glbBytes = ExportModel();
+            }
+
+            if (glbBytes == null || glbBytes.Length == 0)
+            {
+                Debug.LogError("[Export] FFI returned empty GLB data. " + RgpreBindings.GetLastErrorMessage());
+                return false;
+            }
+
+            File.WriteAllBytes(filePath, glbBytes);
+            Debug.Log("[Export] Exported " + filePath + " (" + (glbBytes.Length / 1024) + " KB)");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("[Export] " + ex.Message);
+            return false;
+        }
+    }
+
+    public System.Threading.Tasks.Task<bool> ExportToPath(GameObject _, string filePath)
+    {
+        return System.Threading.Tasks.Task.FromResult(ExportToPath(filePath));
+    }
+
+    private byte[] ExportModel()
+    {
+        string artFolder = Game.pathManager.GetArtFolder();
+        string assetsDir = Game.pathManager.GetRootFolder();
+        string extension = fileType switch {
+            ModelFileType.file3D => ".3D",
+            ModelFileType.file3DC => ".3DC",
+            ModelFileType.fileROB => ".ROB",
+            _ => ".3D"
         };
-        
-        if (filePath.EndsWith("gltf"))
+        string modelPath = Path.Combine(artFolder, modelName + extension);
+        if (!File.Exists(modelPath))
         {
-            settings.Format = GltfFormat.Json;
+            Debug.LogError("[Export] Model file not found: " + modelPath);
+            return null;
         }
-        else if (filePath.EndsWith("glb"))
+
+        IntPtr resultPtr = RgpreBindings.ConvertModelFromPath(modelPath, assetsDir);
+        if (resultPtr == IntPtr.Zero)
         {
-            settings.Format = GltfFormat.Binary;
+            Debug.LogError("[Export] FFI conversion failed: " + RgpreBindings.GetLastErrorMessage());
+            return null;
         }
-        
-        var export = new GameObjectExport(settings);
-        export.AddScene(objectsToExport);
-    
-        // Async glTF export
-        var success = await export.SaveToFileAndDispose(filePath);
-    
-        if (success)
+
+        return RgpreBindings.ExtractBytesAndFree(resultPtr);
+    }
+
+    private byte[] ExportArea()
+    {
+        string mapsFolder = Game.pathManager.GetMapsFolder();
+        string assetsDir = Game.pathManager.GetRootFolder();
+
+        if (!string.IsNullOrEmpty(wldName))
         {
-            print("Exported " + filePath);
+            string wldPath = Path.Combine(mapsFolder, wldName + ".WLD");
+            if (!File.Exists(wldPath))
+            {
+                Debug.LogError("[Export] WLD file not found: " + wldPath);
+                return null;
+            }
+
+            IntPtr wldResult = RgpreBindings.ConvertWldFromPath(wldPath, assetsDir);
+            if (wldResult == IntPtr.Zero)
+            {
+                Debug.LogError("[Export] FFI area conversion failed: " + RgpreBindings.GetLastErrorMessage());
+                return null;
+            }
+
+            return RgpreBindings.ExtractBytesAndFree(wldResult);
         }
-        else
+
+        string rgmPath = Path.Combine(mapsFolder, rgmName + ".RGM");
+        if (!File.Exists(rgmPath))
         {
-            Debug.LogError("Something went wrong trying to export the model." + filePath);
+            Debug.LogError("[Export] RGM file not found: " + rgmPath);
+            return null;
         }
+
+        IntPtr rgmResult = RgpreBindings.ConvertRgmFromPath(rgmPath, assetsDir);
+        if (rgmResult == IntPtr.Zero)
+        {
+            Debug.LogError("[Export] FFI area conversion failed: " + RgpreBindings.GetLastErrorMessage());
+            return null;
+        }
+
+        return RgpreBindings.ExtractBytesAndFree(rgmResult);
     }
 }

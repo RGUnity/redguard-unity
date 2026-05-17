@@ -1,25 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
-using RGFileImport;
 using System.Collections.Generic;
 
 public class MenuTest : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    /*
-    RGINIFile iniData;
-    Canvas canvas;
-    List<GameObject> textObjects;
-    List<Text> textContents;
-    GameObject text1;
-    Text text1text;
-    void Start()
-    {
-        iniData = new RGINIFile();
-        iniData.LoadFile($"{Game.pathManager.GetRootFolder()}/MENU.INI");
-    }
-    */
-
     // Update is called once per frame
     void Start()
     {
