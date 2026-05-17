@@ -151,20 +151,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             fogToggle.SetIsOnWithoutNotify(settings.useFog);
         if (fogDensitySlider != null)
             fogDensitySlider.SetValueWithoutNotify(settings.fogDensity);
-
-        // Now wire callbacks
-        if (flyModeToggle != null)
-            flyModeToggle.onValueChanged.AddListener(val => settings.ToggleFlyMode(val));
-        if (filterToggle != null)
-            filterToggle.onValueChanged.AddListener(val => settings.ToggleTextureFiltering(val));
-        if (animationToggle != null)
-            animationToggle.onValueChanged.AddListener(val => settings.ToggleAnimations(val));
-        if (fovSlider != null)
-            fovSlider.onValueChanged.AddListener(val => settings.SetFieldOfView(val));
-        if (fogToggle != null)
-            fogToggle.onValueChanged.AddListener(val => settings.ToggleFog(val));
-        if (fogDensitySlider != null)
-            fogDensitySlider.onValueChanged.AddListener(val => settings.SetFogDensity(val));
     }
 
     public bool IsMouseOverUI { get; private set; }
