@@ -44,14 +44,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private List<FFIWorldStore.WorldData> areaList = new();
     private List<FileInfo> modelList = new();
 
-    private int selectedButtonIndex = -1;
-    private Color defaultButtonColor = new Color(0.2f, 0.2f, 0.2f, 1f);
-    private Color selectedButtonColor = new Color(0.3f, 0.4f, 0.6f, 1f);
-    private ScrollRect fileListScrollRect;
-
     public void Initialize()
     {
-        fileListScrollRect = root_ButtonList.GetComponentInParent<ScrollRect>();
         SwitchMode(ViewerModes.Areas);
         UpdateModelDependentUI();
     }
@@ -68,36 +62,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         IsMouseOverUI = false;
     }
 
-    private void Update()
-    {
-        if (!SettingsData.showUI) return;
-
-        var kb = Keyboard.current;
-        if (kb == null) return;
-
-        List<GameObject> activeButtons = GetActiveButtonList();
-        if (activeButtons == null || activeButtons.Count == 0) return;
-
-        if (kb.downArrowKey.wasPressedThisFrame)
-        {
-            SelectButton(Mathf.Min(selectedButtonIndex + 1, activeButtons.Count - 1), activeButtons);
-        }
-        else if (kb.upArrowKey.wasPressedThisFrame)
-        {
-            SelectButton(Mathf.Max(selectedButtonIndex - 1, 0), activeButtons);
-        }
-        else if (kb.enterKey.wasPressedThisFrame || kb.numpadEnterKey.wasPressedThisFrame)
-        {
-            if (selectedButtonIndex >= 0 && selectedButtonIndex < activeButtons.Count)
-            {
-                LoadSelectedButton(activeButtons[selectedButtonIndex]);
-            }
-        }
-    }
-
     private void SwitchMode(ViewerModes mode)
     {
-        ResetButtonSelection();
         switch (mode)
         {
             case ViewerModes.Areas:
