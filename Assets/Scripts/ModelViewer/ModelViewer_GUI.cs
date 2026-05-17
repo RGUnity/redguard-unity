@@ -59,8 +59,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void WireSettingsCallbacks()
     {
-        var settings = modelViewer.settings;
-
         // Sync all UI controls to code defaults before wiring callbacks
         if (flyModeToggle != null)
             flyModeToggle.SetIsOnWithoutNotify(SettingsData.useFlyMode);

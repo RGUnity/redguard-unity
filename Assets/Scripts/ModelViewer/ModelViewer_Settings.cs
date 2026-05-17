@@ -1,9 +1,5 @@
-using System;
-using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 public class ModelViewer_Settings : MonoBehaviour
 {
