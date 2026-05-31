@@ -348,27 +348,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
     }
 
-    private List<GameObject> GetActiveButtonList()
-    {
-        if (areaButtonList.Count > 0 && areaButtonList[0].activeSelf)
-            return areaButtonList;
-        if (modelButtonList.Count > 0 && modelButtonList[0].activeSelf)
-            return modelButtonList;
-        return null;
-    }
-
-    private void LoadSelectedButton(GameObject button)
-    {
-        if (button.TryGetComponent(out ModelViewer_AreaButton areaBtn))
-        {
-            RequestArea(areaBtn.worldId, areaBtn.RGM, areaBtn.WLD, areaBtn.COL, areaBtn.prettyAreaName);
-        }
-        else if (button.TryGetComponent(out ModelViewer_ModelButton modelBtn))
-        {
-            RequestModel(modelBtn.meshName, modelBtn.fileType, modelBtn.COL);
-        }
-    }
-
     // Button Signals
     public void ModeButton_Areas()
     {
