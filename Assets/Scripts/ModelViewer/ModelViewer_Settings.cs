@@ -56,7 +56,6 @@ public class ModelViewer_Settings : MonoBehaviour
         SettingsData.flySpeedMultiplier = multiplier;
         if (gui.flySpeedSlider != null) gui.flySpeedSlider.SetValueWithoutNotify(SettingsData.flySpeedMultiplier);
         mv_camera.flySpeedMultiplier = SettingsData.flySpeedMultiplier;
-        print(SettingsData.flySpeedMultiplier);
     }
 
     public void ToggleFog(bool enable)

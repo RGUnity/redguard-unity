@@ -159,16 +159,6 @@ public class ModelViewer_Camera : MonoBehaviour
         cameraRootZ.localPosition = new Vector3(0, 0, distance) * -1;
     }
 
-    public Transform GetCameraTransform()
-    {
-        return _camera;
-    }
-
-    public float GetCameraDistance()
-    {
-        return -cameraRootZ.localPosition.z;
-    }
-
     Bounds GetMaxBounds(GameObject g) {
         var renderers = g.GetComponentsInChildren<Renderer>();
         if (renderers.Length == 0) return new Bounds(g.transform.position, Vector3.zero);
