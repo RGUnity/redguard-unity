@@ -31,6 +31,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public Toggle filterToggle;
     [SerializeField] public Toggle animationToggle;
     [SerializeField] public Toggle flyModeToggle;
+    [SerializeField] public Slider flySpeedSlider;
     [SerializeField] public Slider fovSlider;
     [SerializeField] public Toggle fogToggle;
     [SerializeField] public Slider fogDensitySlider;

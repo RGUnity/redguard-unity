@@ -8,6 +8,7 @@ public class SettingsData
     // Camera
     public static bool useFlyMode = false;
     public static float fieldOfView = 60f;
+    public static float flySpeedMultiplier = 10f;
 
     // Rendering
     public static bool useTextureFiltering = false;

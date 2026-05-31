@@ -10,6 +10,7 @@ public class ModelViewer_Settings : MonoBehaviour
     public void Initialize()
     {
         Camera.main.fieldOfView = SettingsData.fieldOfView;
+        gui.flySpeedSlider.value = SettingsData.flySpeedMultiplier;
         ApplyFog();
         
         ToggleTextureFiltering(SettingsData.useTextureFiltering);
@@ -52,9 +53,10 @@ public class ModelViewer_Settings : MonoBehaviour
 
     public void SetFlySpeedMultiplier(float multiplier)
     {
-        flySpeedMultiplier = Mathf.Clamp(multiplier, 0.1f, 20f);
-        if (gui.flySpeedSlider != null) gui.flySpeedSlider.SetValueWithoutNotify(flySpeedMultiplier);
-        mv_camera.flySpeedMultiplier = flySpeedMultiplier;
+        SettingsData.flySpeedMultiplier = multiplier;
+        if (gui.flySpeedSlider != null) gui.flySpeedSlider.SetValueWithoutNotify(SettingsData.flySpeedMultiplier);
+        mv_camera.flySpeedMultiplier = SettingsData.flySpeedMultiplier;
+        print(SettingsData.flySpeedMultiplier);
     }
 
     public void ToggleFog(bool enable)
