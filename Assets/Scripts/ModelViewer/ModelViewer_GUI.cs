@@ -25,6 +25,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] public TMP_Dropdown objectDropDown;
     [SerializeField] public string objectDropdownResetText = "All";
     [SerializeField] public TMP_Text fileNameText;
+    [SerializeField] public AnimationOverlay animationOverlay;
 
     [Header("Settings Panel")]
     [SerializeField] public Toggle filterToggle;
@@ -43,128 +44,10 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private List<FFIWorldStore.WorldData> areaList = new();
     private List<FileInfo> modelList = new();
 
-    private int selectedButtonIndex = -1;
-    private Color defaultButtonColor = new Color(0.2f, 0.2f, 0.2f, 1f);
-    private Color selectedButtonColor = new Color(0.3f, 0.4f, 0.6f, 1f);
-    private ScrollRect fileListScrollRect;
-
-    private Dictionary<string, string> modelPaletteDict = new()
-    {
-        // Necromancer Isle, City Jail
-        ["DEAD.3DC"] = "NECRO",
-        ["JAILINT.ROB"] = "NECRO",
-        ["NECRISLE.ROB"] = "NECRO",
-        ["NECRTOWR.ROB"] = "NECRO",
-        ["NCROCK.3D"] = "NECRO",
-        ["SKELA001.3DC"] = "NECRO",
-        ["SKELA002.3DC"] = "NECRO",
-        ["SKELA003.3DC"] = "NECRO",
-        ["SKELA004.3DC"] = "NECRO",
-        ["VERMA001.3DC"] = "NECRO",
-        ["VERMA002.3DC"] = "NECRO",
-        ["VULTA001.3DC"] = "NECRO",
-        ["ZOMBA001.3DC"] = "NECRO",
-        ["ZOMBA002.3DC"] = "NECRO",
-
-        // Goblin Caves, Mages Guild
-        ["CAVERNS.ROB"] = "REDCAVE",
-        ["CV_BOOM.3D"] = "REDCAVE",
-        ["CV_BOOM.3DC"] = "REDCAVE",
-        ["CV_EXPL1.3DC"] = "REDCAVE",
-        ["CV_MUSH2.3DC"] = "REDCAVE",
-        ["MGUILD.ROB"] = "REDCAVE",
-
-        // Observatory, Dwemer Caves
-        ["DGOLA001.3DC"] = "OBSERVAT",
-        ["DRINT.ROB"] = "OBSERVAT",
-        ["ERASA001.3DC"] = "OBSERVAT",
-        ["GOLMA001.3DC"] = "OBSERVAT",
-        ["GOLMA002.3DC"] = "OBSERVAT",
-        ["OBSERVE.ROB"] = "OBSERVAT",
-
-        // Restless League Hideout
-        ["FLAG_RL.3DC"] = "HIDEOUT",
-        ["HIDEINT.ROB"] = "HIDEOUT",
-        ["HIDEOUT.ROB"] = "HIDEOUT",
-
-        // Imperial Palace
-        ["PALACE.ROB"] = "PALACE00",
-        ["PALATEST.ROB"] = "PALACE00",
-
-        // Catacombs
-        ["CATACOMB.ROB"] = "CATACOMB"
-    };
-
-    private Dictionary<string, string> areaNameDict = new()
-    {
-        ["BELLTOWR"] = "Bell Tower",
-        ["BRENNANS"] = "Brennan's Ship",
-        ["CARTOGR"] = "Cartographer",
-        ["CATACOMB"] = "Palace Catacombs",
-        ["CAVERNS"] = "Goblin Caverns",
-        ["DRINT"] = "Dwarven Ruins",
-        ["EXTPALAC"] = "Palace Courtyard",
-        ["GERRICKS"] = "Gerrick's Store",
-        ["HARBTOWR"] = "Harbor Tower",
-        ["HIDEINT"] = "League Hideout Interior",
-        ["HIDEOUT"] = "League Hideout Exterior",
-        ["ISLAND"] = "Stros M'kai",
-        ["JAILINT"] = "City Jail",
-        ["JFFERS"] = "J'ffer's Book Store",
-        ["MGUILD"] = "Mages Guild",
-        ["NECRISLE"] = "N'Gasta's Island",
-        ["NECRTOWR"] = "N'Gasta's Tower",
-        ["OBSERVE"] = "Dwarven Observatory",
-        ["PALACE"] = "Palace Interior",
-        ["ROLLOS"] = "Rollo's House",
-        ["SILVER1"] = "Silversmith's",
-        ["SILVER2"] = "Silversmith's Dwelling",
-        ["SMDEN"] = "Smuggler's Den",
-        ["START"] = "Starting Area",
-        ["TAVERN"] = "Draggin Tale Tavern",
-        ["TEMPLE"] = "Temple of Arkay",
-        ["VILE"] = "Realm of Clavicus Vile"
-    };
-
     public void Initialize()
     {
-        fileListScrollRect = root_ButtonList.GetComponentInParent<ScrollRect>();
-        WireSettingsCallbacks();
         SwitchMode(ViewerModes.Areas);
         UpdateModelDependentUI();
-    }
-
-    private void WireSettingsCallbacks()
-    {
-        var settings = modelViewer.settings;
-
-        // Sync all UI controls to code defaults before wiring callbacks
-        if (flyModeToggle != null)
-            flyModeToggle.SetIsOnWithoutNotify(settings.useFlyMode);
-        if (filterToggle != null)
-            filterToggle.SetIsOnWithoutNotify(settings.useTextureFiltering);
-        if (animationToggle != null)
-            animationToggle.SetIsOnWithoutNotify(settings.playAnimations);
-        if (fovSlider != null)
-            fovSlider.SetValueWithoutNotify(settings.fieldOfView);
-        if (fogToggle != null)
-            fogToggle.SetIsOnWithoutNotify(settings.useFog);
-        if (fogDensitySlider != null)
-            fogDensitySlider.SetValueWithoutNotify(settings.fogDensity);
-
-        // Now wire callbacks
-        if (flyModeToggle != null)
-            flyModeToggle.onValueChanged.AddListener(val => settings.ToggleFlyMode(val));
-        if (filterToggle != null)
-            filterToggle.onValueChanged.AddListener(val => settings.ToggleTextureFiltering(val));
-        if (animationToggle != null)
-            animationToggle.onValueChanged.AddListener(val => settings.ToggleAnimations(val));
-        if (fovSlider != null)
-            fovSlider.onValueChanged.AddListener(val => settings.SetFieldOfView(val));
-        if (fogToggle != null)
-            fogToggle.onValueChanged.AddListener(val => settings.ToggleFog(val));
-        if (fogDensitySlider != null)
-            fogDensitySlider.onValueChanged.AddListener(val => settings.SetFogDensity(val));
     }
 
     public bool IsMouseOverUI { get; private set; }
@@ -179,36 +62,8 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         IsMouseOverUI = false;
     }
 
-    private void Update()
-    {
-        if (!modelViewer.settings.showUI) return;
-
-        var kb = Keyboard.current;
-        if (kb == null) return;
-
-        List<GameObject> activeButtons = GetActiveButtonList();
-        if (activeButtons == null || activeButtons.Count == 0) return;
-
-        if (kb.downArrowKey.wasPressedThisFrame)
-        {
-            SelectButton(Mathf.Min(selectedButtonIndex + 1, activeButtons.Count - 1), activeButtons);
-        }
-        else if (kb.upArrowKey.wasPressedThisFrame)
-        {
-            SelectButton(Mathf.Max(selectedButtonIndex - 1, 0), activeButtons);
-        }
-        else if (kb.enterKey.wasPressedThisFrame || kb.numpadEnterKey.wasPressedThisFrame)
-        {
-            if (selectedButtonIndex >= 0 && selectedButtonIndex < activeButtons.Count)
-            {
-                LoadSelectedButton(activeButtons[selectedButtonIndex]);
-            }
-        }
-    }
-
     private void SwitchMode(ViewerModes mode)
     {
-        ResetButtonSelection();
         switch (mode)
         {
             case ViewerModes.Areas:
@@ -251,7 +106,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             foreach (var ext in extensions)
             {
                 string key = modelViewer.minimalLoadedFileName + ext;
-                if (modelPaletteDict.TryGetValue(key, out string pal))
+                if (ModelPalettes.Dict.TryGetValue(key, out string pal))
                 {
                     currentPal = pal;
                     break;
@@ -359,7 +214,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
             // Sort areaList alphabetically
             areaList = areaList.OrderBy(item =>
-                    areaNameDict.GetValueOrDefault(item.RGM, item.RGM),
+                    AreaNames.Dict.GetValueOrDefault(item.RGM, item.RGM),
                 StringComparer.OrdinalIgnoreCase).ToList();
         }
 
@@ -403,7 +258,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             component.COL = COL;
 
             // Look for a pretty name in areaNameDict, or use the RGM string as text
-            var prettyAreaName = areaNameDict.GetValueOrDefault(RGM, RGM);
+            var prettyAreaName = AreaNames.Dict.GetValueOrDefault(RGM, RGM);
             component.prettyAreaName = prettyAreaName;
             component.SetButtonText(prettyAreaName);
         }
@@ -442,7 +297,7 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             {
                 string palette = "ISLAND"; // Default
 
-                if (modelPaletteDict.TryGetValue(file.Name, out string customPalette))
+                if (ModelPalettes.Dict.TryGetValue(file.Name, out string customPalette))
                 {
                     palette = customPalette;
                 }
@@ -501,32 +356,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         return null;
     }
 
-    private void SelectButton(int index, List<GameObject> buttons)
-    {
-        // Deselect previous
-        if (selectedButtonIndex >= 0 && selectedButtonIndex < buttons.Count)
-        {
-            var prevImg = buttons[selectedButtonIndex].GetComponent<Image>();
-            if (prevImg != null) prevImg.color = defaultButtonColor;
-        }
-
-        selectedButtonIndex = index;
-
-        // Highlight new
-        if (selectedButtonIndex >= 0 && selectedButtonIndex < buttons.Count)
-        {
-            var img = buttons[selectedButtonIndex].GetComponent<Image>();
-            if (img != null) img.color = selectedButtonColor;
-
-            // Scroll to keep visible
-            if (fileListScrollRect != null)
-            {
-                float normalizedPos = 1f - ((float)selectedButtonIndex / Mathf.Max(1, buttons.Count - 1));
-                fileListScrollRect.verticalNormalizedPosition = normalizedPos;
-            }
-        }
-    }
-
     private void LoadSelectedButton(GameObject button)
     {
         if (button.TryGetComponent(out ModelViewer_AreaButton areaBtn))
@@ -537,17 +366,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             RequestModel(modelBtn.meshName, modelBtn.fileType, modelBtn.COL);
         }
-    }
-
-    private void ResetButtonSelection()
-    {
-        var buttons = GetActiveButtonList();
-        if (buttons != null && selectedButtonIndex >= 0 && selectedButtonIndex < buttons.Count)
-        {
-            var img = buttons[selectedButtonIndex].GetComponent<Image>();
-            if (img != null) img.color = defaultButtonColor;
-        }
-        selectedButtonIndex = -1;
     }
 
     // Button Signals

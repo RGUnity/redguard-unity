@@ -271,6 +271,7 @@ public class ModelViewer : MonoBehaviour
                 obj.gameObject.SetActive(false);
             }
         }
+        mvCam.FrameObject(objectRoot);
     }
 
     public void ResetIsolation()
@@ -298,7 +299,7 @@ public class ModelViewer : MonoBehaviour
                     continue;
                 }
 
-                mat.mainTexture.filterMode = settings.useTextureFiltering ? FilterMode.Bilinear : FilterMode.Point;
+                mat.mainTexture.filterMode = SettingsData.useTextureFiltering ? FilterMode.Bilinear : FilterMode.Point;
             }
         }
     }
@@ -316,7 +317,7 @@ public class ModelViewer : MonoBehaviour
             {
                 if (rgso.type == RGScriptedObject.ScriptedObjectType.scriptedobject_animated)
                 {
-                    if(settings.playAnimations == true)
+                    if(SettingsData.playAnimations == true)
                         rgso.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_panic, 0);
                     else
                         rgso.ClearAnim();
@@ -325,7 +326,7 @@ public class ModelViewer : MonoBehaviour
 
             if (obj.TryGetComponent(out BlendShapeAnimator bsa))
             {
-                if (settings.playAnimations)
+                if (SettingsData.playAnimations)
                     bsa.Play();
                 else
                     bsa.Stop();
