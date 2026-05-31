@@ -24,6 +24,7 @@ public class ModelViewer_Camera : MonoBehaviour
     private float speed_reg = 15;
     private float speed_fast = 50;
     private float speed_cur;
+    public float flySpeedMultiplier = 1f;
     private float flyPitch;
     private float flyYaw;
     private int flyRotationSkip;
@@ -64,9 +65,9 @@ public class ModelViewer_Camera : MonoBehaviour
             else
                 speed_cur = speed_reg;
             if (input != Vector3.zero)
-                _camera.Translate(input * (speed_cur * Time.deltaTime));
+                _camera.Translate(input * (speed_cur * flySpeedMultiplier * Time.deltaTime));
             if (scrollInput != 0f)
-                _camera.Translate(Vector3.up * scrollInput * speed_cur * 2f);
+                _camera.Translate(Vector3.up * scrollInput * speed_cur * flySpeedMultiplier * 2f);
 
             // rotation — only while dragging
             // On fresh click, sync flyPitch/flyYaw from current camera rotation

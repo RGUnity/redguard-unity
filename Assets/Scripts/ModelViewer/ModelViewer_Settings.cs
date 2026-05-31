@@ -50,6 +50,13 @@ public class ModelViewer_Settings : MonoBehaviour
         Camera.main.fieldOfView = SettingsData.fieldOfView;
     }
 
+    public void SetFlySpeedMultiplier(float multiplier)
+    {
+        flySpeedMultiplier = Mathf.Clamp(multiplier, 0.1f, 20f);
+        if (gui.flySpeedSlider != null) gui.flySpeedSlider.SetValueWithoutNotify(flySpeedMultiplier);
+        mv_camera.flySpeedMultiplier = flySpeedMultiplier;
+    }
+
     public void ToggleFog(bool enable)
     {
         SettingsData.useFog = enable;
