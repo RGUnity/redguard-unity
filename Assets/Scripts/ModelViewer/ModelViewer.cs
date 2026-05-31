@@ -271,6 +271,7 @@ public class ModelViewer : MonoBehaviour
                 obj.gameObject.SetActive(false);
             }
         }
+        mvCam.FrameObject(objectRoot);
     }
 
     public void ResetIsolation()
@@ -298,7 +299,7 @@ public class ModelViewer : MonoBehaviour
                     continue;
                 }
 
-                mat.mainTexture.filterMode = settings.useTextureFiltering ? FilterMode.Bilinear : FilterMode.Point;
+                mat.mainTexture.filterMode = SettingsData.useTextureFiltering ? FilterMode.Bilinear : FilterMode.Point;
             }
         }
     }

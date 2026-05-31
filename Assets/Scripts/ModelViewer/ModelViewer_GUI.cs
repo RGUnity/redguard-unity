@@ -356,32 +356,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         return null;
     }
 
-    private void SelectButton(int index, List<GameObject> buttons)
-    {
-        // Deselect previous
-        if (selectedButtonIndex >= 0 && selectedButtonIndex < buttons.Count)
-        {
-            var prevImg = buttons[selectedButtonIndex].GetComponent<Image>();
-            if (prevImg != null) prevImg.color = defaultButtonColor;
-        }
-
-        selectedButtonIndex = index;
-
-        // Highlight new
-        if (selectedButtonIndex >= 0 && selectedButtonIndex < buttons.Count)
-        {
-            var img = buttons[selectedButtonIndex].GetComponent<Image>();
-            if (img != null) img.color = selectedButtonColor;
-
-            // Scroll to keep visible
-            if (fileListScrollRect != null)
-            {
-                float normalizedPos = 1f - ((float)selectedButtonIndex / Mathf.Max(1, buttons.Count - 1));
-                fileListScrollRect.verticalNormalizedPosition = normalizedPos;
-            }
-        }
-    }
-
     private void LoadSelectedButton(GameObject button)
     {
         if (button.TryGetComponent(out ModelViewer_AreaButton areaBtn))
@@ -392,17 +366,6 @@ public class ModelViewer_GUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             RequestModel(modelBtn.meshName, modelBtn.fileType, modelBtn.COL);
         }
-    }
-
-    private void ResetButtonSelection()
-    {
-        var buttons = GetActiveButtonList();
-        if (buttons != null && selectedButtonIndex >= 0 && selectedButtonIndex < buttons.Count)
-        {
-            var img = buttons[selectedButtonIndex].GetComponent<Image>();
-            if (img != null) img.color = defaultButtonColor;
-        }
-        selectedButtonIndex = -1;
     }
 
     // Button Signals
