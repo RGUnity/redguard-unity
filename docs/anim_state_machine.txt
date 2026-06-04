@@ -1,0 +1,401 @@
+@startuml
+!pragma layout elk
+skinparam linetype polyline
+'skinparam linetype ortho
+skinparam dpi 50
+
+state locked: always reachable
+state init
+state death
+state panic
+state idle_hurt
+state idle_torch
+' TODO:
+'state idle_rope
+state idle_ledge
+state fight_panic
+state turn_left: +torch
+state turn_right: +torch
+state run_forward
+state run_backward: unused?
+state walk_forward: +torch
+state walk_backward: +torch
+state step_left: +torch
+state step_right: +torch
+state jump_start: +torch
+state jump_right_start: +torch
+state jump_left_start: +torch
+state jump_torch
+state jump_up
+state jump_up_arms
+state jump_forward: +torch
+state jump_forward_arms
+state jump_right: +torch
+state jump_left: +torch
+state jump_run_arms
+state jump_backward: +torch
+'TODO:
+'state jump_off_rope: +torch
+'state jump_off_rope_sword: +torch
+state jump_draw_sword
+state attack_jump_up
+state attack_jump_forward
+state fall: +torch
+state fall_up_arms
+state fall_right: +torch
+state fall_left: +torch
+state fall_backward: +torch
+state land: +torch
+state land_right: +torch
+state land_left: +torch
+state land_backward: +torch
+state land_hurt
+state land_death
+state slide_forward: +torch
+state slide_backward: +torch
+
+'ROPES
+state rope_panic
+state rope_swing_forward
+state rope_swing_back
+state rope_up
+state rope_down
+state rope_grab
+state rope_jump
+
+' LEDGES
+state pull_up_ledge
+state drop_off_ledge
+state grab_ledge
+' TODO:
+'state swing_ledge
+'state hand_plant_ledge
+
+' FIGHT STUFF
+state draw_sword
+state fight_forward
+state fight_backward
+state fight_circle_left
+state fight_circle_right
+state fight_turn_left
+state fight_turn_right
+state defend_low
+state defend_right
+state defend_left
+state defend_high
+state attack_1
+state attack_2
+state attack_3
+state attack_thrust
+state attack_lunge
+state attack_1_end
+state attack_2_end
+state fight_disarm
+state attack_low
+state fight_jump_start
+state fight_jump
+state fight_fall
+state fight_land
+state fight_fall_attack
+state fight_land_attack
+state fight_hurt_1
+state fight_hurt_2
+state fight_hurt_front
+state fight_hurt_back
+state death_fight_stab
+state death_fight_hard
+state death_fight_stab_end
+state death_fight_hard_end
+state death_fight_front
+state death_fight_back
+state death_fight_front_end
+state death_fight_back_end
+state sheath_sword
+state fight_land_right
+state fight_land_left
+
+'DEATHS NON-COMBAT
+state explore_hurt_1
+state explore_hurt_2
+state death_explore
+
+' FLASK STATES
+' state flask_panic
+' state draw_flask
+' state sheath_flask
+' state catch_spell
+' state charge_flask
+' state shoot_flask
+
+state swim_idle
+state swim_forward
+state swim_backward
+
+' INTERACTIONS
+' state pickup
+' state pull_lever_down
+' state pull_lever_up
+' state turn_lever_left
+' state turn_lever_right
+state light_torch
+state unlight_torch
+' state light_with_torch
+
+state walk_forward_fall
+state walk_forward_fall_up_arms
+state run_fall_up_arms
+
+' EXTRA STATES
+state walk_forward_turn_left: +torch
+state walk_forward_turn_right: +torch
+state run_forward_turn_left: +torch
+state run_forward_turn_right: +torch
+state walk_backward_turn_left: +torch
+state walk_backward_turn_right: +torch
+
+state swim_idle_turn_left
+state swim_idle_turn_right
+state swim_forward_turn_left
+state swim_forward_turn_right
+state swim_backward_turn_left
+state swim_backward_turn_right
+
+
+state jumpchoice1 <<choice>>
+state jumpchoice2 <<choice>>
+
+state landchoice1 <<choice>>
+
+init-->panic: [firstframe]
+
+' idle stuff
+panic->idle_hurt: [player damage]
+idle_hurt-->panic: [anim done]
+
+' walking forward tree
+panic-->walk_forward: [btn walkfwd]
+walk_forward-->panic: [btn walkfwd released]
+
+' walking forward turns
+walk_forward-->walk_forward_turn_left: [btn turnleft]
+walk_forward_turn_left-->walk_forward: [btn turnleft released]
+walk_forward_turn_left-->turn_left: [btn walkfwd released]
+
+walk_forward-->walk_forward_turn_right: [btn turnright]
+walk_forward_turn_right-->walk_forward: [btn turnright released]
+walk_forward_turn_right-->turn_right: [btn walkfwd released]
+
+' forward jump
+walk_forward-->jumpchoice2: [btn jump]
+jumpchoice2-->jump_forward: [default]
+jumpchoice2-->jump_forward_arms: [close to wall(?)]
+jump_forward-->walk_forward_fall: [anim done]
+walk_forward_fall-->walk_forward: [landed]
+jump_forward_arms-->walk_forward_fall_up_arms: [anim done]
+walk_forward_fall_up_arms-->walk_forward: [landed]
+
+' walking backwards tree
+panic-->walk_backward: [btn walkbckw]
+walk_backward-->panic: [btn walkbckw released]
+
+' walking backward turns
+walk_backward-->walk_backward_turn_left: [btn turnleft]
+walk_backward_turn_left-->walk_backward: [btn turnleft released]
+walk_backward_turn_left-->turn_left: [btn walkbckw released]
+
+walk_backward-->walk_backward_turn_right: [btn turnright]
+walk_backward_turn_right-->walk_backward: [btn turnright released]
+walk_backward_turn_right-->turn_right: [btn walkbckw released]
+
+' backwards jump 
+walk_backward-->jump_backward: [btn jump]
+jump_backward-->fall_backward: [anim done]
+fall_backward-->land_backward: [landed]
+land_backward-->walk_backward: [anim done]
+
+' run tree
+panic-->run_forward: [btn runfwd]
+run_forward-->panic: [btn runfwd released]
+
+' walk to run
+walk_forward-->run_forward: [btn movemod]
+run_forward-->walk_forward: [btn movemod released]
+
+' running turns
+run_forward-->run_forward_turn_left: [btn turnleft]
+run_forward_turn_left-->run_forward: [btn turnleft released]
+run_forward_turn_left-->turn_left: [btn runfwd released]
+run_forward_turn_left-->walk_forward_turn_left: [btn movemod released]
+
+run_forward-->run_forward_turn_right: [btn turnright]
+run_forward_turn_right-->run_forward: [btn turnright released]
+run_forward_turn_right-->turn_right: [btn runfwd released]
+run_forward_turn_right-->walk_forward_turn_right: [btn movemod released]
+
+
+' run jump
+run_forward-->jump_run_arms: [btn jump]
+jump_run_arms-->run_fall_up_arms: [anim done]
+run_fall_up_arms-->run_forward: [landed]
+
+' turn left
+panic-->turn_left: [btn turnleft]
+turn_left-->panic: [btn turnleft released]
+turn_left-->walk_forward_turn_left: [btn walkfwd]
+turn_left-->run_forward_turn_left: [btn runfwd]
+turn_left-->walk_backward_turn_left: [btn walkfwd]
+
+' turn right
+panic-->turn_right: [btn turnright]
+turn_right-->panic: [btn turnright released]
+turn_right-->walk_forward_turn_right: [btn walkfwd]
+turn_right-->run_forward_turn_right: [btn runfwd]
+turn_right-->walk_backward_turn_right: [btn walkfwd]
+
+
+panic-->step_left: [btn stepleft]
+step_left-->panic: [btn stepleft released]
+step_left-->jump_left_start: [btn jump]
+jump_left_start-->jump_left: [anim done]
+jump_left-->fall_left: [anim_done]
+fall_left-->land_left: [landed]
+land_left-->step_left: [anim done]
+
+panic-->step_right: [btn stepright]
+step_right-->panic: [btn stepright released]
+step_right-->jump_right_start: [btn jump]
+jump_right_start-->jump_right: [anim done]
+jump_right-->fall_right: [anim done]
+fall_right-->land_right: [landed]
+land_right-->step_right: [anim done]
+
+panic-->jump_start: [btn jump]
+jump_start-->jumpchoice1: [anim done]
+jumpchoice1-->jump_up: [default]
+jump_up-->fall: [anim done]
+fall-->land: [landed]
+
+jumpchoice1-->jump_up_arms: [close to wall (?)]
+jump_up_arms-->fall_up_arms: [anim done]
+fall_up_arms-->land: [landed]
+
+land-->panic: [anim done]
+
+
+' ledges
+' TODO:
+' 1. swing_ledge
+' 2. hand_plant_ledge
+fall_up_arms-->grab_ledge: [close to ledge]
+walk_forward_fall_up_arms-->grab_ledge: [close to ledge]
+run_fall_up_arms-->grab_ledge: [close to ledge]
+
+grab_ledge-->idle_ledge: [anim done]
+idle_ledge-->pull_up_ledge: [btn jump]
+pull_up_ledge-->panic: [anim done]
+
+idle_ledge-->drop_off_ledge: [btn walkbckw]
+drop_off_ledge-->land: [landed]
+
+' rope tree
+' TODO:
+' 1. jump_off_rope
+' 2. jump_off_rope_sword
+fall_up_arms-->rope_grab: [close to rope]
+walk_forward_fall_up_arms-->rope_grab: [close to rope]
+run_fall_up_arms-->rope_grab: [close to rope]
+rope_grab-->rope_panic: [anim_done]
+
+rope_panic-->rope_swing_forward: [btn runfwd]
+rope_swing_forward-->rope_panic: [anim done]
+rope_panic-->rope_swing_back: [btn runbckw]
+rope_swing_back-->rope_panic: [anim done]
+
+rope_panic-->rope_up: [btn climbup]
+rope_up-->rope_panic: [btn climbup released]
+
+rope_panic-->rope_down: [btn climbdwn]
+rope_down-->rope_panic: [btn climbdwn released]
+
+rope_panic-->rope_jump: [btn jump]
+rope_jump-->fall: [anim done]
+
+
+'torch tree
+panic-->light_torch: [torch activate]
+light_torch-->idle_torch: [anim done]
+idle_torch-->unlight_torch: [torch deactivate]
+unlight_torch-->panic: [anim done]
+
+' hurt fall
+walk_forward_fall-->land_hurt: [landed hurt]
+walk_forward_fall_up_arms-->land_hurt: [landed hurt]
+fall-->land_hurt: [landed hurt]
+fall_up_arms-->land_hurt: [landed hurt]
+fall_right-->land_hurt: [landed hurt]
+fall_left-->land_hurt: [landed hurt]
+fall_backward-->land_hurt: [landed hurt]
+land_hurt-->panic: [anim done]
+
+
+' death fall
+walk_forward_fall-->land_death: [landed death]
+walk_forward_fall_up_arms-->land_death: [landed death]
+fall-->land_death: [landed death]
+fall_up_arms-->land_death: [landed death]
+fall_right-->land_death: [landed death]
+fall_left-->land_death: [landed death]
+fall_backward-->land_death: [landed death]
+land_death-->death: [anim done]
+
+' water
+fall-->swim_idle: [landed water]
+fall_up_arms-->swim_idle: [landed water]
+fall_right-->swim_idle: [landed water]
+fall_left-->swim_idle: [landed water]
+fall_backward-->swim_idle: [landed water]
+
+' swim forward tree
+swim_idle-->swim_forward: [btn walkfwd]
+swim_forward-->swim_idle: [btn walkfwd released]
+
+' swim forward turns
+swim_forward-->swim_forward_turn_left: [btn turnleft]
+swim_forward_turn_left-->swim_forward: [btn turnleft released]
+swim_forward_turn_left-->swim_idle_turn_left: [btn walkfwd released]
+
+swim_forward-->swim_forward_turn_right: [btn turnright]
+swim_forward_turn_right-->swim_forward: [btn turnright released]
+swim_forward_turn_right-->swim_idle_turn_right: [btn walkfwd released]
+
+' swim backward tree
+swim_idle-->swim_backward: [btn walkbckw]
+swim_backward-->swim_idle: [btn walkbckw released]
+
+' swim backward turns
+swim_backward-->swim_backward_turn_left: [btn turnleft]
+swim_backward_turn_left-->swim_backward: [btn turnleft released]
+swim_backward_turn_left-->swim_idle_turn_left: [btn walkbckw released]
+
+swim_backward-->swim_backward_turn_right: [btn turnright]
+swim_backward_turn_right-->swim_backward: [btn turnright released]
+swim_backward_turn_right-->swim_idle_turn_right: [btn walkbckw released]
+
+swim_idle-->swim_idle_turn_right: [btn turnright]
+swim_idle_turn_right-->swim_idle: [btn turnright released]
+swim_idle_turn_right-->swim_backward_turn_right: [btn walkbckw]
+swim_idle_turn_right-->swim_forward_turn_right: [btn walkfwd]
+
+swim_idle-->swim_idle_turn_left: [btn turnleft]
+swim_idle_turn_left-->swim_idle: [btn turnleft released]
+swim_idle_turn_left-->swim_backward_turn_left: [btn walkbckw]
+swim_idle_turn_left-->swim_forward_turn_left: [btn walkfwd]
+
+
+
+swim_backward-->landchoice1: [touch land]
+swim_forward-->landchoice1: [touch land]
+
+
+
+@enduml

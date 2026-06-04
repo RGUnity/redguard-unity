@@ -1,10 +1,31 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
+using RGFileImport;
 
-public class PlayerMain: MonoBehaviour
+public partial class PlayerMain: MonoBehaviour
 {
-    enum AnimState
+    // statemachine stuff
+    public abstract class State
+    {
+        public int id;
+        public bool panic;
+        public bool s_internal;
+        public PlayerMain main;
+        public virtual void Entry() {}
+        public virtual void InternalEntry() {}
+        public virtual void Exit() {}
+        public virtual void InternalExit() {}
+
+        public State(PlayerMain m)
+        {
+            main = m;
+            panic = false;
+        }
+
+    }
+
+    public enum AnimState
     {
         state_init              = -1,
         state_panic             = RGRGMAnimStore.AnimGroup.anim_panic,
@@ -13,660 +34,326 @@ public class PlayerMain: MonoBehaviour
         state_run_forward       = RGRGMAnimStore.AnimGroup.anim_run_forward,
         state_turn_left         = RGRGMAnimStore.AnimGroup.anim_turn_left,
         state_turn_right        = RGRGMAnimStore.AnimGroup.anim_turn_right,
+
+        state_jump_start        = RGRGMAnimStore.AnimGroup.anim_jump_start,
+        state_jump_up           = RGRGMAnimStore.AnimGroup.anim_jump_up,
+        state_fall              = RGRGMAnimStore.AnimGroup.anim_fall,
+        state_land              = RGRGMAnimStore.AnimGroup.anim_land,
+
         state_locked            = 1337, //  bit of a hack but better than before :)
     }
 
-    private RGScriptedObject player;
-    [SerializeField] AnimState currentAnimState;
-    [SerializeField] AnimState wantAnimState;
+    public enum Event
+    {
+        init,
+        anim_done,
+        input_jump,
+        input_runfwd,
+        input_runfwd_released,
+        input_stepleft,
+        input_stepleft_released,
+        input_stepright,
+        input_stepright_released,
+        input_turnleft,
+        input_turnleft_released,
+        input_turnright,
+        input_turnright_released,
+        input_walkbckw,
+        input_walkbckw_released,
+        input_walkfwd,
+        input_walkfwd_released,
+        //close to wall(?),
+        player_landed,
 
+    }
+
+
+    Dictionary<ST, TD> transitions;
+    State currentState;
+    [SerializeField] int state_int;
+
+    State nextState;
+    [SerializeField] bool animShouldExit;
+
+    class ST // state transition
+    {
+        State currentState;
+        Event trigger;
+        public ST(State state, Event ev)
+        {
+            currentState = state;
+            trigger = ev;
+        }
+
+        public override int GetHashCode()
+        {
+            return 17 + 31 * currentState.id.GetHashCode() + 31 * trigger.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            ST other = obj as ST;
+            return other != null && this.currentState.id == other.currentState.id && this.trigger == other.trigger;
+        }
+    }
+    class TD //transition data
+    {
+        public State state;
+        public bool internalTransition;
+        public TD(State s, bool i)
+        {
+            state = s;
+            internalTransition = i;
+        }
+    }
+    public PlayerMain()
+    {
+        currentState = new State_init(this);
+        transitions = new Dictionary<ST, TD>
+        {
+            {new ST(new State_init(this),                      Event.init),                        new TD(new State_panic(this), false)},
+
+// walking forward tree
+            {new ST(new State_panic(this),                     Event.input_walkfwd),               new TD(new State_walk_forward(this), false)},
+            {new ST(new State_walk_forward(this),              Event.input_walkfwd_released),      new TD(new State_panic(this), false)},
+            {new ST(new State_walk_forward(this),              Event.input_walkbckw),              new TD(new State_walk_backward(this), false)},
+            {new ST(new State_walk_forward(this),              Event.input_runfwd),                new TD(new State_run_forward(this), false)},
+
+            // walking forward turns 
+            {new ST(new State_walk_forward(this),              Event.input_turnleft),              new TD(new State_walk_forward_turn_left(this), true)},
+            {new ST(new State_walk_forward_turn_left(this),    Event.input_turnleft_released),     new TD(new State_walk_forward(this), true)},
+            {new ST(new State_walk_forward_turn_left(this),    Event.input_walkfwd_released),      new TD(new State_turn_left(this), false)},
+
+            {new ST(new State_walk_forward(this),              Event.input_turnright),             new TD(new State_walk_forward_turn_right(this), true)},
+            {new ST(new State_walk_forward_turn_right(this),   Event.input_turnright_released),    new TD(new State_walk_forward(this), true)},
+            {new ST(new State_walk_forward_turn_right(this),   Event.input_walkfwd_released),      new TD(new State_turn_right(this), false)},
+
+// walking backwards tree
+            {new ST(new State_panic(this),                     Event.input_walkbckw),              new TD(new State_walk_backward(this), false)},
+            {new ST(new State_walk_backward(this),             Event.input_walkbckw_released),     new TD(new State_panic(this), false)},
+            {new ST(new State_walk_backward(this),             Event.input_runfwd),                new TD(new State_run_forward(this), false)},
+            {new ST(new State_walk_backward(this),             Event.input_walkfwd),               new TD(new State_walk_forward(this), false)},
+
+            // walking backwards turns
+            {new ST(new State_walk_backward(this),              Event.input_turnleft),              new TD(new State_walk_backward_turn_left(this), true)},
+            {new ST(new State_walk_backward_turn_left(this),    Event.input_turnleft_released),     new TD(new State_walk_backward(this), true)},
+            {new ST(new State_walk_backward_turn_left(this),    Event.input_walkbckw_released),      new TD(new State_turn_left(this), false)},
+
+            {new ST(new State_walk_backward(this),              Event.input_turnright),             new TD(new State_walk_backward_turn_right(this), true)},
+            {new ST(new State_walk_backward_turn_right(this),   Event.input_turnright_released),    new TD(new State_walk_backward(this), true)},
+            {new ST(new State_walk_backward_turn_right(this),   Event.input_walkbckw_released),     new TD(new State_turn_right(this), false)},
+
+
+// running forward tree tree
+            {new ST(new State_panic(this),                     Event.input_runfwd),                 new TD(new State_run_forward(this), false)},
+            {new ST(new State_run_forward(this),               Event.input_runfwd_released),        new TD(new State_panic(this), false)},
+            {new ST(new State_run_forward(this),               Event.input_walkfwd),                new TD(new State_walk_forward(this), false)},
+            {new ST(new State_run_forward(this),               Event.input_walkbckw),               new TD(new State_walk_backward(this), false)},
+
+            // running forward turns
+            {new ST(new State_run_forward(this),              Event.input_turnleft),                new TD(new State_run_forward_turn_left(this), true)},
+            {new ST(new State_run_forward_turn_left(this),    Event.input_turnleft_released),       new TD(new State_run_forward(this), true)},
+            {new ST(new State_run_forward_turn_left(this),    Event.input_runfwd_released),         new TD(new State_turn_left(this), false)},
+
+            {new ST(new State_run_forward(this),              Event.input_turnright),               new TD(new State_run_forward_turn_right(this), true)},
+            {new ST(new State_run_forward_turn_right(this),   Event.input_turnright_released),      new TD(new State_run_forward(this), true)},
+            {new ST(new State_run_forward_turn_right(this),   Event.input_runfwd_released),         new TD(new State_turn_right(this), false)},
+
+
+            // turns
+            {new ST(new State_panic(this),                     Event.input_turnleft),              new TD(new State_turn_left(this), false)},
+            {new ST(new State_turn_left(this),                 Event.input_turnleft_released),     new TD(new State_panic(this), false)},
+            {new ST(new State_turn_left(this),                 Event.input_walkfwd),               new TD(new State_walk_forward_turn_left(this), false)},
+            {new ST(new State_turn_left(this),                 Event.input_walkbckw),              new TD(new State_walk_backward_turn_left(this), false)},
+            {new ST(new State_turn_left(this),                 Event.input_runfwd),                new TD(new State_run_forward_turn_left(this), false)},
+
+            {new ST(new State_panic(this),                     Event.input_turnright),             new TD(new State_turn_right(this), false)},
+            {new ST(new State_turn_right(this),                Event.input_turnright_released),    new TD(new State_panic(this), false)},
+            {new ST(new State_turn_right(this),                Event.input_walkfwd),               new TD(new State_walk_forward_turn_right(this), false)},
+            {new ST(new State_turn_right(this),                Event.input_walkbckw),              new TD(new State_walk_backward_turn_right(this), false)},
+            {new ST(new State_turn_right(this),                Event.input_runfwd),                new TD(new State_run_forward_turn_right(this), false)},
+
+
+        };
+    }
+    bool GetNext(Event ev, out TD next)
+    {
+        ST transition = new ST(currentState, ev);
+        if(!transitions.TryGetValue(transition, out next))
+            return false;
+        return true;
+    }
+
+    public void MoveNext(Event ev)
+    {
+        TD next;
+        bool transitioned = GetNext(ev, out next);
+        if(transitioned)
+        {
+            nextState = next.state;
+            if(next.internalTransition== true)
+            {
+                currentState.InternalExit();
+                nextState.InternalEntry();
+
+                currentState = nextState;
+                state_int = currentState.id;
+            }
+            else if(currentState.panic == true)
+                animDoExitFcn();
+            else
+                animShouldExit = true;
+        }
+    }
+    bool animShouldExitFcn()
+    {
+        return animShouldExit;
+    }
+    void animDoExitFcn()
+    {
+        currentState.Exit();
+        nextState.Entry();
+        currentState = nextState;
+        animShouldExit = false;
+        state_int = currentState.id;
+    }
+    public void setLocked(bool l)
+    {
+    }
+
+
+
+    // Unity stuff
+    private RGScriptedObject player;
     [SerializeField] private CharacterController cc;
     [SerializeField] private PlayerMovementConfig config;
 
-    // General CC properties
-    private PlayerMovementStates _currentMovementState = PlayerMovementStates.Walking;
     private Vector3 _velocity;
-    private bool _isGrounded;
-    private bool _feetVisiblyGrounded;
-    private Vector3 _playerRootPosition;
-
-    // Surface information
-    private float _surfaceAngleSphere;
-    private float _surfaceAngleRay;
-    private Vector3 _surfaceDownhill;
-    private Vector3 _forwardOnSurface;
-    private Vector3 _rightOnSurface;
-
-    private bool _isOnScriptedObject;
-    private float _pointRotation;
-
-    // Other variables
-    private Vector3 _smoothVelocity;
-    private float _speed;
-    public RGScriptedObject _currentScriptedGround;
-    private Vector3 _ledgeTargetPosition;
-    private bool _isClimbingUpLedge;
-    private Vector3 _ledgeWallNormal;
-
-    public PlayerMain()
-    {
-        currentAnimState = AnimState.state_init;
-        wantAnimState = AnimState.state_init;
-    }
+    [SerializeField] private float _yRotation;
 
     public void SetPositionAndRotation(Vector3 pos, Quaternion rot)
-    {
+    {   
         // disable CC, otherwise it will overwrite transform
         cc.enabled = false;
         cc.transform.SetPositionAndRotation(pos, rot);
         cc.enabled = true;
-    }
-
-    public void setLocked(bool l)
-    {
-        if(l)
-        {
-            currentAnimState = AnimState.state_locked;
-            wantAnimState = AnimState.state_locked;
-        }
-        else
-        {
-            currentAnimState = AnimState.state_init;
-            wantAnimState = AnimState.state_init;
-        }
-    }
-
-    bool animShouldExitFcn()
-    {
-        if(wantAnimState != currentAnimState)
-            return true;
-        return false;
-    }
-    void animDoExitFcn()
-    {
-        currentAnimState = wantAnimState;
-        player.SetAnim((int)currentAnimState, 0);
-
-        _velocity = Vector3.zero;
-    }
+    }   
     
-    [SerializeField] private bool locked;
-    private void doAnimStateMachine()
+    public void FixedUpdate()
     {
+        if(currentState.id == -1)
+            MoveNext(Event.init);
         if(Game.Input.moveForward)
         {
-            if (Game.Input.moveModifier)
-                wantAnimState = AnimState.state_walk_forward;
+            if(Game.Input.moveModifier)
+                MoveNext(Event.input_runfwd);
             else
-                wantAnimState = AnimState.state_run_forward;
-        }
-        else if(Game.Input.moveBackward)
-        {
-            wantAnimState = AnimState.state_walk_backward;
-        }
-        else if(Game.Input.turnLeft)
-        {
-            wantAnimState = AnimState.state_turn_left;
-        }
-        else if(Game.Input.turnRight)
-        {
-            wantAnimState = AnimState.state_turn_right;
+                MoveNext(Event.input_walkfwd);
         }
         else
         {
-            wantAnimState = AnimState.state_panic;
+            MoveNext(Event.input_walkfwd_released);
+            MoveNext(Event.input_runfwd_released);
         }
-        float yRotation = 0.0f;
 
-        switch(currentAnimState)
-        {
-            case AnimState.state_locked:
-                break;
-            case AnimState.state_init:
-                player = RGObjectStore.GetPlayer();
-                currentAnimState = AnimState.state_panic;
-                wantAnimState = AnimState.state_panic;
-                if (player != null && player.animations != null)
-                {
-                    player.animations.shouldExitFcn = animShouldExitFcn;
-                    player.animations.doExitFcn = animDoExitFcn;
-                }
-                animDoExitFcn();
-                break;
+        if(Game.Input.moveBackward)
+            MoveNext(Event.input_walkbckw);
+        else
+            MoveNext(Event.input_walkbckw_released);
 
-            case AnimState.state_panic:
-                _velocity = Vector3.zero;
-                break;
-            case AnimState.state_walk_forward:
-                _velocity = _forwardOnSurface * (1.0f * config.walkSpeed / 60);
-                // can turn when walking
-                if(Game.Input.turnLeft)
-                    yRotation = -1.0f * config.turnSpeed * Time.deltaTime * 60;
-                else if(Game.Input.turnRight)
-                    yRotation = 1.0f * config.turnSpeed * Time.deltaTime * 60;
-                transform.Rotate(0, yRotation, 0);
-                break;
-            case AnimState.state_walk_backward:
-                _velocity = _forwardOnSurface * (-1.0f * config.walkSpeed / 60);
-                // can turn when walking
-                if(Game.Input.turnLeft)
-                    yRotation = -1.0f * config.turnSpeed * Time.deltaTime * 60;
-                else if(Game.Input.turnRight)
-                    yRotation = 1.0f * config.turnSpeed * Time.deltaTime * 60;
-                transform.Rotate(0, yRotation, 0);
-                break;
-            case AnimState.state_run_forward:
-                _velocity = _forwardOnSurface * (1.0f * config.runSpeed / 60);
-                // can turn when walking
-                if(Game.Input.turnLeft)
-                    yRotation = -1.0f * config.turnSpeed * Time.deltaTime * 60;
-                else if(Game.Input.turnRight)
-                    yRotation = 1.0f * config.turnSpeed * Time.deltaTime * 60;
-                transform.Rotate(0, yRotation, 0);
-                break;
-            case AnimState.state_turn_left:
-                yRotation = -1.0f * config.turnSpeed * Time.deltaTime * 60;
-                transform.Rotate(0, yRotation, 0);
-                break;
-            case AnimState.state_turn_right:
-                yRotation = 1.0f * config.turnSpeed * Time.deltaTime * 60;
-                transform.Rotate(0, yRotation, 0);
-                break;
-        }
-    }
-    
-    private void FixedUpdate()
-    {
-        // This shows where the feet of the player are currently in the 3D space.
-        float playerRootHeight = transform.position.y - cc.height / 2 + cc.center.y;
-        _playerRootPosition = new Vector3(transform.position.x, playerRootHeight, transform.position.z);
+        if(Game.Input.jump)
+            MoveNext(Event.input_jump);
 
-        GroundCheck();
-        doAnimStateMachine();
-        // Apply ground magnet
+        if(Game.Input.stepLeft)
+            MoveNext(Event.input_stepleft);
+        else
+            MoveNext(Event.input_stepleft_released);
+        if(Game.Input.stepRight)
+            MoveNext(Event.input_stepright);
+        else
+            MoveNext(Event.input_stepright_released);
+
+        if(Game.Input.turnLeft)
+            MoveNext(Event.input_turnleft);
+        else
+            MoveNext(Event.input_turnleft_released);
+        if(Game.Input.turnRight)
+            MoveNext(Event.input_turnright);
+        else
+            MoveNext(Event.input_turnright_released);
+ 
+
+        float rot = _yRotation * config.turnSpeed * Time.deltaTime * 60;
+        transform.Rotate(0, _yRotation, 0);
+
         _velocity.y += config.groundMagnet;
-        
-        // Apply smoothing with MoveTowards
-        _smoothVelocity = Vector3.MoveTowards(_smoothVelocity, _velocity, (1 / config.velocitySmoothing));
-        _velocity.z = _smoothVelocity.z;
-        _velocity.x = _smoothVelocity.x;
-        HandleStepOffset();
-        
-        // Step dropping
-        if (_isGrounded
-            && !_feetVisiblyGrounded
-            && _velocity.magnitude < 1
-            && cc.velocity.y < 0.01)
-        {
-            ForceDropDown();
-        }
-
-        // Apply the velocity to the CC
-        cc.Move(_velocity);
-
-        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
+        Vector3 localvel = transform.TransformDirection(_velocity);
+        cc.Move(localvel);
+    }
 
 
-        return;
 
-        // Airborne State Entry and Exit
-        if (!_isGrounded)
+
+    public class State_init: State
+    {
+        public State_init(PlayerMain m):base(m)
         {
-            _currentMovementState = PlayerMovementStates.Airborne;
+            id = -1;
+            panic = true;
         }
-        
-        if (Game.Input.jump
-            && _currentMovementState == PlayerMovementStates.Walking)
+        public override void Exit()
         {
-            Game.Input.jump = false;
-            _currentMovementState = PlayerMovementStates.Airborne;
-            Jump();
-        }
-        else if (Game.Input.jump)
-        {
-            Game.Input.jump = false;
-        }
-        
-        if (_isGrounded 
-            && _currentMovementState == PlayerMovementStates.Airborne)
-        {
-            _currentMovementState = PlayerMovementStates.Walking;
-        }
-        
-        // Slide state Entry and Exit
-        if (_isGrounded
-            && _feetVisiblyGrounded
-            && _surfaceAngleSphere > cc.slopeLimit
-            && _surfaceAngleRay > cc.slopeLimit)
-        {
-            _currentMovementState = PlayerMovementStates.Sliding;
-        }
-        else if (_isGrounded
-                 && _feetVisiblyGrounded
-                 && _surfaceAngleSphere <= cc.slopeLimit
-                 && _surfaceAngleRay <= cc.slopeLimit)
-        {
-            _currentMovementState = PlayerMovementStates.Walking;
-        }
-        
-        // Climbing State Entry and Exit
-        if (_currentMovementState == PlayerMovementStates.Airborne)
-        {
-            if (IsNearHighLedge())
+            main.player = RGObjectStore.GetPlayer();
+            if (main.player != null && main.player.animations != null)
             {
-                _velocity = Vector3.zero;
-                _currentMovementState = PlayerMovementStates.Climbing;
+                main.player.animations.shouldExitFcn = main.animShouldExitFcn;
+                main.player.animations.doExitFcn = main.animDoExitFcn;
             }
+            main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_land, 0);
         }
-        
-        if (_currentMovementState == PlayerMovementStates.Climbing 
-            && Game.Input.dropDown)
-        {
-            _currentMovementState = PlayerMovementStates.Walking;
-            _velocity = Vector3.zero;
-            _smoothVelocity = Vector3.zero;
-            // Todo: Disable the ledge detection for a short time to avoid the player getting stuck
-            // OR shorten the ledge detection ray.
-        }
-        else if (_currentMovementState == PlayerMovementStates.Climbing 
-                 && Game.Input.climbUp)
-        {
-            PullUpLedge();
-            // Todo: Check if the player has enough space to climb up
-        }
-        
-        // Switch to desired state
-        switch (_currentMovementState)
-        {
-            case PlayerMovementStates.Walking:
-                WalkMode();
-                break;
-            case PlayerMovementStates.Airborne:
-                AirborneMode();
-                break;
-            case PlayerMovementStates.Climbing:
-                ClimbMode();
-                break;
-            case PlayerMovementStates.Sliding:
-                SlideMode();
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-
-        // Apply the velocity to the CC
-        cc.Move(_velocity);
-
-        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
-
-        // This ray represents the direction velocity
-        //Debug.DrawRay(transform.position - Vector3.up, cc.velocity.normalized, Color.green);
-
-        // This is mainly a readonly variable to validate the resulting movement speed
-        _speed = cc.velocity.magnitude;
     }
-    
-    private void WalkMode()
+    public class State_panic: State
     {
-        // A debug ray pointing in Cyrus forward direction
-        //Debug.DrawRay(transform.position + Vector3.down, _forwardOnSurface, Color.yellow);
-        
-        // Movement when moveModifier is pressed / is true
-        if (Game.Input.moveModifier)
+        public State_panic(PlayerMain m):base(m)
         {
-            if (Game.Input.move.y != 0)
-            {
-                // Walk forward or backwards
-                _velocity = _forwardOnSurface * (Game.Input.move.y * config.walkSpeed / 60);
-
-                // Turn the player
-                float yRotation = Game.Input.move.x * config.turnSpeed * Time.deltaTime * 60;
-                transform.Rotate(0, yRotation, 0);
-            }
-            else if (Game.Input.move.x != 0
-                     && Game.Input.move.y == 0)
-            {
-                // Strafe left or right
-                _velocity = _rightOnSurface * (Game.Input.move.x * config.walkSpeed / 60);
-            }
-            else
-            {
-                _velocity = Vector3.zero;
-            }
+            id = (int)RGRGMAnimStore.AnimGroup.anim_panic;
+            panic = true;
         }
-        // Movement when moveModifier is NOT pressed / is false
-        else
+        public override void Entry()
         {
-            // Run Forward
-            if (Game.Input.move.y > 0)
-            {
-                _velocity = _forwardOnSurface * (Game.Input.move.y * config.runSpeed / 60);
-            }
-            // Walk backwards
-            else if (Game.Input.move.y < 0)
-            {
-                _velocity = _forwardOnSurface * (Game.Input.move.y * config.walkSpeed / 60);
-            }
-            else
-            {
-                _velocity = Vector3.zero;
-            }
-
-            // Turn the player
-            float yRotation = Game.Input.move.x * config.turnSpeed * Time.deltaTime * 60;
-            transform.Rotate(0, yRotation, 0);
-        }
-        
-        // Apply ground magnet
-        _velocity.y += config.groundMagnet;
-        
-        // Apply smoothing with MoveTowards
-        _smoothVelocity = Vector3.MoveTowards(_smoothVelocity, _velocity, (1 / config.velocitySmoothing));
-        _velocity.z = _smoothVelocity.z;
-        _velocity.x = _smoothVelocity.x;
-        
-        // Step dropping
-        if (_isGrounded
-            && !_feetVisiblyGrounded
-            && _velocity.magnitude < 1
-            && cc.velocity.y < 0.01)
-        {
-            ForceDropDown();
+            main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_panic, 0);
+            main._velocity = Vector3.zero;
+            main._yRotation = 0.0f;
         }
     }
-
-    private void AirborneMode()
+    public class State_turn_left: State
     {
-        // Apply gravity
-        _velocity.y += config.gravity / 1000;
+        public State_turn_left(PlayerMain m):base(m)
+        {
+            id = (int)RGRGMAnimStore.AnimGroup.anim_turn_left;
+        }
+        public override void Entry()
+        {
+            main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_turn_left, 0);
+            main._yRotation = -1.0f;
+        }
     }
-    
-    private void ClimbMode()
+    public class State_turn_right: State
     {
-        // Cast a sphere from the player to the _ledgeTargetPosition
-        if (Physics.SphereCast(transform.position, 0.1f, _ledgeTargetPosition - transform.position, out RaycastHit hit, 2f, config.groundLayers))
+        public State_turn_right(PlayerMain m):base(m)
         {
-            Vector3 newNormal = hit.normal;
-            // Lerp it to reduce jitters
-            _ledgeWallNormal = Vector3.Lerp(_ledgeWallNormal, newNormal, 0.2f);
-            Debug.DrawRay(transform.position, _ledgeWallNormal, Color.magenta);
+            id = (int)RGRGMAnimStore.AnimGroup.anim_turn_right;
         }
-
-        // Player should always be facing the wall
-        transform.rotation = Quaternion.LookRotation(-_ledgeWallNormal, transform.up);
-            
-        // Calculate movement direction on ledge
-        Vector3 wallRight = Vector3.Cross(transform.up, -_ledgeWallNormal);
-
-        // Move on ledge
-        if (Game.Input.move.x > 0 && CanClimbRight())
+        public override void Entry()
         {
-            _velocity = wallRight - _ledgeWallNormal;
-        }
-        else if (Game.Input.move.x < 0 && CanClimbLeft())
-        {
-            _velocity = -wallRight - _ledgeWallNormal;
-        }
-
-        // Keep the value positive and also hammer it towards full numbers
-        float moveDir = Mathf.Sign(Mathf.Abs(Game.Input.move.x));
-        _velocity *= moveDir * 0.0334f * config.ledgeStrafeSpeed;
-    }
-
-    private void SlideMode()
-    {
-        // Add velocity in the downhill direction
-        _velocity = _surfaceDownhill * config.slopeSlideSpeed;
-
-        // Rotate the player towards the slideDirection
-        Vector3 flatSurfaceDownhill = new Vector3(_surfaceDownhill.x, 0, _surfaceDownhill.z);
-
-        //Debug.DrawRay(transform.position + Vector3.down, flatSurfaceDownhill, Color.blue);
-        Quaternion stepRotation = Quaternion.LookRotation(flatSurfaceDownhill, Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, stepRotation, config.slopeAlignmentSpeed * Time.deltaTime);
-    }
-    
-
-
-    private void HandleStepOffset()
-    {
-        // Empty, the bugfix doesnt seem to work anymore; TODO: figure out why
-
-        // There is a bug in Unity's CC where it ignores the step limit and jumps upwards when walking near some edges.
-        // Here is a forum thread that explains more and also offers a workaround, which is implemented below.
-        // Link: https://forum.unity.com/threads/character-controller-unexpected-step-offset-behaviour.640828/
-    }
-
-    private void Jump()
-    {
-        if (IsNearLowLedge())
-        {
-            PullUpLedge();
-            return;
-        }
-
-        if (Game.Input.move.y > 0
-            && _speed > config.longJumpThreshold)
-        {
-            // Long forward jump
-            _velocity = _forwardOnSurface * config.longJumpDistance / 10;
-            _velocity.y = config.jumpHeight / 10;
-            _isGrounded = false;
-        }
-        else if (Game.Input.move.y > 0
-                && _speed > config.shortJumpThreshold)
-        {
-            // Short forward jump
-            _velocity = _forwardOnSurface * config.shortJumpDistance / 10;
-            _velocity.y = config.jumpHeight / 10;
-            _isGrounded = false;
-        }
-        else
-        {
-            // Standing jump
-            _velocity = Vector3.zero;
-            _smoothVelocity = Vector3.zero;
-            _velocity.y = config.jumpHeight / 10;
-            _isGrounded = false;
+            main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_turn_right, 0);
+            main._yRotation = 1.0f;
         }
     }
 
-    private void GroundCheck()
-    {
-        Vector3 surfaceDownhillSphere = default;
-        Vector3 surfaceDownhillRay = default;
 
-        float castRadius = 0.34f;
-        float castDistance = cc.height / 2 - (castRadius - 0.14f);
 
-        if (Physics.SphereCast(transform.position, castRadius, Vector3.down, out RaycastHit sphereHit, castDistance, config.groundLayers))
-        {
-            _isGrounded = true;
-            _surfaceAngleSphere = Vector3.Angle(Vector3.up, sphereHit.normal);
-            surfaceDownhillSphere = Vector3.Cross((Vector3.Cross(Vector3.up, sphereHit.normal)), sphereHit.normal).normalized;
 
-            if (sphereHit.transform.TryGetComponent(out RGScriptedObject platform))
-            {
-                _currentScriptedGround = platform;
-                _isOnScriptedObject = true;
-                _currentScriptedGround.playerStanding = true;
-//                this.transform.SetParent(_currentScriptedGround.transform);
-            }
-            else
-            {
-                if(_currentScriptedGround != null)
-                    _currentScriptedGround.playerStanding = false;
-//                this.transform.SetParent(null);
-                _currentScriptedGround = null;
-                _isOnScriptedObject = false;
-            }
-        }
-        else
-        {
-            _isGrounded = false;
 
-            if(_currentScriptedGround != null)
-                _currentScriptedGround.playerStanding = false;
-//            this.transform.SetParent(null);
-            _currentScriptedGround = null;
-            _isOnScriptedObject = false;
-        }
 
-        //Debug.DrawRay(transform.position, Vector3.down * 1.7f, Color.red);
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit rayHit, 1.7f, config.groundLayers))
-        {
-            _surfaceAngleRay = Vector3.Angle(Vector3.up, rayHit.normal);
-            surfaceDownhillRay = Vector3.Cross((Vector3.Cross(Vector3.up, rayHit.normal)), rayHit.normal).normalized;
-            _forwardOnSurface = Vector3.Cross(transform.right, rayHit.normal).normalized;
-            _rightOnSurface = Vector3.Cross(rayHit.normal, _forwardOnSurface);
 
-            _surfaceDownhill = Vector3.Normalize(surfaceDownhillSphere + surfaceDownhillRay);
-        }
-        else
-        {
-            // These are fallback vectors in case the Raycast doesn't hit anything
-            _forwardOnSurface = transform.forward;
-            _rightOnSurface = transform.right;
-
-            _surfaceDownhill = surfaceDownhillSphere;
-        }
-
-        // Overhang check - returns true if the players feet are not visibly touching ground
-        
-        float castRadius2 = 0.15f;
-        float castDistance2 = cc.height / 2 - (castRadius2 - 0.25f);
-        
-        if (Physics.SphereCast(transform.position, castRadius2, Vector3.down, out RaycastHit sphereHit2, castDistance2, config.groundLayers))
-        {
-            _feetVisiblyGrounded = true;
-        }
-        else
-        {
-            _feetVisiblyGrounded = false;
-        }
-    }
-
-    private void ForceDropDown()
-    {
-        // Add velocity in the downhill direction
-        _surfaceDownhill += Vector3.down * 2;
-        _velocity = _surfaceDownhill.normalized * (config.slopeSlideSpeed*2);
-    }
-
-    public Vector3 RotateVectorAroundTransform(Vector3 vector, Transform transform, Vector3 axis, float angle)
-    {
-        // Step 1: Calculate the vector from the transform's position to the vector
-        Vector3 vectorToRotate = vector - transform.position;
-
-        // Step 2: Convert the vector from world space to local space
-        Vector3 localVector = Quaternion.Inverse(transform.rotation) * vectorToRotate;
-
-        // Step 3: Rotate the vector using the desired rotation
-        Quaternion rotation = Quaternion.AngleAxis(angle, axis);
-        Vector3 rotatedVector = rotation * localVector;
-
-        // Step 4: Convert the rotated vector back to world space
-        Vector3 worldRotatedVector = transform.rotation * rotatedVector;
-
-        // Step 5: Add the rotated vector to the transform's position
-        Vector3 finalPosition = transform.position + worldRotatedVector;
-
-        return finalPosition;
-    }
-
-    // Cyrus can climb directly over low ledges
-    private bool IsNearLowLedge()
-    {
-        Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
-        Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(config.centerLedgeRaycastOrigin);
-        float raycastLength = config.centerLedgeRaycastOrigin.y - config.lowLedgeStart;
-
-        //Debug.DrawRay(raycastOrigin, Vector3.down * raycastLength, Color.magenta);
-        if (Physics.Raycast(raycastOrigin, Vector3.down, out RaycastHit hitLow, raycastLength, config.groundLayers))
-        {
-            _ledgeTargetPosition = hitLow.point;
-            Vector3 ledgeSurfaceNormal = hitLow.normal;
-            if (Vector3.Dot(ledgeSurfaceNormal, transform.up) > 0.5f)
-            {
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
-
-    // Cyrus can jump and hang on to high ledges
-    private bool IsNearHighLedge()
-    {
-        Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
-        Vector3 raycastOrigin = playerRootPosition + transform.TransformVector(config.centerLedgeRaycastOrigin);
-        float raycastLength = config.centerLedgeRaycastOrigin.y - config.highLedgeStart;
-
-        Debug.DrawRay(raycastOrigin, Vector3.down * raycastLength, Color.red);
-
-        // This is the center raycast that starts ledge climbing
-        if (Physics.Raycast(raycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, config.groundLayers))
-        {
-            _ledgeTargetPosition = hitHigh.point;
-            Vector3 surfaceNormal = hitHigh.normal;
-            float angleCheck = Vector3.Dot(surfaceNormal, transform.up);
-            // A perfectly even  ground has angleCheck = 1
-            if (angleCheck > 0.9f
-                && !_isGrounded)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void PullUpLedge()
-    {
-        cc.enabled = false;
-        transform.position = _ledgeTargetPosition + transform.forward / 4 + Vector3.up;
-        cc.enabled = true;
-        _velocity = Vector3.zero;
-    }
-    
-    // Check if there is space to climb to the left
-    private bool CanClimbLeft()
-    {
-        Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
-        Vector3 leftRaycastOrigin = playerRootPosition + transform.TransformVector(config.leftLedgeRaycastOrigin);
-        float raycastLength = config.centerLedgeRaycastOrigin.y - config.highLedgeStart;
-        Debug.DrawRay(leftRaycastOrigin, Vector3.down * raycastLength, Color.red);
-        
-        if (Physics.Raycast(leftRaycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, config.groundLayers))
-        {
-            _ledgeTargetPosition = hitHigh.point;
-            Vector3 surfaceNormal = hitHigh.normal;
-            if (Vector3.Dot(surfaceNormal, transform.up) > 0.5f
-                && !_isGrounded)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    // Check if there is space to climb to the right
-    private bool CanClimbRight()
-    {
-        Vector3 playerRootPosition = new Vector3(transform.position.x, _playerRootPosition.y, transform.position.z);
-        Vector3 rightRaycastOrigin = playerRootPosition + transform.TransformVector(config.rightLedgeRaycastOrigin);
-        float raycastLength = config.centerLedgeRaycastOrigin.y - config.highLedgeStart;
-        Debug.DrawRay(rightRaycastOrigin, Vector3.down * raycastLength, Color.red);
-        
-        if (Physics.Raycast(rightRaycastOrigin, Vector3.down, out RaycastHit hitHigh, 0.1f, config.groundLayers))
-        {
-            _ledgeTargetPosition = hitHigh.point;
-            Vector3 surfaceNormal = hitHigh.normal;
-            if (Vector3.Dot(surfaceNormal, transform.up) > 0.5f
-                && !_isGrounded)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 }

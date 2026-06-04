@@ -62,10 +62,7 @@ public class InputManager : MonoBehaviour
         Game.Input.use = _useAction.WasPressedThisFrame();
         
         // jump is used in FixedUpdate. To avoid sync issues, PlayerMovement.cs sets it to false after processing it.
-        if (_jumpAction.WasPressedThisFrame())
-        {
-            Game.Input.jump = true;
-        }
+        Game.Input.jump = _jumpAction.WasPressedThisFrame();
         
         Game.Input.toggleInventory = _toggleInventoryAction.WasPressedThisFrame();
         Game.Input.toggleMap = _toggleMapAction.WasPressedThisFrame();

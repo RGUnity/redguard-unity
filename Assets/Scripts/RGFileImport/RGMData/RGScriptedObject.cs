@@ -59,8 +59,8 @@ public class RGScriptedObject : MonoBehaviour
     public ScriptedObjectType type;
 
 	SkinnedMeshRenderer skinnedMeshRenderer;
-    Light light;
-    Collider collider;
+    new Light light;
+    new Collider collider;
     AudioSource audioSource;
 
 	GameObject flat;
@@ -1148,7 +1148,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         Quaternion rotationDelta = Quaternion.AngleAxis(((float)i[1])/DA2DG, axis);
         Quaternion localRotation = transform.localRotation;
 
-        newTask.rotationTarget = rotationDelta;
+        newTask.rotationTarget = rotationDelta*localRotation;
         newTask.rotationStart = localRotation;
         AddTask(multitask, newTask);
 

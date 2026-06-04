@@ -17,6 +17,8 @@ public struct InputData
 
     public bool moveForward;
     public bool moveBackward;
+    public bool stepLeft;
+    public bool stepRight;
     public bool turnLeft;
     public bool turnRight;
 

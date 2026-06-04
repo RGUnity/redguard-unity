@@ -28,7 +28,7 @@ public class LoadWorld : MonoBehaviour
     void Update()
     {
         WorldLoader.LoadWorldIfRequested();
-
+/*
         if(Input.GetKeyUp("space"))
             Game.uiManager.HideLoadingScreen();
         if(Input.GetKeyDown("space"))
@@ -39,5 +39,6 @@ public class LoadWorld : MonoBehaviour
                 Game.uiManager.ShowLoadingScreen(loadScreenMat.mainTexture);
             }
         }
+*/
     }
 }
