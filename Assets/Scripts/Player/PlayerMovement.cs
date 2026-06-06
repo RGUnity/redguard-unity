@@ -317,7 +317,7 @@ public class PlayerMovement : MonoBehaviour
                 && _speed > config.shortJumpThreshold)
         {
             // Short forward jump
-            _velocity = _forwardOnSurface * config.shortJumpDistance / 10;
+//            _velocity = _forwardOnSurface * config.shortJumpDistance / 10;
             _velocity.y = config.jumpHeight / 10;
             _isGrounded = false;
         }

@@ -23,9 +23,12 @@ MonoBehaviour:
   turnSpeed: 1.8
   stepOffset: 1
   rayDistance: 1
-  jumpHeight: 5
+  jumpHeight: 1.5
+  shortJumpSpeed: 5
+  walkForwardJumpSpeed: 3
+  walkBackwardJumpSpeed: 1.5
+  runForwardJumpSpeed: 6
   longJumpDistance: 1.3
-  shortJumpDistance: 0.7
   longJumpThreshold: 3.5
   shortJumpThreshold: 0.1
   slopeSlideSpeed: 0.1

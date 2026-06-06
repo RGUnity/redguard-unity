@@ -23,8 +23,10 @@ public class PlayerMovementConfig : ScriptableObject
 
     [Header("Jumping")]
     public float jumpHeight = 1.2f;
+    public float walkForwardJumpSpeed = 3.0f;
+    public float walkBackwardJumpSpeed = 1.5f;
+    public float runForwardJumpSpeed = 6.0f;
     public float longJumpDistance = 1.3f;
-    public float shortJumpDistance = 0.7f;
     public float longJumpThreshold = 3.5f;
     public float shortJumpThreshold = 0.1f;
 

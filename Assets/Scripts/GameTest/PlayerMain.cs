@@ -5,217 +5,103 @@ using RGFileImport;
 
 public partial class PlayerMain: MonoBehaviour
 {
-    // statemachine stuff
-    public abstract class State
-    {
-        public int id;
-        public bool panic;
-        public bool s_internal;
-        public PlayerMain main;
-        public virtual void Entry() {}
-        public virtual void InternalEntry() {}
-        public virtual void Exit() {}
-        public virtual void InternalExit() {}
-
-        public State(PlayerMain m)
-        {
-            main = m;
-            panic = false;
-        }
-
-    }
-
-    public enum AnimState
-    {
-        state_init              = -1,
-        state_panic             = RGRGMAnimStore.AnimGroup.anim_panic,
-        state_walk_forward      = RGRGMAnimStore.AnimGroup.anim_walk_forward,
-        state_walk_backward     = RGRGMAnimStore.AnimGroup.anim_walk_backward,
-        state_run_forward       = RGRGMAnimStore.AnimGroup.anim_run_forward,
-        state_turn_left         = RGRGMAnimStore.AnimGroup.anim_turn_left,
-        state_turn_right        = RGRGMAnimStore.AnimGroup.anim_turn_right,
-
-        state_jump_start        = RGRGMAnimStore.AnimGroup.anim_jump_start,
-        state_jump_up           = RGRGMAnimStore.AnimGroup.anim_jump_up,
-        state_fall              = RGRGMAnimStore.AnimGroup.anim_fall,
-        state_land              = RGRGMAnimStore.AnimGroup.anim_land,
-
-        state_locked            = 1337, //  bit of a hack but better than before :)
-    }
-
-    public enum Event
-    {
-        init,
-        anim_done,
-        input_jump,
-        input_runfwd,
-        input_runfwd_released,
-        input_stepleft,
-        input_stepleft_released,
-        input_stepright,
-        input_stepright_released,
-        input_turnleft,
-        input_turnleft_released,
-        input_turnright,
-        input_turnright_released,
-        input_walkbckw,
-        input_walkbckw_released,
-        input_walkfwd,
-        input_walkfwd_released,
-        //close to wall(?),
-        player_landed,
-
-    }
-
-
-    Dictionary<ST, TD> transitions;
-    State currentState;
-    [SerializeField] int state_int;
-
-    State nextState;
-    [SerializeField] bool animShouldExit;
-
-    class ST // state transition
-    {
-        State currentState;
-        Event trigger;
-        public ST(State state, Event ev)
-        {
-            currentState = state;
-            trigger = ev;
-        }
-
-        public override int GetHashCode()
-        {
-            return 17 + 31 * currentState.id.GetHashCode() + 31 * trigger.GetHashCode();
-        }
-        public override bool Equals(object obj)
-        {
-            ST other = obj as ST;
-            return other != null && this.currentState.id == other.currentState.id && this.trigger == other.trigger;
-        }
-    }
-    class TD //transition data
-    {
-        public State state;
-        public bool internalTransition;
-        public TD(State s, bool i)
-        {
-            state = s;
-            internalTransition = i;
-        }
-    }
     public PlayerMain()
     {
         currentState = new State_init(this);
         transitions = new Dictionary<ST, TD>
         {
-            {new ST(new State_init(this),                      Event.init),                        new TD(new State_panic(this), false)},
+// keep this table up-to-date with anim_state_machine.txt in /docs so we get a nice plantuml diagram
 
-// walking forward tree
-            {new ST(new State_panic(this),                     Event.input_walkfwd),               new TD(new State_walk_forward(this), false)},
-            {new ST(new State_walk_forward(this),              Event.input_walkfwd_released),      new TD(new State_panic(this), false)},
-            {new ST(new State_walk_forward(this),              Event.input_walkbckw),              new TD(new State_walk_backward(this), false)},
-            {new ST(new State_walk_forward(this),              Event.input_runfwd),                new TD(new State_run_forward(this), false)},
+//                     from state                              event                                          to state                         internal transition?
+// init
+            {new ST(new State_init(this),                      Event.init),                        new TD(new State_panic(this),                    false)},
+
+// walking forward
+            {new ST(new State_panic(this),                     Event.input_walkfwd),               new TD(new State_walk_forward(this),             false)},
+            {new ST(new State_walk_forward(this),              Event.input_walkfwd_released),      new TD(new State_panic(this),                    false)},
+            {new ST(new State_walk_forward(this),              Event.input_walkbckw),              new TD(new State_walk_backward(this),            false)},
+            {new ST(new State_walk_forward(this),              Event.input_runfwd),                new TD(new State_run_forward(this),              false)},
 
             // walking forward turns 
-            {new ST(new State_walk_forward(this),              Event.input_turnleft),              new TD(new State_walk_forward_turn_left(this), true)},
-            {new ST(new State_walk_forward_turn_left(this),    Event.input_turnleft_released),     new TD(new State_walk_forward(this), true)},
-            {new ST(new State_walk_forward_turn_left(this),    Event.input_walkfwd_released),      new TD(new State_turn_left(this), false)},
+            {new ST(new State_walk_forward(this),              Event.input_turnleft),              new TD(new State_walk_forward_turn_left(this),   true)},
+            {new ST(new State_walk_forward_turn_left(this),    Event.input_turnleft_released),     new TD(new State_walk_forward(this),             true)},
+            {new ST(new State_walk_forward_turn_left(this),    Event.input_walkfwd_released),      new TD(new State_turn_left(this),                false)},
 
-            {new ST(new State_walk_forward(this),              Event.input_turnright),             new TD(new State_walk_forward_turn_right(this), true)},
-            {new ST(new State_walk_forward_turn_right(this),   Event.input_turnright_released),    new TD(new State_walk_forward(this), true)},
-            {new ST(new State_walk_forward_turn_right(this),   Event.input_walkfwd_released),      new TD(new State_turn_right(this), false)},
+            {new ST(new State_walk_forward(this),              Event.input_turnright),             new TD(new State_walk_forward_turn_right(this),  true)},
+            {new ST(new State_walk_forward_turn_right(this),   Event.input_turnright_released),    new TD(new State_walk_forward(this),             true)},
+            {new ST(new State_walk_forward_turn_right(this),   Event.input_walkfwd_released),      new TD(new State_turn_right(this),               false)},
 
-// walking backwards tree
-            {new ST(new State_panic(this),                     Event.input_walkbckw),              new TD(new State_walk_backward(this), false)},
-            {new ST(new State_walk_backward(this),             Event.input_walkbckw_released),     new TD(new State_panic(this), false)},
-            {new ST(new State_walk_backward(this),             Event.input_runfwd),                new TD(new State_run_forward(this), false)},
-            {new ST(new State_walk_backward(this),             Event.input_walkfwd),               new TD(new State_walk_forward(this), false)},
+// walking backwards
+            {new ST(new State_panic(this),                     Event.input_walkbckw),              new TD(new State_walk_backward(this),            false)},
+            {new ST(new State_walk_backward(this),             Event.input_walkbckw_released),     new TD(new State_panic(this),                    false)},
+            {new ST(new State_walk_backward(this),             Event.input_runfwd),                new TD(new State_run_forward(this),              false)},
+            {new ST(new State_walk_backward(this),             Event.input_walkfwd),               new TD(new State_walk_forward(this),             false)},
 
             // walking backwards turns
             {new ST(new State_walk_backward(this),              Event.input_turnleft),              new TD(new State_walk_backward_turn_left(this), true)},
-            {new ST(new State_walk_backward_turn_left(this),    Event.input_turnleft_released),     new TD(new State_walk_backward(this), true)},
-            {new ST(new State_walk_backward_turn_left(this),    Event.input_walkbckw_released),      new TD(new State_turn_left(this), false)},
+            {new ST(new State_walk_backward_turn_left(this),    Event.input_turnleft_released),     new TD(new State_walk_backward(this),           true)},
+            {new ST(new State_walk_backward_turn_left(this),    Event.input_walkbckw_released),      new TD(new State_turn_left(this),              false)},
 
-            {new ST(new State_walk_backward(this),              Event.input_turnright),             new TD(new State_walk_backward_turn_right(this), true)},
-            {new ST(new State_walk_backward_turn_right(this),   Event.input_turnright_released),    new TD(new State_walk_backward(this), true)},
-            {new ST(new State_walk_backward_turn_right(this),   Event.input_walkbckw_released),     new TD(new State_turn_right(this), false)},
+            {new ST(new State_walk_backward(this),              Event.input_turnright),             new TD(new State_walk_backward_turn_right(this),true)},
+            {new ST(new State_walk_backward_turn_right(this),   Event.input_turnright_released),    new TD(new State_walk_backward(this),           true)},
+            {new ST(new State_walk_backward_turn_right(this),   Event.input_walkbckw_released),     new TD(new State_turn_right(this),              false)},
 
 
-// running forward tree tree
-            {new ST(new State_panic(this),                     Event.input_runfwd),                 new TD(new State_run_forward(this), false)},
-            {new ST(new State_run_forward(this),               Event.input_runfwd_released),        new TD(new State_panic(this), false)},
-            {new ST(new State_run_forward(this),               Event.input_walkfwd),                new TD(new State_walk_forward(this), false)},
-            {new ST(new State_run_forward(this),               Event.input_walkbckw),               new TD(new State_walk_backward(this), false)},
+// running forward
+            {new ST(new State_panic(this),                     Event.input_runfwd),                 new TD(new State_run_forward(this),             false)},
+            {new ST(new State_run_forward(this),               Event.input_runfwd_released),        new TD(new State_panic(this),                   false)},
+            {new ST(new State_run_forward(this),               Event.input_walkfwd),                new TD(new State_walk_forward(this),            false)},
+            {new ST(new State_run_forward(this),               Event.input_walkbckw),               new TD(new State_walk_backward(this),           false)},
 
             // running forward turns
-            {new ST(new State_run_forward(this),              Event.input_turnleft),                new TD(new State_run_forward_turn_left(this), true)},
-            {new ST(new State_run_forward_turn_left(this),    Event.input_turnleft_released),       new TD(new State_run_forward(this), true)},
-            {new ST(new State_run_forward_turn_left(this),    Event.input_runfwd_released),         new TD(new State_turn_left(this), false)},
+            {new ST(new State_run_forward(this),              Event.input_turnleft),                new TD(new State_run_forward_turn_left(this),   true)},
+            {new ST(new State_run_forward_turn_left(this),    Event.input_turnleft_released),       new TD(new State_run_forward(this),             true)},
+            {new ST(new State_run_forward_turn_left(this),    Event.input_runfwd_released),         new TD(new State_turn_left(this),               false)},
 
-            {new ST(new State_run_forward(this),              Event.input_turnright),               new TD(new State_run_forward_turn_right(this), true)},
-            {new ST(new State_run_forward_turn_right(this),   Event.input_turnright_released),      new TD(new State_run_forward(this), true)},
-            {new ST(new State_run_forward_turn_right(this),   Event.input_runfwd_released),         new TD(new State_turn_right(this), false)},
+            {new ST(new State_run_forward(this),              Event.input_turnright),               new TD(new State_run_forward_turn_right(this),  true)},
+            {new ST(new State_run_forward_turn_right(this),   Event.input_turnright_released),      new TD(new State_run_forward(this),             true)},
+            {new ST(new State_run_forward_turn_right(this),   Event.input_runfwd_released),         new TD(new State_turn_right(this),              false)},
 
 
-            // turns
-            {new ST(new State_panic(this),                     Event.input_turnleft),              new TD(new State_turn_left(this), false)},
-            {new ST(new State_turn_left(this),                 Event.input_turnleft_released),     new TD(new State_panic(this), false)},
-            {new ST(new State_turn_left(this),                 Event.input_walkfwd),               new TD(new State_walk_forward_turn_left(this), false)},
-            {new ST(new State_turn_left(this),                 Event.input_walkbckw),              new TD(new State_walk_backward_turn_left(this), false)},
-            {new ST(new State_turn_left(this),                 Event.input_runfwd),                new TD(new State_run_forward_turn_left(this), false)},
+// turns
+            {new ST(new State_panic(this),                     Event.input_turnleft),              new TD(new State_turn_left(this),                false)},
+            {new ST(new State_turn_left(this),                 Event.input_turnleft_released),     new TD(new State_panic(this),                    false)},
+            {new ST(new State_turn_left(this),                 Event.input_walkfwd),               new TD(new State_walk_forward_turn_left(this),   false)},
+            {new ST(new State_turn_left(this),                 Event.input_walkbckw),              new TD(new State_walk_backward_turn_left(this),  false)},
+            {new ST(new State_turn_left(this),                 Event.input_runfwd),                new TD(new State_run_forward_turn_left(this),    false)},
 
-            {new ST(new State_panic(this),                     Event.input_turnright),             new TD(new State_turn_right(this), false)},
-            {new ST(new State_turn_right(this),                Event.input_turnright_released),    new TD(new State_panic(this), false)},
-            {new ST(new State_turn_right(this),                Event.input_walkfwd),               new TD(new State_walk_forward_turn_right(this), false)},
+            {new ST(new State_panic(this),                     Event.input_turnright),             new TD(new State_turn_right(this),               false)},
+            {new ST(new State_turn_right(this),                Event.input_turnright_released),    new TD(new State_panic(this),                    false)},
+            {new ST(new State_turn_right(this),                Event.input_walkfwd),               new TD(new State_walk_forward_turn_right(this),  false)},
             {new ST(new State_turn_right(this),                Event.input_walkbckw),              new TD(new State_walk_backward_turn_right(this), false)},
-            {new ST(new State_turn_right(this),                Event.input_runfwd),                new TD(new State_run_forward_turn_right(this), false)},
+            {new ST(new State_turn_right(this),                Event.input_runfwd),                new TD(new State_run_forward_turn_right(this),   false)},
 
+// jumps
+            // standing jump
+            {new ST(new State_panic(this),                     Event.input_jump),                  new TD(new State_jump_start(this),               false)},
+            {new ST(new State_jump_start(this),                Event.anim_done),                   new TD(new State_jump_up(this),                  false)},
+            {new ST(new State_jump_up(this),                   Event.anim_done),                   new TD(new State_fall(this),                     false)},
+            {new ST(new State_fall(this),                      Event.player_landed),               new TD(new State_land(this),                     false)},
+            {new ST(new State_land(this),                      Event.anim_done),                   new TD(new State_panic(this),                    false)},
 
+            // forward jump TODO: find right animations
+            {new ST(new State_walk_forward(this),              Event.input_jump),                  new TD(new State_jump_forward(this),             true)},
+            {new ST(new State_jump_forward(this),              Event.anim_done),                   new TD(new State_walk_forward_fall(this),        false)},
+            {new ST(new State_walk_forward_fall(this),         Event.player_landed),               new TD(new State_walk_forward(this),             false)},
+
+            // backward jump
+            {new ST(new State_walk_backward(this),             Event.input_jump),                  new TD(new State_jump_backward(this),            true)},
+            {new ST(new State_jump_backward(this),             Event.anim_done),                   new TD(new State_fall_backward(this),            false)},
+            {new ST(new State_fall_backward(this),             Event.player_landed),               new TD(new State_land_backward(this),            false)},
+            {new ST(new State_land_backward(this),             Event.anim_done),                   new TD(new State_walk_backward(this),            false)},
+
+            // run jump TODO: find right animations
+            {new ST(new State_run_forward(this),               Event.input_jump),                  new TD(new State_jump_run_arms(this),            true)},
+            {new ST(new State_jump_run_arms(this),             Event.anim_done),                   new TD(new State_run_fall_up_arms(this),         false)},
+            {new ST(new State_run_fall_up_arms(this),          Event.player_landed),               new TD(new State_run_forward(this),              false)},
         };
     }
-    bool GetNext(Event ev, out TD next)
-    {
-        ST transition = new ST(currentState, ev);
-        if(!transitions.TryGetValue(transition, out next))
-            return false;
-        return true;
-    }
 
-    public void MoveNext(Event ev)
-    {
-        TD next;
-        bool transitioned = GetNext(ev, out next);
-        if(transitioned)
-        {
-            nextState = next.state;
-            if(next.internalTransition== true)
-            {
-                currentState.InternalExit();
-                nextState.InternalEntry();
-
-                currentState = nextState;
-                state_int = currentState.id;
-            }
-            else if(currentState.panic == true)
-                animDoExitFcn();
-            else
-                animShouldExit = true;
-        }
-    }
-    bool animShouldExitFcn()
-    {
-        return animShouldExit;
-    }
-    void animDoExitFcn()
-    {
-        currentState.Exit();
-        nextState.Entry();
-        currentState = nextState;
-        animShouldExit = false;
-        state_int = currentState.id;
-    }
     public void setLocked(bool l)
     {
     }
@@ -227,6 +113,9 @@ public partial class PlayerMain: MonoBehaviour
     [SerializeField] private CharacterController cc;
     [SerializeField] private PlayerMovementConfig config;
 
+    private bool _isGrounded;
+    public RGScriptedObject _currentScriptedGround = default;
+
     private Vector3 _velocity;
     [SerializeField] private float _yRotation;
 
@@ -237,6 +126,40 @@ public partial class PlayerMain: MonoBehaviour
         cc.transform.SetPositionAndRotation(pos, rot);
         cc.enabled = true;
     }   
+
+    private bool IsGrounded()
+    {
+        float castRadius = 0.34f;
+        float castDistance = cc.height / 2 - (castRadius - 0.14f);
+
+        if (Physics.SphereCast(transform.position, castRadius, Vector3.down, out RaycastHit sphereHit, castDistance, config.groundLayers))
+        {
+
+            if (sphereHit.transform.TryGetComponent(out RGScriptedObject platform))
+            {
+                _currentScriptedGround = platform;
+                _currentScriptedGround.playerStanding = true;
+//                this.transform.SetParent(_currentScriptedGround.transform);
+            }
+            else
+            {
+                if(_currentScriptedGround != null)
+                    _currentScriptedGround.playerStanding = false;
+//                this.transform.SetParent(null);
+                _currentScriptedGround = null;
+            }
+            return true;
+        }
+        else
+        {
+            if(_currentScriptedGround != null)
+                _currentScriptedGround.playerStanding = false;
+//            this.transform.SetParent(null);
+            _currentScriptedGround = null;
+            return false;
+        }
+    }
+
     
     public void FixedUpdate()
     {
@@ -281,6 +204,14 @@ public partial class PlayerMain: MonoBehaviour
         else
             MoveNext(Event.input_turnright_released);
  
+        if(animShouldExit) // this should be set to true in state entry if this is a valid event
+            MoveNext(Event.anim_done);
+
+        if(IsGrounded())
+        {
+            Debug.Log("GROUNDED");
+            MoveNext(Event.player_landed);
+        }
 
         float rot = _yRotation * config.turnSpeed * Time.deltaTime * 60;
         transform.Rotate(0, _yRotation, 0);
@@ -289,71 +220,4 @@ public partial class PlayerMain: MonoBehaviour
         Vector3 localvel = transform.TransformDirection(_velocity);
         cc.Move(localvel);
     }
-
-
-
-
-    public class State_init: State
-    {
-        public State_init(PlayerMain m):base(m)
-        {
-            id = -1;
-            panic = true;
-        }
-        public override void Exit()
-        {
-            main.player = RGObjectStore.GetPlayer();
-            if (main.player != null && main.player.animations != null)
-            {
-                main.player.animations.shouldExitFcn = main.animShouldExitFcn;
-                main.player.animations.doExitFcn = main.animDoExitFcn;
-            }
-            main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_land, 0);
-        }
-    }
-    public class State_panic: State
-    {
-        public State_panic(PlayerMain m):base(m)
-        {
-            id = (int)RGRGMAnimStore.AnimGroup.anim_panic;
-            panic = true;
-        }
-        public override void Entry()
-        {
-            main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_panic, 0);
-            main._velocity = Vector3.zero;
-            main._yRotation = 0.0f;
-        }
-    }
-    public class State_turn_left: State
-    {
-        public State_turn_left(PlayerMain m):base(m)
-        {
-            id = (int)RGRGMAnimStore.AnimGroup.anim_turn_left;
-        }
-        public override void Entry()
-        {
-            main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_turn_left, 0);
-            main._yRotation = -1.0f;
-        }
-    }
-    public class State_turn_right: State
-    {
-        public State_turn_right(PlayerMain m):base(m)
-        {
-            id = (int)RGRGMAnimStore.AnimGroup.anim_turn_right;
-        }
-        public override void Entry()
-        {
-            main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_turn_right, 0);
-            main._yRotation = 1.0f;
-        }
-    }
-
-
-
-
-
-
-
 }

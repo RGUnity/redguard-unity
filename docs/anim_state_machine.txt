@@ -2,6 +2,7 @@
 !pragma layout elk
 skinparam linetype polyline
 'skinparam linetype ortho
+'left to right direction
 skinparam dpi 50
 
 state locked: always reachable
@@ -162,96 +163,113 @@ state swim_backward_turn_right
 
 
 state jumpchoice1 <<choice>>
-state jumpchoice2 <<choice>>
+''state jumpchoice2 <<choice>>
 
 state landchoice1 <<choice>>
 
-init-->panic: [firstframe]
+' these have been implemented in RGU
+' init
+init-->panic: [init]
+
+' walking forward tree
+    panic-->walk_forward: [btn walkfwd]
+    walk_forward-->panic: [btn walkfwd released]
+    walk_forward-->walkbckw: [btn walkfwd]
+    walk_forward-->run_forward: [btn runfwd]
+
+    ' walking forward turns
+    walk_forward-->walk_forward_turn_left: [btn turnleft]
+    walk_forward_turn_left-->walk_forward: [btn turnleft released]
+    walk_forward_turn_left-->turn_left: [btn walkfwd released]
+
+    walk_forward-->walk_forward_turn_right: [btn turnright]
+    walk_forward_turn_right-->walk_forward: [btn turnright released]
+    walk_forward_turn_right-->turn_right: [btn walkfwd released]
+
+' walking backwards tree
+    panic-->walk_backward: [btn walkbckw]
+    walk_backward-->panic: [btn walkbckw released]
+    walk_backward-->walk_forward: [btn walkfwd]
+    walk_backward-->run_forward: [btn runfwd]
+
+    ' walking backward turns
+    walk_backward-->walk_backward_turn_left: [btn turnleft]
+    walk_backward_turn_left-->walk_backward: [btn turnleft released]
+    walk_backward_turn_left-->turn_left: [btn walkbckw released]
+
+    walk_backward-->walk_backward_turn_right: [btn turnright]
+    walk_backward_turn_right-->walk_backward: [btn turnright released]
+    walk_backward_turn_right-->turn_right: [btn walkbckw released]
+
+' run forward tree
+    panic-->run_forward: [btn runfwd]
+    run_forward-->panic: [btn runfwd released]
+    run_forward-->walk_forward: [btn walkfwd]
+    run_forward-->walk_backward: [btn walkbckw]
+
+    ' running turns
+
+    run_forward_turn_left-->turn_left: [btn runfwd released]
+
+    run_forward-->run_forward_turn_right: [btn turnright]
+    run_forward_turn_right-->run_forward: [btn turnright released]
+    run_forward_turn_right-->turn_right: [btn runfwd released]
+
+' turns tree
+    panic-->turn_left: [btn turnleft]
+    turn_left-->panic: [btn turnleft released]
+    turn_left-->walk_forward_turn_left: [btn walkfwd]
+    turn_left-->walk_backward_turn_left: [btn walkfwd]
+    turn_left-->run_forward_turn_left: [btn runfwd]
+
+    ' turn right
+    panic-->turn_right: [btn turnright]
+    turn_right-->panic: [btn turnright released]
+    turn_right-->walk_forward_turn_right: [btn walkfwd]
+    turn_right-->walk_backward_turn_right: [btn walkfwd]
+    turn_right-->run_forward_turn_right: [btn runfwd]
+
+
+
+' REST
+' jumps
+    ' standing jump
+    panic-->jump_start: [btn jump]
+    jump_start-->jump_up: [anim done]
+    jump_up-->fall: [anim done]
+    fall-->land: [landed]
+    land-->panic: [anim done]
+
+    ' forward jump
+    walk_forward-->jump_forward: [btn jump]
+    jump_forward-->walk_forward_fall: [anim done]
+    walk_forward_fall-->walk_forward: [landed]
+
+    ' backwards jump 
+    walk_backward-->jump_backward: [btn jump]
+    jump_backward-->fall_backward: [anim done]
+    fall_backward-->land_backward: [landed]
+    land_backward-->walk_backward: [anim done]
+
+
+    ' run jump
+    run_forward-->jump_run_arms: [btn jump]
+    jump_run_arms-->run_fall_up_arms: [anim done]
+    run_fall_up_arms-->run_forward: [landed]
+
+
+' TODO: THESE ONE
+'jumpchoice2-->jump_forward_arms: [close to wall(?)]
+'jump_forward_arms-->walk_forward_fall_up_arms: [anim done]
+'walk_forward_fall_up_arms-->walk_forward: [landed]
+
+'jumpchoice1-->jump_up_arms: [close to wall (?)]
+'jump_up_arms-->fall_up_arms: [anim done]
+'fall_up_arms-->land: [landed]
 
 ' idle stuff
 panic->idle_hurt: [player damage]
 idle_hurt-->panic: [anim done]
-
-' walking forward tree
-panic-->walk_forward: [btn walkfwd]
-walk_forward-->panic: [btn walkfwd released]
-
-' walking forward turns
-walk_forward-->walk_forward_turn_left: [btn turnleft]
-walk_forward_turn_left-->walk_forward: [btn turnleft released]
-walk_forward_turn_left-->turn_left: [btn walkfwd released]
-
-walk_forward-->walk_forward_turn_right: [btn turnright]
-walk_forward_turn_right-->walk_forward: [btn turnright released]
-walk_forward_turn_right-->turn_right: [btn walkfwd released]
-
-' forward jump
-walk_forward-->jumpchoice2: [btn jump]
-jumpchoice2-->jump_forward: [default]
-jumpchoice2-->jump_forward_arms: [close to wall(?)]
-jump_forward-->walk_forward_fall: [anim done]
-walk_forward_fall-->walk_forward: [landed]
-jump_forward_arms-->walk_forward_fall_up_arms: [anim done]
-walk_forward_fall_up_arms-->walk_forward: [landed]
-
-' walking backwards tree
-panic-->walk_backward: [btn walkbckw]
-walk_backward-->panic: [btn walkbckw released]
-
-' walking backward turns
-walk_backward-->walk_backward_turn_left: [btn turnleft]
-walk_backward_turn_left-->walk_backward: [btn turnleft released]
-walk_backward_turn_left-->turn_left: [btn walkbckw released]
-
-walk_backward-->walk_backward_turn_right: [btn turnright]
-walk_backward_turn_right-->walk_backward: [btn turnright released]
-walk_backward_turn_right-->turn_right: [btn walkbckw released]
-
-' backwards jump 
-walk_backward-->jump_backward: [btn jump]
-jump_backward-->fall_backward: [anim done]
-fall_backward-->land_backward: [landed]
-land_backward-->walk_backward: [anim done]
-
-' run tree
-panic-->run_forward: [btn runfwd]
-run_forward-->panic: [btn runfwd released]
-
-' walk to run
-walk_forward-->run_forward: [btn movemod]
-run_forward-->walk_forward: [btn movemod released]
-
-' running turns
-run_forward-->run_forward_turn_left: [btn turnleft]
-run_forward_turn_left-->run_forward: [btn turnleft released]
-run_forward_turn_left-->turn_left: [btn runfwd released]
-run_forward_turn_left-->walk_forward_turn_left: [btn movemod released]
-
-run_forward-->run_forward_turn_right: [btn turnright]
-run_forward_turn_right-->run_forward: [btn turnright released]
-run_forward_turn_right-->turn_right: [btn runfwd released]
-run_forward_turn_right-->walk_forward_turn_right: [btn movemod released]
-
-
-' run jump
-run_forward-->jump_run_arms: [btn jump]
-jump_run_arms-->run_fall_up_arms: [anim done]
-run_fall_up_arms-->run_forward: [landed]
-
-' turn left
-panic-->turn_left: [btn turnleft]
-turn_left-->panic: [btn turnleft released]
-turn_left-->walk_forward_turn_left: [btn walkfwd]
-turn_left-->run_forward_turn_left: [btn runfwd]
-turn_left-->walk_backward_turn_left: [btn walkfwd]
-
-' turn right
-panic-->turn_right: [btn turnright]
-turn_right-->panic: [btn turnright released]
-turn_right-->walk_forward_turn_right: [btn walkfwd]
-turn_right-->run_forward_turn_right: [btn runfwd]
-turn_right-->walk_backward_turn_right: [btn walkfwd]
-
 
 panic-->step_left: [btn stepleft]
 step_left-->panic: [btn stepleft released]
@@ -268,18 +286,6 @@ jump_right_start-->jump_right: [anim done]
 jump_right-->fall_right: [anim done]
 fall_right-->land_right: [landed]
 land_right-->step_right: [anim done]
-
-panic-->jump_start: [btn jump]
-jump_start-->jumpchoice1: [anim done]
-jumpchoice1-->jump_up: [default]
-jump_up-->fall: [anim done]
-fall-->land: [landed]
-
-jumpchoice1-->jump_up_arms: [close to wall (?)]
-jump_up_arms-->fall_up_arms: [anim done]
-fall_up_arms-->land: [landed]
-
-land-->panic: [anim done]
 
 
 ' ledges
