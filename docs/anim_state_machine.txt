@@ -1,3 +1,5 @@
+' NOTE: this file is outdated, its just here for reference
+' see anim_state_machine_confirmed.txt for the confirmed state machine
 @startuml
 !pragma layout elk
 skinparam linetype polyline

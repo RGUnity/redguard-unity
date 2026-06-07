@@ -147,7 +147,6 @@ public partial class PlayerMain: MonoBehaviour
                 main.player.animations.shouldExitFcn = main.animShouldExitFcn;
                 main.player.animations.doExitFcn = main.animDoExitFcn;
             }
-            main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_land, 0);
         }
     }
     public class State_panic: State

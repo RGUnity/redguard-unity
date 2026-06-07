@@ -84,21 +84,17 @@ public partial class PlayerMain: MonoBehaviour
             {new ST(new State_fall(this),                      Event.player_landed),               new TD(new State_land(this),                     false)},
             {new ST(new State_land(this),                      Event.anim_done),                   new TD(new State_panic(this),                    false)},
 
-            // forward jump TODO: find right animations
-            {new ST(new State_walk_forward(this),              Event.input_jump),                  new TD(new State_jump_forward(this),             true)},
-            {new ST(new State_jump_forward(this),              Event.anim_done),                   new TD(new State_walk_forward_fall(this),        false)},
-            {new ST(new State_walk_forward_fall(this),         Event.player_landed),               new TD(new State_walk_forward(this),             false)},
+            // forward jump
+            {new ST(new State_walk_forward(this),              Event.input_jump),                  new TD(new State_jump_start_forward(this),       false)},
+            {new ST(new State_jump_start_forward(this),        Event.anim_done),                   new TD(new State_jump_forward(this),             false)},
+            {new ST(new State_jump_forward(this),              Event.anim_done),                   new TD(new State_fall(this),                     false)},
 
             // backward jump
-            {new ST(new State_walk_backward(this),             Event.input_jump),                  new TD(new State_jump_backward(this),            true)},
+            {new ST(new State_walk_backward(this),             Event.input_jump),                  new TD(new State_jump_start_backward(this),      false)},
+            {new ST(new State_jump_start_backward(this),       Event.anim_done),                   new TD(new State_jump_backward(this),            false)},
             {new ST(new State_jump_backward(this),             Event.anim_done),                   new TD(new State_fall_backward(this),            false)},
             {new ST(new State_fall_backward(this),             Event.player_landed),               new TD(new State_land_backward(this),            false)},
-            {new ST(new State_land_backward(this),             Event.anim_done),                   new TD(new State_walk_backward(this),            false)},
-
-            // run jump TODO: find right animations
-            {new ST(new State_run_forward(this),               Event.input_jump),                  new TD(new State_jump_run_arms(this),            true)},
-            {new ST(new State_jump_run_arms(this),             Event.anim_done),                   new TD(new State_run_fall_up_arms(this),         false)},
-            {new ST(new State_run_fall_up_arms(this),          Event.player_landed),               new TD(new State_run_forward(this),              false)},
+            {new ST(new State_land_backward(this),             Event.anim_done),                  new TD(new State_panic(this),                     false)},
         };
     }
 

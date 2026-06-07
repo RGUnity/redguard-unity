@@ -1,0 +1,122 @@
+' these are confirmed in-game
+@startuml
+'!pragma layout elk
+skinparam linetype polyline
+'skinparam linetype ortho
+top to bottom direction
+'skinparam dpi 50
+
+' init is only for setup, it transitions to panic on first frame
+state init
+
+state panic
+
+state walk_forward
+state walk_forward_turn_left: walk_forward
+state walk_forward_turn_right: walk_forward
+
+state walk_backward
+state walk_backward_turn_left: walk_forward
+state walk_backward_turn_right: walk_forward
+
+state run_forward
+state run_forward_turn_left: run_forward
+state run_forward_turn_right: run_forward
+
+state turn_left
+state turn_right
+
+state jump_start
+state jump_up
+state fall
+state land
+
+state jump_start_forward: jump_start
+state jump_forward
+
+state jump_start_backward: jump_start
+state jump_backward
+state fall_backward: fall
+
+' init
+    init-->panic: [init]
+
+' walking forward
+    panic-->walk_forward: [input_walkfwd]
+    walk_forward-->panic: [input_walkfwd_released]
+
+    ' walking forward turns
+    walk_forward-->walk_forward_turn_left: [input_turnleft]
+    walk_forward_turn_left-->walk_forward: [input_turnleft_released]
+    walk_forward_turn_left-->turn_left: [input_walkfwd_released]
+
+    walk_forward-->walk_forward_turn_right: [input_turnright]
+    walk_forward_turn_right-->walk_forward: [input_turnright_released]
+    walk_forward_turn_right-->turn_right: [input_walkfwd_released]
+
+' walking backward
+    panic-->walk_backward: [input_walkfwd]
+    walk_backward-->panic: [input_walkbckw_released]
+
+    ' walking backward turns
+    walk_backward-->walk_backward_turn_left: [input_turnleft]
+    walk_backward_turn_left-->walk_backward: [input_turnleft_released]
+    walk_backward_turn_left-->turn_left: [input_walkbckw_released]
+
+    walk_backward-->walk_backward_turn_right: [input_turnright]
+    walk_backward_turn_right-->walk_backward: [input_turnright_released]
+    walk_backward_turn_right-->turn_right: [input_walkbckwd_release]
+
+' runing forward
+    panic-->run_forward: [input_runfwd]
+    run_forward-->panic: [input_runfwd_released]
+
+    ' runing forward turns
+    run_forward-->run_forward_turn_left: [input_turnleft]
+    run_forward_turn_left-->run_forward: [input_turnleft_released]
+    run_forward_turn_left-->turn_left: [input_runfwd_released]
+
+    run_forward-->run_forward_turn_right: [input_turnright]
+    run_forward_turn_right-->run_forward: [input_turnright_released]
+    run_forward_turn_right-->turn_right: [input_runfwd_released]
+
+' turns
+    panic-->turn_left: [input_turnleft]
+    turn_left-->panic: [input_turnleft_released]
+    turn_left-->walk_forward_turn_left: [input_walkfwd]
+    turn_left-->walk_backward_turn_left: [input_walkbckw]
+    turn_left-->run_forward_turn_left: [input_runfwd]
+
+    panic-->turn_right: [input_turnright]
+    turn_right-->panic: [input_turnright_released]
+    turn_right-->walk_forward_turn_right: [input_walkfwd]
+    turn_right-->walk_backward_turn_right: [input_walkbckw]
+    turn_right-->run_forward_turn_right: [input_runfwd]
+
+' jumps
+    ' standing jump 
+    ' TODO: do we need jump_start or can we go straight to jump_up
+    panic-->jump_start: [input_jump]
+    jump_start-->jump_up: [anim_done]
+    jump_up-->fall: [anim_done]
+    fall-->land: [player_landed]
+
+    land-->panic: [anim_done]
+
+    ' forward jump
+    ' TODO: do we need jump_start or can we go straight to jump_up
+    walk_forward-->jump_start_forward: [input_jump] 
+    jump_start_forward-->jump_forward: [anim_done]
+    jump_forward-->fall: [anim_done]
+
+    ' backward jump
+    ' TODO: do we need jump_start or can we go straight to jump_up
+    walk_backward-->jump_start_backward: [input_jump] 
+    jump_start_backward-->jump_backward: [anim_done]
+    jump_backward-->fall_backward: [anim_done]
+    fall_backward-->land: [player_landed]
+
+
+
+
+@enduml

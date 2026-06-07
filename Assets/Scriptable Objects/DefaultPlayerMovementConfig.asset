@@ -24,10 +24,9 @@ MonoBehaviour:
   stepOffset: 1
   rayDistance: 1
   jumpHeight: 1.5
-  shortJumpSpeed: 5
   walkForwardJumpSpeed: 3
   walkBackwardJumpSpeed: 1.5
-  runForwardJumpSpeed: 6
+  runForwardJumpSpeed: 20
   longJumpDistance: 1.3
   longJumpThreshold: 3.5
   shortJumpThreshold: 0.1
