@@ -19,7 +19,6 @@ public partial class PlayerMain: MonoBehaviour
 // walking forward
             {new ST(new State_panic(this),                     Event.input_walkfwd),               new TD(new State_walk_forward(this),             false)},
             {new ST(new State_walk_forward(this),              Event.input_walkfwd_released),      new TD(new State_panic(this),                    false)},
-            {new ST(new State_walk_forward(this),              Event.input_walkbckw),              new TD(new State_walk_backward(this),            false)},
             {new ST(new State_walk_forward(this),              Event.input_runfwd),                new TD(new State_run_forward(this),              false)},
 
             // walking forward turns 
@@ -34,8 +33,6 @@ public partial class PlayerMain: MonoBehaviour
 // walking backwards
             {new ST(new State_panic(this),                     Event.input_walkbckw),              new TD(new State_walk_backward(this),            false)},
             {new ST(new State_walk_backward(this),             Event.input_walkbckw_released),     new TD(new State_panic(this),                    false)},
-            {new ST(new State_walk_backward(this),             Event.input_runfwd),                new TD(new State_run_forward(this),              false)},
-            {new ST(new State_walk_backward(this),             Event.input_walkfwd),               new TD(new State_walk_forward(this),             false)},
 
             // walking backwards turns
             {new ST(new State_walk_backward(this),              Event.input_turnleft),              new TD(new State_walk_backward_turn_left(this), true)},
@@ -51,7 +48,6 @@ public partial class PlayerMain: MonoBehaviour
             {new ST(new State_panic(this),                     Event.input_runfwd),                 new TD(new State_run_forward(this),             false)},
             {new ST(new State_run_forward(this),               Event.input_runfwd_released),        new TD(new State_panic(this),                   false)},
             {new ST(new State_run_forward(this),               Event.input_walkfwd),                new TD(new State_walk_forward(this),            false)},
-            {new ST(new State_run_forward(this),               Event.input_walkbckw),               new TD(new State_walk_backward(this),           false)},
 
             // running forward turns
             {new ST(new State_run_forward(this),              Event.input_turnleft),                new TD(new State_run_forward_turn_left(this),   true)},

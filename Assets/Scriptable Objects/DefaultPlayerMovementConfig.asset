@@ -19,6 +19,7 @@ MonoBehaviour:
   groundMagnet: -0.1
   runSpeed: 5
   walkSpeed: 2
+  walkBackSpeed: 1
   velocitySmoothing: 100
   turnSpeed: 1.8
   stepOffset: 1

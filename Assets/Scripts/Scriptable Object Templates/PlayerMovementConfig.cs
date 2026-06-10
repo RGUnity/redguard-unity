@@ -14,6 +14,7 @@ public class PlayerMovementConfig : ScriptableObject
     [Header("Basic Movement")]
     public float runSpeed = 5f;
     public float walkSpeed = 2;
+    public float walkBackSpeed = 1;
     public float velocitySmoothing = 100;
     public float turnSpeed = 1.8f;
 

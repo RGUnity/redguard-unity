@@ -34,6 +34,11 @@ public partial class PlayerMain: MonoBehaviour
         {
             main._yRotation = 0.0f;
         }
+        public override void Exit()
+        {
+            main._yRotation = 0.0f;
+        }
+
     }
     public class State_walk_forward_turn_right: State_walk_forward
     {
@@ -46,6 +51,10 @@ public partial class PlayerMain: MonoBehaviour
             main._yRotation = 1.0f;
         }
         public override void InternalExit()
+        {
+            main._yRotation = 0.0f;
+        }
+        public override void Exit()
         {
             main._yRotation = 0.0f;
         }
@@ -82,6 +91,10 @@ public partial class PlayerMain: MonoBehaviour
         {
             main._yRotation = 0.0f;
         }
+        public override void Exit()
+        {
+            main._yRotation = 0.0f;
+        }
     }
     public class State_run_forward_turn_right: State_run_forward
     {
@@ -97,6 +110,10 @@ public partial class PlayerMain: MonoBehaviour
         {
             main._yRotation = 0.0f;
         }
+        public override void Exit()
+        {
+            main._yRotation = 0.0f;
+        }
     }
 
 // walk backward
@@ -109,7 +126,7 @@ public partial class PlayerMain: MonoBehaviour
         public override void Entry()
         {
             main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_walk_backward, 0);
-            main._velocity = Vector3.forward* (-1.0f * main.config.walkSpeed / 60);
+            main._velocity = Vector3.forward* (-1.0f * main.config.walkBackSpeed / 60);
         }
         public override void Exit()
         {
@@ -130,6 +147,10 @@ public partial class PlayerMain: MonoBehaviour
         {
             main._yRotation = 0.0f;
         }
+        public override void Exit()
+        {
+            main._yRotation = 0.0f;
+        }
     }
     public class State_walk_backward_turn_right: State_walk_backward
     {
@@ -142,6 +163,10 @@ public partial class PlayerMain: MonoBehaviour
             main._yRotation = 1.0f;
         }
         public override void InternalExit()
+        {
+            main._yRotation = 0.0f;
+        }
+        public override void Exit()
         {
             main._yRotation = 0.0f;
         }

@@ -25,6 +25,7 @@ state run_forward_turn_right: run_forward
 
 state turn_left
 state turn_right
+state turn_end
 
 state jump_start
 state jump_up
@@ -44,6 +45,7 @@ state fall_backward: fall
 ' walking forward
     panic-->walk_forward: [input_walkfwd]
     walk_forward-->panic: [input_walkfwd_released]
+    walk_forward-->run_forward: [input_runfwd]
 
     ' walking forward turns
     walk_forward-->walk_forward_turn_left: [input_turnleft]
@@ -70,6 +72,7 @@ state fall_backward: fall
 ' runing forward
     panic-->run_forward: [input_runfwd]
     run_forward-->panic: [input_runfwd_released]
+    run_forward-->walk_forward: [input_walkfwd]
 
     ' runing forward turns
     run_forward-->run_forward_turn_left: [input_turnleft]
@@ -82,12 +85,15 @@ state fall_backward: fall
 
 ' turns
     panic-->turn_left: [input_turnleft]
-    turn_left-->panic: [input_turnleft_released]
+    turn_left-->turn_end: [input_turnleft_released]
+
     turn_left-->walk_forward_turn_left: [input_walkfwd]
     turn_left-->walk_backward_turn_left: [input_walkbckw]
     turn_left-->run_forward_turn_left: [input_runfwd]
 
     panic-->turn_right: [input_turnright]
+    turn_right-->turn_end: [input_turnleft_released]
+
     turn_right-->panic: [input_turnright_released]
     turn_right-->walk_forward_turn_right: [input_walkfwd]
     turn_right-->walk_backward_turn_right: [input_walkbckw]
@@ -97,6 +103,9 @@ state fall_backward: fall
     ' standing jump 
     ' TODO: do we need jump_start or can we go straight to jump_up
     panic-->jump_start: [input_jump]
+    turn_left-->jump_start: [input_jump]
+    turn_right-->jump_start: [input_jump]
+
     jump_start-->jump_up: [anim_done]
     jump_up-->fall: [anim_done]
     fall-->land: [player_landed]
@@ -106,12 +115,18 @@ state fall_backward: fall
     ' forward jump
     ' TODO: do we need jump_start or can we go straight to jump_up
     walk_forward-->jump_start_forward: [input_jump] 
+    walk_forward_turn_left-->jump_start_forward: [input_jump] 
+    walk_forward_turn_right-->jump_start_forward: [input_jump] 
+
     jump_start_forward-->jump_forward: [anim_done]
     jump_forward-->fall: [anim_done]
 
     ' backward jump
     ' TODO: do we need jump_start or can we go straight to jump_up
     walk_backward-->jump_start_backward: [input_jump] 
+    walk_backward_turn_left-->jump_start_backward: [input_jump] 
+    walk_backward_turn_right-->jump_start_backward: [input_jump] 
+
     jump_start_backward-->jump_backward: [anim_done]
     jump_backward-->fall_backward: [anim_done]
     fall_backward-->land: [player_landed]
