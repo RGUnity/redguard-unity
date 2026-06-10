@@ -153,6 +153,7 @@ public partial class PlayerMain: MonoBehaviour
         public State_turn_left(PlayerMain m):base(m)
         {
             id = (int)RGRGMAnimStore.AnimGroup.anim_turn_left;
+            panic = true;
         }
         public override void Entry()
         {
@@ -165,6 +166,7 @@ public partial class PlayerMain: MonoBehaviour
         public State_turn_right(PlayerMain m):base(m)
         {
             id = (int)RGRGMAnimStore.AnimGroup.anim_turn_right;
+            panic = true;
         }
         public override void Entry()
         {
@@ -172,5 +174,20 @@ public partial class PlayerMain: MonoBehaviour
             main._yRotation = 1.0f;
         }
     }
+
+    // special end so we can stop rotating mid-turn
+    public class State_turn_end: State
+    {
+        public State_turn_end(PlayerMain m):base(m)
+        {
+            id = (int)RGRGMAnimStore.AnimGroup.anim_turn_left+1000;
+        }
+        public override void Entry()
+        {
+            main.animShouldExit = true;
+            main._yRotation = 0.0f;
+        }
+    }
+
 
 }

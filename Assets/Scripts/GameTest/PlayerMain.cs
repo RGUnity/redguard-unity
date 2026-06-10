@@ -65,20 +65,26 @@ public partial class PlayerMain: MonoBehaviour
 
 // turns
             {new ST(new State_panic(this),                     Event.input_turnleft),              new TD(new State_turn_left(this),                false)},
-            {new ST(new State_turn_left(this),                 Event.input_turnleft_released),     new TD(new State_panic(this),                    false)},
+            {new ST(new State_turn_left(this),                 Event.input_turnleft_released),     new TD(new State_turn_end(this),                 false)},
+
             {new ST(new State_turn_left(this),                 Event.input_walkfwd),               new TD(new State_walk_forward_turn_left(this),   false)},
             {new ST(new State_turn_left(this),                 Event.input_walkbckw),              new TD(new State_walk_backward_turn_left(this),  false)},
             {new ST(new State_turn_left(this),                 Event.input_runfwd),                new TD(new State_run_forward_turn_left(this),    false)},
 
             {new ST(new State_panic(this),                     Event.input_turnright),             new TD(new State_turn_right(this),               false)},
-            {new ST(new State_turn_right(this),                Event.input_turnright_released),    new TD(new State_panic(this),                    false)},
+            {new ST(new State_turn_right(this),                Event.input_turnright_released),    new TD(new State_turn_end(this),                 false)},
+
             {new ST(new State_turn_right(this),                Event.input_walkfwd),               new TD(new State_walk_forward_turn_right(this),  false)},
             {new ST(new State_turn_right(this),                Event.input_walkbckw),              new TD(new State_walk_backward_turn_right(this), false)},
             {new ST(new State_turn_right(this),                Event.input_runfwd),                new TD(new State_run_forward_turn_right(this),   false)},
 
+            {new ST(new State_turn_end(this),                  Event.anim_done),                   new TD(new State_panic(this),                    false)},
 // jumps
             // standing jump
             {new ST(new State_panic(this),                     Event.input_jump),                  new TD(new State_jump_start(this),               false)},
+            {new ST(new State_turn_left(this),                 Event.input_jump),                  new TD(new State_jump_start(this),               false)},
+            {new ST(new State_turn_right(this),                Event.input_jump),                  new TD(new State_jump_start(this),               false)},
+
             {new ST(new State_jump_start(this),                Event.anim_done),                   new TD(new State_jump_up(this),                  false)},
             {new ST(new State_jump_up(this),                   Event.anim_done),                   new TD(new State_fall(this),                     false)},
             {new ST(new State_fall(this),                      Event.player_landed),               new TD(new State_land(this),                     false)},
@@ -86,11 +92,17 @@ public partial class PlayerMain: MonoBehaviour
 
             // forward jump
             {new ST(new State_walk_forward(this),              Event.input_jump),                  new TD(new State_jump_start_forward(this),       false)},
+            {new ST(new State_walk_forward_turn_left(this),    Event.input_jump),                  new TD(new State_jump_start_forward(this),       false)},
+            {new ST(new State_walk_forward_turn_right(this),   Event.input_jump),                  new TD(new State_jump_start_forward(this),       false)},
+ 
             {new ST(new State_jump_start_forward(this),        Event.anim_done),                   new TD(new State_jump_forward(this),             false)},
             {new ST(new State_jump_forward(this),              Event.anim_done),                   new TD(new State_fall(this),                     false)},
 
             // backward jump
             {new ST(new State_walk_backward(this),             Event.input_jump),                  new TD(new State_jump_start_backward(this),      false)},
+            {new ST(new State_walk_backward_turn_left(this),   Event.input_jump),                  new TD(new State_jump_start_backward(this),      false)},
+            {new ST(new State_walk_backward_turn_right(this),  Event.input_jump),                  new TD(new State_jump_start_backward(this),      false)},
+
             {new ST(new State_jump_start_backward(this),       Event.anim_done),                   new TD(new State_jump_backward(this),            false)},
             {new ST(new State_jump_backward(this),             Event.anim_done),                   new TD(new State_fall_backward(this),            false)},
             {new ST(new State_fall_backward(this),             Event.player_landed),               new TD(new State_land_backward(this),            false)},
@@ -135,14 +147,14 @@ public partial class PlayerMain: MonoBehaviour
             {
                 _currentScriptedGround = platform;
                 _currentScriptedGround.playerStanding = true;
-//                this.transform.SetParent(_currentScriptedGround.transform);
+                cc.transform.SetParent(_currentScriptedGround.transform);
             }
             else
             {
                 if(_currentScriptedGround != null)
                     _currentScriptedGround.playerStanding = false;
-//                this.transform.SetParent(null);
                 _currentScriptedGround = null;
+                cc.transform.SetParent(null);
             }
             return true;
         }
@@ -150,8 +162,8 @@ public partial class PlayerMain: MonoBehaviour
         {
             if(_currentScriptedGround != null)
                 _currentScriptedGround.playerStanding = false;
-//            this.transform.SetParent(null);
             _currentScriptedGround = null;
+            cc.transform.SetParent(null);
             return false;
         }
     }
@@ -204,10 +216,7 @@ public partial class PlayerMain: MonoBehaviour
             MoveNext(Event.anim_done);
 
         if(IsGrounded())
-        {
-            Debug.Log("GROUNDED");
             MoveNext(Event.player_landed);
-        }
 
         float rot = _yRotation * config.turnSpeed * Time.deltaTime * 60;
         transform.Rotate(0, _yRotation, 0);
