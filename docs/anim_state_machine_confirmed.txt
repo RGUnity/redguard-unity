@@ -4,7 +4,7 @@
 skinparam linetype polyline
 'skinparam linetype ortho
 top to bottom direction
-'skinparam dpi 50
+skinparam dpi 50
 
 ' init is only for setup, it transitions to panic on first frame
 state init
