@@ -108,6 +108,11 @@ public partial class PlayerMain: MonoBehaviour
 
     public void setLocked(bool l)
     {
+        
+        if(l)
+            currentState = new State_locked(this);
+        else
+            currentState = new State_panic(this);
     }
 
 

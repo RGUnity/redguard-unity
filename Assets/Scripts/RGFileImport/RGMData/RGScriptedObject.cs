@@ -737,6 +737,7 @@ public class RGScriptedObject : MonoBehaviour
         functions[17] = WaitOnTasks;
         functions[21] = showObj;
         functions[22] = showObjLoc;
+        functions[26] = showPlayer;
         functions[30] = showCyrusLoc;
         functions[33] = PlayAnimation;
         functions[34] = lockoutPlayer;
@@ -921,6 +922,19 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         Debug.Log($"OBJ {ofs} + {co} = {tco} /{cto}");
 
         CameraMain.ShowLocation(this.transform, tco, cto);
+        return 0;
+    }
+
+    /*task 26*/
+    public int showPlayer(uint caller, bool multitask, int[] i /*0*/)	
+    {
+        ScriptingDBG($"{multitask}_{scriptName}_showPlayer()");
+        // Targets the camera to show Cyrus, using the default camera offset
+        RGScriptedObject player = RGObjectStore.GetPlayer();
+        Vector3 offsetPos = new Vector3(0.0f,
+                                        5.06f,
+                                      -10.48f);
+        CameraMain.ShowObj(player, offsetPos, Vector3.zero, true);
         return 0;
     }
 

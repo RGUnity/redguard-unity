@@ -163,4 +163,18 @@ public partial class PlayerMain: MonoBehaviour
             main._yRotation = 0.0f;
         }
     }
+    public class State_locked: State
+    {
+        public State_locked(PlayerMain m):base(m)
+        {
+            id = (int)RGRGMAnimStore.AnimGroup.anim_panic+1000;
+        }
+        public override void Entry()
+        {
+            main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_panic, 0);
+            main._velocity = Vector3.zero;
+            main._yRotation = 0.0f;
+        }
+    }
+
 }

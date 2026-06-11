@@ -17,7 +17,7 @@ MonoBehaviour:
     m_Bits: 1
   gravity: -6.5
   groundMagnet: -0.1
-  runSpeed: 5
+  runSpeed: 10
   walkSpeed: 2
   walkBackSpeed: 1
   velocitySmoothing: 100

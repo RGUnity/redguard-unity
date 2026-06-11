@@ -70,7 +70,7 @@ public partial class PlayerMain: MonoBehaviour
         public override void Entry()
         {
             main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_run_forward, 0);
-            main._velocity = Vector3.forward* (1.0f * main.config.walkSpeed / 60);
+            main._velocity = Vector3.forward* (1.0f * main.config.runSpeed / 60);
         }
         public override void Exit()
         {
