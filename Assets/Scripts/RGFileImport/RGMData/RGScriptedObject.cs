@@ -60,7 +60,7 @@ public class RGScriptedObject : MonoBehaviour
 
 	SkinnedMeshRenderer skinnedMeshRenderer;
     new Light light;
-    new Collider collider;
+    new MeshCollider collider;
     AudioSource audioSource;
 
 	GameObject flat;
@@ -346,8 +346,8 @@ public class RGScriptedObject : MonoBehaviour
         {
             if(skinnedMeshRenderer.sharedMesh != null)
             {
-                gameObject.AddComponent<MeshCollider>();
-                gameObject.GetComponent<MeshCollider>().sharedMesh = skinnedMeshRenderer.sharedMesh;
+                collider = gameObject.AddComponent<MeshCollider>();
+                collider.sharedMesh = skinnedMeshRenderer.sharedMesh;
             }
         }
          
