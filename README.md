@@ -5,7 +5,6 @@
 
 
 
-
 Redguard Unity is an open source project that intends to port _The Elder Scrolls Adventures: Redguard_ to the Unity game engine.
 
 Despite beeing developed by a different team, it has similar goals to _Daggerfall Unity_ and aims for a faithful recreation of the original game in a new engine. It will feature vastly improved performance, more responsive controls, better graphical fidelity, and many other fixes to make the game more enjoyable.
