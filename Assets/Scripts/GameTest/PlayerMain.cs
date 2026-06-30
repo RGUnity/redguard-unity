@@ -125,7 +125,7 @@ public partial class PlayerMain: MonoBehaviour
     private bool _isGrounded;
     public RGScriptedObject _currentScriptedGround = default;
 
-    private Vector3 _velocity;
+    [SerializeField] private Vector3 _velocity;
     [SerializeField] private float _yRotation;
 
     public void SetPositionAndRotation(Vector3 pos, Quaternion rot)
@@ -173,7 +173,10 @@ public partial class PlayerMain: MonoBehaviour
     public void FixedUpdate()
     {
         if(currentState.id == -1)
+        {
+            // first tick
             MoveNext(Event.init);
+        }
         if(Game.Input.moveForward)
         {
             if(Game.Input.moveModifier)
@@ -222,8 +225,10 @@ public partial class PlayerMain: MonoBehaviour
         float rot = _yRotation * config.turnSpeed * Time.deltaTime * 60;
         transform.Rotate(0, _yRotation, 0);
 
-        _velocity.y += config.groundMagnet;
-        Vector3 localvel = transform.TransformDirection(_velocity);
+
+        if(_velocity.y >= config.gravity)
+            _velocity.y += config.gravity;
+        Vector3 localvel = transform.TransformDirection(_velocity)*Time.deltaTime;
         cc.Move(localvel);
     }
 }

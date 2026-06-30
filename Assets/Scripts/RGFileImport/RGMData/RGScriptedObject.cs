@@ -517,7 +517,7 @@ public class RGScriptedObject : MonoBehaviour
                 skinnedMeshRenderer.SetBlendShapeWeight(newLocal, 100.0f);
 		}
 	}
-	void Update()
+	void FixedUpdate()
     {
         UpdateTasks();
         UpdateAnimations();

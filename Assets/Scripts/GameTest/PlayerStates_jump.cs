@@ -76,8 +76,8 @@ public partial class PlayerMain: MonoBehaviour
             // TODO: which animation here?
             main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_jump_forward, 0);
 
-            main._velocity = Vector3.up* (1.0f * main.config.jumpHeight);
-            main._velocity += Vector3.forward* (1.0f * main.config.walkForwardJumpSpeed/ 60);
+            main._velocity = Vector3.up* (main.config.jumpHeight);
+            main._velocity += Vector3.forward* (main.config.walkForwardJumpSpeed);
             main._isGrounded = false;
         }
     }
@@ -100,8 +100,8 @@ public partial class PlayerMain: MonoBehaviour
         {
             main.animShouldExit = true;
             main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_jump_backward, 0);
-            main._velocity = Vector3.up* (1.0f * main.config.jumpHeight);
-            main._velocity += Vector3.forward* -(1.0f * main.config.walkBackwardJumpSpeed/ 60);
+            main._velocity = Vector3.up* (main.config.jumpHeight);
+            main._velocity += Vector3.forward* -(main.config.walkBackwardJumpSpeed);
             main._isGrounded = false;
         }
     }
@@ -143,8 +143,8 @@ public partial class PlayerMain: MonoBehaviour
             main.animShouldExit = true;
             // TODO: which animation here?
             main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_jump_run_arms, 0);
-            main._velocity = Vector3.up* (1.0f * main.config.jumpHeight);
-            main._velocity += Vector3.forward* (1.0f * main.config.runForwardJumpSpeed/ 60);
+            main._velocity = Vector3.up* (main.config.jumpHeight);
+            main._velocity += Vector3.forward* (main.config.runForwardJumpSpeed);
             main._isGrounded = false;
         }
     }

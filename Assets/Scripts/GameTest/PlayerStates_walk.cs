@@ -13,7 +13,7 @@ public partial class PlayerMain: MonoBehaviour
         public override void Entry()
         {
             main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_walk_forward, 0);
-            main._velocity = Vector3.forward* (1.0f * main.config.walkSpeed / 60);
+            main._velocity = Vector3.forward* (main.config.walkSpeed);
         }
         public override void Exit()
         {
@@ -70,7 +70,7 @@ public partial class PlayerMain: MonoBehaviour
         public override void Entry()
         {
             main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_run_forward, 0);
-            main._velocity = Vector3.forward* (1.0f * main.config.runSpeed / 60);
+            main._velocity = Vector3.forward* (main.config.runSpeed);
         }
         public override void Exit()
         {
@@ -126,7 +126,7 @@ public partial class PlayerMain: MonoBehaviour
         public override void Entry()
         {
             main.player.SetAnim((int)RGRGMAnimStore.AnimGroup.anim_walk_backward, 0);
-            main._velocity = Vector3.forward* (-1.0f * main.config.walkBackSpeed / 60);
+            main._velocity = Vector3.forward* -(main.config.walkBackSpeed);
         }
         public override void Exit()
         {
