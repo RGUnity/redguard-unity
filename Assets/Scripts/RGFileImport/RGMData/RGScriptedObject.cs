@@ -1575,6 +1575,7 @@ Vector3 ofsvec_tst(int ix, int iy, int iz)
         // i[0]: the ID of the world to load
         // i[1]: the map marker to start the player at
         // i[2]: the player rotation when he loads in
+        Debug.Log($"{scriptName}_LoadWorld: worldId={i[0]}, spawnMarker={i[1]}, rotation={i[2]}");
         WorldLoader.RequestLoadWorld(i[0], i[1], i[2]);
         return 0;
     }
