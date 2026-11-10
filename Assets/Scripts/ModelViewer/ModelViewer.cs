@@ -365,19 +365,4 @@ public class ModelViewer : MonoBehaviour
         else
             SpawnArea(-1, rgmName, loadedWLD, paletteName, rgmName);
     }
-    
-    private Bounds GetObjectBounds()
-    {
-        if (_objectRootGenerated == null)
-            return new Bounds(Vector3.zero, Vector3.one);
-
-        var renderers = _objectRootGenerated.GetComponentsInChildren<Renderer>();
-        if (renderers.Length == 0)
-            return new Bounds(_objectRootGenerated.transform.position, Vector3.one);
-
-        var bounds = renderers[0].bounds;
-        foreach (var r in renderers)
-            bounds.Encapsulate(r.bounds);
-        return bounds;
-    }
 }
