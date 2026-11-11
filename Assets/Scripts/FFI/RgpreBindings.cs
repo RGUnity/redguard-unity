@@ -225,6 +225,12 @@ public static class RgpreBindings
 
     // --- GLB export ---
 
+    [DllImport("rgpre", EntryPoint = "rg_convert_model_from_path_with_palette", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr ConvertModelFromPathWithPaletteNative(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string assetsDir,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string palettePath);
+
     [DllImport("rgpre", EntryPoint = "rg_convert_model_from_path", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr ConvertModelFromPathNative(
         [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath,
@@ -312,6 +318,8 @@ public static class RgpreBindings
     // --- GLB export ---
 
     public static IntPtr ConvertModelFromPath(string filePath, string assetsDir) => ConvertModelFromPathNative(filePath, assetsDir);
+    public static IntPtr ConvertModelFromPathWithPalette(string filePath, string assetsDir, string palettePath)
+        => ConvertModelFromPathWithPaletteNative(filePath, assetsDir, palettePath);
     public static IntPtr ConvertRgmFromPath(string filePath, string assetsDir) => ConvertRgmFromPathNative(filePath, assetsDir);
     public static IntPtr ConvertWldFromPath(string filePath, string assetsDir) => ConvertWldFromPathNative(filePath, assetsDir);
 

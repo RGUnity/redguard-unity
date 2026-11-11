@@ -83,7 +83,14 @@ public class GLTFExporter : MonoBehaviour
             return null;
         }
 
-        IntPtr resultPtr = RgpreBindings.ConvertModelFromPath(modelPath, assetsDir);
+        string palettePath = FFIPathUtils.ResolveFile(artFolder, colName, ".COL");
+        if (string.IsNullOrEmpty(palettePath))
+        {
+            Debug.LogError("[Export] Selected palette not found: " + colName);
+            return null;
+        }
+
+        IntPtr resultPtr = RgpreBindings.ConvertModelFromPathWithPalette(modelPath, assetsDir, palettePath);
         if (resultPtr == IntPtr.Zero)
         {
             Debug.LogError("[Export] FFI conversion failed: " + RgpreBindings.GetLastErrorMessage());
